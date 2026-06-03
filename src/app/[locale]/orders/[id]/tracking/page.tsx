@@ -1,35 +1,42 @@
-'use client'
+"use client";
 
-import { useLocale } from 'next-intl'
-import Spinner from '@/components/ui/Spinner'
-import OrderStatusBadge from '@/components/orders/OrderStatusBadge'
-import StatusTimeline from '@/components/orders/StatusTimeline'
-import { useGetOrderTrackingQuery } from '@/api/orders/ordersApi'
+import { useGetOrderTrackingQuery } from "@/api/orders/ordersApi";
+import OrderStatusBadge from "@/components/orders/OrderStatusBadge";
+import StatusTimeline from "@/components/orders/StatusTimeline";
+import Spinner from "@/components/ui/Spinner";
+import { useLocale } from "next-intl";
 
 export default function TrackingPage({ params }: { params: { id: string } }) {
-  const locale = useLocale()
-  const isBn   = locale === 'bn'
-  const { data: order, isLoading } = useGetOrderTrackingQuery(params.id)
+  const locale = useLocale();
+  const isBn = locale === "bn";
+  const { data: order, isLoading } = useGetOrderTrackingQuery(params.id);
 
-  if (isLoading) return <Spinner />
-  if (!order) return (
-    <p className="text-center py-16 text-gray-400">
-      {isBn ? 'অর্ডার পাওয়া যায়নি' : 'Order not found'}
-    </p>
-  )
+  if (isLoading) return <Spinner />;
+  if (!order)
+    return (
+      <p className="text-center py-16 text-gray-400">
+        {isBn ? "অর্ডার পাওয়া যায়নি" : "Order not found"}
+      </p>
+    );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-12">
-      <div className="card max-w-lg mx-auto space-y-5">
-
+    <div className="max-w-7xl mx-auto px-4 py-5">
+      <div className="card max-w-2xl mx-auto space-y-5">
         {/* Header */}
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-xl font-bold text-gray-800">{order.order_number}</h1>
+            <h1 className="text-xl font-bold text-gray-800">
+              {order.order_number}
+            </h1>
             <p className="text-gray-500 text-sm mt-0.5">
-              {new Date(order.created_at).toLocaleDateString(isBn ? 'bn-BD' : 'en-US', {
-                year: 'numeric', month: 'long', day: 'numeric',
-              })}
+              {new Date(order.created_at).toLocaleDateString(
+                isBn ? "bn-BD" : "en-US",
+                {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                },
+              )}
             </p>
           </div>
           <OrderStatusBadge status={order.status} locale={locale} />
@@ -38,10 +45,12 @@ export default function TrackingPage({ params }: { params: { id: string } }) {
         {/* Customer */}
         <div className="border-t border-gray-100 pt-4 space-y-0.5">
           <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">
-            {isBn ? 'গ্রাহকের তথ্য' : 'Customer'}
+            {isBn ? "গ্রাহকের তথ্য" : "Customer"}
           </p>
           <p className="text-sm font-medium text-gray-700">
-            {isBn ? order.shipping_name_bn : order.shipping_name_en || order.shipping_name_bn}
+            {isBn
+              ? order.shipping_name_bn
+              : order.shipping_name_en || order.shipping_name_bn}
           </p>
           <p className="text-sm text-gray-500">{order.shipping_phone}</p>
         </div>
@@ -50,7 +59,7 @@ export default function TrackingPage({ params }: { params: { id: string } }) {
         {order.timeline.length > 0 && (
           <div className="border-t border-gray-100 pt-4">
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-4">
-              {isBn ? 'অর্ডারের অগ্রগতি' : 'Order Progress'}
+              {isBn ? "অর্ডারের অগ্রগতি" : "Order Progress"}
             </p>
             <StatusTimeline
               logs={order.timeline}
@@ -61,5 +70,5 @@ export default function TrackingPage({ params }: { params: { id: string } }) {
         )}
       </div>
     </div>
-  )
+  );
 }

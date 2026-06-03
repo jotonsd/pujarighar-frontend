@@ -86,6 +86,7 @@ export interface PackageItem {
   component_name_en: string
   component_sku: string
   quantity: string
+  unit_price: string
 }
 
 export interface Product {

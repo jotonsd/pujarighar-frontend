@@ -8,12 +8,10 @@ import Footer from '@/components/layout/Footer'
 import Toaster from '@/components/ui/Toaster'
 import type { Metadata } from 'next'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'পূজারিঘর | PujariGhar',
-}
-
-export function generateStaticParams() {
-  return locales.map((locale) => ({ locale }))
 }
 
 export default async function LocaleLayout({
