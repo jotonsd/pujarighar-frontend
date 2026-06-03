@@ -30,6 +30,11 @@ export default function ProductDetailPage({
   const { data: product, isLoading } = useGetProductQuery(params.id);
   const [addToCart, { isLoading: adding }] = useAddToCartMutation();
 
+  const handleBuyNow = async () => {
+    await handleAddToCart()
+    router.push(`/${locale}/cart`)
+  }
+
   const handleAddToCart = async () => {
     if (!product) return;
     if (!isAuthenticated) {
@@ -138,9 +143,16 @@ export default function ProductDetailPage({
               <button
                 onClick={handleAddToCart}
                 disabled={adding}
-                className="btn-primary flex-1"
+                className="btn-secondary flex-1"
               >
                 {adding ? t("common.loading") : t("product.addToCart")}
+              </button>
+              <button
+                onClick={handleBuyNow}
+                disabled={adding}
+                className="btn-primary flex-1"
+              >
+                {locale === 'bn' ? 'এখনই কিনুন' : 'Buy Now'}
               </button>
             </div>
           )}

@@ -26,6 +26,11 @@ export default function PackageDetailPage({ params }: { params: { id: string } }
   const { data: pkg, isLoading } = useGetProductQuery(params.id)
   const [addToCart, { isLoading: adding }] = useAddToCartMutation()
 
+  const handleBuyNow = async () => {
+    await handleAddToCart()
+    router.push(`/${locale}/cart`)
+  }
+
   const handleAddToCart = async () => {
     if (!pkg) return
     if (!isAuthenticated) {
@@ -129,8 +134,11 @@ export default function PackageDetailPage({ params }: { params: { id: string } }
                 <span className="px-4 py-2 border-x border-gray-200 text-sm font-medium">{qty}</span>
                 <button onClick={() => setQty(qty + 1)} className="px-3 py-2 hover:bg-gray-50 text-gray-600">+</button>
               </div>
-              <button onClick={handleAddToCart} disabled={adding} className="btn-primary flex-1">
+              <button onClick={handleAddToCart} disabled={adding} className="btn-secondary flex-1">
                 {adding ? t('common.loading') : t('product.addToCart')}
+              </button>
+              <button onClick={handleBuyNow} disabled={adding} className="btn-primary flex-1">
+                {locale === 'bn' ? 'এখনই কিনুন' : 'Buy Now'}
               </button>
             </div>
           )}

@@ -17,7 +17,7 @@ export default function HeroSlider() {
     return () => clearInterval(id)
   }, [slides.length])
 
-  if (isLoading) return <Skeleton className="h-72 w-full rounded-2xl mb-10" />
+  if (isLoading) return <Skeleton className="h-80 md:h-96 w-full rounded-2xl mb-10" />
   if (!slides.length) return null
 
   return (
@@ -35,7 +35,7 @@ export default function HeroSlider() {
                 <img
                   src={slide.image}
                   alt={locale === 'bn' ? slide.title_bn : slide.title_en}
-                  className="w-full h-72 object-cover"
+                  className="w-full h-80 md:h-96 object-cover"
                 />
                 {/* Overlay for text */}
                 {(slide.title_bn || slide.title_en) && (
@@ -59,7 +59,7 @@ export default function HeroSlider() {
             ) : (
               /* Text-only slide */
               <div
-                className="w-full h-72 flex flex-col items-center justify-center text-center px-6"
+                className="w-full h-80 md:h-96 flex flex-col items-center justify-center text-center px-6"
                 style={{ backgroundColor: slide.bg_color || '#FFF7ED' }}
               >
                 <h1 className="text-4xl font-bold text-amber-800 mb-3">
