@@ -8,6 +8,7 @@ import PageHeader from "@/components/ui/PageHeader";
 import TableSkeleton from "@/components/ui/TableSkeleton";
 import { Product } from "@/lib/types";
 import { toast } from "@/store/toastStore";
+import { formatNumber } from "@/utils/format";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 
@@ -15,6 +16,7 @@ export default function InventoryPage() {
   const t = useTranslations();
   const locale = useLocale();
   const [selected, setSelected] = useState<Product | null>(null);
+  const [search, setSearch]     = useState('');
   const [adjForm, setAdjForm] = useState({
     movement_type: "PURCHASE",
     quantity: "",
@@ -48,6 +50,14 @@ export default function InventoryPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="card overflow-auto max-h-[70vh]">
+          {/* Search */}
+          <div className="mb-3">
+            <FloatingInput
+              label={locale === 'bn' ? 'পণ্য খুঁজুন (নাম বা SKU)' : 'Search product (name or SKU)'}
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            />
+          </div>
           {isLoading ? (
             <TableSkeleton columns={3} rows={8} />
           ) : (
@@ -66,7 +76,12 @@ export default function InventoryPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {products?.data?.map(p => (
+                {products?.data
+                  ?.filter(p => {
+                    const q = search.toLowerCase()
+                    return !q || p.name_bn.toLowerCase().includes(q) || p.name_en.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q)
+                  })
+                  .map(p => (
                   <tr
                     key={p.id}
                     onClick={() => setSelected(p)}
@@ -82,11 +97,11 @@ export default function InventoryPage() {
                       <Badge
                         variant={Number(p.stock_on_hand) > 0 ? "green" : "red"}
                       >
-                        {p.stock_on_hand}
+                        {formatNumber(parseFloat(p.stock_on_hand), locale)}
                       </Badge>
                     </td>
                   </tr>
-                ))}
+                  ))}
               </tbody>
             </table>
           )}
@@ -99,7 +114,9 @@ export default function InventoryPage() {
                 {locale === "bn" ? selected.name_bn : selected.name_en}
               </h2>
               <p className="text-3xl font-bold text-amber-600">
-                {stockData?.stock_on_hand ?? "..."}
+                {stockData?.stock_on_hand
+                  ? formatNumber(parseFloat(stockData.stock_on_hand), locale)
+                  : "..."}
               </p>
               <p className="text-gray-500 text-sm mt-1">
                 {locale === "bn" ? "বর্তমান স্টক" : "Current stock"}

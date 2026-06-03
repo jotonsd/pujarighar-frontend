@@ -148,6 +148,7 @@ export interface CartItem {
   stock_on_hand: string
   is_package: boolean
   package_items: CartPackageItem[]
+  product_image: string | null
 }
 
 export interface Cart {

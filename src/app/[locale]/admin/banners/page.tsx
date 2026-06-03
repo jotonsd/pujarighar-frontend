@@ -34,6 +34,7 @@ export default function BannersAdminPage() {
   const fileRef                 = useRef<HTMLInputElement>(null)
   const [imageFile, setImageFile]       = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const [clearImage, setClearImage]     = useState(false)
 
   const { data: banners = [], isLoading } = useGetAllBannersQuery()
   const [createBanner, { isLoading: creating }] = useCreateBannerMutation()
@@ -46,7 +47,7 @@ export default function BannersAdminPage() {
     setForm((p) => ({ ...p, [key]: e.target.value }))
 
   const openCreate = () => {
-    setEditId(null); setForm({ ...EMPTY_FORM }); setImageFile(null); setImagePreview(null); setShowForm(true)
+    setEditId(null); setForm({ ...EMPTY_FORM }); setImageFile(null); setImagePreview(null); setClearImage(false); setShowForm(true)
   }
 
   const openEdit = (b: Banner) => {
@@ -54,6 +55,7 @@ export default function BannersAdminPage() {
     setForm({ title_bn: b.title_bn, title_en: b.title_en, subtitle_bn: b.subtitle_bn, subtitle_en: b.subtitle_en, badge_text: b.badge_text, bg_color: b.bg_color, link: b.link, order: b.order })
     setImageFile(null)
     setImagePreview(b.image ?? null)
+    setClearImage(false)
     setShowForm(true)
   }
 
@@ -68,6 +70,7 @@ export default function BannersAdminPage() {
     const fd = new FormData()
     Object.entries(form).forEach(([k, v]) => fd.append(k, String(v)))
     if (imageFile) fd.append('image', imageFile)
+    if (clearImage && !imageFile) fd.append('clear_image', '1')
     return fd
   }
 
@@ -84,7 +87,7 @@ export default function BannersAdminPage() {
         await createBanner(fd).unwrap()
         toast.success(locale === 'bn' ? 'ব্যানার তৈরি হয়েছে' : 'Banner created')
       }
-      setShowForm(false); setEditId(null); setForm({ ...EMPTY_FORM }); setImageFile(null); setImagePreview(null)
+      setShowForm(false); setEditId(null); setForm({ ...EMPTY_FORM }); setImageFile(null); setImagePreview(null); setClearImage(false)
     } catch {
       toast.error(locale === 'bn' ? 'ব্যর্থ হয়েছে' : 'Failed')
     }
@@ -235,8 +238,16 @@ export default function BannersAdminPage() {
             <p className="text-xs text-gray-500 mb-2">{locale === 'bn' ? 'ছবি (ঐচ্ছিক)' : 'Image (optional)'}</p>
             <div className="flex items-center gap-3">
               {imagePreview && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={imagePreview} alt="Preview" className="w-20 h-12 object-cover rounded-lg border border-gray-200" />
+                <div className="relative">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={imagePreview} alt="Preview" className="w-20 h-12 object-cover rounded-lg border border-gray-200" />
+                  <button
+                    type="button"
+                    onClick={() => { setImagePreview(null); setImageFile(null); setClearImage(true) }}
+                    className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center hover:bg-red-600"
+                    title={locale === 'bn' ? 'ছবি মুছুন' : 'Remove image'}
+                  >×</button>
+                </div>
               )}
               <button type="button" onClick={() => fileRef.current?.click()}
                 className="btn-secondary text-xs px-3 py-1.5">

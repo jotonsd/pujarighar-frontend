@@ -513,93 +513,64 @@ export default function CartPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 space-y-3">
-              {items.map(item => {
-                const name =
-                  locale === "bn" ? item.product_name_bn : item.product_name_en;
-                const qty = Math.round(Number(item.quantity));
-                return (
-                  <div key={item.id} className="card space-y-2">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-amber-50 rounded-lg flex items-center justify-center text-2xl shrink-0">
-                        {item.is_package ? "🎁" : "🪔"}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-bold text-gray-800 truncate">
-                          {name}
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          {formatAmount(item.unit_price, locale, 0)}
-                        </p>
-                        <div className="flex items-center gap-1 mt-1">
+            <div className="lg:col-span-2">
+              <div className="card divide-y divide-gray-100 p-0 overflow-hidden">
+                {items.map(item => {
+                  const name = locale === "bn" ? item.product_name_bn : item.product_name_en;
+                  const qty  = Math.round(Number(item.quantity));
+                  return (
+                    <div key={item.id} className="px-4 py-3 space-y-2">
+                      <div className="flex items-center gap-3">
+                        {/* Image */}
+                        <div className="w-12 h-12 rounded-lg overflow-hidden bg-amber-50 shrink-0 flex items-center justify-center">
+                          {item.product_image ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={item.product_image} alt={name} className="w-full h-full object-cover" />
+                          ) : (
+                            <span className="text-xl">{item.is_package ? "🎁" : "🪔"}</span>
+                          )}
+                        </div>
+                        {/* Name + price */}
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-gray-800 text-sm truncate">{name}</p>
+                          <p className="text-xs text-gray-400">{formatAmount(item.unit_price, locale, 0)}</p>
+                        </div>
+                        {/* Qty stepper */}
+                        <div className="flex items-center gap-1 shrink-0">
                           <button
-                            onClick={() =>
-                              qty > 1
-                                ? updateItem({
-                                    itemId: item.id,
-                                    quantity: String(qty - 1),
-                                  })
-                                : removeItem(item.id)
-                            }
-                            className="w-5 h-5 bg-amber-100 rounded text-amber-700 text-xs flex items-center justify-center hover:bg-amber-200"
-                          >
-                            −
-                          </button>
-                          <span className="text-sm font-bold w-6 text-center">
-                            {formatNumber(qty, locale)}
-                          </span>
+                            onClick={() => qty > 1 ? updateItem({ itemId: item.id, quantity: String(qty - 1) }) : removeItem(item.id)}
+                            className="w-6 h-6 bg-amber-100 rounded text-amber-700 text-sm flex items-center justify-center hover:bg-amber-200"
+                          >−</button>
+                          <span className="text-sm font-medium w-7 text-center">{formatNumber(qty, locale)}</span>
                           <button
-                            onClick={() =>
-                              updateItem({
-                                itemId: item.id,
-                                quantity: String(qty + 1),
-                              })
-                            }
-                            className="w-5 h-5 bg-amber-100 rounded text-amber-700 text-xs flex items-center justify-center hover:bg-amber-200"
-                          >
-                            +
-                          </button>
+                            onClick={() => updateItem({ itemId: item.id, quantity: String(qty + 1) })}
+                            className="w-6 h-6 bg-amber-100 rounded text-amber-700 text-sm flex items-center justify-center hover:bg-amber-200"
+                          >+</button>
+                        </div>
+                        {/* Total + remove */}
+                        <div className="text-right shrink-0 w-20">
+                          <p className="font-bold text-amber-600 text-sm">{formatAmount(item.line_total, locale, 0)}</p>
+                          <button onClick={() => removeItem(item.id)} className="text-xs text-red-400 hover:text-red-600">{t("cart.remove")}</button>
                         </div>
                       </div>
-                      <div className="text-right shrink-0">
-                        <p className="font-bold text-amber-600">
-                          {formatAmount(item.line_total, locale)}
-                        </p>
-                        <button
-                          onClick={() => removeItem(item.id)}
-                          className="text-xs text-red-400 hover:text-red-600 mt-1"
-                        >
-                          {t("cart.remove")}
-                        </button>
-                      </div>
+                      {/* Package items */}
+                      {item.is_package && item.package_items?.length > 0 && (
+                        <div className="ml-15 pl-3 border-l-2 border-amber-100 space-y-0.5" style={{ marginLeft: '60px' }}>
+                          {item.package_items.map((pi, i) => (
+                            <div key={i} className="flex items-center justify-between text-xs text-gray-400">
+                              <span className="flex items-center gap-1">
+                                <span className="w-1 h-1 rounded-full bg-amber-300 shrink-0" />
+                                {locale === "bn" ? pi.component_name_bn : pi.component_name_en}
+                              </span>
+                              <span>×{formatNumber(Math.round(Number(pi.quantity) * qty), locale)}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                    {item.is_package && item.package_items?.length > 0 && (
-                      <div className="ml-16 pl-3 border-l-2 border-amber-100 space-y-0.5">
-                        {item.package_items.map((pi, i) => (
-                          <div
-                            key={i}
-                            className="flex items-center justify-between text-xs text-gray-500"
-                          >
-                            <span className="flex items-center gap-1">
-                              <span className="w-1 h-1 rounded-full bg-amber-400 shrink-0" />
-                              {locale === "bn"
-                                ? pi.component_name_bn
-                                : pi.component_name_en}
-                            </span>
-                            <span className="text-gray-400 ml-2">
-                              ×
-                              {formatNumber(
-                                Math.round(Number(pi.quantity) * qty),
-                                locale,
-                              )}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
             <div className="card h-fit space-y-4">
               {/* Delivery address — inline selection */}

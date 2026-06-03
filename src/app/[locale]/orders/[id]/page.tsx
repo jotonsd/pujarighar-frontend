@@ -13,6 +13,43 @@ import { useAuthStore } from "@/store/authStore";
 import { toast } from "@/store/toastStore";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+
+function CancelConfirmModal({
+  locale, orderNumber, onConfirm, onCancel, loading,
+}: {
+  locale: string; orderNumber: string
+  onConfirm: () => void; onCancel: () => void; loading: boolean
+}) {
+  const isBn = locale === 'bn'
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 space-y-4">
+        <div className="flex items-center gap-3">
+          <span className="text-3xl">⚠️</span>
+          <h2 className="text-lg font-bold text-gray-800">
+            {isBn ? 'অর্ডার বাতিল করবেন?' : 'Cancel this order?'}
+          </h2>
+        </div>
+        <p className="text-sm text-gray-500">
+          {isBn
+            ? `অর্ডার নম্বর `
+            : `Order `}
+          <strong className="text-gray-700">{orderNumber}</strong>
+          {isBn ? ` বাতিল করা হবে। এটি পূর্বাবস্থায় ফেরানো যাবে না।` : ` will be cancelled. This cannot be undone.`}
+        </p>
+        <div className="flex gap-3">
+          <button onClick={onConfirm} disabled={loading} className="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-2.5 rounded-xl transition-colors text-sm">
+            {loading ? (isBn ? 'বাতিল হচ্ছে...' : 'Cancelling...') : (isBn ? 'হ্যাঁ, বাতিল করুন' : 'Yes, Cancel')}
+          </button>
+          <button onClick={onCancel} disabled={loading} className="flex-1 btn-secondary">
+            {isBn ? 'ফিরে যান' : 'Go Back'}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export default function OrderDetailPage({
   params,
@@ -28,17 +65,15 @@ export default function OrderDetailPage({
   const { data: logs = [] } = useGetOrderStatusLogQuery(params.id);
   const [cancelOrder, { isLoading: cancelling }] = useCancelOrderMutation();
 
+  const [showCancelModal, setShowCancelModal] = useState(false);
+
   const handleCancel = async () => {
-    if (!confirm(t("common.confirm"))) return;
     try {
       await cancelOrder({ id: params.id }).unwrap();
-      toast.success(
-        locale === "bn" ? "অর্ডার বাতিল হয়েছে" : "Order cancelled",
-      );
+      setShowCancelModal(false);
+      toast.success(locale === "bn" ? "অর্ডার বাতিল হয়েছে" : "Order cancelled");
     } catch {
-      toast.error(
-        locale === "bn" ? "বাতিল ব্যর্থ হয়েছে" : "Cancellation failed",
-      );
+      toast.error(locale === "bn" ? "বাতিল ব্যর্থ হয়েছে" : "Cancellation failed");
     }
   };
 
@@ -158,12 +193,20 @@ export default function OrderDetailPage({
           </div>
           {user?.role === "CUSTOMER" && order.status === "PENDING" && (
             <button
-              onClick={handleCancel}
-              disabled={cancelling}
+              onClick={() => setShowCancelModal(true)}
               className="btn-secondary"
             >
-              {cancelling ? t("common.loading") : t("order.cancel")}
+              {t("order.cancel")}
             </button>
+          )}
+          {showCancelModal && (
+            <CancelConfirmModal
+              locale={locale}
+              orderNumber={order.order_number}
+              onConfirm={handleCancel}
+              onCancel={() => setShowCancelModal(false)}
+              loading={cancelling}
+            />
           )}
         </div>
         <div className="card h-fit">
