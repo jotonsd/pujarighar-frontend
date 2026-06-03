@@ -1,0 +1,117 @@
+'use client'
+
+import { useState } from 'react'
+import Link from 'next/link'
+import { useTranslations } from 'next-intl'
+import { formatAmount } from '@/utils/format'
+import { Product } from '@/lib/types'
+import Badge from '@/components/ui/Badge'
+import { useAuthStore } from '@/store/authStore'
+import { useGuestCartStore } from '@/store/guestCartStore'
+import { useCartStore } from '@/store/cartStore'
+import { toast } from '@/store/toastStore'
+import { useAddToCartMutation } from '@/api/cart/cartApi'
+
+interface Props {
+  product: Product
+  locale: string
+}
+
+export default function ProductCard({ product, locale }: Props) {
+  const t      = useTranslations()
+  const [qty, setQty]           = useState(1)
+  const [localAdding, setLocalAdding] = useState(false)
+
+  const name     = locale === 'bn' ? product.name_bn : product.name_en
+  const inStock  = Number(product.stock_on_hand) > 0
+  const maxStock = Math.max(1, Number(product.stock_on_hand))
+
+  const { isAuthenticated } = useAuthStore()
+  const guestAddItem  = useGuestCartStore((s) => s.addItem)
+  const setItemCount  = useCartStore((s) => s.setItemCount)
+
+  const [addToCart, { isLoading: apiAdding }] = useAddToCartMutation()
+  const adding = localAdding || apiAdding
+
+  const dec = (e: React.MouseEvent) => { e.preventDefault(); e.stopPropagation(); setQty((q) => Math.max(1, q - 1)) }
+  const inc = (e: React.MouseEvent) => { e.preventDefault(); e.stopPropagation(); setQty((q) => Math.min(maxStock, q + 1)) }
+
+  const handleAddToCart = async (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (!inStock || adding) return
+
+    if (!isAuthenticated) {
+      setLocalAdding(true)
+      guestAddItem({
+        product_id:    product.id, name_bn: product.name_bn, name_en: product.name_en,
+        unit_price:    product.unit_price, stock: Number(product.stock_on_hand),
+        is_package:    false,
+        package_items: [],
+      }, qty)
+      toast.success(locale === 'bn' ? 'কার্টে যোগ হয়েছে' : 'Added to cart')
+      setQty(1)
+      setLocalAdding(false)
+      return
+    }
+
+    try {
+      const cart = await addToCart({ product_id: product.id, quantity: qty.toFixed(3) }).unwrap()
+      setItemCount(cart.item_count)
+      toast.success(locale === 'bn' ? 'কার্টে যোগ হয়েছে' : 'Added to cart')
+      setQty(1)
+    } catch {
+      toast.error(locale === 'bn' ? 'যোগ করা যায়নি' : 'Failed to add to cart')
+    }
+  }
+
+  return (
+    <div className="card hover:shadow-md transition-shadow group flex flex-col p-0 overflow-hidden">
+      <Link href={`/${locale}/products/${product.id}`} className="block p-4 flex-1">
+        <div className="aspect-square bg-amber-50 rounded-lg relative overflow-hidden mb-4">
+          {product.images?.[0] ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={product.images[0].image}
+              alt={locale === 'bn' ? product.images[0].alt_bn : product.images[0].alt_en}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-4xl group-hover:bg-amber-100 transition-colors">🪔</div>
+          )}
+        </div>
+        <h3 className="font-medium text-gray-800 mb-1 line-clamp-2 text-sm">{name}</h3>
+        <p className="text-xs text-gray-400 mb-2">SKU: {product.sku}</p>
+        <div className="flex items-center justify-between">
+          <span className="text-amber-600 font-bold">{formatAmount(product.unit_price, locale, 0)}</span>
+          {inStock
+            ? <Badge variant="green" className="text-xs">{t('product.inStock')}</Badge>
+            : <Badge variant="red"   className="text-xs">{t('product.outOfStock')}</Badge>}
+        </div>
+      </Link>
+
+      <div className="px-3 pb-3">
+        <div className="flex items-center gap-1.5">
+          {inStock && (
+            <>
+              <button onClick={dec} className="w-6 h-6 rounded bg-amber-50 hover:bg-amber-100 text-amber-700 font-bold text-sm flex items-center justify-center transition-colors shrink-0">−</button>
+              <span className="w-5 text-center text-xs font-semibold text-gray-800 shrink-0">{qty}</span>
+              <button onClick={inc} className="w-6 h-6 rounded bg-amber-50 hover:bg-amber-100 text-amber-700 font-bold text-sm flex items-center justify-center transition-colors shrink-0">+</button>
+            </>
+          )}
+          <button
+            onClick={handleAddToCart}
+            disabled={!inStock || adding}
+            className={`flex-1 h-6 px-2 rounded text-xs font-medium whitespace-nowrap transition-colors ${
+              inStock
+                ? 'bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-white'
+                : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+            }`}
+          >
+            {adding ? '...' : inStock ? t('product.addToCart') : t('product.outOfStock')}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}

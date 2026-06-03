@@ -1,0 +1,23 @@
+/**
+ * Format a number as currency.
+ * In Bangla locale: uses bn-BD which natively produces Bangla numerals & separators (e.g. ৳১,২৩৪)
+ * In English locale: standard en-US format (e.g. ৳1,234)
+ */
+export function formatAmount(amount: number | string, locale: string, decimals = 2): string {
+  const num = typeof amount === 'string' ? parseFloat(amount) : amount
+  if (isNaN(num)) return '৳0'
+  const formatted = num.toLocaleString(locale === 'bn' ? 'bn-BD' : 'en-US', {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  })
+  return `৳${formatted}`
+}
+
+/**
+ * Format a plain number without currency symbol.
+ */
+export function formatNumber(value: number | string, locale: string): string {
+  const num = typeof value === 'string' ? parseFloat(value) : value
+  if (isNaN(num)) return '0'
+  return num.toLocaleString(locale === 'bn' ? 'bn-BD' : 'en-US')
+}

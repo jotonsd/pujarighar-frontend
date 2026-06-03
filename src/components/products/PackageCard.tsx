@@ -1,0 +1,82 @@
+'use client'
+
+import { Product } from '@/lib/types'
+import { formatAmount } from '@/utils/format'
+import Link from 'next/link'
+
+interface Props {
+  pkg: Product
+  locale: string
+}
+
+export default function PackageCard({ pkg, locale }: Props) {
+  const name = locale === 'bn' ? pkg.name_bn : pkg.name_en
+
+  const originalPrice = pkg.package_items?.reduce(
+    (sum, item) => sum + parseFloat(item.unit_price ?? '0') * Number(item.quantity),
+    0,
+  ) ?? 0
+
+  const finalPrice = parseFloat(pkg.unit_price ?? '0')
+  const hasDiscount = pkg.discount_type !== 'NONE' && originalPrice > finalPrice
+
+  return (
+    <Link href={`/${locale}/packages/${pkg.id}`} className="group block">
+      <div className="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+
+        {/* Image */}
+        <div className="h-56 bg-amber-50 relative overflow-hidden">
+          {pkg.images?.[0] ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={pkg.images[0].image}
+              alt={name}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-4xl">🎁</div>
+          )}
+          {hasDiscount && (
+            <span className="absolute top-2 left-2 text-xs font-bold bg-amber-500 text-white px-2 py-0.5 rounded-full">
+              {pkg.discount_type === 'PERCENTAGE'
+                ? `${pkg.discount_value}% OFF`
+                : `৳${pkg.discount_value} OFF`}
+            </span>
+          )}
+        </div>
+
+        {/* Info */}
+        <div className="p-3">
+          <p className="text-sm font-semibold text-gray-800 line-clamp-2 leading-snug mb-2">
+            {name}
+          </p>
+
+          {/* Items count */}
+          {pkg.package_items?.length > 0 && (
+            <p className="text-xs text-gray-400 mb-2">
+              {pkg.package_items.length}{' '}
+              {locale === 'bn' ? 'টি পণ্য' : 'items'}
+            </p>
+          )}
+
+          {/* Price + Details */}
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-base font-bold text-amber-600">
+                {formatAmount(finalPrice, locale, 0)}
+              </span>
+              {hasDiscount && (
+                <span className="text-xs text-gray-400 line-through">
+                  {formatAmount(originalPrice, locale, 0)}
+                </span>
+              )}
+            </div>
+            <span className="shrink-0 text-xs font-semibold px-3 py-1.5 rounded-lg bg-amber-500 text-white group-hover:bg-amber-600 transition-colors">
+              {locale === 'bn' ? 'বিস্তারিত' : 'Details'}
+            </span>
+          </div>
+        </div>
+      </div>
+    </Link>
+  )
+}
