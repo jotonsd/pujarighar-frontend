@@ -12,8 +12,10 @@ import {
   FileText,
   Trash2,
 } from 'lucide-react'
+import { useLocale } from 'next-intl'
 import { ReactNode, useEffect, useRef, useState } from 'react'
 import * as XLSX from 'xlsx'
+import { formatNumber } from '@/utils/format'
 import TableSkeleton from './TableSkeleton'
 
 export interface Column<T> {
@@ -88,6 +90,9 @@ export function ReusableTable<T>({
   const [sortDir, setSortDir] = useState<SortDirection>(null)
   const [exportOpen, setExportOpen] = useState(false)
   const exportRef = useRef<HTMLDivElement>(null)
+  const locale = useLocale()
+  const isBn = locale === 'bn'
+  const n = (v: number) => formatNumber(v, locale)
 
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
@@ -299,7 +304,7 @@ export function ReusableTable<T>({
                 {columns.map((col, i) => (
                   <th
                     key={i}
-                    className={col.headerClassName || 'px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider'}
+                    className={col.headerClassName || 'px-4 py-3 text-left text-xs font-bold text-amber-600 uppercase tracking-wider'}
                   >
                     {col.sortable && enableSorting ? (
                       <button
@@ -315,7 +320,7 @@ export function ReusableTable<T>({
                   </th>
                 ))}
                 {quickActions && quickActions.length > 0 && (
-                  <th className="px-4 py-3 text-right text-xs font-semibold text-amber-600 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-right text-xs font-bold text-amber-600 uppercase tracking-wider">
                     Actions
                   </th>
                 )}
@@ -372,26 +377,28 @@ export function ReusableTable<T>({
             {/* Left: info + per-page */}
             <div className="flex items-center gap-3 flex-wrap">
               <span className="text-xs text-gray-500">
-                Page <span className="font-semibold text-gray-800">{currentPage}</span> of{' '}
-                <span className="font-semibold text-gray-800">{totalPages}</span>
+                {isBn ? 'পেজ' : 'Page'}{' '}
+                <span className="font-bold text-gray-800">{n(currentPage)}</span>{' '}
+                {isBn ? 'এর মধ্যে' : 'of'}{' '}
+                <span className="font-bold text-gray-800">{n(totalPages)}</span>
                 {totalRecords != null && (
-                  <> · <span className="font-semibold text-gray-800">{totalRecords}</span> records</>
+                  <> · <span className="font-bold text-gray-800">{n(totalRecords)}</span> {isBn ? 'রেকর্ড' : 'records'}</>
                 )}
               </span>
               {onLimitChange && (
                 <div className="flex items-center gap-1.5">
-                  <span className="text-xs text-gray-400">Show</span>
+                  <span className="text-xs text-gray-400">{isBn ? 'দেখাও' : 'Show'}</span>
                   <div className="relative">
                     <select
                       value={limit}
                       onChange={e => onLimitChange(Number(e.target.value))}
-                      className="appearance-none text-xs font-semibold bg-gray-50 border border-gray-200 text-gray-700 rounded-lg pl-2.5 pr-6 py-1.5 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-400 cursor-pointer hover:bg-amber-50 hover:border-amber-300 transition-colors"
+                      className="appearance-none text-xs font-bold bg-gray-50 border border-gray-200 text-gray-700 rounded-lg pl-2.5 pr-6 py-1.5 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-400 cursor-pointer hover:bg-amber-50 hover:border-amber-300 transition-colors"
                     >
-                      {PER_PAGE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+                      {PER_PAGE_OPTIONS.map(o => <option key={o} value={o}>{n(o)}</option>)}
                     </select>
                     <ChevronDown className="absolute right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 text-gray-400 pointer-events-none" />
                   </div>
-                  <span className="text-xs text-gray-400">per page</span>
+                  <span className="text-xs text-gray-400">{isBn ? 'প্রতি পেজে' : 'per page'}</span>
                 </div>
               )}
             </div>
@@ -402,10 +409,10 @@ export function ReusableTable<T>({
               <div className="relative" ref={exportRef}>
                 <button
                   onClick={() => setExportOpen(p => !p)}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-xs font-semibold hover:bg-gray-50 transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-xs font-bold hover:bg-gray-50 transition-colors"
                 >
                   <FileDown className="w-3.5 h-3.5" />
-                  Export
+                  {isBn ? 'এক্সপোর্ট' : 'Export'}
                   <ChevronDown className="w-3 h-3 text-gray-400" />
                 </button>
                 {exportOpen && (
@@ -415,14 +422,14 @@ export function ReusableTable<T>({
                       className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                     >
                       <FileText className="w-4 h-4 text-green-600" />
-                      Export as CSV
+                      {isBn ? 'CSV হিসেবে' : 'Export as CSV'}
                     </button>
                     <button
                       onClick={handleExportExcel}
                       className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                     >
                       <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
-                      Export as Excel
+                      {isBn ? 'Excel হিসেবে' : 'Export as Excel'}
                     </button>
                   </div>
                 )}
@@ -435,10 +442,10 @@ export function ReusableTable<T>({
                   <button
                     onClick={() => onPageChange(currentPage - 1)}
                     disabled={currentPage <= 1}
-                    className="inline-flex items-center gap-1 px-2 py-1 bg-white border-2 border-gray-200 text-gray-700 rounded-lg text-xs font-semibold hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    className="inline-flex items-center gap-1 px-2 py-1 bg-white border-2 border-gray-200 text-gray-700 rounded-lg text-xs font-bold hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                   >
                     <ChevronLeft className="w-3.5 h-3.5" />
-                    <span className="hidden sm:inline">Prev</span>
+                    <span className="hidden sm:inline">{isBn ? 'আগে' : 'Prev'}</span>
                   </button>
                   {getPageNumbers().map((p, i) =>
                     p === '...' ? (
@@ -453,16 +460,16 @@ export function ReusableTable<T>({
                             : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50'
                         }`}
                       >
-                        {p}
+                        {n(p)}
                       </button>
                     ),
                   )}
                   <button
                     onClick={() => onPageChange(currentPage + 1)}
                     disabled={currentPage >= totalPages}
-                    className="inline-flex items-center gap-1 px-2 py-1 bg-white border-2 border-gray-200 text-gray-700 rounded-lg text-xs font-semibold hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    className="inline-flex items-center gap-1 px-2 py-1 bg-white border-2 border-gray-200 text-gray-700 rounded-lg text-xs font-bold hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                   >
-                    <span className="hidden sm:inline">Next</span>
+                    <span className="hidden sm:inline">{isBn ? 'পরে' : 'Next'}</span>
                     <ChevronRight className="w-3.5 h-3.5" />
                   </button>
                 </div>

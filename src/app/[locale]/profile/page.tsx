@@ -44,7 +44,7 @@ export default function ProfilePage() {
       setForm({ ...form, [key]: e.target.value });
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-4">
+    <div className="max-w-7xl mx-auto px-4 py-3">
       <PageHeader title={t("profile.title")} />
       <div className="card space-y-4">
         <div className="grid grid-cols-2 gap-4">

@@ -68,7 +68,7 @@ export default function ChangePasswordPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-4">
+    <div className="max-w-7xl mx-auto px-4 py-3">
       <PageHeader title={t("auth.changePassword")} showBack />
       <div className="card max-w-md space-y-4">
         <form onSubmit={handleSubmit} className="space-y-4">

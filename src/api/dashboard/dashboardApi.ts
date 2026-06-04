@@ -7,7 +7,8 @@ export interface DashboardSummary {
   low_stock_count: number
   total_customers: number
   total_products: number
-  monthly_revenue_chart: { month: string; revenue: string }[]
+  monthly_revenue_chart: { month: string; revenue: string; expense: string }[]
+  status_breakdown: { status: string; count: number }[]
 }
 
 export const dashboardApi = baseApi.injectEndpoints({

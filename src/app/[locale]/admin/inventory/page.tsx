@@ -16,7 +16,7 @@ export default function InventoryPage() {
   const t = useTranslations();
   const locale = useLocale();
   const [selected, setSelected] = useState<Product | null>(null);
-  const [search, setSearch]     = useState('');
+  const [search, setSearch] = useState("");
   const [adjForm, setAdjForm] = useState({
     movement_type: "PURCHASE",
     quantity: "",
@@ -44,7 +44,13 @@ export default function InventoryPage() {
         }),
         note_bn: adjForm.note_bn,
       }).unwrap();
-      setAdjForm({ movement_type: "PURCHASE", quantity: "", unit_cost: "", unit_price: "", note_bn: "" });
+      setAdjForm({
+        movement_type: "PURCHASE",
+        quantity: "",
+        unit_cost: "",
+        unit_price: "",
+        note_bn: "",
+      });
       toast.success(locale === "bn" ? "স্টক আপডেট হয়েছে" : "Stock updated");
     } catch {
       toast.error("Failed");
@@ -56,137 +62,167 @@ export default function InventoryPage() {
       <PageHeader title={t("admin.inventory")} />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="card overflow-auto max-h-[70vh]">
-          {/* Search */}
-          <div className="mb-3">
+        <div className="card p-0 overflow-hidden flex flex-col max-h-[70vh]">
+          {/* Search — fixed at top */}
+          <div className="px-4 pt-4 pb-3 border-b border-gray-100 shrink-0">
             <FloatingInput
-              label={locale === 'bn' ? 'পণ্য খুঁজুন (নাম বা SKU)' : 'Search product (name or SKU)'}
+              label={
+                locale === "bn"
+                  ? "পণ্য খুঁজুন (নাম বা SKU)"
+                  : "Search product (name or SKU)"
+              }
               value={search}
               onChange={e => setSearch(e.target.value)}
             />
           </div>
-          {isLoading ? (
-            <TableSkeleton columns={3} rows={8} />
-          ) : (
-            <table className="w-full text-sm">
-              <thead className="bg-amber-50 border-b border-amber-200">
-                <tr>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">
-                    {t("product.name")}
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">
-                    SKU
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">
-                    {t("product.stock")}
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {products?.data
-                  ?.filter(p => {
-                    const q = search.toLowerCase()
-                    return !q || p.name_bn.toLowerCase().includes(q) || p.name_en.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q)
-                  })
-                  .map(p => (
-                  <tr
-                    key={p.id}
-                    onClick={() => setSelected(p)}
-                    className={`cursor-pointer transition-colors ${selected?.id === p.id ? "bg-amber-50" : "hover:bg-gray-50"}`}
-                  >
-                    <td className="px-4 py-3 text-sm text-gray-800">
-                      {locale === "bn" ? p.name_bn : p.name_en}
-                    </td>
-                    <td className="px-4 py-3 text-xs text-gray-400 font-mono">
-                      {p.sku}
-                    </td>
-                    <td className="px-4 py-3">
-                      <Badge
-                        variant={Number(p.stock_on_hand) > 0 ? "green" : "red"}
-                      >
-                        {formatNumber(parseFloat(p.stock_on_hand), locale)}
-                      </Badge>
-                    </td>
+          {/* Scrollable list */}
+          <div className="overflow-y-auto flex-1">
+            {isLoading ? (
+              <TableSkeleton columns={3} rows={8} />
+            ) : (
+              <table className="w-full text-sm">
+                <thead className="bg-amber-50 border-b border-amber-200 sticky top-0 z-10">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">
+                      {t("product.name")}
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">
+                      SKU
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">
+                      {t("product.stock")}
+                    </th>
                   </tr>
-                  ))}
-              </tbody>
-            </table>
-          )}
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {products?.data
+                    ?.filter(p => {
+                      const q = search.toLowerCase();
+                      return (
+                        !q ||
+                        p.name_bn.toLowerCase().includes(q) ||
+                        p.name_en.toLowerCase().includes(q) ||
+                        p.sku.toLowerCase().includes(q)
+                      );
+                    })
+                    .map(p => (
+                      <tr
+                        key={p.id}
+                        onClick={() => setSelected(p)}
+                        className={`cursor-pointer transition-colors ${selected?.id === p.id ? "bg-amber-50" : "hover:bg-gray-50"}`}
+                      >
+                        <td className="px-4 py-3 text-sm text-gray-800">
+                          {locale === "bn" ? p.name_bn : p.name_en}
+                        </td>
+                        <td className="px-4 py-3 text-xs text-gray-400 font-mono">
+                          {p.sku}
+                        </td>
+                        <td className="px-4 py-3">
+                          <Badge
+                            className=" font-bold"
+                            variant={
+                              Number(p.stock_on_hand) > 0 ? "green" : "red"
+                            }
+                          >
+                            {formatNumber(parseFloat(p.stock_on_hand), locale)}
+                          </Badge>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            )}
+          </div>
         </div>
 
         {selected ? (
           <div className="space-y-4">
-            <div className="card">
-              <h2 className="font-semibold text-gray-700 mb-2">
+            <div className="card flex items-center justify-between">
+              <h2 className="font-semibold text-gray-700 text-2xl">
                 {locale === "bn" ? selected.name_bn : selected.name_en}
               </h2>
-              <p className="text-3xl font-bold text-amber-600">
-                {stockData?.stock_on_hand
-                  ? formatNumber(parseFloat(stockData.stock_on_hand), locale)
-                  : "..."}
-              </p>
-              <p className="text-gray-500 text-sm mt-1">
-                {locale === "bn" ? "বর্তমান স্টক" : "Current stock"}
-              </p>
+              <div className="text-right shrink-0">
+                <p className="text-3xl font-bold text-amber-600">
+                  {stockData?.stock_on_hand
+                    ? formatNumber(parseFloat(stockData.stock_on_hand), locale)
+                    : "..."}
+                </p>
+                <p className="text-gray-500 text-xs mt-0.5">
+                  {locale === "bn" ? "বর্তমান স্টক" : "Current stock"}
+                </p>
+              </div>
             </div>
             <div className="card space-y-3">
               <h3 className="font-medium text-gray-700">
                 {locale === "bn" ? "স্টক সমন্বয়" : "Stock Adjustment"}
               </h3>
-              <FloatingSelect
-                label={locale === "bn" ? "ধরন" : "Type"}
-                value={adjForm.movement_type}
-                onChange={val =>
-                  setAdjForm(p => ({ ...p, movement_type: val }))
-                }
-              >
-                <option value="PURCHASE">ক্রয় / Purchase</option>
-                <option value="ADJUSTMENT">সমন্বয় / Adjustment</option>
-              </FloatingSelect>
-              <FloatingInput
-                label={t("product.quantity")}
-                type="number"
-                value={adjForm.quantity}
-                onChange={e =>
-                  setAdjForm({ ...adjForm, quantity: e.target.value })
-                }
-              />
-              {adjForm.movement_type === "PURCHASE" && (
-                <>
+              <div className="grid grid-cols-2 gap-3">
+                <FloatingSelect
+                  label={locale === "bn" ? "ধরন" : "Type"}
+                  value={adjForm.movement_type}
+                  onChange={val =>
+                    setAdjForm(p => ({ ...p, movement_type: val }))
+                  }
+                >
+                  <option value="PURCHASE">ক্রয় / Purchase</option>
+                  <option value="ADJUSTMENT">সমন্বয় / Adjustment</option>
+                </FloatingSelect>
+                <FloatingInput
+                  label={t("product.quantity")}
+                  type="number"
+                  value={adjForm.quantity}
+                  onChange={e =>
+                    setAdjForm({ ...adjForm, quantity: e.target.value })
+                  }
+                />
+                {adjForm.movement_type === "PURCHASE" && (
+                  <>
+                    <FloatingInput
+                      label={
+                        locale === "bn"
+                          ? "ক্রয় মূল্য (প্রতি একক) *"
+                          : "Buying Price (per unit) *"
+                      }
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={adjForm.unit_cost}
+                      onChange={e =>
+                        setAdjForm({ ...adjForm, unit_cost: e.target.value })
+                      }
+                    />
+                    <FloatingInput
+                      label={
+                        locale === "bn"
+                          ? "বিক্রয় মূল্য (ঐচ্ছিক)"
+                          : "Selling Price (optional)"
+                      }
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={adjForm.unit_price}
+                      onChange={e =>
+                        setAdjForm({ ...adjForm, unit_price: e.target.value })
+                      }
+                    />
+                  </>
+                )}
+                <div className="col-span-2">
                   <FloatingInput
-                    label={locale === "bn" ? "ক্রয় মূল্য (প্রতি একক) *" : "Buying Price (per unit) *"}
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    value={adjForm.unit_cost}
+                    label="নোট (বাংলা)"
+                    value={adjForm.note_bn}
                     onChange={e =>
-                      setAdjForm({ ...adjForm, unit_cost: e.target.value })
+                      setAdjForm({ ...adjForm, note_bn: e.target.value })
                     }
                   />
-                  <FloatingInput
-                    label={locale === "bn" ? "বিক্রয় মূল্য (ঐচ্ছিক)" : "Selling Price (optional)"}
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    value={adjForm.unit_price}
-                    onChange={e =>
-                      setAdjForm({ ...adjForm, unit_price: e.target.value })
-                    }
-                  />
-                </>
-              )}
-              <FloatingInput
-                label="নোট (বাংলা)"
-                value={adjForm.note_bn}
-                onChange={e =>
-                  setAdjForm({ ...adjForm, note_bn: e.target.value })
-                }
-              />
+                </div>
+              </div>
               <button
                 onClick={handleAdjust}
                 disabled={
                   !adjForm.quantity ||
-                  (adjForm.movement_type === "PURCHASE" && !adjForm.unit_cost) ||
+                  (adjForm.movement_type === "PURCHASE" &&
+                    !adjForm.unit_cost) ||
                   adjusting
                 }
                 className="btn-primary w-full"
@@ -210,7 +246,14 @@ export default function InventoryPage() {
                   >
                     <span className="text-gray-600">
                       {locale === "bn"
-                        ? ({ PURCHASE: "ক্রয়", SALE: "বিক্রয়", RETURN: "ফেরত", ADJUSTMENT: "সমন্বয়" } as Record<string, string>)[m.movement_type] ?? m.movement_type
+                        ? ((
+                            {
+                              PURCHASE: "ক্রয়",
+                              SALE: "বিক্রয়",
+                              RETURN: "ফেরত",
+                              ADJUSTMENT: "সমন্বয়",
+                            } as Record<string, string>
+                          )[m.movement_type] ?? m.movement_type)
                         : m.movement_type}
                     </span>
                     <span
