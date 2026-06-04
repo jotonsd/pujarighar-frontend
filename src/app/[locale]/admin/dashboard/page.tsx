@@ -2,7 +2,7 @@
 
 import { useGetDashboardSummaryQuery } from "@/api/dashboard/dashboardApi";
 import PageHeader from "@/components/ui/PageHeader";
-import Spinner from "@/components/ui/Spinner";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { formatAmount, formatNumber } from "@/utils/format";
 import { useLocale, useTranslations } from "next-intl";
 import {
@@ -43,7 +43,20 @@ export default function DashboardPage() {
   const isBn = locale === "bn";
   const { data, isLoading } = useGetDashboardSummaryQuery();
 
-  if (isLoading) return <Spinner />;
+  if (isLoading) return (
+    <div className="space-y-5">
+      <Skeleton className="h-14 w-full rounded-xl" />
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <Skeleton key={i} className="h-20 rounded-2xl" />
+        ))}
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        <Skeleton className="lg:col-span-2 h-80 rounded-2xl" />
+        <Skeleton className="h-80 rounded-2xl" />
+      </div>
+    </div>
+  );
 
   const year = new Date().getFullYear();
 
