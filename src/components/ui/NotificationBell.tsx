@@ -54,7 +54,7 @@ export default function NotificationBell() {
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen(o => !o)}
-        className="relative text-gray-600 hover:text-amber-600 transition-colors"
+        className="relative flex items-center justify-center text-gray-600 hover:text-amber-600 transition-colors"
         aria-label="Notifications"
       >
         <Bell className="w-5 h-5" />
@@ -110,9 +110,12 @@ export default function NotificationBell() {
                         <p className="text-xs font-semibold text-gray-800 leading-snug">
                           {isBn ? n.title_bn : n.title_en}
                         </p>
-                        <p className="text-xs text-gray-500 mt-0.5 leading-snug">
-                          {isBn ? n.body_bn : n.body_en}
-                        </p>
+                        <p className="text-xs text-gray-500 mt-0.5 leading-snug"
+                          dangerouslySetInnerHTML={{
+                            __html: (isBn ? n.body_bn : n.body_en)
+                              .replace(/\*\*(.+?)\*\*/g, '<strong class="text-gray-800">$1</strong>')
+                          }}
+                        />
                         <p className="text-[10px] text-gray-400 mt-1">{timeAgo(n.created_at)}</p>
                       </div>
                     </div>
