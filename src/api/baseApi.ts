@@ -66,6 +66,7 @@ export const baseApi = createApi({
     'Banners',
     'HeroSlides',
     'ShippingAddresses',
+    'Notifications',
   ],
   endpoints: () => ({}),
 })

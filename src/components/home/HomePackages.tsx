@@ -32,10 +32,7 @@ export default function HomePackages() {
       <div className="grid grid-cols-3 gap-4">
         {isLoading
           ? Array.from({ length: 3 }).map((_, i) => (
-              <div
-                key={i}
-                className="rounded-lg overflow-hidden border border-gray-100"
-              >
+              <div key={i} className="rounded-lg overflow-hidden border border-gray-100">
                 <Skeleton className="h-56 w-full" />
                 <div className="p-3 space-y-2">
                   <Skeleton className="h-4 w-3/4" />

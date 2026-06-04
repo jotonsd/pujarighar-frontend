@@ -7,6 +7,13 @@ import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import Toaster from '@/components/ui/Toaster'
 import type { Metadata } from 'next'
+import { Roboto } from 'next/font/google'
+
+const roboto = Roboto({
+  subsets: ['latin'],
+  weight: ['400', '500', '700'],
+  display: 'swap',
+})
 
 export const dynamic = 'force-dynamic'
 
@@ -26,7 +33,7 @@ export default async function LocaleLayout({
   const messages = await getMessages()
 
   return (
-    <html lang={locale}>
+    <html lang={locale} className={locale === 'en' ? roboto.className : ''}>
       <body>
         <NextIntlClientProvider messages={messages}>
           <Providers>

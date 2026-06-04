@@ -9,6 +9,7 @@ import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import NotificationBell from "@/components/ui/NotificationBell";
 import LanguageSwitcher from "./LanguageSwitcher";
 
 const ADMIN_LINKS = [
@@ -501,6 +502,7 @@ export default function Navbar() {
           {/* Right actions */}
           <div className="flex items-center gap-3 shrink-0">
             <LanguageSwitcher />
+            {currentUser && <NotificationBell />}
 
             {showCart && (
               <Link

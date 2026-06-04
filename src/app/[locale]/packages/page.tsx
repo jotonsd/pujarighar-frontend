@@ -1,6 +1,7 @@
 "use client";
 
 import { useGetProductsQuery } from "@/api/products/productsApi";
+import OfferBanners from "@/components/products/OfferBanners";
 import PackageCard from "@/components/products/PackageCard";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Product } from "@/lib/types";
@@ -10,11 +11,11 @@ import { useEffect, useRef, useState } from "react";
 export default function PackagesPage() {
   const locale = useLocale();
 
-  const [page, setPage]               = useState(1);
+  const [page, setPage] = useState(1);
   const [allPackages, setAllPackages] = useState<Product[]>([]);
 
   const isFetchingRef = useRef(false);
-  const hasMoreRef    = useRef(false);
+  const hasMoreRef = useRef(false);
 
   const { data, isLoading, isFetching } = useGetProductsQuery({
     page,
@@ -22,15 +23,15 @@ export default function PackagesPage() {
   });
 
   const totalPages = data?.pagination?.total_pages ?? 1;
-  const hasMore    = page < totalPages;
+  const hasMore = page < totalPages;
 
   isFetchingRef.current = isFetching;
-  hasMoreRef.current    = hasMore;
+  hasMoreRef.current = hasMore;
 
   useEffect(() => {
     if (!data?.data) return;
-    setAllPackages(prev => page === 1 ? data.data : [...prev, ...data.data]);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    setAllPackages(prev => (page === 1 ? data.data : [...prev, ...data.data]));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
   useEffect(() => {
@@ -58,21 +59,25 @@ export default function PackagesPage() {
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-6">
-      <h1 className="text-xl font-bold text-gray-800 mb-6">
-        {locale === "bn" ? "প্যাকেজ" : "Packages"}
-      </h1>
+    <div className="max-w-7xl mx-auto px-4 py-3">
+      <div className="mb-6">
+        <OfferBanners />
+      </div>
 
       {isLoading && allPackages.length === 0 ? (
         <div className="grid grid-cols-3 gap-3">
-          {Array.from({ length: 6 }).map((_, i) => <CardSkeleton key={i} />)}
+          {Array.from({ length: 6 }).map((_, i) => (
+            <CardSkeleton key={i} />
+          ))}
         </div>
       ) : (
         <>
           {allPackages.length === 0 ? (
             <div className="text-center py-20 text-gray-400">
               <p className="text-4xl mb-3">🎁</p>
-              <p>{locale === "bn" ? "কোনো প্যাকেজ নেই" : "No packages available"}</p>
+              <p>
+                {locale === "bn" ? "কোনো প্যাকেজ নেই" : "No packages available"}
+              </p>
             </div>
           ) : (
             <div className="grid grid-cols-3 gap-3">
@@ -85,16 +90,13 @@ export default function PackagesPage() {
           {isFetching && allPackages.length > 0 && (
             <div className="py-6 flex justify-center gap-1.5">
               {[0, 1, 2].map(i => (
-                <span key={i} className="w-2 h-2 rounded-full bg-amber-400 animate-bounce"
-                  style={{ animationDelay: `${i * 0.15}s` }} />
+                <span
+                  key={i}
+                  className="w-2 h-2 rounded-full bg-amber-400 animate-bounce"
+                  style={{ animationDelay: `${i * 0.15}s` }}
+                />
               ))}
             </div>
-          )}
-
-          {!hasMore && allPackages.length > 0 && (
-            <p className="text-center text-xs text-gray-400 py-6">
-              {locale === "bn" ? "সব প্যাকেজ দেখানো হয়েছে" : "All packages loaded"}
-            </p>
           )}
         </>
       )}
