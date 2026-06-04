@@ -38,8 +38,6 @@ export default function EditProductPage({
     name_en: "",
     description_bn: "",
     description_en: "",
-    unit_price: "",
-    cost_price: "",
     unit_bn: "",
     unit_en: "",
     category: "",
@@ -57,8 +55,6 @@ export default function EditProductPage({
         name_en: product.name_en,
         description_bn: product.description_bn,
         description_en: product.description_en,
-        unit_price: product.unit_price,
-        cost_price: product.cost_price,
         unit_bn: product.unit_bn,
         unit_en: product.unit_en,
         category: product.category,
@@ -141,24 +137,6 @@ export default function EditProductPage({
             label="Name (English)"
             value={form.name_en}
             onChange={f("name_en")}
-          />
-        </div>
-        <div className="grid grid-cols-2 gap-4">
-          <FloatingInput
-            label={t("product.price")}
-            type="number"
-            min="0"
-            step="0.01"
-            value={form.unit_price}
-            onChange={f("unit_price")}
-          />
-          <FloatingInput
-            label="Cost Price"
-            type="number"
-            min="0"
-            step="0.01"
-            value={form.cost_price}
-            onChange={f("cost_price")}
           />
         </div>
         <FloatingSelect

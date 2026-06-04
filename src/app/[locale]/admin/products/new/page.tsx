@@ -28,8 +28,6 @@ export default function NewProductPage() {
     description_en: "",
     sku: "",
     category: "",
-    unit_price: "",
-    cost_price: "0",
     unit_bn: "পিস",
     unit_en: "piece",
   });
@@ -128,25 +126,6 @@ export default function NewProductPage() {
               </option>
             ))}
           </FloatingSelect>
-        </div>
-        <div className="grid grid-cols-2 gap-4">
-          <FloatingInput
-            label={t("product.price")}
-            type="number"
-            required
-            min="0"
-            step="0.01"
-            value={form.unit_price}
-            onChange={f("unit_price")}
-          />
-          <FloatingInput
-            label="Cost Price"
-            type="number"
-            min="0"
-            step="0.01"
-            value={form.cost_price}
-            onChange={f("cost_price")}
-          />
         </div>
         <div className="grid grid-cols-2 gap-4">
           <FloatingInput

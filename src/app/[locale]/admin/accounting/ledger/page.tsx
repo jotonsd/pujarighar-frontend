@@ -6,7 +6,7 @@ import { useLocale, useTranslations } from 'next-intl'
 import { ReusableTable } from '@/components/ui/ReusableTable'
 import type { Column } from '@/components/ui/ReusableTable'
 import { useGetAccountsQuery, useGetLedgerQuery } from '@/api/accounting/accountingApi'
-import { FloatingInput, FloatingSelect } from '@/components/ui/forms'
+import { FloatingDatePicker, FloatingSelect } from '@/components/ui/forms'
 import PageHeader from '@/components/ui/PageHeader'
 
 interface LedgerLine {
@@ -75,11 +75,11 @@ export default function LedgerPage() {
             {accounts.map((a) => <option key={a.id} value={a.id}>{a.code} — {locale === 'bn' ? a.name_bn : a.name_en}</option>)}
           </FloatingSelect>
         </div>
-        <div className="w-44">
-          <FloatingInput label={locale === 'bn' ? 'শুরু তারিখ' : 'From'} type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
+        <div className="w-56">
+          <FloatingDatePicker label={locale === 'bn' ? 'শুরু তারিখ' : 'From'} value={from} onChange={setFrom} clearable />
         </div>
-        <div className="w-44">
-          <FloatingInput label={locale === 'bn' ? 'শেষ তারিখ' : 'To'} type="date" value={to} onChange={(e) => setTo(e.target.value)} />
+        <div className="w-56">
+          <FloatingDatePicker label={locale === 'bn' ? 'শেষ তারিখ' : 'To'} value={to} onChange={setTo} clearable />
         </div>
       </div>
 

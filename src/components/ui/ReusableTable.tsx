@@ -249,8 +249,38 @@ export function ReusableTable<T>({
         </div>
       )}
 
-      {/* Table */}
-      <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+      {/* Mobile cards */}
+      <div className="md:hidden space-y-3">
+        {data.map((row, rowIdx) => {
+          const id = keyExtractor(row)
+          return (
+            <div key={id} className="bg-white rounded-xl shadow-sm overflow-hidden">
+              <div className="divide-y divide-gray-100">
+                {columns.map((col, colIdx) => (
+                  <div key={colIdx} className="flex items-start justify-between px-4 py-3 gap-3">
+                    <span className="text-xs font-medium text-gray-400 shrink-0 pt-0.5 w-28">
+                      {col.header}
+                    </span>
+                    <span className="text-sm text-gray-800 text-right">
+                      {renderCell(col, row, rowIdx)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              {quickActions && quickActions.filter(a => !a.show || a.show(row)).length > 0 && (
+                <div className="px-4 py-3 border-t border-gray-100 flex items-center gap-2 justify-end bg-gray-50">
+                  {quickActions
+                    .filter(a => !a.show || a.show(row))
+                    .map((a, i) => renderAction(a, row, i))}
+                </div>
+              )}
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Table — desktop only */}
+      <div className="hidden md:block bg-white rounded-lg shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-amber-50 border-b border-amber-200">

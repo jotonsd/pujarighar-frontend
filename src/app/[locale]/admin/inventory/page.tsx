@@ -20,6 +20,8 @@ export default function InventoryPage() {
   const [adjForm, setAdjForm] = useState({
     movement_type: "PURCHASE",
     quantity: "",
+    unit_cost: "",
+    unit_price: "",
     note_bn: "",
   });
 
@@ -34,10 +36,15 @@ export default function InventoryPage() {
     try {
       await adjustStock({
         productId: selected.id,
-        ...adjForm,
+        movement_type: adjForm.movement_type,
         quantity: Number(adjForm.quantity),
+        ...(adjForm.movement_type === "PURCHASE" && {
+          unit_cost: Number(adjForm.unit_cost),
+          ...(adjForm.unit_price && { unit_price: Number(adjForm.unit_price) }),
+        }),
+        note_bn: adjForm.note_bn,
       }).unwrap();
-      setAdjForm({ movement_type: "PURCHASE", quantity: "", note_bn: "" });
+      setAdjForm({ movement_type: "PURCHASE", quantity: "", unit_cost: "", unit_price: "", note_bn: "" });
       toast.success(locale === "bn" ? "স্টক আপডেট হয়েছে" : "Stock updated");
     } catch {
       toast.error("Failed");
@@ -144,6 +151,30 @@ export default function InventoryPage() {
                   setAdjForm({ ...adjForm, quantity: e.target.value })
                 }
               />
+              {adjForm.movement_type === "PURCHASE" && (
+                <>
+                  <FloatingInput
+                    label={locale === "bn" ? "ক্রয় মূল্য (প্রতি একক) *" : "Buying Price (per unit) *"}
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={adjForm.unit_cost}
+                    onChange={e =>
+                      setAdjForm({ ...adjForm, unit_cost: e.target.value })
+                    }
+                  />
+                  <FloatingInput
+                    label={locale === "bn" ? "বিক্রয় মূল্য (ঐচ্ছিক)" : "Selling Price (optional)"}
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={adjForm.unit_price}
+                    onChange={e =>
+                      setAdjForm({ ...adjForm, unit_price: e.target.value })
+                    }
+                  />
+                </>
+              )}
               <FloatingInput
                 label="নোট (বাংলা)"
                 value={adjForm.note_bn}
@@ -153,7 +184,11 @@ export default function InventoryPage() {
               />
               <button
                 onClick={handleAdjust}
-                disabled={!adjForm.quantity || adjusting}
+                disabled={
+                  !adjForm.quantity ||
+                  (adjForm.movement_type === "PURCHASE" && !adjForm.unit_cost) ||
+                  adjusting
+                }
                 className="btn-primary w-full"
               >
                 {adjusting
@@ -173,7 +208,11 @@ export default function InventoryPage() {
                     key={m.id}
                     className="flex justify-between text-sm py-2 border-b last:border-0"
                   >
-                    <span className="text-gray-600">{m.movement_type}</span>
+                    <span className="text-gray-600">
+                      {locale === "bn"
+                        ? ({ PURCHASE: "ক্রয়", SALE: "বিক্রয়", RETURN: "ফেরত", ADJUSTMENT: "সমন্বয়" } as Record<string, string>)[m.movement_type] ?? m.movement_type
+                        : m.movement_type}
+                    </span>
                     <span
                       className={
                         Number(m.quantity) > 0

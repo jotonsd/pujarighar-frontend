@@ -100,6 +100,8 @@ export interface Product {
   sku: string
   category: string
   category_name: string
+  category_name_bn: string
+  category_name_en: string
   unit_price: string
   cost_price: string
   unit_bn: string

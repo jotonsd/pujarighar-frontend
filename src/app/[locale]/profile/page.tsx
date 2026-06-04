@@ -2,6 +2,7 @@
 
 import { useUpdateMeMutation } from "@/api/auth/authApi";
 import { FloatingInput, FloatingTextarea } from "@/components/ui/forms";
+import PageHeader from "@/components/ui/PageHeader";
 import { useAuthStore } from "@/store/authStore";
 import { toast } from "@/store/toastStore";
 import Cookies from "js-cookie";
@@ -43,10 +44,8 @@ export default function ProfilePage() {
       setForm({ ...form, [key]: e.target.value });
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-5">
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">
-        {t("profile.title")}
-      </h1>
+    <div className="max-w-7xl mx-auto px-4 py-4">
+      <PageHeader title={t("profile.title")} />
       <div className="card space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <FloatingInput

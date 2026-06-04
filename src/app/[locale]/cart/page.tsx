@@ -12,6 +12,7 @@ import {
   useCreateShippingAddressMutation,
   useListShippingAddressesQuery,
 } from "@/api/shipping/shippingApi";
+import OfferBanners from "@/components/products/OfferBanners";
 import { FloatingInput, FloatingTextarea } from "@/components/ui/forms";
 import Spinner from "@/components/ui/Spinner";
 import { useAuthStore } from "@/store/authStore";
@@ -814,18 +815,7 @@ export default function CartPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-5">
-      <h1 className="text-2xl font-bold text-gray-800 mb-1">
-        {t("cart.title")}
-      </h1>
-      <p className="text-sm text-gray-500 mb-6">
-        <Link
-          href={`/${locale}/auth/login`}
-          className="text-amber-600 hover:underline"
-        >
-          {t("nav.login")}
-        </Link>{" "}
-        {locale === "bn" ? "করুন দ্রুত চেকআউটের জন্য" : "for faster checkout"}
-      </p>
+      <OfferBanners />
       {guestItems.length === 0 ? (
         <div className="card text-center py-16 text-gray-400">
           <p className="text-4xl mb-4">🛒</p>
@@ -938,6 +928,15 @@ export default function CartPage() {
                 );
               })}
             </div>
+            <p className="text-base text-gray-500 mt-3">
+              <Link
+                href={`/${locale}/auth/login`}
+                className="text-amber-600 hover:underline font-medium"
+              >
+                {t("nav.login")}
+              </Link>{" "}
+              {locale === "bn" ? "করুন দ্রুত চেকআউটের জন্য" : "for faster checkout"}
+            </p>
           </div>
 
           <form onSubmit={handleGuestCheckout} className="card space-y-3">

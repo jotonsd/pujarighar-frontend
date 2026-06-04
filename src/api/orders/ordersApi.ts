@@ -6,10 +6,16 @@ interface OrderListResponse { data: SalesOrder[]; pagination: ApiMeta }
 export const ordersApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
 
-    getOrders: build.query<OrderListResponse, { page?: number; status?: string }>({
-      query: ({ page = 1, status = '' } = {}) => {
+    getOrders: build.query<OrderListResponse, { page?: number; status?: string; payment_status?: string; order_number?: string; phone?: string; name?: string; from?: string; to?: string }>({
+      query: ({ page = 1, status = '', payment_status = '', order_number = '', phone = '', name = '', from = '', to = '' } = {}) => {
         const p = new URLSearchParams({ page: String(page) })
-        if (status) p.set('status', status)
+        if (status)         p.set('status', status)
+        if (payment_status) p.set('payment_status', payment_status)
+        if (order_number)   p.set('order_number', order_number)
+        if (phone)          p.set('phone', phone)
+        if (name)           p.set('name', name)
+        if (from)           p.set('from', from)
+        if (to)             p.set('to', to)
         return `/api/orders/?${p}`
       },
       providesTags: ['Orders'],

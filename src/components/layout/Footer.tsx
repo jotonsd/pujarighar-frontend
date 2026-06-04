@@ -53,6 +53,7 @@ export default async function Footer() {
                 { href: `/${locale}/products`, label_bn: 'পণ্য', label_en: 'Products' },
                 { href: `/${locale}/packages`, label_bn: 'প্যাকেজ', label_en: 'Packages' },
                 { href: `/${locale}/cart`, label_bn: 'কার্ট', label_en: 'Cart' },
+                { href: `/${locale}/track`, label_bn: 'অর্ডার ট্র্যাক', label_en: 'Track Order' },
                 { href: `/${locale}/orders`, label_bn: 'আমার অর্ডার', label_en: 'My Orders' },
               ].map(l => (
                 <li key={l.href}>
@@ -107,10 +108,6 @@ export default async function Footer() {
                 <a href="mailto:info@pujarighar.com" className="hover:text-amber-400 transition-colors">
                   info@pujarighar.com
                 </a>
-              </li>
-              <li className="flex items-center gap-2.5 text-sm text-gray-400">
-                <span className="shrink-0">🕐</span>
-                <span>{bn ? 'শনি–বৃহস্পতি: সকাল ৯টা – রাত ৯টা' : 'Sat–Thu: 9 AM – 9 PM'}</span>
               </li>
             </ul>
 

@@ -1,18 +1,19 @@
 "use client";
 
+import { useGetCategoriesQuery } from "@/api/categories/categoriesApi";
 import {
   useGetProductsQuery,
   useUpdateProductMutation,
 } from "@/api/products/productsApi";
 import Badge from "@/components/ui/Badge";
-import { FloatingInput } from "@/components/ui/forms";
+import { FloatingInput, FloatingSelect } from "@/components/ui/forms";
 import ToggleSwitch from "@/components/ui/forms/ToggleSwitch";
 import PageHeader from "@/components/ui/PageHeader";
 import type { Column } from "@/components/ui/ReusableTable";
 import { ReusableTable } from "@/components/ui/ReusableTable";
 import { Product } from "@/lib/types";
 import { toast } from "@/store/toastStore";
-import { formatAmount } from "@/utils/format";
+import { formatNumber } from "@/utils/format";
 import { Pencil } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
@@ -23,11 +24,14 @@ export default function AdminProductsPage() {
   const t = useTranslations();
   const locale = useLocale();
   const router = useRouter();
-  const [page, setPage]     = useState(1);
-  const [search, setSearch] = useState('');
-  const [limit, setLimit]   = useState(10);
+  const [page, setPage]           = useState(1);
+  const [search, setSearch]       = useState('');
+  const [category, setCategory]   = useState('');
+  const [isPackage, setIsPackage] = useState('');
+  const [limit, setLimit]         = useState(10);
 
-  const { data, isLoading } = useGetProductsQuery({ page, search, page_size: limit, include_inactive: true });
+  const { data: categories = [] } = useGetCategoriesQuery();
+  const { data, isLoading } = useGetProductsQuery({ page, search, category, is_package: isPackage, page_size: limit, include_inactive: true });
   const [updateProduct] = useUpdateProductMutation();
 
   const handleToggleActive = async (p: Product) => {
@@ -58,17 +62,19 @@ export default function AdminProductsPage() {
       ),
     },
     {
-      header: t("product.price"),
+      header: locale === "bn" ? "কেটাগরি" : "Category",
       accessor: p => (
-        <span className="font-semibold text-amber-600">{formatAmount(p.unit_price, locale, 0)}</span>
+        <span className="text-sm text-gray-600">
+          {locale === "bn" ? p.category_name_bn : p.category_name_en}
+        </span>
       ),
-      exportValue: p => p.unit_price,
+      exportValue: p => locale === "bn" ? p.category_name_bn : p.category_name_en,
     },
     {
       header: t("product.stock"),
       accessor: p => (
         <Badge variant={Number(p.stock_on_hand) > 0 ? "green" : "red"}>
-          {Math.round(Number(p.stock_on_hand))}
+          {formatNumber(Math.round(Number(p.stock_on_hand)), locale)}
         </Badge>
       ),
       exportValue: p => p.stock_on_hand,
@@ -95,15 +101,35 @@ export default function AdminProductsPage() {
         onAdd={() => router.push(`/${locale}/admin/products/new`)}
       />
 
-      <div className="mb-4 w-64">
-        <FloatingInput
-          label={t("common.search")}
-          value={search}
-          onChange={e => {
-            setSearch(e.target.value);
-            setPage(1);
-          }}
-        />
+      <div className="mb-4 grid grid-cols-4 gap-3">
+        <div className="col-span-2">
+          <FloatingInput
+            label={t("common.search")}
+            value={search}
+            onChange={e => { setSearch(e.target.value); setPage(1); }}
+          />
+        </div>
+        <FloatingSelect
+          label={locale === "bn" ? "কেটাগরি" : "Category"}
+          value={category}
+          onChange={val => { setCategory(val); setPage(1); }}
+        >
+          <option value="">{locale === "bn" ? "সব কেটাগরি" : "All Categories"}</option>
+          {categories.map(c => (
+            <option key={c.id} value={c.id}>
+              {locale === "bn" ? c.name_bn : c.name_en}
+            </option>
+          ))}
+        </FloatingSelect>
+        <FloatingSelect
+          label={locale === "bn" ? "ধরন" : "Type"}
+          value={isPackage}
+          onChange={val => { setIsPackage(val); setPage(1); }}
+        >
+          <option value="">{locale === "bn" ? "সব ধরন" : "All Types"}</option>
+          <option value="false">{locale === "bn" ? "পণ্য" : "Product"}</option>
+          <option value="true">{locale === "bn" ? "প্যাকেজ" : "Package"}</option>
+        </FloatingSelect>
       </div>
 
       <ReusableTable

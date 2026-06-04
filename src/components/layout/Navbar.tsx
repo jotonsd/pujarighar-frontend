@@ -410,7 +410,7 @@ export default function Navbar() {
           {/* Brand — admin goes to POS, others go home */}
           <Link
             href={role === "ADMIN" || role === "WAREHOUSE" ? `/${locale}/admin/orders/new` : `/${locale}`}
-            className="text-xl font-bold text-amber-600 shrink-0"
+            className="text-xl font-bold text-amber-600 flex-1 md:flex-none shrink-0"
           >
             {t("common.appName")}
           </Link>
@@ -453,6 +453,9 @@ export default function Navbar() {
                 <Link href={`/${locale}/packages`} className="text-gray-600 hover:text-amber-600 text-sm px-2">
                   {t("nav.packages")}
                 </Link>
+                <Link href={`/${locale}/track`} className="text-gray-600 hover:text-amber-600 text-sm px-2">
+                  {locale === 'bn' ? 'অর্ডার ট্র্যাক' : 'Track Order'}
+                </Link>
               </>
             )}
           </div>
@@ -469,10 +472,10 @@ export default function Navbar() {
             </div>
           )}
 
-          {/* Search — hidden on admin pages */}
+          {/* Search — hidden for admin/warehouse users */}
           <form
             onSubmit={handleSearch}
-            className={`shrink-0 justify-end ${isAdmin ? "hidden" : "hidden md:flex w-64 lg:w-80"}`}
+            className={`shrink-0 justify-end ${isAdmin || role === "ADMIN" || role === "WAREHOUSE" ? "hidden" : "hidden md:flex w-64 lg:w-80"}`}
           >
             <div className="relative w-full">
               <input
@@ -522,13 +525,6 @@ export default function Navbar() {
               />
             ) : (
               <>
-                <Link
-                  href={`/${locale}/track`}
-                  className="text-gray-600 hover:text-amber-600 text-sm hidden sm:inline"
-                  title={locale === 'bn' ? 'অর্ডার ট্র্যাক করুন' : 'Track Order'}
-                >
-                  📦
-                </Link>
                 <Link
                   href={`/${locale}/auth/login`}
                   className="text-gray-600 hover:text-amber-600 text-sm"

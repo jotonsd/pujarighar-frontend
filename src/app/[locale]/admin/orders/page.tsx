@@ -2,13 +2,13 @@
 
 import { useGetOrdersQuery } from "@/api/orders/ordersApi";
 import OrderStatusBadge from "@/components/orders/OrderStatusBadge";
-import { FloatingSelect } from "@/components/ui/forms";
+import { FloatingDatePicker, FloatingInput, FloatingSelect } from "@/components/ui/forms";
 import PageHeader from "@/components/ui/PageHeader";
 import type { Column } from "@/components/ui/ReusableTable";
 import { ReusableTable } from "@/components/ui/ReusableTable";
 import { OrderStatus, SalesOrder } from "@/lib/types";
 import { formatAmount } from "@/utils/format";
-import { Eye } from "lucide-react";
+import { Eye, Filter, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -29,10 +29,18 @@ export default function AdminOrdersPage() {
   const t = useTranslations();
   const locale = useLocale();
   const router = useRouter();
-  const [page, setPage] = useState(1);
-  const [status, setStatus] = useState("");
+  const EMPTY = { status: "", payment_status: "", order_number: "", phone: "", name: "", from: "", to: "" };
+  const [page, setPage]               = useState(1);
+  const [showFilters, setShowFilters] = useState(false);
+  const [draft, setDraft]             = useState(EMPTY);
+  const [applied, setApplied]         = useState(EMPTY);
 
-  const { data, isLoading } = useGetOrdersQuery({ page, status });
+  const set = (k: keyof typeof draft) => (v: string) => setDraft(f => ({ ...f, [k]: v }));
+  const activeCount = Object.values(applied).filter(Boolean).length;
+  const handleSubmit = () => { setApplied(draft); setPage(1); };
+  const clearAll = () => { setDraft(EMPTY); setApplied(EMPTY); setPage(1); };
+
+  const { data, isLoading } = useGetOrdersQuery({ page, ...applied });
 
   const columns: Column<SalesOrder>[] = [
     {
@@ -108,25 +116,93 @@ export default function AdminOrdersPage() {
         title={t("admin.orders")}
         addLabel={locale === "bn" ? "নতুন অর্ডার (POS)" : "New Order (POS)"}
         onAdd={() => router.push(`/${locale}/admin/orders/new`)}
+        actions={
+          <div className="flex items-center gap-2">
+            {activeCount > 0 && (
+              <button
+                onClick={clearAll}
+                className="flex items-center gap-1 text-xs text-red-500 hover:text-red-700"
+              >
+                <X className="w-3.5 h-3.5" />
+                {locale === "bn" ? "ক্লিয়ার" : "Clear"}
+              </button>
+            )}
+            <button
+              onClick={() => setShowFilters(v => !v)}
+              className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-xs font-medium transition-colors ${
+                showFilters || activeCount > 0
+                  ? "bg-amber-50 border-amber-400 text-amber-700"
+                  : "bg-gray-50 border-gray-200 text-gray-600 hover:border-amber-300 hover:text-amber-600"
+              }`}
+            >
+              <Filter className="w-3.5 h-3.5" />
+              {locale === "bn" ? "ফিল্টার" : "Filter"}
+              {activeCount > 0 && (
+                <span className="bg-amber-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center leading-none">
+                  {activeCount}
+                </span>
+              )}
+            </button>
+          </div>
+        }
       />
 
-      <div className="mb-4 w-56">
-        <FloatingSelect
-          label={t("order.status")}
-          value={status}
-          onChange={val => {
-            setStatus(val);
-            setPage(1);
-          }}
-        >
-          <option value="">{t("common.all")}</option>
-          {STATUSES.map(s => (
-            <option key={s} value={s}>
-              {t(`order.${s}`)}
-            </option>
-          ))}
-        </FloatingSelect>
-      </div>
+      {/* Filter panel */}
+      {showFilters && (
+        <div className="mb-5 p-4 bg-white rounded-2xl grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+          <FloatingInput
+            label={locale === "bn" ? "অর্ডার নম্বর" : "Order Number"}
+            value={draft.order_number}
+            onChange={e => set("order_number")(e.target.value)}
+          />
+          <FloatingInput
+            label={locale === "bn" ? "ফোন নম্বর" : "Phone Number"}
+            value={draft.phone}
+            onChange={e => set("phone")(e.target.value)}
+          />
+          <FloatingInput
+            label={locale === "bn" ? "নাম" : "Name"}
+            value={draft.name}
+            onChange={e => set("name")(e.target.value)}
+          />
+          <FloatingSelect
+            label={t("order.status")}
+            value={draft.status}
+            onChange={set("status")}
+          >
+            <option value="">{t("common.all")}</option>
+            {STATUSES.map(s => (
+              <option key={s} value={s}>{t(`order.${s}`)}</option>
+            ))}
+          </FloatingSelect>
+          <FloatingSelect
+            label={locale === "bn" ? "পেমেন্ট" : "Payment"}
+            value={draft.payment_status}
+            onChange={set("payment_status")}
+          >
+            <option value="">{t("common.all")}</option>
+            <option value="PAID">{locale === "bn" ? "পেইড" : "Paid"}</option>
+            <option value="UNPAID">{locale === "bn" ? "আনপেইড" : "Unpaid"}</option>
+          </FloatingSelect>
+          <FloatingDatePicker
+            label={locale === "bn" ? "শুরু তারিখ" : "From Date"}
+            value={draft.from}
+            onChange={set("from")}
+            clearable
+          />
+          <FloatingDatePicker
+            label={locale === "bn" ? "শেষ তারিখ" : "To Date"}
+            value={draft.to}
+            onChange={set("to")}
+            clearable
+          />
+          <div className="flex items-center">
+            <button onClick={handleSubmit} className="btn-primary w-full">
+              {locale === "bn" ? "খুঁজুন" : "Apply"}
+            </button>
+          </div>
+        </div>
+      )}
 
       <ReusableTable
         data={data?.data ?? []}

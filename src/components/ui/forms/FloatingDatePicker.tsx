@@ -248,13 +248,13 @@ const FloatingDatePicker = forwardRef<HTMLDivElement, FloatingDatePickerProps>(
             maxLength={showTimePicker ? 16 : 10}
             disabled={disabled}
             className={`block px-2.5 pb-2 pt-3 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-0 focus:border-amber-600 peer cursor-pointer ${
-              error ? 'border-amber-500' : ''
+              error ? 'border-red-500' : ''
             } ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}
           />
 
           <label
             className={`absolute text-sm duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 pointer-events-none peer-focus:px-2 peer-focus:text-amber-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 start-1 ${
-              error ? 'text-amber-500' : 'text-gray-500'
+              error ? 'text-red-500' : 'text-gray-500'
             }`}
           >
             {label}
@@ -282,7 +282,7 @@ const FloatingDatePicker = forwardRef<HTMLDivElement, FloatingDatePickerProps>(
           )}
         </div>
 
-        {error && <p className="mt-1 text-xs text-amber-500">{error}</p>}
+        {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
 
         {isOpen &&
           dropdownPosition &&
