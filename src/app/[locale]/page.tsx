@@ -2,6 +2,7 @@ import { getLocale } from 'next-intl/server'
 import HeroSlider from '@/components/home/HeroSlider'
 import HomePackages from '@/components/home/HomePackages'
 import HomeProducts from '@/components/home/HomeProducts'
+import OfferBanners from '@/components/products/OfferBanners'
 
 export default async function HomePage() {
   const locale = await getLocale()
@@ -19,6 +20,9 @@ export default async function HomePage() {
 
       {/* Packages */}
       <HomePackages />
+
+      {/* Offer Banners */}
+      <OfferBanners />
 
       {/* Products — 18 items, 6 per row */}
       <HomeProducts />

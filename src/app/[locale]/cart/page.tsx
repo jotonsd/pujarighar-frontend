@@ -167,6 +167,46 @@ function AddAddressModal({
   );
 }
 
+function RemoveConfirmModal({
+  locale,
+  productName,
+  onConfirm,
+  onCancel,
+}: {
+  locale: string;
+  productName: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+}) {
+  const isBn = locale === "bn";
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 space-y-4">
+        <h2 className="text-base font-bold text-gray-800">
+          {isBn ? "কার্ট থেকে সরাবেন?" : "Remove from cart?"}
+        </h2>
+        <p className="text-sm text-gray-500">
+          <span className="font-medium text-gray-700">{productName}</span>
+          {isBn
+            ? " কার্ট থেকে সরিয়ে দেওয়া হবে।"
+            : " will be removed from your cart."}
+        </p>
+        <div className="flex gap-3">
+          <button
+            onClick={onConfirm}
+            className="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-2.5 rounded-xl transition-colors text-sm"
+          >
+            {isBn ? "হ্যাঁ, সরান" : "Yes, Remove"}
+          </button>
+          <button onClick={onCancel} className="flex-1 btn-secondary">
+            {isBn ? "বাতিল" : "Cancel"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function PaymentMethodModal({
   locale,
   onSelect,
@@ -379,6 +419,11 @@ export default function CartPage() {
     number: string;
     phone: string;
   } | null>(null);
+  const [removeTarget, setRemoveTarget] = useState<{
+    id: string;
+    name: string;
+    isGuest: boolean;
+  } | null>(null);
   const [showAddAddressModal, setShowAddAddressModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -516,8 +561,11 @@ export default function CartPage() {
             <div className="lg:col-span-2">
               <div className="card divide-y divide-gray-100 p-0 overflow-hidden">
                 {items.map(item => {
-                  const name = locale === "bn" ? item.product_name_bn : item.product_name_en;
-                  const qty  = Math.round(Number(item.quantity));
+                  const name =
+                    locale === "bn"
+                      ? item.product_name_bn
+                      : item.product_name_en;
+                  const qty = Math.round(Number(item.quantity));
                   return (
                     <div key={item.id} className="px-4 py-3 space-y-2">
                       <div className="flex items-center gap-3">
@@ -525,44 +573,103 @@ export default function CartPage() {
                         <div className="w-12 h-12 rounded-lg overflow-hidden bg-amber-50 shrink-0 flex items-center justify-center">
                           {item.product_image ? (
                             // eslint-disable-next-line @next/next/no-img-element
-                            <img src={item.product_image} alt={name} className="w-full h-full object-cover" />
+                            <img
+                              src={item.product_image}
+                              alt={name}
+                              className="w-full h-full object-cover"
+                            />
                           ) : (
-                            <span className="text-xl">{item.is_package ? "🎁" : "🪔"}</span>
+                            <span className="text-xl">
+                              {item.is_package ? "🎁" : "🪔"}
+                            </span>
                           )}
                         </div>
                         {/* Name + price */}
                         <div className="flex-1 min-w-0">
-                          <p className="font-medium text-gray-800 text-sm truncate">{name}</p>
-                          <p className="text-xs text-gray-400">{formatAmount(item.unit_price, locale, 0)}</p>
+                          <p className="font-medium text-gray-800 text-sm truncate">
+                            {name}
+                          </p>
+                          <p className="text-xs text-gray-400">
+                            {formatAmount(item.unit_price, locale, 0)}
+                          </p>
                         </div>
                         {/* Qty stepper */}
                         <div className="flex items-center gap-1 shrink-0">
                           <button
-                            onClick={() => qty > 1 ? updateItem({ itemId: item.id, quantity: String(qty - 1) }) : removeItem(item.id)}
+                            onClick={() =>
+                              qty > 1
+                                ? updateItem({
+                                    itemId: item.id,
+                                    quantity: String(qty - 1),
+                                  })
+                                : setRemoveTarget({
+                                    id: item.id,
+                                    name,
+                                    isGuest: false,
+                                  })
+                            }
                             className="w-6 h-6 bg-amber-100 rounded text-amber-700 text-sm flex items-center justify-center hover:bg-amber-200"
-                          >−</button>
-                          <span className="text-sm font-medium w-7 text-center">{formatNumber(qty, locale)}</span>
+                          >
+                            −
+                          </button>
+                          <span className="text-sm font-bold w-7 text-center">
+                            {formatNumber(qty, locale)}
+                          </span>
                           <button
-                            onClick={() => updateItem({ itemId: item.id, quantity: String(qty + 1) })}
+                            onClick={() =>
+                              updateItem({
+                                itemId: item.id,
+                                quantity: String(qty + 1),
+                              })
+                            }
                             className="w-6 h-6 bg-amber-100 rounded text-amber-700 text-sm flex items-center justify-center hover:bg-amber-200"
-                          >+</button>
+                          >
+                            +
+                          </button>
                         </div>
                         {/* Total + remove */}
                         <div className="text-right shrink-0 w-20">
-                          <p className="font-bold text-amber-600 text-sm">{formatAmount(item.line_total, locale, 0)}</p>
-                          <button onClick={() => removeItem(item.id)} className="text-xs text-red-400 hover:text-red-600">{t("cart.remove")}</button>
+                          <p className="font-bold text-amber-600 text-sm">
+                            {formatAmount(item.line_total, locale, 0)}
+                          </p>
+                          <button
+                            onClick={() =>
+                              setRemoveTarget({
+                                id: item.id,
+                                name,
+                                isGuest: false,
+                              })
+                            }
+                            className="text-xs text-red-400 hover:text-red-600"
+                          >
+                            {t("cart.remove")}
+                          </button>
                         </div>
                       </div>
                       {/* Package items */}
                       {item.is_package && item.package_items?.length > 0 && (
-                        <div className="ml-15 pl-3 border-l-2 border-amber-100 space-y-0.5" style={{ marginLeft: '60px' }}>
+                        <div
+                          className="ml-15 pl-3 border-l-2 border-amber-100 space-y-0.5"
+                          style={{ marginLeft: "60px" }}
+                        >
                           {item.package_items.map((pi, i) => (
-                            <div key={i} className="flex items-center justify-between text-xs text-gray-400">
+                            <div
+                              key={i}
+                              className="flex items-center justify-between text-xs text-gray-400"
+                            >
                               <span className="flex items-center gap-1">
                                 <span className="w-1 h-1 rounded-full bg-amber-300 shrink-0" />
-                                {locale === "bn" ? pi.component_name_bn : pi.component_name_en}
+                                {locale === "bn"
+                                  ? pi.component_name_bn
+                                  : pi.component_name_en}
                               </span>
-                              <span>×{formatNumber(Math.round(Number(pi.quantity) * qty), locale)}</span>
+                              <span>
+                                ×
+                                {formatNumber(
+                                  Math.round(Number(pi.quantity) * qty),
+                                  locale,
+                                )}
+                              </span>
                             </div>
                           ))}
                         </div>
@@ -657,6 +764,17 @@ export default function CartPage() {
           </div>
         )}
 
+        {removeTarget && !removeTarget.isGuest && (
+          <RemoveConfirmModal
+            locale={locale}
+            productName={removeTarget.name}
+            onConfirm={() => {
+              removeItem(removeTarget.id);
+              setRemoveTarget(null);
+            }}
+            onCancel={() => setRemoveTarget(null)}
+          />
+        )}
         {showAddAddressModal && (
           <AddAddressModal
             locale={locale}
@@ -714,37 +832,50 @@ export default function CartPage() {
           <p>{t("cart.empty")}</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-          <div className="lg:col-span-2 space-y-3">
-            {guestItems.map(item => {
-              const name = locale === "bn" ? item.name_bn : item.name_en;
-              const total = (
-                parseFloat(item.unit_price) * item.quantity
-              ).toFixed(2);
-              return (
-                <div key={item.product_id} className="card space-y-2">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-amber-50 rounded-lg flex items-center justify-center text-xl shrink-0">
-                      {item.is_package ? "🎁" : "🪔"}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-gray-800 text-sm truncate">
-                        {name}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {formatAmount(item.unit_price, locale, 0)}
-                      </p>
-                      <div className="flex items-center gap-1 mt-1">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <div className="card divide-y divide-gray-100 p-0 overflow-hidden">
+              {guestItems.map(item => {
+                const name = locale === "bn" ? item.name_bn : item.name_en;
+                const total = (
+                  parseFloat(item.unit_price) * item.quantity
+                ).toFixed(2);
+                return (
+                  <div key={item.product_id} className="px-4 py-3 space-y-2">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-lg overflow-hidden bg-amber-50 shrink-0 flex items-center justify-center">
+                        <span className="text-xl">
+                          {item.is_package ? "🎁" : "🪔"}
+                        </span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-gray-800 text-sm truncate">
+                          {name}
+                        </p>
+                        <p className="text-xs text-gray-400">
+                          {formatAmount(item.unit_price, locale, 0)}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-1 shrink-0">
                         <button
                           onClick={() =>
-                            guestUpdateQty(item.product_id, item.quantity - 1)
+                            item.quantity > 1
+                              ? guestUpdateQty(
+                                  item.product_id,
+                                  item.quantity - 1,
+                                )
+                              : setRemoveTarget({
+                                  id: item.product_id,
+                                  name,
+                                  isGuest: true,
+                                })
                           }
-                          className="w-5 h-5 bg-amber-100 rounded text-amber-700 text-xs flex items-center justify-center hover:bg-amber-200"
+                          className="w-6 h-6 bg-amber-100 rounded text-amber-700 text-sm flex items-center justify-center hover:bg-amber-200"
                         >
                           −
                         </button>
-                        <span className="text-sm font-medium w-6 text-center">
-                          {item.quantity}
+                        <span className="text-sm font-bold w-7 text-center">
+                          {formatNumber(item.quantity, locale)}
                         </span>
                         <button
                           onClick={() =>
@@ -753,63 +884,63 @@ export default function CartPage() {
                               Math.min(item.quantity + 1, item.stock),
                             )
                           }
-                          className="w-5 h-5 bg-amber-100 rounded text-amber-700 text-xs flex items-center justify-center hover:bg-amber-200"
+                          className="w-6 h-6 bg-amber-100 rounded text-amber-700 text-sm flex items-center justify-center hover:bg-amber-200"
                         >
                           +
                         </button>
                       </div>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <p className="font-bold text-amber-600 text-sm">
-                        {formatAmount(total, locale)}
-                      </p>
-                      <button
-                        onClick={() => guestRemove(item.product_id)}
-                        className="text-xs text-red-400 hover:text-red-600 mt-1"
-                      >
-                        {t("cart.remove")}
-                      </button>
-                    </div>
-                  </div>
-                  {item.is_package && item.package_items?.length > 0 && (
-                    <div className="ml-14 pl-3 border-l-2 border-amber-100 space-y-0.5">
-                      {item.package_items.map((pi, i) => (
-                        <div
-                          key={i}
-                          className="flex items-center justify-between text-xs text-gray-500"
+                      <div className="text-right shrink-0 w-20">
+                        <p className="font-bold text-amber-600 text-sm">
+                          {formatAmount(total, locale, 0)}
+                        </p>
+                        <button
+                          onClick={() =>
+                            setRemoveTarget({
+                              id: item.product_id,
+                              name,
+                              isGuest: true,
+                            })
+                          }
+                          className="text-xs text-red-400 hover:text-red-600"
                         >
-                          <span className="flex items-center gap-1">
-                            <span className="w-1 h-1 rounded-full bg-amber-400 shrink-0" />
-                            {locale === "bn"
-                              ? pi.component_name_bn
-                              : pi.component_name_en}
-                          </span>
-                          <span className="text-gray-400 ml-2">
-                            ×
-                            {formatNumber(
-                              Math.round(Number(pi.quantity) * item.quantity),
-                              locale,
-                            )}
-                          </span>
-                        </div>
-                      ))}
+                          {t("cart.remove")}
+                        </button>
+                      </div>
                     </div>
-                  )}
-                </div>
-              );
-            })}
-            <div className="flex justify-between font-bold text-base px-1 pt-1 border-t border-gray-100">
-              <span>{t("cart.subtotal")}</span>
-              <span className="text-amber-600">
-                {formatAmount(guestSubtotal(), locale)}
-              </span>
+                    {item.is_package && item.package_items?.length > 0 && (
+                      <div
+                        className="pl-3 border-l-2 border-amber-100 space-y-0.5"
+                        style={{ marginLeft: "60px" }}
+                      >
+                        {item.package_items.map((pi, i) => (
+                          <div
+                            key={i}
+                            className="flex items-center justify-between text-xs text-gray-400"
+                          >
+                            <span className="flex items-center gap-1">
+                              <span className="w-1 h-1 rounded-full bg-amber-300 shrink-0" />
+                              {locale === "bn"
+                                ? pi.component_name_bn
+                                : pi.component_name_en}
+                            </span>
+                            <span>
+                              ×
+                              {formatNumber(
+                                Math.round(Number(pi.quantity) * item.quantity),
+                                locale,
+                              )}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
 
-          <form
-            onSubmit={handleGuestCheckout}
-            className="lg:col-span-3 card space-y-3"
-          >
+          <form onSubmit={handleGuestCheckout} className="card space-y-3">
             <h2 className="font-bold text-gray-800 text-lg">
               {t("cart.guestCheckout")}
             </h2>
@@ -877,6 +1008,17 @@ export default function CartPage() {
         </div>
       )}
 
+      {removeTarget?.isGuest && (
+        <RemoveConfirmModal
+          locale={locale}
+          productName={removeTarget.name}
+          onConfirm={() => {
+            guestRemove(removeTarget.id);
+            setRemoveTarget(null);
+          }}
+          onCancel={() => setRemoveTarget(null)}
+        />
+      )}
       {showPaymentModal && (
         <PaymentMethodModal
           locale={locale}

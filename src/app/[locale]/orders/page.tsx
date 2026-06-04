@@ -3,6 +3,7 @@ import { formatAmount } from "@/utils/format";
 
 import { useGetOrdersQuery } from "@/api/orders/ordersApi";
 import OrderStatusBadge from "@/components/orders/OrderStatusBadge";
+import PageHeader from "@/components/ui/PageHeader";
 import Pagination from "@/components/ui/Pagination";
 import Spinner from "@/components/ui/Spinner";
 import { useLocale, useTranslations } from "next-intl";
@@ -18,9 +19,7 @@ export default function OrdersPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-5">
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">
-        {t("order.title")}
-      </h1>
+      <PageHeader title={t("order.title")} />
 
       {isLoading ? (
         <Spinner />

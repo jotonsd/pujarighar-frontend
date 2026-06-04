@@ -2,12 +2,13 @@
 import { formatAmount, formatNumber } from "@/utils/format";
 
 import {
-    useCancelOrderMutation,
-    useGetOrderQuery,
-    useGetOrderStatusLogQuery,
+  useCancelOrderMutation,
+  useGetOrderQuery,
+  useGetOrderStatusLogQuery,
 } from "@/api/orders/ordersApi";
 import OrderStatusBadge from "@/components/orders/OrderStatusBadge";
 import StatusTimeline from "@/components/orders/StatusTimeline";
+import PageHeader from "@/components/ui/PageHeader";
 import Spinner from "@/components/ui/Spinner";
 import { useAuthStore } from "@/store/authStore";
 import { toast } from "@/store/toastStore";
@@ -16,39 +17,60 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 function CancelConfirmModal({
-  locale, orderNumber, onConfirm, onCancel, loading,
+  locale,
+  orderNumber,
+  onConfirm,
+  onCancel,
+  loading,
 }: {
-  locale: string; orderNumber: string
-  onConfirm: () => void; onCancel: () => void; loading: boolean
+  locale: string;
+  orderNumber: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+  loading: boolean;
 }) {
-  const isBn = locale === 'bn'
+  const isBn = locale === "bn";
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 space-y-4">
         <div className="flex items-center gap-3">
           <span className="text-3xl">⚠️</span>
           <h2 className="text-lg font-bold text-gray-800">
-            {isBn ? 'অর্ডার বাতিল করবেন?' : 'Cancel this order?'}
+            {isBn ? "অর্ডার বাতিল করবেন?" : "Cancel this order?"}
           </h2>
         </div>
         <p className="text-sm text-gray-500">
-          {isBn
-            ? `অর্ডার নম্বর `
-            : `Order `}
+          {isBn ? `অর্ডার নম্বর ` : `Order `}
           <strong className="text-gray-700">{orderNumber}</strong>
-          {isBn ? ` বাতিল করা হবে। এটি পূর্বাবস্থায় ফেরানো যাবে না।` : ` will be cancelled. This cannot be undone.`}
+          {isBn
+            ? ` বাতিল করা হবে। এটি পূর্বাবস্থায় ফেরানো যাবে না।`
+            : ` will be cancelled. This cannot be undone.`}
         </p>
         <div className="flex gap-3">
-          <button onClick={onConfirm} disabled={loading} className="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-2.5 rounded-xl transition-colors text-sm">
-            {loading ? (isBn ? 'বাতিল হচ্ছে...' : 'Cancelling...') : (isBn ? 'হ্যাঁ, বাতিল করুন' : 'Yes, Cancel')}
+          <button
+            onClick={onConfirm}
+            disabled={loading}
+            className="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-2.5 rounded-xl transition-colors text-sm"
+          >
+            {loading
+              ? isBn
+                ? "বাতিল হচ্ছে..."
+                : "Cancelling..."
+              : isBn
+                ? "হ্যাঁ, বাতিল করুন"
+                : "Yes, Cancel"}
           </button>
-          <button onClick={onCancel} disabled={loading} className="flex-1 btn-secondary">
-            {isBn ? 'ফিরে যান' : 'Go Back'}
+          <button
+            onClick={onCancel}
+            disabled={loading}
+            className="flex-1 btn-secondary"
+          >
+            {isBn ? "ফিরে যান" : "Go Back"}
           </button>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 export default function OrderDetailPage({
@@ -71,9 +93,13 @@ export default function OrderDetailPage({
     try {
       await cancelOrder({ id: params.id }).unwrap();
       setShowCancelModal(false);
-      toast.success(locale === "bn" ? "অর্ডার বাতিল হয়েছে" : "Order cancelled");
+      toast.success(
+        locale === "bn" ? "অর্ডার বাতিল হয়েছে" : "Order cancelled",
+      );
     } catch {
-      toast.error(locale === "bn" ? "বাতিল ব্যর্থ হয়েছে" : "Cancellation failed");
+      toast.error(
+        locale === "bn" ? "বাতিল ব্যর্থ হয়েছে" : "Cancellation failed",
+      );
     }
   };
 
@@ -82,26 +108,15 @@ export default function OrderDetailPage({
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-5">
-      <button
-        onClick={() => router.back()}
-        className="text-amber-600 hover:underline mb-6 text-sm"
-      >
-        ← {t("common.back")}
-      </button>
-
-      <div className="flex items-start justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-800">
-            {order.order_number}
-          </h1>
-          <p className="text-gray-500 text-sm mt-1">
-            {new Date(order.created_at).toLocaleString(
-              locale === "bn" ? "bn-BD" : "en-US",
-            )}
-          </p>
-        </div>
-        <OrderStatusBadge status={order.status} locale={locale} />
-      </div>
+      <PageHeader
+        title={order.order_number}
+        description={new Date(order.created_at).toLocaleString(
+          locale === "bn" ? "bn-BD" : "en-US",
+        )}
+        showBack
+        backLabel={t("common.back")}
+        actions={<OrderStatusBadge status={order.status} locale={locale} />}
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-4">

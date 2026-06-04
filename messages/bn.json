@@ -68,7 +68,7 @@
   "cart": {
     "title": "কার্ট",
     "empty": "কার্ট খালি",
-    "subtotal": "উপমোট",
+    "subtotal": "সাবটোটাল",
     "checkout": "চেকআউট",
     "remove": "ডিলিট",
     "update": "আপডেট",
