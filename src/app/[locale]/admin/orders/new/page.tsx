@@ -15,7 +15,80 @@ import { toast } from "@/store/toastStore";
 import { formatAmount, formatNumber } from "@/utils/format";
 import { useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
+function POSProductCard({
+  product, inCart, inStock, locale, onClick,
+}: {
+  product: Product;
+  inCart: { quantity: number } | undefined;
+  inStock: boolean;
+  locale: string;
+  onClick: () => void;
+}) {
+  const images = product.images ?? [];
+  const hasMany = images.length > 1;
+  const [imgIdx, setImgIdx] = useState(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    if (!hasMany) return;
+    timerRef.current = setInterval(() => setImgIdx(i => (i + 1) % images.length), 3000);
+    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+  }, [hasMany, images.length]);
+
+  const name = locale === "bn" ? product.name_bn : product.name_en;
+  const imgSrc = images[imgIdx]?.image;
+
+  return (
+    <button
+      onClick={onClick}
+      disabled={!inStock}
+      className={`text-left rounded-xl border transition-all p-2 ${
+        inCart
+          ? "border-amber-400 bg-amber-50 ring-1 ring-amber-400"
+          : inStock
+            ? "border-gray-200 bg-white hover:border-amber-300 hover:shadow-sm"
+            : "border-gray-100 bg-gray-50 opacity-50 cursor-not-allowed"
+      }`}
+    >
+      <div className="aspect-square bg-amber-50 rounded-lg overflow-hidden mb-2 relative">
+        {imgSrc ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={imgSrc} alt={name} className="w-full h-full object-cover" />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-3xl">
+            {product.is_package ? "🎁" : "🪔"}
+          </div>
+        )}
+        {hasMany && (
+          <div className="absolute bottom-1 left-0 right-0 flex justify-center gap-1">
+            {images.map((_, i) => (
+              <span
+                key={i}
+                className={`w-1 h-1 rounded-full transition-colors ${i === imgIdx ? "bg-white" : "bg-white/40"}`}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+      <p className="text-xs font-medium text-gray-800 line-clamp-2 leading-tight">{name}</p>
+      <p className="text-sm font-bold text-amber-600 mt-0.5">
+        {formatAmount(product.unit_price, locale, 0)}
+      </p>
+      {inCart && (
+        <p className="text-xs text-amber-600 font-bold mt-0.5">
+          {locale === "bn" ? `কার্টে: ${formatNumber(inCart.quantity, locale)}` : `In cart: ${formatNumber(inCart.quantity, locale)}`}
+        </p>
+      )}
+      {!inStock && (
+        <p className="text-xs text-amber-400 mt-0.5">
+          {locale === "bn" ? "স্টক নেই" : "Out of stock"}
+        </p>
+      )}
+    </button>
+  );
+}
 
 interface CartLine {
   product: Product;
@@ -158,52 +231,16 @@ export default function POSPage() {
           <POSProductSkeleton count={25} />
         ) : (
           <div className="overflow-y-auto flex-1 grid grid-cols-5 gap-3 content-start mt-3">
-            {products.map(product => {
-              const isPackage = product.is_package;
-              const inStock = isPackage || Number(product.stock_on_hand) > 0;
-              const inCart = cart.find(l => l.product.id === product.id);
-              const name = locale === "bn" ? product.name_bn : product.name_en;
-              const imgSrc = product.images?.[0]?.image;
-
-              return (
-                <button
-                  key={product.id}
-                  onClick={() => addToCart(product)}
-                  disabled={!inStock}
-                  className={`text-left rounded-xl border transition-all p-2 ${
-                    inCart
-                      ? "border-amber-400 bg-amber-50 ring-1 ring-amber-400"
-                      : inStock
-                        ? "border-gray-200 bg-white hover:border-amber-300 hover:shadow-sm"
-                        : "border-gray-100 bg-gray-50 opacity-50 cursor-not-allowed"
-                  }`}
-                >
-                  <div className="aspect-square bg-amber-50 rounded-lg overflow-hidden mb-2">
-                    {imgSrc ? (
-                      <img src={imgSrc} alt={name} className="w-full h-full object-cover" /> // eslint-disable-line
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-3xl">
-                        {isPackage ? "🎁" : "🪔"}
-                      </div>
-                    )}
-                  </div>
-                  <p className="text-xs font-medium text-gray-800 line-clamp-2 leading-tight">{name}</p>
-                  <p className="text-sm font-bold text-amber-600 mt-0.5">
-                    {formatAmount(product.unit_price, locale, 0)}
-                  </p>
-                  {inCart && (
-                    <p className="text-xs text-amber-600 font-medium mt-0.5">
-                      {locale === "bn" ? `কার্টে: ${formatNumber(inCart.quantity, locale)}` : `In cart: ${formatNumber(inCart.quantity, locale)}`}
-                    </p>
-                  )}
-                  {!inStock && (
-                    <p className="text-xs text-amber-400 mt-0.5">
-                      {locale === "bn" ? "স্টক নেই" : "Out of stock"}
-                    </p>
-                  )}
-                </button>
-              );
-            })}
+            {products.map(product => (
+              <POSProductCard
+                key={product.id}
+                product={product}
+                inCart={cart.find(l => l.product.id === product.id)}
+                inStock={product.is_package || Number(product.stock_on_hand) > 0}
+                locale={locale}
+                onClick={() => addToCart(product)}
+              />
+            ))}
             {products.length === 0 && !isLoading && (
               <p className="col-span-full text-center text-gray-400 py-12">
                 {locale === "bn" ? "কোনো পণ্য পাওয়া যায়নি" : "No products found"}

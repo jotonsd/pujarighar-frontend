@@ -14,7 +14,18 @@ import PageHeader from "@/components/ui/PageHeader";
 import { toast } from "@/store/toastStore";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
+import { RefreshCw } from "lucide-react";
 import { useRef, useState } from "react";
+
+function generateSku(name: string): string {
+  const prefix = name
+    .toUpperCase()
+    .replace(/[^A-Z]/g, "")
+    .slice(0, 3)
+    .padEnd(3, "X");
+  const suffix = Math.floor(1000 + Math.random() * 9000);
+  return `PG-${prefix}-${suffix}`;
+}
 
 export default function NewProductPage() {
   const t = useTranslations();
@@ -34,6 +45,7 @@ export default function NewProductPage() {
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const fileRef = useRef<HTMLInputElement>(null);
+  const skuManualRef = useRef(false);
 
   const { data: categories = [] } = useGetCategoriesQuery();
   const [createProduct, { isLoading }] = useCreateProductMutation();
@@ -82,7 +94,21 @@ export default function NewProductPage() {
         HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
       >,
     ) =>
-      setForm({ ...form, [key]: e.target.value });
+      setForm(p => ({ ...p, [key]: e.target.value }));
+
+  const handleNameEnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const name = e.target.value;
+    setForm(p => ({
+      ...p,
+      name_en: name,
+      ...(!skuManualRef.current && { sku: name ? generateSku(name) : "" }),
+    }));
+  };
+
+  const regenerateSku = () => {
+    skuManualRef.current = false;
+    setForm(p => ({ ...p, sku: p.name_en ? generateSku(p.name_en) : generateSku("PG") }));
+  };
 
   return (
     <div className="max-w-7xl">
@@ -102,16 +128,30 @@ export default function NewProductPage() {
             label="Name (English)"
             required
             value={form.name_en}
-            onChange={f("name_en")}
+            onChange={handleNameEnChange}
           />
         </div>
         <div className="grid grid-cols-2 gap-4">
-          <FloatingInput
-            label={t("product.sku")}
-            required
-            value={form.sku}
-            onChange={f("sku")}
-          />
+          <div className="flex gap-2 items-start">
+            <FloatingInput
+              label={t("product.sku")}
+              required
+              value={form.sku}
+              onChange={e => {
+                skuManualRef.current = true;
+                f("sku")(e);
+              }}
+              className="flex-1"
+            />
+            <button
+              type="button"
+              onClick={regenerateSku}
+              title={locale === "bn" ? "পুনরায় তৈরি করুন" : "Regenerate SKU"}
+              className="h-10 w-10 shrink-0 flex items-center justify-center rounded-lg border border-gray-300 text-gray-500 hover:text-amber-600 hover:border-amber-400 transition-colors"
+            >
+              <RefreshCw className="w-4 h-4" />
+            </button>
+          </div>
           <FloatingSelect
             label={t("product.category")}
             value={form.category}

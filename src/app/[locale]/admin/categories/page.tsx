@@ -10,9 +10,9 @@ import PageHeader from "@/components/ui/PageHeader";
 import TableSkeleton from "@/components/ui/TableSkeleton";
 import { Category } from "@/lib/types";
 import { toast } from "@/store/toastStore";
-import { Pencil, X } from "lucide-react";
+import { Pencil, RefreshCw, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 type CreateForm = { name_bn: string; name_en: string; slug: string };
 type EditForm = { name_bn: string; name_en: string };
@@ -33,6 +33,8 @@ export default function CategoriesPage() {
   });
   const [createCategory, { isLoading: creating }] = useCreateCategoryMutation();
   const [updateCategory] = useUpdateCategoryMutation();
+
+  const slugManualRef = useRef(false);
 
   const [showCreate, setShowCreate] = useState(false);
   const [createForm, setCreateForm] = useState<CreateForm>({
@@ -60,6 +62,7 @@ export default function CategoriesPage() {
         locale === "bn" ? "কেটাগরি তৈরি হয়েছে" : "Category created",
       );
       setCreateForm({ name_bn: "", name_en: "", slug: "" });
+      slugManualRef.current = false;
       setShowCreate(false);
     } catch (err: unknown) {
       const e = err as {
@@ -125,17 +128,32 @@ export default function CategoriesPage() {
                 setCreateForm(f => ({
                   ...f,
                   name_en: val,
-                  slug: slugify(val),
+                  ...(!slugManualRef.current && { slug: slugify(val) }),
                 }));
               }}
             />
-            <FloatingInput
-              label="Slug *"
-              value={createForm.slug}
-              onChange={e =>
-                setCreateForm(f => ({ ...f, slug: e.target.value }))
-              }
-            />
+            <div className="flex gap-2 items-start">
+              <FloatingInput
+                label="Slug *"
+                value={createForm.slug}
+                onChange={e => {
+                  slugManualRef.current = true;
+                  setCreateForm(f => ({ ...f, slug: e.target.value }));
+                }}
+                className="flex-1"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  slugManualRef.current = false;
+                  setCreateForm(f => ({ ...f, slug: slugify(f.name_en) }));
+                }}
+                title={locale === "bn" ? "পুনরায় তৈরি করুন" : "Regenerate slug"}
+                className="h-10 w-10 shrink-0 flex items-center justify-center rounded-lg border border-gray-300 text-gray-500 hover:text-amber-600 hover:border-amber-400 transition-colors"
+              >
+                <RefreshCw className="w-4 h-4" />
+              </button>
+            </div>
           </div>
           <div className="flex gap-2">
             <button
