@@ -12,9 +12,11 @@ import {
 import OrderStatusBadge from "@/components/orders/OrderStatusBadge";
 import StatusTimeline from "@/components/orders/StatusTimeline";
 import { DeliveryOrderDetailSkeleton } from "@/components/ui/skeletons";
+import PaymentConfirmModal from "@/components/ui/PaymentConfirmModal";
 import { toast } from "@/store/toastStore";
 import { useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function DeliveryOrderDetailPage({
   params,
@@ -31,6 +33,8 @@ export default function DeliveryOrderDetailPage({
   const [deliver, { isLoading: delivering }]   = useDeliverOrderMutation();
   const [returnOrd, { isLoading: returning }]  = useReturnOrderMutation();
   const [markPaid, { isLoading: markingPaid }] = useMarkCodPaidMutation();
+
+  const [showPayModal, setShowPayModal] = useState(false);
 
   const isPending = dispatching || delivering || returning || markingPaid;
   const loading = locale === "bn" ? "লোড হচ্ছে..." : "Loading...";
@@ -88,13 +92,17 @@ export default function DeliveryOrderDetailPage({
             {isPending ? loading : locale === "bn" ? "✅ ডেলিভারি সম্পন্ন" : "✅ Mark as Delivered"}
           </button>
         )}
-        {order.status === "ON_THE_WAY" && order.payment_method === "COD" && order.payment_status === "UNPAID" && (
+        {(
+          (order.status === "ON_THE_WAY" || order.status === "DELIVERED") &&
+          order.payment_method === "COD" &&
+          order.payment_status === "UNPAID"
+        ) && (
           <button
-            onClick={() => doAction(() => markPaid(params.id).unwrap(), locale === "bn" ? "পেমেন্ট নিশ্চিত হয়েছে" : "Payment confirmed")}
+            onClick={() => setShowPayModal(true)}
             disabled={isPending}
             className="flex-1 py-2 px-4 rounded-lg bg-green-600 hover:bg-green-700 text-white font-medium transition-colors"
           >
-            {isPending ? loading : locale === "bn" ? "💵 পেমেন্ট নিশ্চিত করুন" : "💵 Mark as Paid"}
+            {locale === "bn" ? "💵 পেমেন্ট নিশ্চিত করুন" : "💵 Mark as Paid"}
           </button>
         )}
         {order.status === "DELIVERED" && (
@@ -109,16 +117,21 @@ export default function DeliveryOrderDetailPage({
             {isPending ? loading : locale === "bn" ? "↩ ফেরত" : "↩ Mark as Returned"}
           </button>
         )}
-        {order.status === "DELIVERED" && order.payment_method === "COD" && order.payment_status === "UNPAID" && (
-          <button
-            onClick={() => doAction(() => markPaid(params.id).unwrap(), locale === "bn" ? "পেমেন্ট নিশ্চিত হয়েছে" : "Payment confirmed")}
-            disabled={isPending}
-            className="flex-1 py-2 px-4 rounded-lg bg-green-600 hover:bg-green-700 text-white font-medium transition-colors"
-          >
-            {isPending ? loading : locale === "bn" ? "💵 পেমেন্ট নিশ্চিত করুন" : "💵 Mark as Paid"}
-          </button>
-        )}
       </div>
+
+      {showPayModal && order && (
+        <PaymentConfirmModal
+          locale={locale}
+          orderNumber={order.order_number}
+          amount={formatAmount(order.grand_total, locale, 0)}
+          loading={markingPaid}
+          onCancel={() => setShowPayModal(false)}
+          onConfirm={async () => {
+            await doAction(() => markPaid(params.id).unwrap(), locale === "bn" ? "পেমেন্ট নিশ্চিত হয়েছে" : "Payment confirmed");
+            setShowPayModal(false);
+          }}
+        />
+      )}
 
       <div className="grid grid-cols-1 gap-4">
         <div className="card">

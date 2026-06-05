@@ -47,6 +47,12 @@ export default function OrderItems({ order }: Props) {
           </div>
         ))}
         <hr className="my-2" />
+        {parseFloat(order.delivery_charge) > 0 && (
+          <div className="flex justify-between text-sm text-gray-500">
+            <span>{locale === 'bn' ? 'ডেলিভারি চার্জ' : 'Delivery Charge'}</span>
+            <span>{formatAmount(order.delivery_charge, locale)}</span>
+          </div>
+        )}
         <div className="flex justify-between font-bold">
           <span>{t('order.total')}</span>
           <span className="text-amber-600">{formatAmount(order.grand_total, locale)}</span>

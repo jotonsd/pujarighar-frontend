@@ -11,6 +11,8 @@ interface GuestCheckoutPayload {
   notes_bn?: string
   email?: string
   payment_method: 'COD' | 'ONLINE'
+  delivery_zone?: 'inside' | 'outside'
+  apply_delivery?: boolean
 }
 
 interface GuestOrderResult {

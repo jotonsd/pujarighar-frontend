@@ -32,3 +32,17 @@ export function formatNumber(value: number | string, locale: string): string {
   if (isNaN(num)) return '0'
   return num.toLocaleString(locale === 'bn' ? 'bn-BD' : 'en-US')
 }
+
+/**
+ * Format a date string or Date object with the correct locale.
+ * Produces Bengali digits and month names in Bangla mode.
+ */
+export function formatDate(date: string | Date, locale: string): string {
+  const d = typeof date === 'string' ? new Date(date) : date
+  if (isNaN(d.getTime())) return ''
+  return d.toLocaleDateString(locale === 'bn' ? 'bn-BD' : 'en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  })
+}

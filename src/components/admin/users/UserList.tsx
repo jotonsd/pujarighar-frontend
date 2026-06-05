@@ -22,11 +22,12 @@ export default function UserList() {
   const t      = useTranslations()
   const locale = useLocale()
   const [page, setPage]     = useState(1)
+  const [limit, setLimit]   = useState(10)
   const [role, setRole]     = useState('')
   const [search, setSearch] = useState('')
 
   const currentUserId = useAuthStore(s => s.user?.id)
-  const { data, isLoading } = useGetUsersQuery({ page, role, search })
+  const { data, isLoading } = useGetUsersQuery({ page, page_size: limit, role, search })
   const [activate]   = useActivateUserMutation()
   const [deactivate] = useDeactivateUserMutation()
 

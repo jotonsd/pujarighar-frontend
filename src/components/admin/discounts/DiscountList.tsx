@@ -6,7 +6,7 @@ import ToggleSwitch from '@/components/ui/forms/ToggleSwitch'
 import { ReusableTable, Column, QuickAction } from '@/components/ui/ReusableTable'
 import { toast } from '@/store/toastStore'
 import { Discount, useGetDiscountsQuery, useToggleDiscountMutation, useDeleteDiscountMutation } from '@/api/discounts/discountsApi'
-import { formatAmount } from '@/utils/format'
+import { formatAmount, formatDate } from '@/utils/format'
 
 export default function DiscountList() {
   const locale = useLocale()
@@ -61,7 +61,7 @@ export default function DiscountList() {
       header: isBn ? 'তারিখ' : 'Date',
       accessor: d => (
         <span className="text-xs text-gray-400">
-          {new Date(d.created_at).toLocaleDateString(isBn ? 'bn-BD' : 'en-US')}
+          {formatDate(d.created_at, locale)}
         </span>
       ),
       exportValue: d => new Date(d.created_at).toLocaleDateString(),

@@ -17,11 +17,15 @@ const ADMIN_LINKS = [
   { href: "/admin/orders",     icon: "🛍️", label_bn: "অর্ডার",      label_en: "Orders" },
   { href: "/admin/products",   icon: "📦", label_bn: "পণ্য",         label_en: "Products" },
   { href: "/admin/packages",   icon: "🎁", label_bn: "প্যাকেজ",      label_en: "Packages" },
-  { href: "/admin/categories", icon: "🏷️", label_bn: "কেটাগরি",     label_en: "Categories" },
   { href: "/admin/inventory",  icon: "🏭", label_bn: "গুদাম",        label_en: "Inventory" },
   { href: "/admin/users",      icon: "👥", label_bn: "ব্যবহারকারী",  label_en: "Users" },
   { href: "/admin/dashboard",  icon: "📊", label_bn: "ড্যাশবোর্ড",  label_en: "Dashboard" },
-  { href: "/admin/discounts",  icon: "🏷️", label_bn: "ডিসকাউন্ট",   label_en: "Discounts" },
+];
+
+const SETTINGS_LINKS = [
+  { href: "/admin/categories",                 icon: "🏷️", label_bn: "কেটাগরি",      label_en: "Categories" },
+  { href: "/admin/discounts",                  icon: "💸", label_bn: "ডিসকাউন্ট",    label_en: "Discounts" },
+  { href: "/admin/settings/delivery-charges",  icon: "🚚", label_bn: "ডেলিভারি চার্জ", label_en: "Delivery Charges" },
 ];
 
 const ACCOUNTING_LINKS = [
@@ -252,6 +256,12 @@ function MobileMenu({
               {ADMIN_LINKS.map(l => navLink(`/${locale}${l.href}`, l.icon, locale === 'bn' ? l.label_bn : l.label_en))}
               <div className="border-t border-gray-100 mt-2 pt-2">
                 <p className="px-4 py-1 text-xs text-gray-400 font-medium uppercase tracking-wide">
+                  {locale === 'bn' ? 'সেটিংস' : 'Settings'}
+                </p>
+                {SETTINGS_LINKS.map(l => navLink(`/${locale}${l.href}`, l.icon, locale === 'bn' ? l.label_bn : l.label_en))}
+              </div>
+              <div className="border-t border-gray-100 mt-2 pt-2">
+                <p className="px-4 py-1 text-xs text-gray-400 font-medium uppercase tracking-wide">
                   {locale === 'bn' ? 'হিসাব' : 'Accounting'}
                 </p>
                 {ACCOUNTING_LINKS.map(l => navLink(`/${locale}${l.href}`, l.icon, locale === 'bn' ? l.label_bn : l.label_en))}
@@ -465,6 +475,9 @@ export default function Navbar() {
           {/* Banners + Accounting dropdowns — shrink-0 so they stay in place */}
           {(role === "ADMIN" || role === "WAREHOUSE") && (
             <div className="hidden md:flex items-center gap-1 shrink-0">
+              <NavDropdown locale={locale} pathname={pathname}
+                links={SETTINGS_LINKS} icon="⚙️"
+                label_bn="সেটিংস" label_en="Settings" />
               <NavDropdown locale={locale} pathname={pathname}
                 links={BANNER_LINKS} icon="🎨"
                 label_bn="ব্যানার" label_en="Banners" />

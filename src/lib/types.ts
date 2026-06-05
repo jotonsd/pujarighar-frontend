@@ -262,6 +262,7 @@ export interface SalesOrder {
   subtotal: string
   discount_amount: string
   tax_amount: string
+  delivery_charge: string
   grand_total: string
   notes_bn: string
   notes_en: string

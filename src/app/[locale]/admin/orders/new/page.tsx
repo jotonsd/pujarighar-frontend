@@ -4,7 +4,9 @@ import { useLookupUserByPhoneQuery } from "@/api/auth/authApi";
 import { useGetCategoriesQuery } from "@/api/categories/categoriesApi";
 import { usePosCreateOrderMutation } from "@/api/orders/ordersApi";
 import { useGetProductsQuery } from "@/api/products/productsApi";
+import { useGetDeliveryChargesQuery } from "@/api/deliveryCharges/deliveryChargesApi";
 import {
+    Checkbox,
     FloatingInput,
     FloatingSelect,
     FloatingTextarea,
@@ -147,11 +149,24 @@ export default function POSPage() {
     (s, l) => s + parseFloat(l.product.unit_price) * l.quantity, 0,
   );
 
+  const [applyDelivery, setApplyDelivery] = useState(true);
+  const [deliveryZone, setDeliveryZone]   = useState<"inside" | "outside">("outside");
+  const { data: deliveryRates } = useGetDeliveryChargesQuery();
+
   // ── Customer form ─────────────────────────────────────────────────────────
   const [customer, setCustomer] = useState({
     name_bn: "", phone: "", address_bn: "",
     district: "", thana: "", post_code: "", notes_bn: "",
   });
+
+  const deliveryCharge = (() => {
+    if (!applyDelivery || !deliveryRates) return 0;
+    return parseFloat(
+      deliveryZone === "inside" ? deliveryRates.inside_dhaka : deliveryRates.outside_dhaka,
+    );
+  })();
+
+  const grandTotal = subtotal + deliveryCharge;
   const [phoneQuery, setPhoneQuery] = useState("");
   const { data: foundUser } = useLookupUserByPhoneQuery(phoneQuery, {
     skip: phoneQuery.length < 11,
@@ -169,6 +184,8 @@ export default function POSPage() {
       const order = await posCreate({
         items: cart.map(l => ({ product_id: l.product.id, quantity: l.quantity.toFixed(3) })),
         ...customer,
+        apply_delivery: applyDelivery,
+        delivery_zone: applyDelivery ? deliveryZone : undefined,
       }).unwrap();
       toast.success(locale === "bn" ? `অর্ডার তৈরি হয়েছে: ${order.order_number}` : `Order created: ${order.order_number}`);
       router.push(`/${locale}/admin/orders/${order.id}`);
@@ -310,10 +327,20 @@ export default function POSPage() {
           )}
 
           {cart.length > 0 && (
-            <div className="border-t border-gray-100 pt-2 mt-2 shrink-0">
-              <div className="flex justify-between font-bold text-sm">
-                <span>{locale === "bn" ? "মোট" : "Total"}</span>
-                <span className="text-amber-600">{formatAmount(subtotal, locale)}</span>
+            <div className="border-t border-gray-100 pt-2 mt-2 shrink-0 space-y-1">
+              <div className="flex justify-between text-xs text-gray-500">
+                <span>{locale === "bn" ? "সাবটোটাল" : "Subtotal"}</span>
+                <span>{formatAmount(subtotal, locale, 0)}</span>
+              </div>
+              {applyDelivery && deliveryCharge > 0 && (
+                <div className="flex justify-between text-xs text-gray-500">
+                  <span>{locale === "bn" ? "ডেলিভারি" : "Delivery"}</span>
+                  <span>{formatAmount(deliveryCharge, locale, 0)}</span>
+                </div>
+              )}
+              <div className="flex justify-between font-bold text-sm pt-1 border-t border-gray-100">
+                <span>{locale === "bn" ? "সর্বমোট" : "Grand Total"}</span>
+                <span className="text-amber-600">{formatAmount(grandTotal, locale, 0)}</span>
               </div>
             </div>
           )}
@@ -371,13 +398,38 @@ export default function POSPage() {
           </div>
           <FloatingInput label={locale === "bn" ? "মন্তব্য" : "Notes"} value={customer.notes_bn}
             onChange={e => setCustomer(c => ({ ...c, notes_bn: e.target.value }))} />
+          <Checkbox
+            checked={applyDelivery}
+            onChange={() => setApplyDelivery(p => !p)}
+            label={locale === "bn" ? "ডেলিভারি চার্জ যোগ করুন" : "Apply delivery charge"}
+          />
+          {applyDelivery && deliveryRates && (
+            <div className="grid grid-cols-2 gap-2">
+              {(["inside", "outside"] as const).map(z => (
+                <button
+                  key={z}
+                  type="button"
+                  onClick={() => setDeliveryZone(z)}
+                  className={`py-2 px-3 rounded-lg border text-xs font-medium transition-colors ${
+                    deliveryZone === z
+                      ? "border-amber-500 bg-amber-50 text-amber-700"
+                      : "border-gray-200 text-gray-600 hover:border-amber-300"
+                  }`}
+                >
+                  {z === "inside"
+                    ? `${locale === "bn" ? "ঢাকার ভিতরে" : "Inside Dhaka"} (৳${deliveryRates.inside_dhaka})`
+                    : `${locale === "bn" ? "ঢাকার বাইরে" : "Outside Dhaka"} (৳${deliveryRates.outside_dhaka})`}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         <button onClick={handleSubmit} disabled={submitting || cart.length === 0}
           className="btn-primary w-full py-3 text-base font-semibold">
           {submitting
             ? (locale === "bn" ? "তৈরি হচ্ছে..." : "Creating...")
-            : (locale === "bn" ? `অর্ডার তৈরি করুন • ৳${subtotal.toFixed(0)}` : `Create Order • ৳${subtotal.toFixed(0)}`)}
+            : (locale === "bn" ? `অর্ডার তৈরি করুন • ৳${grandTotal.toFixed(0)}` : `Create Order • ৳${grandTotal.toFixed(0)}`)}
         </button>
       </div>
     </div>

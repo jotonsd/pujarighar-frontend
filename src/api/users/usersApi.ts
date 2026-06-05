@@ -6,11 +6,12 @@ interface UserListResponse { data: User[]; pagination: ApiMeta }
 export const usersApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
 
-    getUsers: build.query<UserListResponse, { page?: number; role?: string; search?: string }>({
-      query: ({ page = 1, role = '', search = '' } = {}) => {
+    getUsers: build.query<UserListResponse, { page?: number; page_size?: number; role?: string; search?: string }>({
+      query: ({ page = 1, page_size, role = '', search = '' } = {}) => {
         const p = new URLSearchParams({ page: String(page) })
-        if (role)   p.set('role', role)
-        if (search) p.set('search', search)
+        if (page_size) p.set('page_size', String(page_size))
+        if (role)      p.set('role', role)
+        if (search)    p.set('search', search)
         return `/api/users/?${p}`
       },
       providesTags: ['Users'],

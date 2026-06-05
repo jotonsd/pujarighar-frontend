@@ -36,7 +36,7 @@ export const cartApi = baseApi.injectEndpoints({
       invalidatesTags: ['Cart'],
     }),
 
-    checkout: build.mutation<SalesOrder & { gateway_url?: string }, { payment_method: 'COD' | 'ONLINE'; shipping_address_id?: string }>({
+    checkout: build.mutation<SalesOrder & { gateway_url?: string }, { payment_method: 'COD' | 'ONLINE'; shipping_address_id?: string; delivery_zone?: 'inside' | 'outside' }>({
       query: (body) => ({ url: '/api/cart/checkout/', method: 'POST', body }),
       transformResponse: (res: { data: SalesOrder & { gateway_url?: string } }) => res.data,
       invalidatesTags: ['Cart', 'Orders'],

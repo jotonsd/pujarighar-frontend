@@ -1,5 +1,5 @@
 'use client'
-import { formatAmount } from '@/utils/format'
+import { formatAmount, formatDate } from '@/utils/format'
 
 import { useState } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
@@ -30,17 +30,17 @@ export default function LedgerPage() {
 
   const columns: Column<LedgerLine>[] = [
     {
-      header: 'Date',
-      accessor: (l) => <span className="text-gray-500 text-xs">{new Date(l.date).toLocaleDateString(locale === 'bn' ? 'bn-BD' : 'en-US')}</span>,
+      header: locale === 'bn' ? 'তারিখ' : 'Date',
+      accessor: (l) => <span className="text-gray-500 text-xs">{formatDate(l.date, locale)}</span>,
       exportValue: (l) => new Date(l.date).toLocaleDateString(),
     },
     {
-      header: 'Entry',
+      header: locale === 'bn' ? 'এন্ট্রি' : 'Entry',
       accessor: (l) => <span className="font-mono text-xs">{l.entry_number}</span>,
       exportValue: (l) => l.entry_number,
     },
     {
-      header: 'Description',
+      header: locale === 'bn' ? 'বিবরণ' : 'Description',
       accessor: 'description',
       className: 'px-4 py-3 text-sm text-gray-700',
       exportValue: (l) => l.description,

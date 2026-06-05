@@ -14,6 +14,7 @@ import {
 } from '@/api/orders/ordersApi'
 import { useGetDeliveryPersonsQuery } from '@/api/users/usersApi'
 import CancelConfirmModal from './CancelConfirmModal'
+import PaymentConfirmModal from '@/components/ui/PaymentConfirmModal'
 
 interface Props {
   order: SalesOrder
@@ -25,6 +26,7 @@ export default function OrderActions({ order, orderId }: Props) {
   const locale = useLocale()
   const [deliveryPersonId, setDeliveryPersonId] = useState('')
   const [showCancelModal, setShowCancelModal]   = useState(false)
+  const [showPayModal, setShowPayModal]         = useState(false)
 
   const { data: deliveryPersons = [] } = useGetDeliveryPersonsQuery()
   const [confirmOrder, { isLoading: confirming }] = useConfirmOrderMutation()
@@ -51,17 +53,32 @@ export default function OrderActions({ order, orderId }: Props) {
     <div className="card space-y-3">
       <h2 className="font-semibold text-gray-700">{locale === 'bn' ? 'অ্যাকশন' : 'Actions'}</h2>
       <div className="flex flex-wrap gap-2">
-        {order.payment_method === 'COD' && order.payment_status === 'UNPAID' && (
-          <button
-            disabled={loading}
-            className="btn-primary text-sm bg-green-600 hover:bg-green-700"
-            onClick={() => doAction(
-              () => markPaid(orderId).unwrap(),
-              locale === 'bn' ? 'পেমেন্ট নিশ্চিত হয়েছে' : 'Payment confirmed',
+        {order.payment_method === 'COD' && order.payment_status === 'UNPAID' && !['CANCELLED', 'RETURNED'].includes(order.status) && (
+          <>
+            <button
+              disabled={loading}
+              className="btn-primary text-sm bg-green-600 hover:bg-green-700"
+              onClick={() => setShowPayModal(true)}
+            >
+              💵 {locale === 'bn' ? 'পেমেন্ট নিশ্চিত করুন' : 'Mark as Paid'}
+            </button>
+            {showPayModal && (
+              <PaymentConfirmModal
+                locale={locale}
+                orderNumber={order.order_number}
+                amount={`৳${Number(order.grand_total).toLocaleString()}`}
+                loading={markingPaid}
+                onCancel={() => setShowPayModal(false)}
+                onConfirm={async () => {
+                  await doAction(
+                    () => markPaid(orderId).unwrap(),
+                    locale === 'bn' ? 'পেমেন্ট নিশ্চিত হয়েছে' : 'Payment confirmed',
+                  )
+                  setShowPayModal(false)
+                }}
+              />
             )}
-          >
-            💵 {locale === 'bn' ? 'পেমেন্ট নিশ্চিত করুন' : 'Mark as Paid'}
-          </button>
+          </>
         )}
         {order.status === 'PENDING' && (
           <button disabled={loading} className="btn-primary text-sm"

@@ -6,9 +6,10 @@ interface OrderListResponse { data: SalesOrder[]; pagination: ApiMeta }
 export const ordersApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
 
-    getOrders: build.query<OrderListResponse, { page?: number; status?: string; payment_status?: string; order_number?: string; phone?: string; name?: string; from?: string; to?: string }>({
-      query: ({ page = 1, status = '', payment_status = '', order_number = '', phone = '', name = '', from = '', to = '' } = {}) => {
+    getOrders: build.query<OrderListResponse, { page?: number; page_size?: number; status?: string; payment_status?: string; order_number?: string; phone?: string; name?: string; from?: string; to?: string }>({
+      query: ({ page = 1, page_size, status = '', payment_status = '', order_number = '', phone = '', name = '', from = '', to = '' } = {}) => {
         const p = new URLSearchParams({ page: String(page) })
+        if (page_size)      p.set('page_size', String(page_size))
         if (status)         p.set('status', status)
         if (payment_status) p.set('payment_status', payment_status)
         if (order_number)   p.set('order_number', order_number)
@@ -101,6 +102,8 @@ export const ordersApi = baseApi.injectEndpoints({
       name_bn: string; phone: string; address_bn: string
       district?: string; thana?: string; post_code?: string
       notes_bn?: string; email?: string
+      apply_delivery?: boolean
+      delivery_zone?: 'inside' | 'outside'
     }>({
       query: (body) => ({ url: '/api/orders/pos-create/', method: 'POST', body }),
       transformResponse: (res: { data: SalesOrder }) => res.data,
