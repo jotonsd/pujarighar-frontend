@@ -9,6 +9,7 @@ import {
   useAssignDeliveryMutation,
   useCancelOrderMutation,
   useConfirmOrderMutation,
+  useMarkCodPaidMutation,
   usePackOrderMutation,
 } from '@/api/orders/ordersApi'
 import { useGetDeliveryPersonsQuery } from '@/api/users/usersApi'
@@ -30,8 +31,9 @@ export default function OrderActions({ order, orderId }: Props) {
   const [pack, { isLoading: packing }]            = usePackOrderMutation()
   const [assign, { isLoading: assigning }]        = useAssignDeliveryMutation()
   const [cancel, { isLoading: cancelling }]       = useCancelOrderMutation()
+  const [markPaid, { isLoading: markingPaid }]    = useMarkCodPaidMutation()
 
-  const loading = confirming || packing || assigning || cancelling
+  const loading = confirming || packing || assigning || cancelling || markingPaid
 
   const doAction = async (fn: () => Promise<unknown>, successMsg: string) => {
     try { await fn(); toast.success(successMsg) }
@@ -49,6 +51,18 @@ export default function OrderActions({ order, orderId }: Props) {
     <div className="card space-y-3">
       <h2 className="font-semibold text-gray-700">{locale === 'bn' ? 'অ্যাকশন' : 'Actions'}</h2>
       <div className="flex flex-wrap gap-2">
+        {order.payment_method === 'COD' && order.payment_status === 'UNPAID' && (
+          <button
+            disabled={loading}
+            className="btn-primary text-sm bg-green-600 hover:bg-green-700"
+            onClick={() => doAction(
+              () => markPaid(orderId).unwrap(),
+              locale === 'bn' ? 'পেমেন্ট নিশ্চিত হয়েছে' : 'Payment confirmed',
+            )}
+          >
+            💵 {locale === 'bn' ? 'পেমেন্ট নিশ্চিত করুন' : 'Mark as Paid'}
+          </button>
+        )}
         {order.status === 'PENDING' && (
           <button disabled={loading} className="btn-primary text-sm"
             onClick={() => doAction(() => confirmOrder(orderId).unwrap(), locale === 'bn' ? 'নিশ্চিত হয়েছে' : 'Confirmed')}>
@@ -81,7 +95,7 @@ export default function OrderActions({ order, orderId }: Props) {
             </button>
           </div>
         )}
-        {!['DELIVERED', 'RETURNED', 'CANCELLED'].includes(order.status) && (
+        {!['ASSIGNED', 'ON_THE_WAY', 'DELIVERED', 'RETURNED', 'CANCELLED'].includes(order.status) && (
           <>
             <button disabled={loading} className="btn-secondary text-sm" onClick={() => setShowCancelModal(true)}>
               {t('order.cancel')}

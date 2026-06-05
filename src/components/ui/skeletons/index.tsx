@@ -151,6 +151,32 @@ export function DashboardSkeleton() {
   )
 }
 
+// ─── Delivery Order Detail ────────────────────────────────────────────────────
+
+export function DeliveryOrderDetailSkeleton() {
+  return (
+    <div className="max-w-7xl mx-auto px-4 py-5">
+      <Skeleton className="h-4 w-20 mb-6" />
+      <div className="flex items-start justify-between mb-6">
+        <div className="space-y-2">
+          <Skeleton className="h-7 w-48" />
+          <Skeleton className="h-4 w-32" />
+        </div>
+        <Skeleton className="h-6 w-24 rounded-full" />
+      </div>
+      <div className="flex gap-3 mb-6">
+        <Skeleton className="h-11 flex-1 rounded-lg" />
+        <Skeleton className="h-11 flex-1 rounded-lg" />
+      </div>
+      <div className="grid grid-cols-1 gap-4">
+        <Skeleton className="h-32 rounded-xl" />
+        <Skeleton className="h-48 rounded-xl" />
+        <Skeleton className="h-40 rounded-xl" />
+      </div>
+    </div>
+  )
+}
+
 // ─── POS Product Grid ─────────────────────────────────────────────────────────
 
 export function POSProductSkeleton({ count = 25 }: { count?: number }) {

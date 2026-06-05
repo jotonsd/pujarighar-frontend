@@ -1,19 +1,22 @@
 "use client";
 
 import { useGetOrderQuery, useGetOrderStatusLogQuery } from "@/api/orders/ordersApi";
-import OrderStatusBadge from "@/components/orders/OrderStatusBadge";
-import StatusTimeline from "@/components/orders/StatusTimeline";
 import OrderActions from "@/components/admin/orders/OrderActions";
 import OrderItems from "@/components/admin/orders/OrderItems";
 import OrderShipping from "@/components/admin/orders/OrderShipping";
+import InvoiceModal from "@/components/admin/orders/InvoiceModal";
+import OrderStatusBadge from "@/components/orders/OrderStatusBadge";
+import StatusTimeline from "@/components/orders/StatusTimeline";
 import PageHeader from "@/components/ui/PageHeader";
 import { OrderDetailSkeleton } from "@/components/ui/skeletons";
-import { Printer } from "lucide-react";
+import { FileText } from "lucide-react";
 import { useLocale } from "next-intl";
-import Link from "next/link";
+import { useState } from "react";
 
 export default function AdminOrderDetailPage({ params }: { params: { id: string } }) {
   const locale = useLocale();
+  const [showInvoice, setShowInvoice] = useState(false);
+
   const { data: order, isLoading } = useGetOrderQuery(params.id);
   const { data: logs = [] }        = useGetOrderStatusLogQuery(params.id);
 
@@ -28,13 +31,13 @@ export default function AdminOrderDetailPage({ params }: { params: { id: string 
         backLabel={locale === "bn" ? "অর্ডার তালিকা" : "Orders"}
         actions={
           <div className="flex items-center gap-2">
-            <Link
-              href={`/${locale}/admin/orders/${params.id}/invoice`}
+            <button
+              onClick={() => setShowInvoice(true)}
               className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors"
             >
-              <Printer className="w-3.5 h-3.5" />
+              <FileText className="w-3.5 h-3.5" />
               {locale === "bn" ? "চালান" : "Invoice"}
-            </Link>
+            </button>
             <OrderStatusBadge status={order.status} locale={locale} />
           </div>
         } />
@@ -60,6 +63,14 @@ export default function AdminOrderDetailPage({ params }: { params: { id: string 
             } : null} />
         </div>
       </div>
+
+      {showInvoice && (
+        <InvoiceModal
+          orderId={params.id}
+          orderNumber={order.order_number}
+          onClose={() => setShowInvoice(false)}
+        />
+      )}
     </div>
   );
 }

@@ -84,6 +84,12 @@ export const ordersApi = baseApi.injectEndpoints({
       invalidatesTags: (_r, _e, { id }) => ['Orders', { type: 'Order', id }, { type: 'OrderLogs', id }],
     }),
 
+    markCodPaid: build.mutation<SalesOrder, string>({
+      query: (id) => ({ url: `/api/orders/${id}/mark-cod-paid/`, method: 'POST' }),
+      transformResponse: (res: { data: SalesOrder }) => res.data,
+      invalidatesTags: (_r, _e, id) => ['Orders', { type: 'Order', id }],
+    }),
+
     trackByOrderNumber: build.query<OrderTracking, { order_number: string; phone: string }>({
       query: ({ order_number, phone }) =>
         `/api/orders/track/?order_number=${encodeURIComponent(order_number)}&phone=${encodeURIComponent(phone)}`,
@@ -117,6 +123,7 @@ export const {
   useDeliverOrderMutation,
   useReturnOrderMutation,
   useCancelOrderMutation,
+  useMarkCodPaidMutation,
   usePosCreateOrderMutation,
   useTrackByOrderNumberQuery,
 } = ordersApi

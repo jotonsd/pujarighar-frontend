@@ -6,11 +6,12 @@ import {
     useDispatchOrderMutation,
     useGetOrderQuery,
     useGetOrderStatusLogQuery,
+    useMarkCodPaidMutation,
     useReturnOrderMutation,
 } from "@/api/orders/ordersApi";
 import OrderStatusBadge from "@/components/orders/OrderStatusBadge";
 import StatusTimeline from "@/components/orders/StatusTimeline";
-import Spinner from "@/components/ui/Spinner";
+import { DeliveryOrderDetailSkeleton } from "@/components/ui/skeletons";
 import { toast } from "@/store/toastStore";
 import { useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -27,10 +28,11 @@ export default function DeliveryOrderDetailPage({
   const { data: logs = [] } = useGetOrderStatusLogQuery(params.id);
 
   const [dispatch, { isLoading: dispatching }] = useDispatchOrderMutation();
-  const [deliver, { isLoading: delivering }] = useDeliverOrderMutation();
-  const [returnOrd, { isLoading: returning }] = useReturnOrderMutation();
+  const [deliver, { isLoading: delivering }]   = useDeliverOrderMutation();
+  const [returnOrd, { isLoading: returning }]  = useReturnOrderMutation();
+  const [markPaid, { isLoading: markingPaid }] = useMarkCodPaidMutation();
 
-  const isPending = dispatching || delivering || returning;
+  const isPending = dispatching || delivering || returning || markingPaid;
   const loading = locale === "bn" ? "লোড হচ্ছে..." : "Loading...";
 
   const doAction = async (fn: () => Promise<unknown>, msg: string) => {
@@ -42,7 +44,7 @@ export default function DeliveryOrderDetailPage({
     }
   };
 
-  if (isLoading) return <Spinner />;
+  if (isLoading) return <DeliveryOrderDetailSkeleton />;
   if (!order) return null;
 
   return (
@@ -67,67 +69,56 @@ export default function DeliveryOrderDetailPage({
         <OrderStatusBadge status={order.status} locale={locale} />
       </div>
 
-      {order.status === "ASSIGNED" && (
-        <button
-          onClick={() =>
-            doAction(
-              () => dispatch(params.id).unwrap(),
-              locale === "bn"
-                ? "পণ্য নিয়ে বের হয়েছেন"
-                : "Marked as On the Way",
-            )
-          }
-          disabled={isPending}
-          className="btn-primary w-full mb-6"
-        >
-          {isPending
-            ? loading
-            : locale === "bn"
-              ? "🚴 পথে বের হচ্ছি"
-              : "🚴 Start Delivery"}
-        </button>
-      )}
-      {order.status === "ON_THE_WAY" && (
-        <button
-          onClick={() =>
-            doAction(
-              () => deliver(params.id).unwrap(),
-              locale === "bn" ? "ডেলিভারি সম্পন্ন" : "Marked as Delivered",
-            )
-          }
-          disabled={isPending}
-          className="btn-primary w-full mb-6"
-        >
-          {isPending
-            ? loading
-            : locale === "bn"
-              ? "✅ ডেলিভারি সম্পন্ন"
-              : "✅ Mark as Delivered"}
-        </button>
-      )}
-      {order.status === "DELIVERED" && (
-        <button
-          onClick={() => {
-            if (
-              confirm(
-                locale === "bn" ? "ফেরত নিশ্চিত করুন?" : "Confirm return?",
-              )
-            )
-              doAction(
-                () => returnOrd({ id: params.id }).unwrap(),
-                locale === "bn" ? "ফেরত দেওয়া হয়েছে" : "Marked as Returned",
-              );
-          }}
-          disabled={isPending}
-          className="w-full py-2 px-4 rounded-lg bg-amber-50 text-amber-600 border border-amber-200 hover:bg-amber-100 font-medium transition-colors mb-6"
-        >
-          {isPending
-            ? loading
-            : locale === "bn"
-              ? "↩ ফেরত"
-              : "↩ Mark as Returned"}
-        </button>
-      )}
+      <div className="flex gap-3 mb-6">
+        {order.status === "ASSIGNED" && (
+          <button
+            onClick={() => doAction(() => dispatch(params.id).unwrap(), locale === "bn" ? "পণ্য নিয়ে বের হয়েছেন" : "Marked as On the Way")}
+            disabled={isPending}
+            className="btn-primary flex-1"
+          >
+            {isPending ? loading : locale === "bn" ? "🚴 পথে বের হচ্ছি" : "🚴 Start Delivery"}
+          </button>
+        )}
+        {order.status === "ON_THE_WAY" && (
+          <button
+            onClick={() => doAction(() => deliver(params.id).unwrap(), locale === "bn" ? "ডেলিভারি সম্পন্ন" : "Marked as Delivered")}
+            disabled={isPending}
+            className="btn-primary flex-1"
+          >
+            {isPending ? loading : locale === "bn" ? "✅ ডেলিভারি সম্পন্ন" : "✅ Mark as Delivered"}
+          </button>
+        )}
+        {order.status === "ON_THE_WAY" && order.payment_method === "COD" && order.payment_status === "UNPAID" && (
+          <button
+            onClick={() => doAction(() => markPaid(params.id).unwrap(), locale === "bn" ? "পেমেন্ট নিশ্চিত হয়েছে" : "Payment confirmed")}
+            disabled={isPending}
+            className="flex-1 py-2 px-4 rounded-lg bg-green-600 hover:bg-green-700 text-white font-medium transition-colors"
+          >
+            {isPending ? loading : locale === "bn" ? "💵 পেমেন্ট নিশ্চিত করুন" : "💵 Mark as Paid"}
+          </button>
+        )}
+        {order.status === "DELIVERED" && (
+          <button
+            onClick={() => {
+              if (confirm(locale === "bn" ? "ফেরত নিশ্চিত করুন?" : "Confirm return?"))
+                doAction(() => returnOrd({ id: params.id }).unwrap(), locale === "bn" ? "ফেরত দেওয়া হয়েছে" : "Marked as Returned");
+            }}
+            disabled={isPending}
+            className="flex-1 py-2 px-4 rounded-lg bg-amber-50 text-amber-600 border border-amber-200 hover:bg-amber-100 font-medium transition-colors"
+          >
+            {isPending ? loading : locale === "bn" ? "↩ ফেরত" : "↩ Mark as Returned"}
+          </button>
+        )}
+        {order.status === "DELIVERED" && order.payment_method === "COD" && order.payment_status === "UNPAID" && (
+          <button
+            onClick={() => doAction(() => markPaid(params.id).unwrap(), locale === "bn" ? "পেমেন্ট নিশ্চিত হয়েছে" : "Payment confirmed")}
+            disabled={isPending}
+            className="flex-1 py-2 px-4 rounded-lg bg-green-600 hover:bg-green-700 text-white font-medium transition-colors"
+          >
+            {isPending ? loading : locale === "bn" ? "💵 পেমেন্ট নিশ্চিত করুন" : "💵 Mark as Paid"}
+          </button>
+        )}
+      </div>
 
       <div className="grid grid-cols-1 gap-4">
         <div className="card">
