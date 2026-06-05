@@ -16,7 +16,7 @@ export default function LoginPage() {
   const setAuth = useAuthStore((s) => s.setAuth)
   const isBn    = locale === 'bn'
 
-  const [form, setForm] = useState({ email: '', password: '' })
+  const [form, setForm] = useState({ identifier: '', password: '' })
   const [login, { isLoading }] = useLoginMutation()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -80,11 +80,11 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <FloatingInput
-              label={t('auth.email')}
-              type="email"
+              label={isBn ? 'ইমেইল বা ফোন নম্বর' : 'Email or Phone Number'}
               required
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              value={form.identifier}
+              onChange={(e) => setForm({ ...form, identifier: e.target.value })}
+              placeholder={isBn ? 'ইমেইল অথবা 01XXXXXXXXX' : 'Email or 01XXXXXXXXX'}
             />
             <FloatingInput
               label={t('auth.password')}

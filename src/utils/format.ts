@@ -14,6 +14,17 @@ export function formatAmount(amount: number | string, locale: string, decimals =
 }
 
 /**
+ * Calculate the effective (discounted) price of a product.
+ */
+export function calcDiscountedPrice(unitPrice: string | number, discountType: string, discountValue: string | number): number {
+  const price = typeof unitPrice === 'string' ? parseFloat(unitPrice) : unitPrice
+  const value = typeof discountValue === 'string' ? parseFloat(discountValue) : discountValue
+  if (discountType === 'PERCENTAGE') return Math.max(0, price * (1 - value / 100))
+  if (discountType === 'FLAT')       return Math.max(0, price - value)
+  return price
+}
+
+/**
  * Format a plain number without currency symbol.
  */
 export function formatNumber(value: number | string, locale: string): string {

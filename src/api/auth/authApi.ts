@@ -4,7 +4,7 @@ import { AuthResponse, User } from '@/lib/types'
 export const authApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
 
-    login: build.mutation<AuthResponse, { email: string; password: string }>({
+    login: build.mutation<AuthResponse, { identifier: string; password: string }>({
       query: (body) => ({ url: '/api/auth/login/', method: 'POST', body }),
       transformResponse: (res: { data: AuthResponse }) => res.data,
     }),
@@ -34,6 +34,11 @@ export const authApi = baseApi.injectEndpoints({
       query: (body) => ({ url: '/api/users/me/change-password/', method: 'POST', body }),
     }),
 
+    lookupUserByPhone: build.query<User, string>({
+      query: (phone) => `/api/users/lookup-by-phone/?phone=${encodeURIComponent(phone)}`,
+      transformResponse: (res: { data: User }) => res.data,
+    }),
+
   }),
   overrideExisting: false,
 })
@@ -45,4 +50,5 @@ export const {
   useGetMeQuery,
   useUpdateMeMutation,
   useChangePasswordMutation,
+  useLookupUserByPhoneQuery,
 } = authApi

@@ -3,6 +3,7 @@
 import { useGetCategoriesQuery } from "@/api/categories/categoriesApi";
 import {
   useAddProductImageMutation,
+  useDeleteProductImageMutation,
   useGetProductQuery,
   useUpdateProductMutation,
 } from "@/api/products/productsApi";
@@ -32,6 +33,7 @@ export default function EditProductPage({
   const { data: categories = [] } = useGetCategoriesQuery();
   const [updateProduct, { isLoading: saving }] = useUpdateProductMutation();
   const [addImage] = useAddProductImageMutation();
+  const [deleteImage] = useDeleteProductImageMutation();
 
   const [form, setForm] = useState({
     name_bn: "",
@@ -207,7 +209,7 @@ export default function EditProductPage({
               {existingImages.map((img, i) => (
                 <div
                   key={img.id}
-                  className="w-28 h-28 rounded-lg overflow-hidden border border-gray-200"
+                  className="relative group w-28 h-28 rounded-lg overflow-hidden border border-gray-200"
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
@@ -215,6 +217,13 @@ export default function EditProductPage({
                     alt={img.alt_en || `Image ${i + 1}`}
                     className="w-full h-full object-cover"
                   />
+                  <button
+                    type="button"
+                    onClick={() => deleteImage({ productId: params.id, imageId: img.id })}
+                    className="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    ×
+                  </button>
                 </div>
               ))}
 

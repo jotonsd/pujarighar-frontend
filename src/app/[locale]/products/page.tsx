@@ -4,7 +4,7 @@ import { useGetCategoriesQuery } from "@/api/categories/categoriesApi";
 import { useGetProductsQuery } from "@/api/products/productsApi";
 import OfferBanners from "@/components/products/OfferBanners";
 import ProductCard from "@/components/products/ProductCard";
-import { FloatingInput } from "@/components/ui/forms";
+import { FloatingInput, FloatingSelect } from "@/components/ui/forms";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Product } from "@/lib/types";
 import { formatAmount } from "@/utils/format";
@@ -82,6 +82,7 @@ export default function ProductsPage() {
   const [categories, setCategories] = useState<string[]>([]);
   const [priceMin, setPriceMin] = useState(0);
   const [priceMax, setPriceMax] = useState(PRICE_MAX);
+  const [sortOrder, setSortOrder] = useState<"" | "price_asc" | "price_desc">("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [allProducts, setAllProducts] = useState<Product[]>([]);
 
@@ -96,13 +97,14 @@ export default function ProductsPage() {
   }, [urlSearch]);
 
   const isPriceFiltered = priceMin > 0 || priceMax < PRICE_MAX;
-  const hasFilter = !!(search || categories.length || isPriceFiltered);
+  const hasFilter = !!(search || categories.length || isPriceFiltered || sortOrder);
 
   const resetFilters = () => {
     setSearch("");
     setCategories([]);
     setPriceMin(0);
     setPriceMax(PRICE_MAX);
+    setSortOrder("");
     setPage(1);
     setAllProducts([]);
   };
@@ -122,6 +124,7 @@ export default function ProductsPage() {
     category: categories.length ? categories.join(",") : undefined,
     min_price: priceMin > 0 ? String(priceMin) : undefined,
     max_price: priceMax < PRICE_MAX ? String(priceMax) : undefined,
+    ordering: sortOrder || undefined,
   });
 
   const { data: allCategories = [] } = useGetCategoriesQuery();
@@ -179,6 +182,34 @@ export default function ProductsPage() {
             setPage(1);
             setAllProducts([]);
           }}
+        />
+      </div>
+      <div>
+        <FloatingSelect
+          label={locale === "bn" ? "সাজানো" : "Sort By"}
+          value={sortOrder}
+          onChange={v => {
+            setSortOrder(v as "" | "price_asc" | "price_desc");
+            setPage(1);
+            setAllProducts([]);
+          }}
+          onClear={() => {
+            setSortOrder("");
+            setPage(1);
+            setAllProducts([]);
+          }}
+          showClearButton={!!sortOrder}
+          searchable={false}
+          options={[
+            {
+              value: "price_asc",
+              label: locale === "bn" ? "মূল্য: কম থেকে বেশি" : "Price: Low to High",
+            },
+            {
+              value: "price_desc",
+              label: locale === "bn" ? "মূল্য: বেশি থেকে কম" : "Price: High to Low",
+            },
+          ]}
         />
       </div>
       <div>

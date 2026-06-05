@@ -1,5 +1,6 @@
 "use client";
 
+import { useLookupUserByPhoneQuery } from "@/api/auth/authApi";
 import { useGetCategoriesQuery } from "@/api/categories/categoriesApi";
 import { usePosCreateOrderMutation } from "@/api/orders/ordersApi";
 import { useGetProductsQuery } from "@/api/products/productsApi";
@@ -11,7 +12,7 @@ import {
 import POSProductSkeleton from "@/components/ui/POSProductSkeleton";
 import { Product } from "@/lib/types";
 import { toast } from "@/store/toastStore";
-import { formatAmount } from "@/utils/format";
+import { formatAmount, formatNumber } from "@/utils/format";
 import { useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -77,6 +78,10 @@ export default function POSPage() {
   const [customer, setCustomer] = useState({
     name_bn: "", phone: "", address_bn: "",
     district: "", thana: "", post_code: "", notes_bn: "",
+  });
+  const [phoneQuery, setPhoneQuery] = useState("");
+  const { data: foundUser } = useLookupUserByPhoneQuery(phoneQuery, {
+    skip: phoneQuery.length < 11,
   });
 
   // ── Submit ────────────────────────────────────────────────────────────────
@@ -188,7 +193,7 @@ export default function POSPage() {
                   </p>
                   {inCart && (
                     <p className="text-xs text-amber-600 font-medium mt-0.5">
-                      {locale === "bn" ? `কার্টে: ${inCart.quantity}` : `In cart: ${inCart.quantity}`}
+                      {locale === "bn" ? `কার্টে: ${formatNumber(inCart.quantity, locale)}` : `In cart: ${formatNumber(inCart.quantity, locale)}`}
                     </p>
                   )}
                   {!inStock && (
@@ -238,7 +243,7 @@ export default function POSPage() {
                     <div className="flex items-center gap-1 shrink-0">
                       <button onClick={() => updateQty(line.product.id, line.quantity - 1)}
                         className="w-5 h-5 bg-gray-100 rounded text-xs font-bold flex items-center justify-center hover:bg-amber-100">−</button>
-                      <span className="w-6 text-center text-xs font-semibold">{line.quantity}</span>
+                      <span className="w-6 text-center text-xs font-bold">{formatNumber(line.quantity, locale)}</span>
                       <button onClick={() => updateQty(line.product.id,
                         Math.min(line.quantity + 1, line.product.is_package ? 999 : Number(line.product.stock_on_hand)))}
                         className="w-5 h-5 bg-gray-100 rounded text-xs font-bold flex items-center justify-center hover:bg-amber-100">+</button>
@@ -281,10 +286,44 @@ export default function POSPage() {
           <h2 className="font-semibold text-gray-800 text-sm">
             {locale === "bn" ? "গ্রাহকের তথ্য" : "Customer Details"}
           </h2>
+          <div>
+            <FloatingInput
+              label={locale === "bn" ? "ফোন *" : "Phone *"}
+              value={customer.phone}
+              onChange={e => {
+                const v = e.target.value;
+                setCustomer(c => ({ ...c, phone: v }));
+                setPhoneQuery(v.length >= 11 ? v : "");
+              }}
+              placeholder="01XXXXXXXXX"
+            />
+            {foundUser && customer.phone.length >= 11 && (
+              <div className="mt-1.5 flex items-center justify-between bg-green-50 border border-green-200 rounded-xl px-3 py-2">
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold text-green-800 truncate">
+                    ✓ {foundUser.profile?.full_name_bn || foundUser.profile?.full_name_en || foundUser.email}
+                  </p>
+                  <p className="text-[10px] text-green-600">{foundUser.email}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setCustomer(c => ({
+                    ...c,
+                    name_bn: foundUser.profile?.full_name_bn || foundUser.profile?.full_name_en || "",
+                    address_bn: foundUser.profile?.address_bn || "",
+                    district: foundUser.profile?.district || "",
+                    thana: foundUser.profile?.thana || "",
+                    post_code: foundUser.profile?.post_code || "",
+                  }))}
+                  className="text-[10px] bg-green-600 text-white px-2 py-1 rounded-lg ml-2 shrink-0 hover:bg-green-700"
+                >
+                  {locale === "bn" ? "অটোফিল" : "Autofill"}
+                </button>
+              </div>
+            )}
+          </div>
           <FloatingInput label={locale === "bn" ? "নাম (বাংলা) *" : "Name *"} value={customer.name_bn}
             onChange={e => setCustomer(c => ({ ...c, name_bn: e.target.value }))} />
-          <FloatingInput label={locale === "bn" ? "ফোন *" : "Phone *"} value={customer.phone}
-            onChange={e => setCustomer(c => ({ ...c, phone: e.target.value }))} placeholder="01XXXXXXXXX" />
           <FloatingTextarea label={locale === "bn" ? "ঠিকানা" : "Address"} value={customer.address_bn}
             onChange={e => setCustomer(c => ({ ...c, address_bn: e.target.value }))} rows={2} />
           <div className="grid grid-cols-2 gap-2">

@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import { formatAmount } from '@/utils/format'
+import { calcDiscountedPrice, formatAmount } from '@/utils/format'
 import { Product } from '@/lib/types'
 import Badge from '@/components/ui/Badge'
 import { useAuthStore } from '@/store/authStore'
@@ -19,8 +19,27 @@ interface Props {
 
 export default function ProductCard({ product, locale }: Props) {
   const t      = useTranslations()
-  const [qty, setQty]           = useState(1)
+  const [qty, setQty]                 = useState(1)
   const [localAdding, setLocalAdding] = useState(false)
+  const [imgIdx, setImgIdx]           = useState(0)
+  const timerRef                      = useRef<ReturnType<typeof setInterval> | null>(null)
+  const images                        = product.images ?? []
+  const hasMany                       = images.length > 1
+
+  useEffect(() => {
+    if (!hasMany) return
+    timerRef.current = setInterval(() => {
+      setImgIdx(i => (i + 1) % images.length)
+    }, 3000)
+    return () => { if (timerRef.current) clearInterval(timerRef.current) }
+  }, [hasMany, images.length])
+
+  const goTo = (e: React.MouseEvent, idx: number) => {
+    e.preventDefault(); e.stopPropagation()
+    setImgIdx(idx)
+    if (timerRef.current) clearInterval(timerRef.current)
+    timerRef.current = setInterval(() => setImgIdx(i => (i + 1) % images.length), 3000)
+  }
 
   const name     = locale === 'bn' ? product.name_bn : product.name_en
   const inStock  = Number(product.stock_on_hand) > 0
@@ -69,13 +88,38 @@ export default function ProductCard({ product, locale }: Props) {
     <div className="card hover:shadow-md transition-shadow group flex flex-col p-0 overflow-hidden">
       <Link href={`/${locale}/products/${product.id}`} className="block p-4 flex-1">
         <div className="aspect-square bg-amber-50 rounded-lg relative overflow-hidden mb-4">
-          {product.images?.[0] ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={product.images[0].image}
-              alt={locale === 'bn' ? product.images[0].alt_bn : product.images[0].alt_en}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-            />
+          {images.length > 0 ? (
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={images[imgIdx].image}
+                alt={locale === 'bn' ? images[imgIdx].alt_bn : images[imgIdx].alt_en}
+                className="w-full h-full object-cover transition-opacity duration-300"
+              />
+              {/* Prev / Next arrows */}
+              {hasMany && (
+                <>
+                  <button
+                    onClick={e => goTo(e, (imgIdx - 1 + images.length) % images.length)}
+                    className="absolute left-1 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-black/30 text-white flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                  >‹</button>
+                  <button
+                    onClick={e => goTo(e, (imgIdx + 1) % images.length)}
+                    className="absolute right-1 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-black/30 text-white flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                  >›</button>
+                  {/* Dots */}
+                  <div className="absolute bottom-1.5 left-0 right-0 flex justify-center gap-1">
+                    {images.map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={e => goTo(e, i)}
+                        className={`w-1.5 h-1.5 rounded-full transition-colors ${i === imgIdx ? 'bg-white' : 'bg-white/40'}`}
+                      />
+                    ))}
+                  </div>
+                </>
+              )}
+            </>
           ) : (
             <div className="w-full h-full flex items-center justify-center text-4xl group-hover:bg-amber-100 transition-colors">🪔</div>
           )}
@@ -83,7 +127,20 @@ export default function ProductCard({ product, locale }: Props) {
         <h3 className="font-medium text-gray-800 mb-1 line-clamp-2 text-sm">{name}</h3>
         <p className="text-xs text-gray-400 mb-2">SKU: {product.sku}</p>
         <div className="flex items-center justify-between">
-          <span className="text-amber-600 font-bold">{formatAmount(product.unit_price, locale, 0)}</span>
+          <div>
+            {product.active_discount_type ? (
+              <>
+                <span className="text-amber-600 font-bold">
+                  {formatAmount(product.effective_price, locale, 0)}
+                </span>
+                <span className="text-xs text-gray-400 line-through ml-1.5">
+                  {formatAmount(product.unit_price, locale, 0)}
+                </span>
+              </>
+            ) : (
+              <span className="text-amber-600 font-bold">{formatAmount(product.unit_price, locale, 0)}</span>
+            )}
+          </div>
           {inStock
             ? <Badge variant="green" className="text-xs">{t('product.inStock')}</Badge>
             : <Badge variant="red"   className="text-xs">{t('product.outOfStock')}</Badge>}

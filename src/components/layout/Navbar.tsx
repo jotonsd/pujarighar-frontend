@@ -21,6 +21,7 @@ const ADMIN_LINKS = [
   { href: "/admin/inventory",  icon: "🏭", label_bn: "গুদাম",        label_en: "Inventory" },
   { href: "/admin/users",      icon: "👥", label_bn: "ব্যবহারকারী",  label_en: "Users" },
   { href: "/admin/dashboard",  icon: "📊", label_bn: "ড্যাশবোর্ড",  label_en: "Dashboard" },
+  { href: "/admin/discounts",  icon: "🏷️", label_bn: "ডিসকাউন্ট",   label_en: "Discounts" },
 ];
 
 const ACCOUNTING_LINKS = [

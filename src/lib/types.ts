@@ -110,6 +110,9 @@ export interface Product {
   is_package: boolean
   discount_type: 'NONE' | 'PERCENTAGE' | 'FLAT'
   discount_value: string
+  effective_price: string
+  active_discount_type: 'PERCENTAGE' | 'FLAT' | null
+  active_discount_value: string | null
   is_active: boolean
   stock_on_hand: string
   images: ProductImage[]
