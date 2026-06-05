@@ -1,3 +1,4 @@
+export { default as Checkbox }           from './Checkbox'
 export { default as FloatingInput }      from './FloatingInput'
 export { default as FloatingTextarea }   from './FloatingTextarea'
 export { default as FloatingSelect }     from './FloatingSelect'

@@ -6,8 +6,8 @@ interface ProductListResponse { data: Product[]; pagination: ApiMeta }
 export const productsApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
 
-    getProducts: build.query<ProductListResponse, { page?: number; search?: string; page_size?: number; category?: string; is_package?: string; min_price?: string; max_price?: string; include_inactive?: boolean; ordering?: string }>({
-      query: ({ page = 1, search = '', page_size, category, is_package, min_price, max_price, include_inactive, ordering } = {}) => {
+    getProducts: build.query<ProductListResponse, { page?: number; search?: string; page_size?: number; category?: string; is_package?: string; min_price?: string; max_price?: string; include_inactive?: boolean; ordering?: string; has_discount?: boolean }>({
+      query: ({ page = 1, search = '', page_size, category, is_package, min_price, max_price, include_inactive, ordering, has_discount } = {}) => {
         const p = new URLSearchParams({ page: String(page) })
         if (search)           p.set('search', search)
         if (page_size)        p.set('page_size', String(page_size))
@@ -17,6 +17,7 @@ export const productsApi = baseApi.injectEndpoints({
         if (max_price)        p.set('max_price', max_price)
         if (include_inactive) p.set('include_inactive', 'true')
         if (ordering)         p.set('ordering', ordering)
+        if (has_discount)     p.set('has_discount', 'true')
         return `/api/products/?${p}`
       },
       providesTags: ['Products'],

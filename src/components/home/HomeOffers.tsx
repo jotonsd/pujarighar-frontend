@@ -2,26 +2,32 @@
 
 import { useGetProductsQuery } from "@/api/products/productsApi";
 import ProductCard from "@/components/products/ProductCard";
-import { Skeleton } from "@/components/ui/Skeleton";
+import { ProductCardSkeleton } from "@/components/ui/skeletons";
 import { useLocale } from "next-intl";
 import Link from "next/link";
 
-export default function HomeProducts() {
+export default function HomeOffers() {
   const locale = useLocale();
   const { data, isLoading } = useGetProductsQuery({
     is_package: "false",
-    page_size: 18,
+    has_discount: true,
+    page_size: 12,
   });
   const products = data?.data ?? [];
+
+  if (!isLoading && products.length === 0) return null;
 
   return (
     <section className="mb-8">
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-2">
-          <span className="text-2xl">🪔</span>
+          <span className="text-2xl">🏷️</span>
           <h2 className="text-xl font-bold text-gray-800">
-            {locale === "bn" ? "সকল পণ্য" : "All Products"}
+            {locale === "bn" ? "অফার" : "Offers"}
           </h2>
+          <span className="text-xs font-semibold bg-red-100 text-red-600 px-2 py-0.5 rounded-full">
+            {locale === "bn" ? "ছাড়" : "Sale"}
+          </span>
         </div>
         <Link
           href={`/${locale}/products`}
@@ -32,15 +38,7 @@ export default function HomeProducts() {
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         {isLoading
-          ? Array.from({ length: 18 }).map((_, i) => (
-              <div key={i} className="card p-0 overflow-hidden">
-                <Skeleton className="aspect-square w-full rounded-none" />
-                <div className="p-3 space-y-2">
-                  <Skeleton className="h-3 w-full" />
-                  <Skeleton className="h-3 w-1/2" />
-                </div>
-              </div>
-            ))
+          ? Array.from({ length: 6 }).map((_, i) => <ProductCardSkeleton key={i} />)
           : products.map(product => (
               <ProductCard key={product.id} product={product} locale={locale} />
             ))}

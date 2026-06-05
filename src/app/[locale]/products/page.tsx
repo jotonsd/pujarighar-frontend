@@ -4,7 +4,7 @@ import { useGetCategoriesQuery } from "@/api/categories/categoriesApi";
 import { useGetProductsQuery } from "@/api/products/productsApi";
 import OfferBanners from "@/components/products/OfferBanners";
 import ProductCard from "@/components/products/ProductCard";
-import { FloatingInput, FloatingSelect } from "@/components/ui/forms";
+import { Checkbox, FloatingInput, FloatingSelect } from "@/components/ui/forms";
 import { FilterPanelSkeleton, ProductCardSkeleton } from "@/components/ui/skeletons";
 import { Product } from "@/lib/types";
 import { formatAmount } from "@/utils/format";
@@ -83,6 +83,7 @@ export default function ProductsPage() {
   const [priceMin, setPriceMin] = useState(0);
   const [priceMax, setPriceMax] = useState(PRICE_MAX);
   const [sortOrder, setSortOrder] = useState<"" | "price_asc" | "price_desc">("");
+  const [onlyOffers, setOnlyOffers] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [allProducts, setAllProducts] = useState<Product[]>([]);
 
@@ -97,7 +98,7 @@ export default function ProductsPage() {
   }, [urlSearch]);
 
   const isPriceFiltered = priceMin > 0 || priceMax < PRICE_MAX;
-  const hasFilter = !!(search || categories.length || isPriceFiltered || sortOrder);
+  const hasFilter = !!(search || categories.length || isPriceFiltered || sortOrder || onlyOffers);
 
   const resetFilters = () => {
     setSearch("");
@@ -105,6 +106,7 @@ export default function ProductsPage() {
     setPriceMin(0);
     setPriceMax(PRICE_MAX);
     setSortOrder("");
+    setOnlyOffers(false);
     setPage(1);
     setAllProducts([]);
   };
@@ -125,6 +127,7 @@ export default function ProductsPage() {
     min_price: priceMin > 0 ? String(priceMin) : undefined,
     max_price: priceMax < PRICE_MAX ? String(priceMax) : undefined,
     ordering: sortOrder || undefined,
+    has_discount: onlyOffers || undefined,
   });
 
   const { data: allCategories = [] } = useGetCategoriesQuery();
@@ -171,6 +174,15 @@ export default function ProductsPage() {
             setPage(1);
             setAllProducts([]);
           }}
+        />
+      </div>
+      <div>
+        <Checkbox
+          checked={onlyOffers}
+          onChange={() => { setOnlyOffers(p => !p); setPage(1); setAllProducts([]); }}
+          label={locale === "bn" ? "শুধু অফার" : "Offers only"}
+          variant="red"
+          bold
         />
       </div>
       <div>
@@ -235,25 +247,14 @@ export default function ProductsPage() {
           {locale === "bn" ? "কেটাগরি" : "Category"}
         </p>
         <div className="max-h-80 overflow-y-auto pr-1 space-y-0.5 scrollbar-thin">
-          {allCategories.map(cat => {
-            const selected = categories.includes(cat.id);
-            return (
-              <label
-                key={cat.id}
-                className={`flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer transition-colors text-sm ${selected ? "bg-amber-50 text-amber-700" : "text-gray-600 hover:bg-gray-50"}`}
-              >
-                <input
-                  type="checkbox"
-                  checked={selected}
-                  onChange={() => toggleCategory(cat.id)}
-                  className="w-4 h-4 rounded border-gray-300 text-amber-500 focus:ring-amber-400 shrink-0"
-                />
-                <span className="leading-snug">
-                  {locale === "bn" ? cat.name_bn : cat.name_en}
-                </span>
-              </label>
-            );
-          })}
+          {allCategories.map(cat => (
+            <Checkbox
+              key={cat.id}
+              checked={categories.includes(cat.id)}
+              onChange={() => toggleCategory(cat.id)}
+              label={locale === "bn" ? cat.name_bn : cat.name_en}
+            />
+          ))}
         </div>
         {categories.length > 0 && (
           <button
@@ -377,13 +378,6 @@ export default function ProductsPage() {
                 </div>
               )}
 
-              {!hasMore && allProducts.length > 0 && (
-                <p className="text-center text-xs text-gray-400 py-6">
-                  {locale === "bn"
-                    ? "সব পণ্য দেখানো হয়েছে"
-                    : "All products loaded"}
-                </p>
-              )}
             </>
           )}
         </div>

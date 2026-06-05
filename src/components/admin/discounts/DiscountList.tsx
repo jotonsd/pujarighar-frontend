@@ -3,8 +3,9 @@
 import { useLocale } from 'next-intl'
 import { Trash2 } from 'lucide-react'
 import ToggleSwitch from '@/components/ui/forms/ToggleSwitch'
+import { ReusableTable, Column, QuickAction } from '@/components/ui/ReusableTable'
 import { toast } from '@/store/toastStore'
-import { useGetDiscountsQuery, useToggleDiscountMutation, useDeleteDiscountMutation } from '@/api/discounts/discountsApi'
+import { Discount, useGetDiscountsQuery, useToggleDiscountMutation, useDeleteDiscountMutation } from '@/api/discounts/discountsApi'
 import { formatAmount } from '@/utils/format'
 
 export default function DiscountList() {
@@ -27,41 +28,76 @@ export default function DiscountList() {
     } catch { toast.error('Failed') }
   }
 
-  if (isLoading) return <div className="card text-center text-gray-400 py-10">{isBn ? 'লোড হচ্ছে...' : 'Loading...'}</div>
+  const columns: Column<Discount>[] = [
+    {
+      header: isBn ? 'পণ্য' : 'Product',
+      accessor: d => (
+        <div>
+          <p className="font-medium text-gray-800">{isBn ? d.product_name_bn : d.product_name_en}</p>
+          <p className="text-xs text-gray-400 font-mono">{d.product_sku}</p>
+        </div>
+      ),
+      exportValue: d => isBn ? d.product_name_bn : d.product_name_en,
+    },
+    {
+      header: isBn ? 'ছাড়' : 'Discount',
+      accessor: d => (
+        <span className="text-sm font-semibold text-amber-600">
+          {d.discount_type === 'PERCENTAGE'
+            ? `${d.discount_value}% ${isBn ? 'ছাড়' : 'OFF'}`
+            : `${formatAmount(d.discount_value, locale, 0)} ${isBn ? 'ছাড়' : 'OFF'}`}
+        </span>
+      ),
+      exportValue: d => `${d.discount_value}${d.discount_type === 'PERCENTAGE' ? '%' : '৳'}`,
+    },
+    {
+      header: isBn ? 'নোট' : 'Note',
+      accessor: d => d.note
+        ? <span className="text-sm text-gray-500">{d.note}</span>
+        : <span className="text-gray-300">—</span>,
+      exportValue: d => d.note,
+    },
+    {
+      header: isBn ? 'তারিখ' : 'Date',
+      accessor: d => (
+        <span className="text-xs text-gray-400">
+          {new Date(d.created_at).toLocaleDateString(isBn ? 'bn-BD' : 'en-US')}
+        </span>
+      ),
+      exportValue: d => new Date(d.created_at).toLocaleDateString(),
+    },
+    {
+      header: isBn ? 'স্ট্যাটাস' : 'Status',
+      accessor: d => (
+        <ToggleSwitch
+          checked={d.is_active}
+          onChange={() => handleToggle(d.id)}
+          activeLabel={isBn ? 'সক্রিয়' : 'Active'}
+          inactiveLabel={isBn ? 'নিষ্ক্রিয়' : 'Inactive'}
+        />
+      ),
+      className: 'px-4 py-3 w-36',
+    },
+  ]
 
-  if (discounts.length === 0) return (
-    <div className="card text-center text-gray-400 py-10">
-      {isBn ? 'কোনো ডিসকাউন্ট নেই' : 'No discounts yet'}
-    </div>
-  )
+  const quickActions: QuickAction<Discount>[] = [
+    {
+      label: isBn ? 'মুছুন' : 'Delete',
+      icon: <Trash2 className="w-3.5 h-3.5" />,
+      onClick: d => handleDelete(d.id),
+      className: 'inline-flex items-center justify-center w-8 h-8 rounded-lg border border-red-200 bg-red-50 text-red-500 hover:bg-red-100 transition-colors',
+    },
+  ]
 
   return (
-    <div className="space-y-3">
-      {discounts.map(d => (
-        <div key={d.id} className="card flex items-center gap-4">
-          <div className="flex-1 min-w-0">
-            <p className="font-medium text-gray-800 truncate">{isBn ? d.product_name_bn : d.product_name_en}</p>
-            <p className="text-xs text-gray-400 font-mono">{d.product_sku}</p>
-            <p className="text-sm text-amber-600 font-semibold mt-0.5">
-              {d.discount_type === 'PERCENTAGE'
-                ? `${d.discount_value}% ${isBn ? 'ছাড়' : 'OFF'}`
-                : `${formatAmount(d.discount_value, locale, 0)} ${isBn ? 'ছাড়' : 'OFF'}`}
-            </p>
-            {d.note && <p className="text-xs text-gray-500 mt-0.5">{d.note}</p>}
-            <p className="text-[10px] text-gray-400 mt-0.5">
-              {new Date(d.created_at).toLocaleDateString(isBn ? 'bn-BD' : 'en-US')}
-            </p>
-          </div>
-          <div className="flex items-center gap-2 shrink-0">
-            <ToggleSwitch checked={d.is_active} onChange={() => handleToggle(d.id)}
-              activeLabel={isBn ? 'সক্রিয়' : 'Active'} inactiveLabel={isBn ? 'নিষ্ক্রিয়' : 'Inactive'} />
-            <button onClick={() => handleDelete(d.id)}
-              className="w-8 h-8 flex items-center justify-center rounded-lg bg-red-50 text-red-500 hover:bg-red-100 transition-colors">
-              <Trash2 className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        </div>
-      ))}
-    </div>
+    <ReusableTable
+      data={discounts}
+      columns={columns}
+      keyExtractor={d => d.id}
+      isLoading={isLoading}
+      quickActions={quickActions}
+      emptyMessage={isBn ? 'কোনো ডিসকাউন্ট নেই' : 'No discounts yet'}
+      exportFilename="discounts"
+    />
   )
 }

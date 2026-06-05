@@ -19,9 +19,12 @@ export default function HomePackages() {
   return (
     <section className="mb-8">
       <div className="flex items-center justify-between mb-5">
-        <h2 className="text-xl font-bold text-gray-800">
-          {locale === "bn" ? "পূজার প্যাকেজ" : "Puja Packages"}
-        </h2>
+        <div className="flex items-center gap-2">
+          <span className="text-2xl">🎁</span>
+          <h2 className="text-xl font-bold text-gray-800">
+            {locale === "bn" ? "পূজার প্যাকেজ" : "Puja Packages"}
+          </h2>
+        </div>
         <Link
           href={`/${locale}/packages`}
           className="text-sm text-amber-600 hover:underline font-medium"

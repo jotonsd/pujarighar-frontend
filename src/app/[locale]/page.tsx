@@ -1,5 +1,6 @@
 import { getLocale } from 'next-intl/server'
 import HeroSlider from '@/components/home/HeroSlider'
+import HomeOffers from '@/components/home/HomeOffers'
 import HomePackages from '@/components/home/HomePackages'
 import HomeProducts from '@/components/home/HomeProducts'
 import OfferBanners from '@/components/products/OfferBanners'
@@ -23,6 +24,9 @@ export default async function HomePage() {
 
       {/* Offer Banners */}
       <OfferBanners />
+
+      {/* Offers — discounted products */}
+      <HomeOffers />
 
       {/* Products — 18 items, 6 per row */}
       <HomeProducts />

@@ -321,7 +321,7 @@ export function ReusableTable<T>({
                 ))}
                 {quickActions && quickActions.length > 0 && (
                   <th className="px-4 py-3 text-right text-xs font-bold text-amber-600 uppercase tracking-wider">
-                    Actions
+                    {isBn ? 'অ্যাকশন' : 'Actions'}
                   </th>
                 )}
               </tr>
