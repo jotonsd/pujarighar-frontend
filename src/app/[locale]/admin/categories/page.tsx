@@ -7,7 +7,7 @@ import {
 import { FloatingInput } from "@/components/ui/forms";
 import ToggleSwitch from "@/components/ui/forms/ToggleSwitch";
 import PageHeader from "@/components/ui/PageHeader";
-import TableSkeleton from "@/components/ui/TableSkeleton";
+import TableSkeleton from "@/components/ui/skeletons";
 import CategoryCreateForm from "@/components/admin/categories/CategoryCreateForm";
 import { Category } from "@/lib/types";
 import { toast } from "@/store/toastStore";

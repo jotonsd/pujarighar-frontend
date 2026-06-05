@@ -4,7 +4,7 @@ import { calcDiscountedPrice, formatAmount, formatNumber } from "@/utils/format"
 import { useAddToCartMutation } from "@/api/cart/cartApi";
 import { useGetProductQuery } from "@/api/products/productsApi";
 import Badge from "@/components/ui/Badge";
-import { Skeleton } from "@/components/ui/Skeleton";
+import { ProductDetailSkeleton } from "@/components/ui/skeletons";
 import { useAuthStore } from "@/store/authStore";
 import { useCartStore } from "@/store/cartStore";
 import { useGuestCartStore } from "@/store/guestCartStore";
@@ -89,35 +89,7 @@ export default function ProductDetailPage({
     timerRef.current = setInterval(() => setImgIdx(i => (i + 1) % images.length), 4000);
   };
 
-  if (isLoading) return (
-    <div className="max-w-7xl mx-auto px-4 py-5">
-      <Skeleton className="h-4 w-20 mb-6" />
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="space-y-3">
-          <Skeleton className="aspect-square w-full rounded-xl" />
-          <div className="flex gap-2">
-            {[0, 1, 2].map(i => <Skeleton key={i} className="w-16 h-16 rounded-lg" />)}
-          </div>
-        </div>
-        <div className="space-y-4">
-          <Skeleton className="h-7 w-3/4" />
-          <Skeleton className="h-4 w-1/4" />
-          <div className="flex items-center gap-3">
-            <Skeleton className="h-9 w-28" />
-            <Skeleton className="h-6 w-16 rounded-full" />
-          </div>
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-5/6" />
-          <Skeleton className="h-4 w-4/6" />
-          <div className="flex gap-3 mt-6">
-            <Skeleton className="h-10 w-28 rounded-lg" />
-            <Skeleton className="h-10 flex-1 rounded-lg" />
-            <Skeleton className="h-10 flex-1 rounded-lg" />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+  if (isLoading) return <ProductDetailSkeleton />;
   if (!product) return null;
 
   const name    = locale === "bn" ? product.name_bn : product.name_en;

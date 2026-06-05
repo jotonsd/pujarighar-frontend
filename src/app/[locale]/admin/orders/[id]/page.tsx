@@ -7,7 +7,7 @@ import OrderActions from "@/components/admin/orders/OrderActions";
 import OrderItems from "@/components/admin/orders/OrderItems";
 import OrderShipping from "@/components/admin/orders/OrderShipping";
 import PageHeader from "@/components/ui/PageHeader";
-import { Skeleton } from "@/components/ui/Skeleton";
+import { OrderDetailSkeleton } from "@/components/ui/skeletons";
 import { useLocale } from "next-intl";
 
 export default function AdminOrderDetailPage({ params }: { params: { id: string } }) {
@@ -15,19 +15,7 @@ export default function AdminOrderDetailPage({ params }: { params: { id: string 
   const { data: order, isLoading } = useGetOrderQuery(params.id);
   const { data: logs = [] }        = useGetOrderStatusLogQuery(params.id);
 
-  if (isLoading || !order) return (
-    <div className="max-w-7xl space-y-4">
-      <Skeleton className="h-8 w-48" />
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-4">
-          <Skeleton className="h-48 rounded-xl" />
-          <Skeleton className="h-32 rounded-xl" />
-          <Skeleton className="h-24 rounded-xl" />
-        </div>
-        <Skeleton className="h-64 rounded-xl" />
-      </div>
-    </div>
-  );
+  if (isLoading || !order) return <OrderDetailSkeleton />;
 
   return (
     <div>

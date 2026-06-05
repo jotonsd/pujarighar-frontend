@@ -3,7 +3,7 @@ import { formatAmount } from '@/utils/format'
 
 import { useState } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
-import TableSkeleton from '@/components/ui/TableSkeleton'
+import TableSkeleton from '@/components/ui/skeletons'
 import { useGetProfitLossQuery, useGetTrialBalanceQuery } from '@/api/accounting/accountingApi'
 import { FloatingDatePicker } from '@/components/ui/forms'
 import PageHeader from '@/components/ui/PageHeader'

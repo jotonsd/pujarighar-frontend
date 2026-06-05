@@ -5,7 +5,7 @@ import { useGetProductsQuery } from "@/api/products/productsApi";
 import OfferBanners from "@/components/products/OfferBanners";
 import ProductCard from "@/components/products/ProductCard";
 import { FloatingInput, FloatingSelect } from "@/components/ui/forms";
-import { Skeleton } from "@/components/ui/Skeleton";
+import { FilterPanelSkeleton, ProductCardSkeleton } from "@/components/ui/skeletons";
 import { Product } from "@/lib/types";
 import { formatAmount } from "@/utils/format";
 import { SlidersHorizontal, X } from "lucide-react";
@@ -127,7 +127,7 @@ export default function ProductsPage() {
     ordering: sortOrder || undefined,
   });
 
-  const { data: allCategories = [], isLoading: categoriesLoading } = useGetCategoriesQuery();
+  const { data: allCategories = [] } = useGetCategoriesQuery();
 
   const totalPages = data?.pagination?.total_pages ?? 1;
   const hasMore = page < totalPages;
@@ -156,17 +156,6 @@ export default function ProductsPage() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
-  const CardSkeleton = () => (
-    <div className="card p-0 overflow-hidden flex flex-col">
-      <Skeleton className="aspect-square w-full rounded-none" />
-      <div className="p-4 space-y-2">
-        <Skeleton className="h-3.5 w-full" />
-        <Skeleton className="h-3 w-1/2" />
-        <Skeleton className="h-4 w-1/3" />
-      </div>
-    </div>
-  );
 
   const FilterPanel = () => (
     <div className="space-y-6">
@@ -246,14 +235,7 @@ export default function ProductsPage() {
           {locale === "bn" ? "কেটাগরি" : "Category"}
         </p>
         <div className="max-h-80 overflow-y-auto pr-1 space-y-0.5 scrollbar-thin">
-          {categoriesLoading
-            ? (["w-3/5", "w-4/5", "w-2/5", "w-full", "w-3/4", "w-1/2"] as const).map((w, i) => (
-                <div key={i} className="flex items-center gap-2.5 px-3 py-2">
-                  <Skeleton className="w-4 h-4 rounded shrink-0" />
-                  <Skeleton className={`h-3.5 rounded ${w}`} />
-                </div>
-              ))
-            : allCategories.map(cat => {
+          {allCategories.map(cat => {
             const selected = categories.includes(cat.id);
             return (
               <label
@@ -318,7 +300,7 @@ export default function ProductsPage() {
       <div className="flex gap-3">
         <aside className="hidden lg:block w-56 shrink-0">
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 sticky top-20">
-            <FilterPanel />
+            {isLoading && allProducts.length === 0 ? <FilterPanelSkeleton /> : <FilterPanel />}
           </div>
         </aside>
 
@@ -352,7 +334,7 @@ export default function ProductsPage() {
           {isLoading && allProducts.length === 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
               {Array.from({ length: 10 }).map((_, i) => (
-                <CardSkeleton key={i} />
+                <ProductCardSkeleton key={i} />
               ))}
             </div>
           ) : (

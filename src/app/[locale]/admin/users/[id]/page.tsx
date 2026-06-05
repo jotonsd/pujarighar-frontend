@@ -3,7 +3,7 @@
 import { useLocale, useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import { Role } from '@/lib/types'
-import { Skeleton } from '@/components/ui/Skeleton'
+import { UserDetailSkeleton } from '@/components/ui/skeletons'
 import Badge from '@/components/ui/Badge'
 import PageHeader from '@/components/ui/PageHeader'
 import UserRolePanel from '@/components/admin/users/UserRolePanel'
@@ -18,12 +18,7 @@ export default function UserDetailPage({ params }: { params: { id: string } }) {
   const locale = useLocale()
   const { data: user, isLoading } = useGetUserQuery(params.id)
 
-  if (isLoading || !user) return (
-    <div className="max-w-7xl space-y-4">
-      <Skeleton className="h-8 w-48" />
-      <Skeleton className="h-32 rounded-xl" />
-    </div>
-  )
+  if (isLoading || !user) return <UserDetailSkeleton />
 
   return (
     <div className="max-w-7xl">

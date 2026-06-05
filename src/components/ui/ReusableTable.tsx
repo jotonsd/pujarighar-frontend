@@ -16,7 +16,7 @@ import { useLocale } from 'next-intl'
 import { ReactNode, useEffect, useRef, useState } from 'react'
 import * as XLSX from 'xlsx'
 import { formatNumber } from '@/utils/format'
-import TableSkeleton from './TableSkeleton'
+import TableSkeleton from './skeletons'
 
 export interface Column<T> {
   header: string
@@ -377,10 +377,11 @@ export function ReusableTable<T>({
             {/* Left: info + per-page */}
             <div className="flex items-center gap-3 flex-wrap">
               <span className="text-xs text-gray-500">
-                {isBn ? 'পেজ' : 'Page'}{' '}
-                <span className="font-bold text-gray-800">{n(currentPage)}</span>{' '}
-                {isBn ? 'এর মধ্যে' : 'of'}{' '}
-                <span className="font-bold text-gray-800">{n(totalPages)}</span>
+                {isBn ? (
+                  <>পেজ <span className="font-bold text-gray-800">{n(totalPages)}</span> এর মধ্যে <span className="font-bold text-gray-800">{n(currentPage)}</span></>
+                ) : (
+                  <>Page <span className="font-bold text-gray-800">{n(currentPage)}</span> of <span className="font-bold text-gray-800">{n(totalPages)}</span></>
+                )}
                 {totalRecords != null && (
                   <> · <span className="font-bold text-gray-800">{n(totalRecords)}</span> {isBn ? 'রেকর্ড' : 'records'}</>
                 )}

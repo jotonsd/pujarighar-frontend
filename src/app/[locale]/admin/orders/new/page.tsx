@@ -9,7 +9,7 @@ import {
     FloatingSelect,
     FloatingTextarea,
 } from "@/components/ui/forms";
-import POSProductSkeleton from "@/components/ui/POSProductSkeleton";
+import { POSProductSkeleton } from "@/components/ui/skeletons";
 import { Product } from "@/lib/types";
 import { toast } from "@/store/toastStore";
 import { formatAmount, formatNumber } from "@/utils/format";

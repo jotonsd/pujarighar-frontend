@@ -3,7 +3,7 @@
 import { useGetJournalEntriesQuery } from '@/api/accounting/accountingApi'
 import Badge from '@/components/ui/Badge'
 import PageHeader from '@/components/ui/PageHeader'
-import TableSkeleton from '@/components/ui/TableSkeleton'
+import TableSkeleton from '@/components/ui/skeletons'
 import { formatAmount } from '@/utils/format'
 import { useLocale, useTranslations } from 'next-intl'
 import { useState } from 'react'
