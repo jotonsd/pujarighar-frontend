@@ -8,7 +8,9 @@ import OrderItems from "@/components/admin/orders/OrderItems";
 import OrderShipping from "@/components/admin/orders/OrderShipping";
 import PageHeader from "@/components/ui/PageHeader";
 import { OrderDetailSkeleton } from "@/components/ui/skeletons";
+import { Printer } from "lucide-react";
 import { useLocale } from "next-intl";
+import Link from "next/link";
 
 export default function AdminOrderDetailPage({ params }: { params: { id: string } }) {
   const locale = useLocale();
@@ -24,7 +26,18 @@ export default function AdminOrderDetailPage({ params }: { params: { id: string 
         description={`${locale === "bn" ? order.shipping_name_bn : order.shipping_name_en} · ${order.shipping_phone}`}
         showBack backHref={`/${locale}/admin/orders`}
         backLabel={locale === "bn" ? "অর্ডার তালিকা" : "Orders"}
-        actions={<OrderStatusBadge status={order.status} locale={locale} />} />
+        actions={
+          <div className="flex items-center gap-2">
+            <Link
+              href={`/${locale}/admin/orders/${params.id}/invoice`}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+            >
+              <Printer className="w-3.5 h-3.5" />
+              {locale === "bn" ? "চালান" : "Invoice"}
+            </Link>
+            <OrderStatusBadge status={order.status} locale={locale} />
+          </div>
+        } />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-4">

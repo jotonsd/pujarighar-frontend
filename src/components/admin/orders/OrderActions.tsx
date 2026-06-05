@@ -35,7 +35,14 @@ export default function OrderActions({ order, orderId }: Props) {
 
   const doAction = async (fn: () => Promise<unknown>, successMsg: string) => {
     try { await fn(); toast.success(successMsg) }
-    catch { toast.error(locale === 'bn' ? 'ব্যর্থ হয়েছে' : 'Action failed') }
+    catch (err: unknown) {
+      const e = err as { data?: { errors?: { message_bn?: string; message_en?: string }; message?: string } }
+      const errors = e.data?.errors
+      const msg = locale === 'bn'
+        ? (errors?.message_bn ?? e.data?.message ?? 'ব্যর্থ হয়েছে')
+        : (errors?.message_en ?? e.data?.message ?? 'Action failed')
+      toast.error(msg)
+    }
   }
 
   return (
