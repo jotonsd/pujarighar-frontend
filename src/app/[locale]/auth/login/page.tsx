@@ -28,6 +28,8 @@ export default function LoginPage() {
       const role = data.user?.role
       if (role === 'ADMIN' || role === 'WAREHOUSE') {
         router.push(`/${locale}/admin/orders/new`)
+      } else if (role === 'DELIVERY') {
+        router.push(`/${locale}/delivery/orders`)
       } else {
         router.push(`/${locale}`)
       }
