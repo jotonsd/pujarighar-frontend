@@ -127,7 +127,7 @@ export default function ProductsPage() {
     ordering: sortOrder || undefined,
   });
 
-  const { data: allCategories = [] } = useGetCategoriesQuery();
+  const { data: allCategories = [], isLoading: categoriesLoading } = useGetCategoriesQuery();
 
   const totalPages = data?.pagination?.total_pages ?? 1;
   const hasMore = page < totalPages;
@@ -246,7 +246,14 @@ export default function ProductsPage() {
           {locale === "bn" ? "কেটাগরি" : "Category"}
         </p>
         <div className="max-h-80 overflow-y-auto pr-1 space-y-0.5 scrollbar-thin">
-          {allCategories.map(cat => {
+          {categoriesLoading
+            ? (["w-3/5", "w-4/5", "w-2/5", "w-full", "w-3/4", "w-1/2"] as const).map((w, i) => (
+                <div key={i} className="flex items-center gap-2.5 px-3 py-2">
+                  <Skeleton className="w-4 h-4 rounded shrink-0" />
+                  <Skeleton className={`h-3.5 rounded ${w}`} />
+                </div>
+              ))
+            : allCategories.map(cat => {
             const selected = categories.includes(cat.id);
             return (
               <label
