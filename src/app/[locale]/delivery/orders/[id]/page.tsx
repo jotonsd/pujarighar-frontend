@@ -12,6 +12,7 @@ import {
 import OrderStatusBadge from "@/components/orders/OrderStatusBadge";
 import StatusTimeline from "@/components/orders/StatusTimeline";
 import { DeliveryOrderDetailSkeleton } from "@/components/ui/skeletons";
+import PageHeader from "@/components/ui/PageHeader";
 import PaymentConfirmModal from "@/components/ui/PaymentConfirmModal";
 import { toast } from "@/store/toastStore";
 import { useLocale } from "next-intl";
@@ -53,25 +54,14 @@ export default function DeliveryOrderDetailPage({
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-5">
-      <button
-        onClick={() => router.back()}
-        className="text-amber-600 hover:underline mb-6 text-sm block"
-      >
-        ← {locale === "bn" ? "ফিরে যান" : "Back"}
-      </button>
-      <div className="flex items-start justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-800">
-            {order.order_number}
-          </h1>
-          <p className="text-gray-500 text-sm mt-1">
-            {new Date(order.created_at).toLocaleString(
-              locale === "bn" ? "bn-BD" : "en-US",
-            )}
-          </p>
-        </div>
-        <OrderStatusBadge status={order.status} locale={locale} />
-      </div>
+      <PageHeader
+        title={order.order_number}
+        description={new Date(order.created_at).toLocaleString(locale === "bn" ? "bn-BD" : "en-US")}
+        showBack
+        backHref={`/${locale}/delivery/orders`}
+        backLabel={locale === "bn" ? "আমার ডেলিভারি" : "My Deliveries"}
+        actions={<OrderStatusBadge status={order.status} locale={locale} />}
+      />
 
       <div className="flex gap-3 mb-6">
         {order.status === "ASSIGNED" && (
