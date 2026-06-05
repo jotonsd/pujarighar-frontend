@@ -1,5 +1,5 @@
 "use client";
-import { calcDiscountedPrice, formatAmount, formatNumber } from "@/utils/format";
+import { formatAmount, formatNumber } from "@/utils/format";
 
 import { useAddToCartMutation } from "@/api/cart/cartApi";
 import { useGetProductQuery } from "@/api/products/productsApi";
@@ -21,9 +21,9 @@ export default function ProductDetailPage({
   const t = useTranslations();
   const locale = useLocale();
   const router = useRouter();
-  const [qty, setQty]       = useState(1);
+  const [qty, setQty] = useState(1);
   const [imgIdx, setImgIdx] = useState(0);
-  const timerRef            = useRef<ReturnType<typeof setInterval> | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const { isAuthenticated } = useAuthStore();
   const setItemCount = useCartStore(s => s.setItemCount);
@@ -33,9 +33,9 @@ export default function ProductDetailPage({
   const [addToCart, { isLoading: adding }] = useAddToCartMutation();
 
   const handleBuyNow = async () => {
-    await handleAddToCart()
-    router.push(`/${locale}/cart`)
-  }
+    await handleAddToCart();
+    router.push(`/${locale}/cart`);
+  };
 
   const handleAddToCart = async () => {
     if (!product) return;
@@ -73,27 +73,36 @@ export default function ProductDetailPage({
     }
   };
 
-  const images  = product?.images ?? [];
+  const images = product?.images ?? [];
   const hasMany = images.length > 1;
 
   // Auto-slide — must be before early returns
   useEffect(() => {
     if (!hasMany) return;
-    timerRef.current = setInterval(() => setImgIdx(i => (i + 1) % images.length), 4000);
-    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+    timerRef.current = setInterval(
+      () => setImgIdx(i => (i + 1) % images.length),
+      4000,
+    );
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
   }, [hasMany, images.length]);
 
   const goTo = (idx: number) => {
     setImgIdx(idx);
     if (timerRef.current) clearInterval(timerRef.current);
-    timerRef.current = setInterval(() => setImgIdx(i => (i + 1) % images.length), 4000);
+    timerRef.current = setInterval(
+      () => setImgIdx(i => (i + 1) % images.length),
+      4000,
+    );
   };
 
   if (isLoading) return <ProductDetailSkeleton />;
   if (!product) return null;
 
-  const name    = locale === "bn" ? product.name_bn : product.name_en;
-  const desc    = locale === "bn" ? product.description_bn : product.description_en;
+  const name = locale === "bn" ? product.name_bn : product.name_en;
+  const desc =
+    locale === "bn" ? product.description_bn : product.description_en;
   const inStock = Number(product.stock_on_hand) > 0;
 
   return (
@@ -113,25 +122,35 @@ export default function ProductDetailPage({
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={images[imgIdx].image}
-                  alt={locale === "bn" ? images[imgIdx].alt_bn : images[imgIdx].alt_en}
+                  alt={
+                    locale === "bn"
+                      ? images[imgIdx].alt_bn
+                      : images[imgIdx].alt_en
+                  }
                   className="w-full h-full object-cover transition-opacity duration-300"
                 />
                 {hasMany && (
                   <>
                     <button
-                      onClick={() => goTo((imgIdx - 1 + images.length) % images.length)}
+                      onClick={() =>
+                        goTo((imgIdx - 1 + images.length) % images.length)
+                      }
                       className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/30 hover:bg-black/50 text-white text-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                    >‹</button>
+                    >
+                      ‹
+                    </button>
                     <button
                       onClick={() => goTo((imgIdx + 1) % images.length)}
                       className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/30 hover:bg-black/50 text-white text-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                    >›</button>
+                    >
+                      ›
+                    </button>
                     <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5">
                       {images.map((_, i) => (
                         <button
                           key={i}
                           onClick={() => goTo(i)}
-                          className={`w-2 h-2 rounded-full transition-colors ${i === imgIdx ? 'bg-white' : 'bg-white/40'}`}
+                          className={`w-2 h-2 rounded-full transition-colors ${i === imgIdx ? "bg-white" : "bg-white/40"}`}
                         />
                       ))}
                     </div>
@@ -139,7 +158,9 @@ export default function ProductDetailPage({
                 )}
               </>
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-6xl">🪔</div>
+              <div className="w-full h-full flex items-center justify-center text-6xl">
+                🪔
+              </div>
             )}
           </div>
 
@@ -151,11 +172,17 @@ export default function ProductDetailPage({
                   key={img.id}
                   onClick={() => goTo(i)}
                   className={`w-16 h-16 rounded-lg overflow-hidden border-2 transition-colors shrink-0 ${
-                    i === imgIdx ? 'border-amber-500' : 'border-gray-200 hover:border-amber-300'
+                    i === imgIdx
+                      ? "border-amber-500"
+                      : "border-gray-200 hover:border-amber-300"
                   }`}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={img.image} alt="" className="w-full h-full object-cover" />
+                  <img
+                    src={img.image}
+                    alt=""
+                    className="w-full h-full object-cover"
+                  />
                 </button>
               ))}
             </div>
@@ -174,10 +201,10 @@ export default function ProductDetailPage({
                   <span className="text-sm text-gray-400 line-through ml-2">
                     {formatAmount(product.unit_price, locale, 0)}
                   </span>
-                  <span className="ml-2 text-xs font-semibold bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full">
-                    {product.active_discount_type === 'PERCENTAGE'
-                      ? `${product.active_discount_value}% ${locale === 'bn' ? 'ছাড়' : 'OFF'}`
-                      : `৳${product.active_discount_value} ${locale === 'bn' ? 'ছাড়' : 'OFF'}`}
+                  <span className="ml-2 text-xs font-bold bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full">
+                    {product.active_discount_type === "PERCENTAGE"
+                      ? `${formatAmount(Number(product.active_discount_value), locale, 0)}% ${locale === "bn" ? "ছাড়" : "OFF"}`
+                      : `৳${formatAmount(Number(product.active_discount_value), locale, 0)} ${locale === "bn" ? "ছাড়" : "OFF"}`}
                   </span>
                 </>
               ) : (
@@ -202,7 +229,9 @@ export default function ProductDetailPage({
                 >
                   −
                 </button>
-                <span className="px-4 py-2 border-x font-bold">{formatNumber(qty, locale)}</span>
+                <span className="px-4 py-2 border-x font-bold">
+                  {formatNumber(qty, locale)}
+                </span>
                 <button
                   onClick={() => setQty(qty + 1)}
                   className="px-3 py-2 hover:bg-gray-50"
@@ -222,7 +251,7 @@ export default function ProductDetailPage({
                 disabled={adding}
                 className="btn-primary flex-1"
               >
-                {locale === 'bn' ? 'এখনই কিনুন' : 'Buy Now'}
+                {locale === "bn" ? "এখনই কিনুন" : "Buy Now"}
               </button>
             </div>
           )}
