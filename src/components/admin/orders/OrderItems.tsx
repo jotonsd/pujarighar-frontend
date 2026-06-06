@@ -75,7 +75,9 @@ export default function OrderItems({ order }: Props) {
             <span>
               {locale === "bn" ? "ডেলিভারি চার্জ" : "Delivery Charge"}
             </span>
-            <span>{formatAmount(order.delivery_charge, locale)}</span>
+            <span className="font-bold text-sm">
+              {formatAmount(order.delivery_charge, locale)}
+            </span>
           </div>
         )}
         <div className="flex justify-between font-bold">

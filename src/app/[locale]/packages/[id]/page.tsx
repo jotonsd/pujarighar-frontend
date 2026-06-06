@@ -50,6 +50,7 @@ export default function PackageDetailPage({
           component_name_en: pi.component_name_en,
           quantity: String(pi.quantity),
         })),
+        image: pkg.images?.[0]?.image,
       });
       toast.success(locale === "bn" ? "কার্টে যোগ হয়েছে" : "Added to cart");
       return;

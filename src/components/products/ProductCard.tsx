@@ -89,6 +89,7 @@ export default function ProductCard({ product, locale }: Props) {
           stock: Number(product.stock_on_hand),
           is_package: false,
           package_items: [],
+          image: product.images?.[0]?.image,
         },
         qty,
       );

@@ -598,7 +598,7 @@ export default function CartPage() {
                     <div key={item.id} className="px-4 py-3 space-y-2">
                       <div className="flex items-center gap-3">
                         {/* Image */}
-                        <div className="w-12 h-12 rounded-lg overflow-hidden bg-amber-50 shrink-0 flex items-center justify-center">
+                        <div className="w-11 h-11 rounded-lg overflow-hidden bg-amber-50 shrink-0 flex items-center justify-center">
                           {item.product_image ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img
@@ -952,10 +952,13 @@ export default function CartPage() {
                 return (
                   <div key={item.product_id} className="px-4 py-3 space-y-2">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-lg overflow-hidden bg-amber-50 shrink-0 flex items-center justify-center">
-                        <span className="text-xl">
-                          {item.is_package ? "🎁" : "🪔"}
-                        </span>
+                      <div className="w-11 h-11 rounded-lg overflow-hidden bg-amber-50 shrink-0 flex items-center justify-center">
+                        {item.image ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={item.image} alt={name} className="w-full h-full object-cover" />
+                        ) : (
+                          <span className="text-xl">{item.is_package ? "🎁" : "🪔"}</span>
+                        )}
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="font-medium text-gray-800 text-sm truncate">

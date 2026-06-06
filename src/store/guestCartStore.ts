@@ -16,6 +16,7 @@ export interface GuestCartItem {
   stock:         number
   is_package:    boolean
   package_items: GuestCartPackageItem[]
+  image?:        string
 }
 
 interface GuestCartState {
