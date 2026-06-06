@@ -7,6 +7,23 @@ interface Props {
   deliveryInfo?: DeliveryInfo | null
 }
 
+const STATUS_LABELS: Record<string, { bn: string; en: string }> = {
+  PENDING:   { bn: 'অপেক্ষমাণ',              en: 'Pending'           },
+  CONFIRMED: { bn: 'নিশ্চিত',                en: 'Confirmed'         },
+  PACKED:    { bn: 'প্যাক হয়েছে',            en: 'Packed'            },
+  ASSIGNED:  { bn: 'ডেলিভারিম্যান নির্ধারিত', en: 'Assigned'          },
+  ON_THE_WAY:{ bn: 'পথে আছে',               en: 'On the Way'        },
+  DELIVERED: { bn: 'ডেলিভারি হয়েছে',         en: 'Delivered'         },
+  RETURNED:  { bn: 'ফেরত',                   en: 'Returned'          },
+  CANCELLED: { bn: 'বাতিল',                  en: 'Cancelled'         },
+}
+
+function statusLabel(status: string, isBn: boolean): string {
+  const entry = STATUS_LABELS[status]
+  if (!entry) return status
+  return isBn ? entry.bn : entry.en
+}
+
 function fmt(iso: string, locale: string) {
   return new Date(iso).toLocaleString(locale === 'bn' ? 'bn-BD' : 'en-US', {
     year: 'numeric', month: 'short', day: 'numeric',
@@ -29,7 +46,7 @@ export default function StatusTimeline({ logs, locale, deliveryInfo }: Props) {
 
           {/* Content */}
           <div className="pb-4">
-            <p className="font-medium text-gray-800 text-sm">{log.to_status_label}</p>
+            <p className="font-medium text-gray-800 text-sm">{statusLabel(log.to_status, isBn)}</p>
 
             {/* Delivery person — before the timestamp */}
             {log.to_status === 'ASSIGNED' && deliveryInfo && (

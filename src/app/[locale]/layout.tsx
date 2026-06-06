@@ -19,6 +19,7 @@ export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'পূজারিঘর | PujariGhar',
+  icons: { icon: '/assets/logo/favicon.png' },
 }
 
 export default async function LocaleLayout({

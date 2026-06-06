@@ -765,9 +765,11 @@ export default function CartPage() {
                       {(["inside", "outside"] as const).map(z => (
                         <button key={z} type="button" onClick={() => setDeliveryZone(z)}
                           className={`py-2 px-3 rounded-lg border text-xs font-medium transition-colors ${deliveryZone === z ? "border-amber-500 bg-amber-50 text-amber-700" : "border-gray-200 text-gray-600 hover:border-amber-300"}`}>
-                          {z === "inside"
-                            ? `${locale === "bn" ? "ঢাকার ভিতরে" : "Inside Dhaka"} (৳${deliveryRates.inside_dhaka})`
-                            : `${locale === "bn" ? "ঢাকার বাইরে" : "Outside Dhaka"} (৳${deliveryRates.outside_dhaka})`}
+                          {z === "inside" ? (
+                            <>{locale === "bn" ? "ঢাকার ভিতরে" : "Inside Dhaka"} (<span className="font-bold">৳{formatNumber(deliveryRates.inside_dhaka, locale)}</span>)</>
+                          ) : (
+                            <>{locale === "bn" ? "ঢাকার বাইরে" : "Outside Dhaka"} (<span className="font-bold">৳{formatNumber(deliveryRates.outside_dhaka, locale)}</span>)</>
+                          )}
                         </button>
                       ))}
                     </div>
@@ -1039,9 +1041,11 @@ export default function CartPage() {
                   {(["inside", "outside"] as const).map(z => (
                     <button key={z} type="button" onClick={() => setDeliveryZone(z)}
                       className={`py-2 px-3 rounded-lg border text-xs font-medium transition-colors ${deliveryZone === z ? "border-amber-500 bg-amber-50 text-amber-700" : "border-gray-200 text-gray-600 hover:border-amber-300"}`}>
-                      {z === "inside"
-                        ? `${locale === "bn" ? "ঢাকার ভিতরে" : "Inside Dhaka"} (৳${deliveryRates.inside_dhaka})`
-                        : `${locale === "bn" ? "ঢাকার বাইরে" : "Outside Dhaka"} (৳${deliveryRates.outside_dhaka})`}
+                      {z === "inside" ? (
+                        <>{locale === "bn" ? "ঢাকার ভিতরে" : "Inside Dhaka"} (<span className="font-bold">৳{formatNumber(deliveryRates.inside_dhaka, locale)}</span>)</>
+                      ) : (
+                        <>{locale === "bn" ? "ঢাকার বাইরে" : "Outside Dhaka"} (<span className="font-bold">৳{formatNumber(deliveryRates.outside_dhaka, locale)}</span>)</>
+                      )}
                     </button>
                   ))}
                 </div>

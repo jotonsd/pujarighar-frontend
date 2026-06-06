@@ -1,7 +1,7 @@
 'use client'
 
 import { Product } from '@/lib/types'
-import { formatAmount } from '@/utils/format'
+import { formatAmount, formatNumber } from '@/utils/format'
 import Link from 'next/link'
 
 interface Props {
@@ -25,7 +25,7 @@ export default function PackageCard({ pkg, locale }: Props) {
       <div className="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
 
         {/* Image */}
-        <div className="h-56 bg-amber-50 relative overflow-hidden">
+        <div className="h-36 md:h-56 bg-amber-50 relative overflow-hidden">
           {pkg.images?.[0] ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -39,8 +39,8 @@ export default function PackageCard({ pkg, locale }: Props) {
           {hasDiscount && (
             <span className="absolute top-2 left-2 text-xs font-bold bg-amber-500 text-white px-2 py-0.5 rounded-full">
               {pkg.discount_type === 'PERCENTAGE'
-                ? `${pkg.discount_value}% OFF`
-                : `৳${pkg.discount_value} OFF`}
+                ? `${formatNumber(pkg.discount_value, locale)}% ${locale === 'bn' ? 'ছাড়' : 'OFF'}`
+                : `৳${formatNumber(pkg.discount_value, locale)} ${locale === 'bn' ? 'ছাড়' : 'OFF'}`}
             </span>
           )}
         </div>
@@ -54,7 +54,7 @@ export default function PackageCard({ pkg, locale }: Props) {
           {/* Items count */}
           {pkg.package_items?.length > 0 && (
             <p className="text-xs text-gray-400 mb-2">
-              {pkg.package_items.length}{' '}
+              {formatNumber(pkg.package_items.length, locale)}{' '}
               {locale === 'bn' ? 'টি পণ্য' : 'items'}
             </p>
           )}

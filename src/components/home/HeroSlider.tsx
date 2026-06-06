@@ -21,7 +21,7 @@ export default function HeroSlider() {
   }, [slides.length]);
 
   if (isLoading)
-    return <Skeleton className="h-80 md:h-96 w-full rounded-2xl mb-10" />;
+    return <Skeleton className="h-48 md:h-96 w-full rounded-2xl mb-10" />;
   if (!slides.length) return null;
 
   return (
@@ -39,16 +39,16 @@ export default function HeroSlider() {
                 <img
                   src={slide.image}
                   alt={locale === "bn" ? slide.title_bn : slide.title_en}
-                  className="w-full h-80 md:h-96 object-cover"
+                  className="w-full h-48 md:h-96 object-cover"
                 />
                 {/* Overlay for text */}
                 {(slide.title_bn || slide.title_en) && (
-                  <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent flex flex-col justify-center px-10">
-                    <h1 className="text-4xl font-bold text-white mb-2 drop-shadow">
+                  <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent flex flex-col justify-end md:justify-center px-5 md:px-10 pb-8 md:pb-0">
+                    <h1 className="text-xl md:text-4xl font-bold text-white mb-1 md:mb-2 drop-shadow leading-tight">
                       {locale === "bn" ? slide.title_bn : slide.title_en}
                     </h1>
                     {(slide.subtitle_bn || slide.subtitle_en) && (
-                      <p className="text-white/80 text-base mb-5 max-w-md drop-shadow">
+                      <p className="text-white/80 text-xs md:text-base mb-3 md:mb-5 max-w-md drop-shadow line-clamp-2 md:line-clamp-none">
                         {locale === "bn"
                           ? slide.subtitle_bn
                           : slide.subtitle_en}
@@ -58,7 +58,7 @@ export default function HeroSlider() {
                       (slide.cta_label_bn || slide.cta_label_en) && (
                         <Link
                           href={slide.cta_link}
-                          className="btn-primary self-start px-6 py-2.5"
+                          className="btn-primary self-start px-4 py-2 md:px-6 md:py-2.5 text-sm md:text-base"
                         >
                           {locale === "bn"
                             ? slide.cta_label_bn
@@ -71,14 +71,14 @@ export default function HeroSlider() {
             ) : (
               /* Text-only slide */
               <div
-                className="w-full h-80 md:h-96 flex flex-col items-center justify-center text-center px-6"
+                className="w-full h-48 md:h-96 flex flex-col items-center justify-center text-center px-5 md:px-6"
                 style={{ backgroundColor: slide.bg_color || "#FFF7ED" }}
               >
-                <h1 className="text-4xl font-bold text-amber-800 mb-3">
+                <h1 className="text-2xl md:text-4xl font-bold text-amber-800 mb-2 md:mb-3 leading-tight">
                   {locale === "bn" ? slide.title_bn : slide.title_en}
                 </h1>
                 {(slide.subtitle_bn || slide.subtitle_en) && (
-                  <p className="text-gray-600 text-lg mb-7 max-w-lg">
+                  <p className="text-gray-600 text-sm md:text-lg mb-5 md:mb-7 max-w-lg">
                     {locale === "bn" ? slide.subtitle_bn : slide.subtitle_en}
                   </p>
                 )}
@@ -86,7 +86,7 @@ export default function HeroSlider() {
                   (slide.cta_label_bn || slide.cta_label_en) && (
                     <Link
                       href={slide.cta_link}
-                      className="btn-primary px-8 py-3"
+                      className="btn-primary px-6 py-2.5 md:px-8 md:py-3 text-sm md:text-base"
                     >
                       {locale === "bn"
                         ? slide.cta_label_bn

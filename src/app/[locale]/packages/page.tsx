@@ -65,7 +65,7 @@ export default function PackagesPage() {
       </div>
 
       {isLoading && allPackages.length === 0 ? (
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           {Array.from({ length: 6 }).map((_, i) => (
             <CardSkeleton key={i} />
           ))}
@@ -80,7 +80,7 @@ export default function PackagesPage() {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               {allPackages.map(pkg => (
                 <PackageCard key={pkg.id} pkg={pkg} locale={locale} />
               ))}
