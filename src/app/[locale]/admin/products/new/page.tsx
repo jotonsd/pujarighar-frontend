@@ -12,9 +12,9 @@ import {
 } from "@/components/ui/forms";
 import PageHeader from "@/components/ui/PageHeader";
 import { toast } from "@/store/toastStore";
+import { RefreshCw } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { RefreshCw } from "lucide-react";
 import { useRef, useState } from "react";
 
 function generateSku(name: string): string {
@@ -107,7 +107,10 @@ export default function NewProductPage() {
 
   const regenerateSku = () => {
     skuManualRef.current = false;
-    setForm(p => ({ ...p, sku: p.name_en ? generateSku(p.name_en) : generateSku("PG") }));
+    setForm(p => ({
+      ...p,
+      sku: p.name_en ? generateSku(p.name_en) : generateSku("PG"),
+    }));
   };
 
   return (
@@ -117,7 +120,7 @@ export default function NewProductPage() {
         showBack
       />
       <div className="card space-y-4">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-3">
           <FloatingInput
             label="নাম (বাংলা)"
             required
@@ -131,7 +134,7 @@ export default function NewProductPage() {
             onChange={handleNameEnChange}
           />
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-3">
           <div className="flex gap-2 items-start">
             <FloatingInput
               label={t("product.sku")}
@@ -167,7 +170,7 @@ export default function NewProductPage() {
             ))}
           </FloatingSelect>
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-3">
           <FloatingInput
             label={`${t("product.unit")} (বাংলা)`}
             value={form.unit_bn}

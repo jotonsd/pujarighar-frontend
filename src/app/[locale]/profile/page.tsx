@@ -47,7 +47,7 @@ export default function ProfilePage() {
     <div className="max-w-7xl mx-auto px-4 py-3">
       <PageHeader title={t("profile.title")} />
       <div className="card space-y-4">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-3">
           <FloatingInput
             label={t("profile.fullNameBn")}
             value={form.full_name_bn}
@@ -59,7 +59,7 @@ export default function ProfilePage() {
             onChange={f("full_name_en")}
           />
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-3">
           <FloatingTextarea
             label={`${t("profile.address")} (বাংলা)`}
             value={form.address_bn}
@@ -73,7 +73,7 @@ export default function ProfilePage() {
             rows={2}
           />
         </div>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-3 gap-3">
           <FloatingInput
             label={t("profile.district")}
             value={form.district}

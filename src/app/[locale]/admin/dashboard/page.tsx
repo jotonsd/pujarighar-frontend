@@ -6,35 +6,84 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { formatAmount, formatNumber } from "@/utils/format";
 import { useLocale, useTranslations } from "next-intl";
 import {
-  CartesianGrid,
-  Legend,
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
+    CartesianGrid,
+    Legend,
+    Line,
+    LineChart,
+    ResponsiveContainer,
+    Tooltip,
+    XAxis,
+    YAxis,
 } from "recharts";
 
-
 const STAT_CARDS = [
-  { key: "today_orders",    labelKey: "todayOrders",    icon: "🛍️", color: "bg-blue-50",   text: "text-blue-600",   border: "border-blue-100" },
-  { key: "today_revenue",   labelKey: "todayRevenue",   icon: "💰", color: "bg-green-50",  text: "text-green-600",  border: "border-green-100",  isCurrency: true },
-  { key: "pending_orders",  labelKey: "pendingOrders",  icon: "⏳", color: "bg-amber-50",  text: "text-amber-600",  border: "border-amber-100" },
-  { key: "low_stock_count", labelKey: "lowStock",       icon: "⚠️", color: "bg-red-50",    text: "text-red-600",    border: "border-red-100" },
-  { key: "total_customers", labelKey: "totalCustomers", icon: "👥", color: "bg-purple-50", text: "text-purple-600", border: "border-purple-100" },
-  { key: "total_products",  labelKey: "totalProducts",  icon: "📦", color: "bg-orange-50", text: "text-orange-600", border: "border-orange-100" },
+  {
+    key: "today_orders",
+    labelKey: "todayOrders",
+    icon: "🛍️",
+    color: "bg-blue-50",
+    text: "text-blue-600",
+    border: "border-blue-100",
+  },
+  {
+    key: "today_revenue",
+    labelKey: "todayRevenue",
+    icon: "💰",
+    color: "bg-green-50",
+    text: "text-green-600",
+    border: "border-green-100",
+    isCurrency: true,
+  },
+  {
+    key: "pending_orders",
+    labelKey: "pendingOrders",
+    icon: "⏳",
+    color: "bg-amber-50",
+    text: "text-amber-600",
+    border: "border-amber-100",
+  },
+  {
+    key: "low_stock_count",
+    labelKey: "lowStock",
+    icon: "⚠️",
+    color: "bg-red-50",
+    text: "text-red-600",
+    border: "border-red-100",
+  },
+  {
+    key: "total_customers",
+    labelKey: "totalCustomers",
+    icon: "👥",
+    color: "bg-purple-50",
+    text: "text-purple-600",
+    border: "border-purple-100",
+  },
+  {
+    key: "total_products",
+    labelKey: "totalProducts",
+    icon: "📦",
+    color: "bg-orange-50",
+    text: "text-orange-600",
+    border: "border-orange-100",
+  },
 ] as const;
 
-const STATUS_META: Record<string, { label_bn: string; label_en: string; color: string }> = {
-  PENDING:     { label_bn: "অপেক্ষমাণ",    label_en: "Pending",     color: "#f59e0b" },
-  CONFIRMED:   { label_bn: "নিশ্চিত",       label_en: "Confirmed",   color: "#3b82f6" },
-  PACKED:      { label_bn: "প্যাক করা",     label_en: "Packed",      color: "#8b5cf6" },
-  ASSIGNED:    { label_bn: "বরাদ্দ",        label_en: "Assigned",    color: "#06b6d4" },
-  ON_THE_WAY:  { label_bn: "পথে আছে",      label_en: "On the Way",  color: "#f97316" },
-  DELIVERED:   { label_bn: "ডেলিভারি হয়েছে", label_en: "Delivered",  color: "#22c55e" },
-  RETURNED:    { label_bn: "ফেরত",          label_en: "Returned",    color: "#ef4444" },
-  CANCELLED:   { label_bn: "বাতিল",         label_en: "Cancelled",   color: "#6b7280" },
+const STATUS_META: Record<
+  string,
+  { label_bn: string; label_en: string; color: string }
+> = {
+  PENDING: { label_bn: "অপেক্ষমাণ", label_en: "Pending", color: "#f59e0b" },
+  CONFIRMED: { label_bn: "নিশ্চিত", label_en: "Confirmed", color: "#3b82f6" },
+  PACKED: { label_bn: "প্যাক করা", label_en: "Packed", color: "#8b5cf6" },
+  ASSIGNED: { label_bn: "বরাদ্দ", label_en: "Assigned", color: "#06b6d4" },
+  ON_THE_WAY: { label_bn: "পথে আছে", label_en: "On the Way", color: "#f97316" },
+  DELIVERED: {
+    label_bn: "ডেলিভারি হয়েছে",
+    label_en: "Delivered",
+    color: "#22c55e",
+  },
+  RETURNED: { label_bn: "ফেরত", label_en: "Returned", color: "#ef4444" },
+  CANCELLED: { label_bn: "বাতিল", label_en: "Cancelled", color: "#6b7280" },
 };
 
 export default function DashboardPage() {
@@ -43,20 +92,21 @@ export default function DashboardPage() {
   const isBn = locale === "bn";
   const { data, isLoading } = useGetDashboardSummaryQuery();
 
-  if (isLoading) return (
-    <div className="space-y-5">
-      <Skeleton className="h-14 w-full rounded-xl" />
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <Skeleton key={i} className="h-20 rounded-2xl" />
-        ))}
+  if (isLoading)
+    return (
+      <div className="space-y-5">
+        <Skeleton className="h-14 w-full rounded-xl" />
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Skeleton key={i} className="h-20 rounded-2xl" />
+          ))}
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+          <Skeleton className="lg:col-span-2 h-80 rounded-2xl" />
+          <Skeleton className="h-80 rounded-2xl" />
+        </div>
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        <Skeleton className="lg:col-span-2 h-80 rounded-2xl" />
-        <Skeleton className="h-80 rounded-2xl" />
-      </div>
-    </div>
-  );
+    );
 
   const year = new Date().getFullYear();
 
@@ -64,8 +114,10 @@ export default function DashboardPage() {
   const expenseKey = isBn ? "খরচ" : "Expense";
 
   const chartData = (data?.monthly_revenue_chart ?? []).map(d => ({
-    month: new Date(d.month).toLocaleDateString(isBn ? "bn-BD" : "en-US", { month: "short" }),
-    [incomeKey]:  parseFloat(d.revenue),
+    month: new Date(d.month).toLocaleDateString(isBn ? "bn-BD" : "en-US", {
+      month: "short",
+    }),
+    [incomeKey]: parseFloat(d.revenue),
     [expenseKey]: parseFloat(d.expense || "0"),
   }));
 
@@ -77,20 +129,30 @@ export default function DashboardPage() {
       <PageHeader title={t("dashboard")} />
 
       {/* Stat cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
         {STAT_CARDS.map(card => {
           const raw = data?.[card.key];
-          const value = ("isCurrency" in card && card.isCurrency)
-            ? formatAmount(raw ?? 0, locale, 0)
-            : formatNumber(Number(raw ?? 0), locale);
+          const value =
+            "isCurrency" in card && card.isCurrency
+              ? formatAmount(raw ?? 0, locale, 0)
+              : formatNumber(Number(raw ?? 0), locale);
           return (
-            <div key={card.key} className={`bg-white rounded-2xl border ${card.border} p-4 flex items-start gap-4 shadow-sm`}>
-              <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-xl shrink-0 ${card.color}`}>
+            <div
+              key={card.key}
+              className={`bg-white rounded-2xl border ${card.border} p-4 flex items-start gap-3 shadow-sm`}
+            >
+              <div
+                className={`w-11 h-11 rounded-xl flex items-center justify-center text-xl shrink-0 ${card.color}`}
+              >
                 {card.icon}
               </div>
               <div className="min-w-0">
-                <p className="text-xl font-bold text-gray-900 leading-tight">{value}</p>
-                <p className="text-xs text-gray-500 mt-0.5">{t(card.labelKey)}</p>
+                <p className="text-xl font-bold text-gray-900 leading-tight">
+                  {value}
+                </p>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  {t(card.labelKey)}
+                </p>
               </div>
             </div>
           );
@@ -98,8 +160,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Chart + Status panel */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
         {/* Monthly revenue line chart */}
         <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
           <div className="flex items-start justify-between mb-1">
@@ -116,9 +177,21 @@ export default function DashboardPage() {
 
           {chartData.length > 0 ? (
             <ResponsiveContainer width="100%" height={260}>
-              <LineChart data={chartData} margin={{ top: 10, right: 8, left: 0, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
-                <XAxis dataKey="month" tick={{ fontSize: 11, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
+              <LineChart
+                data={chartData}
+                margin={{ top: 10, right: 8, left: 0, bottom: 0 }}
+              >
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="#f3f4f6"
+                  vertical={false}
+                />
+                <XAxis
+                  dataKey="month"
+                  tick={{ fontSize: 11, fill: "#9ca3af" }}
+                  axisLine={false}
+                  tickLine={false}
+                />
                 <YAxis
                   tick={{ fontSize: 11, fill: "#9ca3af" }}
                   axisLine={false}
@@ -127,10 +200,16 @@ export default function DashboardPage() {
                   width={52}
                 />
                 <Tooltip
-                  formatter={(v) => [formatAmount(Number(v ?? 0), locale, 0)]}
-                  contentStyle={{ borderRadius: "10px", border: "1px solid #e5e7eb", fontSize: "12px" }}
+                  formatter={v => [formatAmount(Number(v ?? 0), locale, 0)]}
+                  contentStyle={{
+                    borderRadius: "10px",
+                    border: "1px solid #e5e7eb",
+                    fontSize: "12px",
+                  }}
                 />
-                <Legend wrapperStyle={{ fontSize: "12px", paddingTop: "12px" }} />
+                <Legend
+                  wrapperStyle={{ fontSize: "12px", paddingTop: "12px" }}
+                />
                 <Line
                   type="monotone"
                   dataKey={incomeKey}

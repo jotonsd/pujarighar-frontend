@@ -42,7 +42,7 @@ export default function OfferBanners() {
     /* ── text-only banner ── */
     return (
       <div
-        className="w-full h-28 rounded-2xl overflow-hidden relative flex items-center px-5 gap-4"
+        className="w-full h-28 rounded-2xl overflow-hidden relative flex items-center px-5 gap-3"
         style={{ backgroundColor: banner.bg_color ?? "#fef2f2" }}
       >
         {/* decorative circles */}

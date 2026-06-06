@@ -4,6 +4,8 @@ import { formatAmount, formatNumber, localName } from "@/utils/format";
 import { useAddToCartMutation } from "@/api/cart/cartApi";
 import { useGetProductQuery } from "@/api/products/productsApi";
 import Badge from "@/components/ui/Badge";
+import OfferBanners from "@/components/products/OfferBanners";
+import { ArrowLeft } from "lucide-react";
 import { ProductDetailSkeleton } from "@/components/ui/skeletons";
 import { useAuthStore } from "@/store/authStore";
 import { useCartStore } from "@/store/cartStore";
@@ -107,13 +109,10 @@ export default function ProductDetailPage({
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-3">
-      <button
-        onClick={() => router.back()}
-        className="text-amber-600 hover:underline mb-6 text-sm"
-      >
-        ← {t("common.back")}
-      </button>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="mb-4">
+        <OfferBanners />
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-3">
           {/* Main image */}
           <div className="aspect-square bg-gray-100 rounded-xl overflow-hidden relative group">
@@ -221,7 +220,7 @@ export default function ProductDetailPage({
           </div>
           {desc && <p className="text-gray-600 mb-6 leading-relaxed">{desc}</p>}
           {inStock && (
-            <div className="flex items-center gap-4 mb-6">
+            <div className="flex items-center gap-3 mb-6">
               <div className="flex items-center border rounded-lg overflow-hidden">
                 <button
                   onClick={() => setQty(Math.max(1, qty - 1))}
@@ -252,6 +251,13 @@ export default function ProductDetailPage({
                 className="btn-primary flex-1 font-bold"
               >
                 {locale === "bn" ? "এখনই কিনুন" : "Buy Now"}
+              </button>
+              <button
+                onClick={() => router.back()}
+                className="flex-1 font-bold inline-flex items-center justify-center gap-1.5 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                {locale === "bn" ? "আরো কিনুন" : "Shop More"}
               </button>
             </div>
           )}

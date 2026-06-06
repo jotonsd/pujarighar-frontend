@@ -79,7 +79,7 @@ export default function PackageDetailPage({
   if (isLoading) return <Spinner />;
   if (!pkg) return null;
 
-  const name = localName(pkg.name_bn, pkg.name_en, locale === 'bn');
+  const name = localName(pkg.name_bn, pkg.name_en, locale === "bn");
   const desc = locale === "bn" ? pkg.description_bn : pkg.description_en;
   const inStock = Number(pkg.stock_on_hand) > 0;
 
@@ -103,7 +103,7 @@ export default function PackageDetailPage({
         ← {t("common.back")}
       </button>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Left — image */}
         <div>
           {pkg.images.length > 0 ? (

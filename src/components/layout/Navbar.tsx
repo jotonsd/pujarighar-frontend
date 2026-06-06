@@ -1,46 +1,114 @@
 "use client";
 
 import { useGetMeQuery, useLogoutMutation } from "@/api/auth/authApi";
+import NotificationBell from "@/components/ui/NotificationBell";
 import { User } from "@/lib/types";
 import { useAuthStore } from "@/store/authStore";
 import { useCartStore } from "@/store/cartStore";
 import { useGuestCartStore } from "@/store/guestCartStore";
 import { useLocale, useTranslations } from "next-intl";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import NotificationBell from "@/components/ui/NotificationBell";
 import LanguageSwitcher from "./LanguageSwitcher";
-import Image from "next/image";
 
 const ADMIN_LINKS = [
-  { href: "/admin/orders/new", icon: "🧾", label_bn: "নতুন অর্ডার", label_en: "New Order" },
-  { href: "/admin/orders",     icon: "🛍️", label_bn: "অর্ডার",      label_en: "Orders" },
-  { href: "/admin/products",   icon: "📦", label_bn: "পণ্য",         label_en: "Products" },
-  { href: "/admin/packages",   icon: "🎁", label_bn: "প্যাকেজ",      label_en: "Packages" },
-  { href: "/admin/inventory",  icon: "🏭", label_bn: "গুদাম",        label_en: "Inventory" },
-  { href: "/admin/users",      icon: "👥", label_bn: "ব্যবহারকারী",  label_en: "Users" },
-  { href: "/admin/dashboard",  icon: "📊", label_bn: "ড্যাশবোর্ড",  label_en: "Dashboard" },
+  {
+    href: "/admin/orders/new",
+    icon: "🧾",
+    label_bn: "নতুন অর্ডার",
+    label_en: "New Order",
+  },
+  { href: "/admin/orders", icon: "🛍️", label_bn: "অর্ডার", label_en: "Orders" },
+  {
+    href: "/admin/products",
+    icon: "📦",
+    label_bn: "পণ্য",
+    label_en: "Products",
+  },
+  {
+    href: "/admin/packages",
+    icon: "🎁",
+    label_bn: "প্যাকেজ",
+    label_en: "Packages",
+  },
+  {
+    href: "/admin/inventory",
+    icon: "🏭",
+    label_bn: "গুদাম",
+    label_en: "Inventory",
+  },
+  {
+    href: "/admin/users",
+    icon: "👥",
+    label_bn: "ব্যবহারকারী",
+    label_en: "Users",
+  },
+  {
+    href: "/admin/dashboard",
+    icon: "📊",
+    label_bn: "ড্যাশবোর্ড",
+    label_en: "Dashboard",
+  },
 ];
 
 const SETTINGS_LINKS = [
-  { href: "/admin/categories",                 icon: "🏷️", label_bn: "কেটাগরি",      label_en: "Categories" },
-  { href: "/admin/discounts",                  icon: "💸", label_bn: "ডিসকাউন্ট",    label_en: "Discounts" },
-  { href: "/admin/settings/delivery-charges",  icon: "🚚", label_bn: "ডেলিভারি চার্জ", label_en: "Delivery Charges" },
+  {
+    href: "/admin/categories",
+    icon: "🏷️",
+    label_bn: "কেটাগরি",
+    label_en: "Categories",
+  },
+  {
+    href: "/admin/discounts",
+    icon: "💸",
+    label_bn: "ডিসকাউন্ট",
+    label_en: "Discounts",
+  },
+  {
+    href: "/admin/settings/delivery-charges",
+    icon: "🚚",
+    label_bn: "ডেলিভারি চার্জ",
+    label_en: "Delivery Charges",
+  },
 ];
 
 const ACCOUNTING_LINKS = [
-  { href: "/admin/accounting/journal", icon: "📓", label_bn: "জার্নাল",  label_en: "Journal" },
-  { href: "/admin/accounting/ledger",  icon: "📒", label_bn: "খাতা",     label_en: "Ledger" },
-  { href: "/admin/accounting/reports", icon: "📊", label_bn: "রিপোর্ট", label_en: "Reports" },
+  {
+    href: "/admin/accounting/journal",
+    icon: "📓",
+    label_bn: "জার্নাল",
+    label_en: "Journal",
+  },
+  {
+    href: "/admin/accounting/ledger",
+    icon: "📒",
+    label_bn: "খাতা",
+    label_en: "Ledger",
+  },
+  {
+    href: "/admin/accounting/reports",
+    icon: "📊",
+    label_bn: "রিপোর্ট",
+    label_en: "Reports",
+  },
 ];
 
 const BANNER_LINKS = [
-  { href: "/admin/slides",  icon: "🖼️", label_bn: "হিরো স্লাইডার", label_en: "Hero Slider" },
-  { href: "/admin/banners", icon: "🎯", label_bn: "অফার ব্যানার",   label_en: "Offer Banners" },
+  {
+    href: "/admin/slides",
+    icon: "🖼️",
+    label_bn: "হিরো স্লাইডার",
+    label_en: "Hero Slider",
+  },
+  {
+    href: "/admin/banners",
+    icon: "🎯",
+    label_bn: "অফার ব্যানার",
+    label_en: "Offer Banners",
+  },
 ];
-
-
 
 function ProfileDropdown({
   locale,
@@ -138,10 +206,20 @@ function ProfileDropdown({
   );
 }
 
-function NavDropdown({ locale, pathname, links, icon, label_bn, label_en }: {
-  locale: string; pathname: string
-  links: { href: string; icon: string; label_bn: string; label_en: string }[]
-  icon: string; label_bn: string; label_en: string
+function NavDropdown({
+  locale,
+  pathname,
+  links,
+  icon,
+  label_bn,
+  label_en,
+}: {
+  locale: string;
+  pathname: string;
+  links: { href: string; icon: string; label_bn: string; label_en: string }[];
+  icon: string;
+  label_bn: string;
+  label_en: string;
 }) {
   const [open, setOpen] = useState(false);
   const isActive = links.some(l => pathname.startsWith(`/${locale}${l.href}`));
@@ -151,12 +229,20 @@ function NavDropdown({ locale, pathname, links, icon, label_bn, label_en }: {
       <button
         onClick={() => setOpen(o => !o)}
         className={`flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs whitespace-nowrap transition-colors ${
-          isActive ? "bg-amber-50 text-amber-700 font-medium" : "text-gray-600 hover:text-amber-600 hover:bg-gray-50"
+          isActive
+            ? "bg-amber-50 text-amber-700 font-medium"
+            : "text-gray-600 hover:text-amber-600 hover:bg-gray-50"
         }`}
       >
         <span>{icon}</span>
         <span>{locale === "bn" ? label_bn : label_en}</span>
-        <svg className={`w-3 h-3 transition-transform ${open ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+        <svg
+          className={`w-3 h-3 transition-transform ${open ? "rotate-180" : ""}`}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2.5}
+          viewBox="0 0 24 24"
+        >
           <path strokeLinecap="round" strokeLinejoin="round" d="m6 9 6 6 6-6" />
         </svg>
       </button>
@@ -168,9 +254,14 @@ function NavDropdown({ locale, pathname, links, icon, label_bn, label_en }: {
               const full = `/${locale}${href}`;
               const active = pathname.startsWith(full);
               return (
-                <Link key={href} href={full} onClick={() => setOpen(false)}
+                <Link
+                  key={href}
+                  href={full}
+                  onClick={() => setOpen(false)}
                   className={`flex items-center gap-2 px-4 py-2.5 text-xs transition-colors ${
-                    active ? "bg-amber-50 text-amber-700 font-medium" : "text-gray-600 hover:bg-gray-50 hover:text-amber-600"
+                    active
+                      ? "bg-amber-50 text-amber-700 font-medium"
+                      : "text-gray-600 hover:bg-gray-50 hover:text-amber-600"
                   }`}
                 >
                   <span>{ic}</span>
@@ -185,39 +276,56 @@ function NavDropdown({ locale, pathname, links, icon, label_bn, label_en }: {
   );
 }
 
-
 function MobileMenu({
-  locale, pathname, role, currentUser, t,
-  onClose, onLogout, onSearch,
+  locale,
+  pathname,
+  role,
+  currentUser,
+  t,
+  onClose,
+  onLogout,
+  onSearch,
 }: {
-  locale: string; pathname: string
-  role: string | null; currentUser: User | null
-  t: ReturnType<typeof useTranslations>
-  onClose: () => void; onLogout: () => void
-  onSearch: (q: string) => void
+  locale: string;
+  pathname: string;
+  role: string | null;
+  currentUser: User | null;
+  t: ReturnType<typeof useTranslations>;
+  onClose: () => void;
+  onLogout: () => void;
+  onSearch: (q: string) => void;
 }) {
-  const [q, setQ] = useState('')
+  const [q, setQ] = useState("");
 
   const navLink = (href: string, icon: string, label: string) => {
-    const full   = href.startsWith('/') ? href : `/${locale}${href.startsWith('/') ? href : '/' + href}`
-    const active = pathname === full || (pathname.startsWith(full + '/') && full !== `/${locale}`)
+    const full = href.startsWith("/")
+      ? href
+      : `/${locale}${href.startsWith("/") ? href : "/" + href}`;
+    const active =
+      pathname === full ||
+      (pathname.startsWith(full + "/") && full !== `/${locale}`);
     return (
-      <Link key={href} href={full} onClick={onClose}
+      <Link
+        key={href}
+        href={full}
+        onClick={onClose}
         className={`flex items-center gap-3 px-4 py-3 text-sm transition-colors ${
-          active ? 'bg-amber-50 text-amber-700 font-medium' : 'text-gray-700 hover:bg-gray-50'
+          active
+            ? "bg-amber-50 text-amber-700 font-medium"
+            : "text-gray-700 hover:bg-gray-50"
         }`}
       >
         <span className="text-base">{icon}</span>
         {label}
       </Link>
-    )
-  }
+    );
+  };
 
   const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault()
-    onSearch(q.trim())
-    onClose()
-  }
+    e.preventDefault();
+    onSearch(q.trim());
+    onClose();
+  };
 
   return (
     <>
@@ -227,62 +335,122 @@ function MobileMenu({
       <div className="fixed top-0 left-0 h-full w-72 max-w-[85vw] bg-white z-50 shadow-xl flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100">
-          <Image src="/assets/logo/pujarighar.png" alt="PujariGhar" width={0} height={0} sizes="100vw" className="h-8 w-auto object-contain" />
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 p-1">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+          <Image
+            src="/assets/logo/pujarighar.png"
+            alt="PujariGhar"
+            width={0}
+            height={0}
+            sizes="100vw"
+            className="h-8 w-auto object-contain"
+          />
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 p-1"
+          >
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2.5}
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
 
         {/* Search */}
-        <form onSubmit={handleSearch} className="px-4 py-3 border-b border-gray-100">
+        <form
+          onSubmit={handleSearch}
+          className="px-4 py-3 border-b border-gray-100"
+        >
           <div className="relative">
             <input
-              type="text" value={q} onChange={e => setQ(e.target.value)}
-              placeholder={t('common.search')}
+              type="text"
+              value={q}
+              onChange={e => setQ(e.target.value)}
+              placeholder={t("common.search")}
               className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-300 bg-gray-50"
             />
-            <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
-              fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-              <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
+            <svg
+              className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              viewBox="0 0 24 24"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.35-4.35" />
             </svg>
           </div>
         </form>
 
         {/* Nav links */}
         <div className="flex-1 overflow-y-auto py-2">
-          {role === 'ADMIN' || role === 'WAREHOUSE' ? (
+          {role === "ADMIN" || role === "WAREHOUSE" ? (
             <>
-              {ADMIN_LINKS.map(l => navLink(`/${locale}${l.href}`, l.icon, locale === 'bn' ? l.label_bn : l.label_en))}
+              {ADMIN_LINKS.map(l =>
+                navLink(
+                  `/${locale}${l.href}`,
+                  l.icon,
+                  locale === "bn" ? l.label_bn : l.label_en,
+                ),
+              )}
               <div className="border-t border-gray-100 mt-2 pt-2">
                 <p className="px-4 py-1 text-xs text-gray-400 font-medium uppercase tracking-wide">
-                  {locale === 'bn' ? 'সেটিংস' : 'Settings'}
+                  {locale === "bn" ? "সেটিংস" : "Settings"}
                 </p>
-                {SETTINGS_LINKS.map(l => navLink(`/${locale}${l.href}`, l.icon, locale === 'bn' ? l.label_bn : l.label_en))}
+                {SETTINGS_LINKS.map(l =>
+                  navLink(
+                    `/${locale}${l.href}`,
+                    l.icon,
+                    locale === "bn" ? l.label_bn : l.label_en,
+                  ),
+                )}
               </div>
               <div className="border-t border-gray-100 mt-2 pt-2">
                 <p className="px-4 py-1 text-xs text-gray-400 font-medium uppercase tracking-wide">
-                  {locale === 'bn' ? 'হিসাব' : 'Accounting'}
+                  {locale === "bn" ? "হিসাব" : "Accounting"}
                 </p>
-                {ACCOUNTING_LINKS.map(l => navLink(`/${locale}${l.href}`, l.icon, locale === 'bn' ? l.label_bn : l.label_en))}
+                {ACCOUNTING_LINKS.map(l =>
+                  navLink(
+                    `/${locale}${l.href}`,
+                    l.icon,
+                    locale === "bn" ? l.label_bn : l.label_en,
+                  ),
+                )}
               </div>
               <div className="border-t border-gray-100 mt-2 pt-2">
                 <p className="px-4 py-1 text-xs text-gray-400 font-medium uppercase tracking-wide">
-                  {locale === 'bn' ? 'ব্যানার' : 'Banners'}
+                  {locale === "bn" ? "ব্যানার" : "Banners"}
                 </p>
-                {BANNER_LINKS.map(l => navLink(`/${locale}${l.href}`, l.icon, locale === 'bn' ? l.label_bn : l.label_en))}
+                {BANNER_LINKS.map(l =>
+                  navLink(
+                    `/${locale}${l.href}`,
+                    l.icon,
+                    locale === "bn" ? l.label_bn : l.label_en,
+                  ),
+                )}
               </div>
             </>
-          ) : role === 'DELIVERY' ? (
-            navLink(`/${locale}/delivery/orders`, '🚚', t('nav.delivery'))
+          ) : role === "DELIVERY" ? (
+            navLink(`/${locale}/delivery/orders`, "🚚", t("nav.delivery"))
           ) : (
             <>
-              {navLink(`/${locale}`, '🏠', t('nav.home'))}
-              {navLink(`/${locale}/products`, '🪔', t('nav.products'))}
-              {navLink(`/${locale}/packages`, '🎁', t('nav.packages'))}
-              {navLink(`/${locale}/track`, '📦', locale === 'bn' ? 'অর্ডার ট্র্যাক করুন' : 'Track Order')}
-              {role === 'CUSTOMER' && navLink(`/${locale}/orders`, '🛍️', t('nav.orders'))}
+              {navLink(`/${locale}`, "🏠", t("nav.home"))}
+              {navLink(`/${locale}/products`, "🪔", t("nav.products"))}
+              {navLink(`/${locale}/packages`, "🎁", t("nav.packages"))}
+              {navLink(
+                `/${locale}/track`,
+                "📦",
+                locale === "bn" ? "অর্ডার ট্র্যাক করুন" : "Track Order",
+              )}
+              {role === "CUSTOMER" &&
+                navLink(`/${locale}/orders`, "🛍️", t("nav.orders"))}
             </>
           )}
         </div>
@@ -291,34 +459,50 @@ function MobileMenu({
         <div className="border-t border-gray-100 p-4">
           {currentUser ? (
             <div className="space-y-1">
-              <p className="text-xs text-gray-500 truncate">{currentUser.profile?.full_name_bn || currentUser.email}</p>
+              <p className="text-xs text-gray-500 truncate">
+                {currentUser.profile?.full_name_bn || currentUser.email}
+              </p>
               <div className="flex gap-2 mt-2">
-                <Link href={`/${locale}/profile`} onClick={onClose}
-                  className="flex-1 btn-secondary text-xs text-center py-1.5">
-                  {t('nav.profile')}
+                <Link
+                  href={`/${locale}/profile`}
+                  onClick={onClose}
+                  className="flex-1 btn-secondary text-xs text-center py-1.5"
+                >
+                  {t("nav.profile")}
                 </Link>
-                <button onClick={() => { onClose(); onLogout() }}
-                  className="flex-1 text-xs text-red-500 border border-red-200 rounded-lg py-1.5 hover:bg-red-50">
-                  {t('nav.logout')}
+                <button
+                  onClick={() => {
+                    onClose();
+                    onLogout();
+                  }}
+                  className="flex-1 text-xs text-red-500 border border-red-200 rounded-lg py-1.5 hover:bg-red-50"
+                >
+                  {t("nav.logout")}
                 </button>
               </div>
             </div>
           ) : (
             <div className="flex gap-2">
-              <Link href={`/${locale}/auth/login`} onClick={onClose}
-                className="flex-1 btn-secondary text-xs text-center py-1.5">
-                {t('nav.login')}
+              <Link
+                href={`/${locale}/auth/login`}
+                onClick={onClose}
+                className="flex-1 btn-secondary text-xs text-center py-1.5"
+              >
+                {t("nav.login")}
               </Link>
-              <Link href={`/${locale}/auth/register`} onClick={onClose}
-                className="flex-1 btn-primary text-xs text-center py-1.5">
-                {t('nav.register')}
+              <Link
+                href={`/${locale}/auth/register`}
+                onClick={onClose}
+                className="flex-1 btn-primary text-xs text-center py-1.5"
+              >
+                {t("nav.register")}
               </Link>
             </div>
           )}
         </div>
       </div>
     </>
-  )
+  );
 }
 
 export default function Navbar() {
@@ -392,15 +576,19 @@ export default function Navbar() {
   };
 
   const handleMobileSearch = (q: string) => {
-    router.push(`/${locale}/products${q ? `?search=${encodeURIComponent(q)}` : ''}`)
-  }
+    router.push(
+      `/${locale}/products${q ? `?search=${encodeURIComponent(q)}` : ""}`,
+    );
+  };
 
   return (
     <nav className="bg-white shadow-sm border-b border-amber-100 sticky top-0 z-50">
       {mobileOpen && (
         <MobileMenu
-          locale={locale} pathname={pathname}
-          role={role} currentUser={currentUser}
+          locale={locale}
+          pathname={pathname}
+          role={role}
+          currentUser={currentUser}
           t={t}
           onClose={() => setMobileOpen(false)}
           onLogout={handleLogout}
@@ -408,7 +596,7 @@ export default function Navbar() {
         />
       )}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center gap-4 h-16">
+        <div className="flex items-center gap-3 h-16">
           {/* Hamburger — mobile only, hidden for delivery */}
           {role !== "DELIVERY" && (
             <button
@@ -416,8 +604,18 @@ export default function Navbar() {
               onClick={() => setMobileOpen(true)}
               aria-label="Open menu"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
               </svg>
             </button>
           )}
@@ -457,9 +655,13 @@ export default function Navbar() {
                     pathname.startsWith(full + "/") &&
                     !(href === "/admin/orders" && pathname === posPath));
                 return (
-                  <Link key={href} href={full}
+                  <Link
+                    key={href}
+                    href={full}
                     className={`flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs whitespace-nowrap transition-colors ${
-                      active ? "bg-amber-50 text-amber-700 font-medium" : "text-gray-600 hover:text-amber-600 hover:bg-gray-50"
+                      active
+                        ? "bg-amber-50 text-amber-700 font-medium"
+                        : "text-gray-600 hover:text-amber-600 hover:bg-gray-50"
                     }`}
                   >
                     <span>{icon}</span>
@@ -468,22 +670,37 @@ export default function Navbar() {
                 );
               })
             ) : role === "DELIVERY" ? (
-              <Link href={`/${locale}/delivery/orders`} className="text-gray-600 hover:text-amber-600 text-sm">
+              <Link
+                href={`/${locale}/delivery/orders`}
+                className="text-gray-600 hover:text-amber-600 text-sm"
+              >
                 {t("nav.delivery")}
               </Link>
             ) : (
               <>
-                <Link href={`/${locale}`} className="text-gray-600 hover:text-amber-600 text-sm px-2">
+                <Link
+                  href={`/${locale}`}
+                  className="text-gray-600 hover:text-amber-600 text-sm px-2"
+                >
                   {t("nav.home")}
                 </Link>
-                <Link href={`/${locale}/products`} className="text-gray-600 hover:text-amber-600 text-sm px-2">
+                <Link
+                  href={`/${locale}/products`}
+                  className="text-gray-600 hover:text-amber-600 text-sm px-2"
+                >
                   {t("nav.products")}
                 </Link>
-                <Link href={`/${locale}/packages`} className="text-gray-600 hover:text-amber-600 text-sm px-2">
+                <Link
+                  href={`/${locale}/packages`}
+                  className="text-gray-600 hover:text-amber-600 text-sm px-2"
+                >
                   {t("nav.packages")}
                 </Link>
-                <Link href={`/${locale}/track`} className="text-gray-600 hover:text-amber-600 text-sm px-2">
-                  {locale === 'bn' ? 'অর্ডার ট্র্যাক' : 'Track Order'}
+                <Link
+                  href={`/${locale}/track`}
+                  className="text-gray-600 hover:text-amber-600 text-sm px-2"
+                >
+                  {locale === "bn" ? "অর্ডার ট্র্যাক" : "Track Order"}
                 </Link>
               </>
             )}
@@ -492,15 +709,30 @@ export default function Navbar() {
           {/* Banners + Accounting dropdowns — shrink-0 so they stay in place */}
           {(role === "ADMIN" || role === "WAREHOUSE") && (
             <div className="hidden md:flex items-center gap-1 shrink-0">
-              <NavDropdown locale={locale} pathname={pathname}
-                links={SETTINGS_LINKS} icon="⚙️"
-                label_bn="সেটিংস" label_en="Settings" />
-              <NavDropdown locale={locale} pathname={pathname}
-                links={BANNER_LINKS} icon="🎨"
-                label_bn="ব্যানার" label_en="Banners" />
-              <NavDropdown locale={locale} pathname={pathname}
-                links={ACCOUNTING_LINKS} icon="📒"
-                label_bn="হিসাব" label_en="Accounting" />
+              <NavDropdown
+                locale={locale}
+                pathname={pathname}
+                links={SETTINGS_LINKS}
+                icon="⚙️"
+                label_bn="সেটিংস"
+                label_en="Settings"
+              />
+              <NavDropdown
+                locale={locale}
+                pathname={pathname}
+                links={BANNER_LINKS}
+                icon="🎨"
+                label_bn="ব্যানার"
+                label_en="Banners"
+              />
+              <NavDropdown
+                locale={locale}
+                pathname={pathname}
+                links={ACCOUNTING_LINKS}
+                icon="📒"
+                label_bn="হিসাব"
+                label_en="Accounting"
+              />
             </div>
           )}
 

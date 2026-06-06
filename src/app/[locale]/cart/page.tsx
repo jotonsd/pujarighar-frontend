@@ -229,7 +229,7 @@ function PaymentMethodModal({
 
         <button
           onClick={() => onSelect("COD")}
-          className="w-full flex items-center gap-4 p-4 rounded-xl border-2 border-gray-200 hover:border-amber-400 hover:bg-amber-50 transition-colors text-left"
+          className="w-full flex items-center gap-3 p-4 rounded-xl border-2 border-gray-200 hover:border-amber-400 hover:bg-amber-50 transition-colors text-left"
         >
           <span className="text-3xl">💵</span>
           <div>
@@ -246,7 +246,7 @@ function PaymentMethodModal({
 
         <button
           onClick={() => onSelect("ONLINE")}
-          className="w-full flex items-center gap-4 p-4 rounded-xl border-2 border-gray-200 hover:border-amber-400 hover:bg-amber-50 transition-colors text-left"
+          className="w-full flex items-center gap-3 p-4 rounded-xl border-2 border-gray-200 hover:border-amber-400 hover:bg-amber-50 transition-colors text-left"
         >
           <span className="text-3xl">💳</span>
           <div>
@@ -585,7 +585,7 @@ export default function CartPage() {
             <p>{t("cart.empty")}</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <div className="lg:col-span-2">
               <div className="card divide-y divide-gray-100 p-0 overflow-hidden">
                 {items.map(item => {
@@ -941,7 +941,7 @@ export default function CartPage() {
           <p>{t("cart.empty")}</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="lg:col-span-2">
             <div className="card divide-y divide-gray-100 p-0 overflow-hidden">
               {guestItems.map(item => {
@@ -955,9 +955,15 @@ export default function CartPage() {
                       <div className="w-11 h-11 rounded-lg overflow-hidden bg-amber-50 shrink-0 flex items-center justify-center">
                         {item.image ? (
                           // eslint-disable-next-line @next/next/no-img-element
-                          <img src={item.image} alt={name} className="w-full h-full object-cover" />
+                          <img
+                            src={item.image}
+                            alt={name}
+                            className="w-full h-full object-cover"
+                          />
                         ) : (
-                          <span className="text-xl">{item.is_package ? "🎁" : "🪔"}</span>
+                          <span className="text-xl">
+                            {item.is_package ? "🎁" : "🪔"}
+                          </span>
                         )}
                       </div>
                       <div className="flex-1 min-w-0">

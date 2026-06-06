@@ -1,22 +1,21 @@
 "use client";
 
-import { useState } from "react";
-import { useTranslations } from "next-intl";
-import PageHeader from "@/components/ui/PageHeader";
-import { Product } from "@/lib/types";
 import ProductSelector from "@/components/admin/inventory/ProductSelector";
 import StockAdjustPanel from "@/components/admin/inventory/StockAdjustPanel";
-import { useLocale } from "next-intl";
+import PageHeader from "@/components/ui/PageHeader";
+import { Product } from "@/lib/types";
+import { useLocale, useTranslations } from "next-intl";
+import { useState } from "react";
 
 export default function InventoryPage() {
-  const t      = useTranslations();
+  const t = useTranslations();
   const locale = useLocale();
   const [selected, setSelected] = useState<Product | null>(null);
 
   return (
     <div>
       <PageHeader title={t("admin.inventory")} />
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <ProductSelector selected={selected} onSelect={setSelected} />
         {selected ? (
           <StockAdjustPanel product={selected} />

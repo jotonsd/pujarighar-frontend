@@ -2,16 +2,16 @@
 
 import { useGetCategoriesQuery } from "@/api/categories/categoriesApi";
 import {
-  useAddProductImageMutation,
-  useDeleteProductImageMutation,
-  useGetProductQuery,
-  useUpdateProductMutation,
+    useAddProductImageMutation,
+    useDeleteProductImageMutation,
+    useGetProductQuery,
+    useUpdateProductMutation,
 } from "@/api/products/productsApi";
 import {
-  FloatingInput,
-  FloatingSelect,
-  FloatingTextarea,
-  ToggleSwitch,
+    FloatingInput,
+    FloatingSelect,
+    FloatingTextarea,
+    ToggleSwitch,
 } from "@/components/ui/forms";
 import PageHeader from "@/components/ui/PageHeader";
 import Spinner from "@/components/ui/Spinner";
@@ -129,7 +129,7 @@ export default function EditProductPage({
       />
 
       <div className="card space-y-4">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-3">
           <FloatingInput
             label="নাম (বাংলা)"
             value={form.name_bn}
@@ -219,7 +219,9 @@ export default function EditProductPage({
                   />
                   <button
                     type="button"
-                    onClick={() => deleteImage({ productId: params.id, imageId: img.id })}
+                    onClick={() =>
+                      deleteImage({ productId: params.id, imageId: img.id })
+                    }
                     className="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                   >
                     ×

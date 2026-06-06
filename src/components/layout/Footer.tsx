@@ -10,7 +10,7 @@ export default async function Footer() {
     <footer className="bg-gray-900 text-gray-300 mt-0">
       {/* Main footer content */}
       <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Brand */}
           <div className="lg:col-span-1">
             <div className="flex items-center gap-2 mb-4">
@@ -169,7 +169,7 @@ export default async function Footer() {
             © {year} PujariGhar.{" "}
             {bn ? "সর্বস্বত্ব সংরক্ষিত।" : "All rights reserved."}
           </p>
-          <div className="flex items-center gap-4 text-xs text-gray-500">
+          <div className="flex items-center gap-3 text-xs text-gray-500">
             <Link
               href={`/${locale}`}
               className="hover:text-amber-400 transition-colors"

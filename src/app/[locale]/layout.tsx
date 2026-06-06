@@ -7,9 +7,9 @@ import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import Toaster from '@/components/ui/Toaster'
 import type { Metadata } from 'next'
-import { Roboto } from 'next/font/google'
+import { Ubuntu } from 'next/font/google'
 
-const roboto = Roboto({
+const ubuntu = Ubuntu({
   subsets: ['latin'],
   weight: ['400', '500', '700'],
   display: 'swap',
@@ -34,7 +34,7 @@ export default async function LocaleLayout({
   const messages = await getMessages()
 
   return (
-    <html lang={locale} className={locale === 'en' ? roboto.className : ''}>
+    <html lang={locale} className={locale === 'en' ? ubuntu.className : ''}>
       <body suppressHydrationWarning>
         <NextIntlClientProvider messages={messages}>
           <Providers>

@@ -2,18 +2,18 @@
 
 import { useGetCategoriesQuery } from "@/api/categories/categoriesApi";
 import {
-  useAddPackageItemMutation,
-  useAddProductImageMutation,
-  useCreateProductMutation,
-  useDeletePackageItemMutation,
-  useDeleteProductImageMutation,
-  useGetProductsQuery,
-  useUpdateProductMutation,
+    useAddPackageItemMutation,
+    useAddProductImageMutation,
+    useCreateProductMutation,
+    useDeletePackageItemMutation,
+    useDeleteProductImageMutation,
+    useGetProductsQuery,
+    useUpdateProductMutation,
 } from "@/api/products/productsApi";
 import {
-  FloatingInput,
-  FloatingSelect,
-  FloatingTextarea,
+    FloatingInput,
+    FloatingSelect,
+    FloatingTextarea,
 } from "@/components/ui/forms";
 import PageHeader from "@/components/ui/PageHeader";
 import { Product } from "@/lib/types";
@@ -207,10 +207,15 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
         if (imageFile) {
           const fd = new FormData();
           fd.append("image", imageFile);
-          await addProductImage({ productId: packageId, formData: fd }).unwrap();
+          await addProductImage({
+            productId: packageId,
+            formData: fd,
+          }).unwrap();
         }
 
-        toast.success(locale === "bn" ? "প্যাকেজ তৈরি হয়েছে" : "Package created");
+        toast.success(
+          locale === "bn" ? "প্যাকেজ তৈরি হয়েছে" : "Package created",
+        );
       } else {
         packageId = pkg!.id;
         await updateProduct({
@@ -243,10 +248,15 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
         if (imageFile) {
           const fd = new FormData();
           fd.append("image", imageFile);
-          await addProductImage({ productId: packageId, formData: fd }).unwrap();
+          await addProductImage({
+            productId: packageId,
+            formData: fd,
+          }).unwrap();
         }
 
-        toast.success(locale === "bn" ? "প্যাকেজ আপডেট হয়েছে" : "Package updated");
+        toast.success(
+          locale === "bn" ? "প্যাকেজ আপডেট হয়েছে" : "Package updated",
+        );
       }
 
       router.push(`/${locale}/admin/packages`);
@@ -285,14 +295,14 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
         backHref={`/${locale}/admin/packages`}
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* ── Left: Basic info ── */}
         <div className="lg:col-span-2 space-y-4">
           <div className="card space-y-4">
             <h2 className="font-semibold text-gray-700 text-sm uppercase tracking-wider">
               {locale === "bn" ? "প্যাকেজ তথ্য" : "Package Info"}
             </h2>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3">
               <FloatingInput
                 label="নাম (বাংলা) *"
                 value={form.name_bn}
@@ -304,7 +314,7 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
                 onChange={f("name_en")}
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3">
               <FloatingInput
                 label="SKU *"
                 value={form.sku}
@@ -577,13 +587,22 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
                 {existingImages.map(img => (
                   <div key={img.id} className="relative group">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={img.image} alt="" className="w-20 h-20 object-cover rounded-lg border border-gray-200" />
+                    <img
+                      src={img.image}
+                      alt=""
+                      className="w-20 h-20 object-cover rounded-lg border border-gray-200"
+                    />
                     <button
                       type="button"
                       onClick={async () => {
                         try {
-                          await deleteProductImage({ productId: pkg!.id, imageId: img.id }).unwrap();
-                          setExistingImages(prev => prev.filter(i => i.id !== img.id));
+                          await deleteProductImage({
+                            productId: pkg!.id,
+                            imageId: img.id,
+                          }).unwrap();
+                          setExistingImages(prev =>
+                            prev.filter(i => i.id !== img.id),
+                          );
                         } catch {
                           toast.error("Failed to delete image");
                         }
@@ -601,12 +620,21 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
             {imagePreview && (
               <div className="relative inline-block">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={imagePreview} alt="Preview" className="w-20 h-20 object-cover rounded-lg border border-amber-200" />
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="w-20 h-20 object-cover rounded-lg border border-amber-200"
+                />
                 <button
                   type="button"
-                  onClick={() => { setImageFile(null); setImagePreview(null); }}
+                  onClick={() => {
+                    setImageFile(null);
+                    setImagePreview(null);
+                  }}
                   className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-amber-500 text-white rounded-full text-xs flex items-center justify-center"
-                >×</button>
+                >
+                  ×
+                </button>
               </div>
             )}
 
