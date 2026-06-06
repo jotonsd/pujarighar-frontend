@@ -10,7 +10,7 @@ import { FloatingDatePicker, FloatingInput, FloatingSelect } from '@/components/
 import PageHeader from '@/components/ui/PageHeader'
 import { ReusableTable, Column } from '@/components/ui/ReusableTable'
 import { OrderStatus, SalesOrder } from '@/lib/types'
-import { formatAmount, formatDate } from '@/utils/format'
+import { formatAmount, formatDate, localName } from '@/utils/format'
 import { useGetOrdersQuery } from '@/api/orders/ordersApi'
 
 const STATUSES: OrderStatus[] = ['PENDING', 'CONFIRMED', 'PACKED', 'ASSIGNED', 'ON_THE_WAY', 'DELIVERED', 'RETURNED', 'CANCELLED']
@@ -37,7 +37,7 @@ export default function OrderList() {
     { header: t('order.number'), accessor: o => <span className="font-mono text-sm">{o.order_number}</span>, exportValue: o => o.order_number },
     {
       header: locale === 'bn' ? 'গ্রাহক' : 'Customer',
-      accessor: o => <div><p className="text-sm font-medium text-gray-800">{locale === 'bn' ? o.shipping_name_bn : o.shipping_name_en}</p><p className="text-xs text-gray-400">{o.shipping_phone}</p></div>,
+      accessor: o => <div><p className="text-sm font-medium text-gray-800">{localName(o.shipping_name_bn, o.shipping_name_en, locale === 'bn')}</p><p className="text-xs text-gray-400">{o.shipping_phone}</p></div>,
       exportValue: o => `${o.shipping_name_en} / ${o.shipping_phone}`,
     },
     {

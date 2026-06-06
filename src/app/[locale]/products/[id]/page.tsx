@@ -1,5 +1,5 @@
 "use client";
-import { formatAmount, formatNumber } from "@/utils/format";
+import { formatAmount, formatNumber, localName } from "@/utils/format";
 
 import { useAddToCartMutation } from "@/api/cart/cartApi";
 import { useGetProductQuery } from "@/api/products/productsApi";
@@ -100,7 +100,7 @@ export default function ProductDetailPage({
   if (isLoading) return <ProductDetailSkeleton />;
   if (!product) return null;
 
-  const name = locale === "bn" ? product.name_bn : product.name_en;
+  const name = localName(product.name_bn, product.name_en, locale === 'bn');
   const desc =
     locale === "bn" ? product.description_bn : product.description_en;
   const inStock = Number(product.stock_on_hand) > 0;

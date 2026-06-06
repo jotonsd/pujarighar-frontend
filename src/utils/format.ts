@@ -34,6 +34,13 @@ export function formatNumber(value: number | string, locale: string): string {
 }
 
 /**
+ * Pick the localised name with fallback: bn→en in Bangla mode, en→bn otherwise.
+ */
+export function localName(bn: string | null | undefined, en: string | null | undefined, isBn: boolean): string {
+  return (isBn ? (bn || en) : (en || bn)) ?? ''
+}
+
+/**
  * Format a date string or Date object with the correct locale.
  * Produces Bengali digits and month names in Bangla mode.
  */

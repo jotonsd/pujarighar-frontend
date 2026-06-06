@@ -4,6 +4,7 @@ import { useGetOrderTrackingQuery } from "@/api/orders/ordersApi";
 import OrderStatusBadge from "@/components/orders/OrderStatusBadge";
 import StatusTimeline from "@/components/orders/StatusTimeline";
 import Spinner from "@/components/ui/Spinner";
+import { localName } from "@/utils/format";
 import { useLocale } from "next-intl";
 
 export default function TrackingPage({ params }: { params: { id: string } }) {
@@ -48,9 +49,7 @@ export default function TrackingPage({ params }: { params: { id: string } }) {
             {isBn ? "গ্রাহকের তথ্য" : "Customer"}
           </p>
           <p className="text-sm font-medium text-gray-700">
-            {isBn
-              ? order.shipping_name_bn
-              : order.shipping_name_en || order.shipping_name_bn}
+            {localName(order.shipping_name_bn, order.shipping_name_en, isBn)}
           </p>
           <p className="text-sm text-gray-500">{order.shipping_phone}</p>
         </div>

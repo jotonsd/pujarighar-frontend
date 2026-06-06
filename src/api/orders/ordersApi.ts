@@ -91,6 +91,12 @@ export const ordersApi = baseApi.injectEndpoints({
       invalidatesTags: (_r, _e, id) => ['Orders', { type: 'Order', id }],
     }),
 
+    updateShipping: build.mutation<SalesOrder, { id: string; shipping_name_bn?: string; shipping_name_en?: string; shipping_phone?: string; shipping_address_bn?: string; shipping_address_en?: string; shipping_district?: string; shipping_thana?: string; shipping_post_code?: string }>({
+      query: ({ id, ...body }) => ({ url: `/api/orders/${id}/update-shipping/`, method: 'PATCH', body }),
+      transformResponse: (res: { data: SalesOrder }) => res.data,
+      invalidatesTags: (_r, _e, { id }) => ['Orders', { type: 'Order', id }],
+    }),
+
     trackByOrderNumber: build.query<OrderTracking, { order_number: string; phone: string }>({
       query: ({ order_number, phone }) =>
         `/api/orders/track/?order_number=${encodeURIComponent(order_number)}&phone=${encodeURIComponent(phone)}`,
@@ -127,6 +133,7 @@ export const {
   useReturnOrderMutation,
   useCancelOrderMutation,
   useMarkCodPaidMutation,
+  useUpdateShippingMutation,
   usePosCreateOrderMutation,
   useTrackByOrderNumberQuery,
 } = ordersApi

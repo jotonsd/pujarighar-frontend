@@ -8,7 +8,7 @@ import { useAuthStore } from "@/store/authStore";
 import { useCartStore } from "@/store/cartStore";
 import { useGuestCartStore } from "@/store/guestCartStore";
 import { toast } from "@/store/toastStore";
-import { formatAmount, formatNumber } from "@/utils/format";
+import { formatAmount, formatNumber, localName } from "@/utils/format";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -78,7 +78,7 @@ export default function PackageDetailPage({
   if (isLoading) return <Spinner />;
   if (!pkg) return null;
 
-  const name = locale === "bn" ? pkg.name_bn : pkg.name_en;
+  const name = localName(pkg.name_bn, pkg.name_en, locale === 'bn');
   const desc = locale === "bn" ? pkg.description_bn : pkg.description_en;
   const inStock = Number(pkg.stock_on_hand) > 0;
 

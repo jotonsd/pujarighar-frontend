@@ -5,7 +5,7 @@ import OrderStatusBadge from "@/components/orders/OrderStatusBadge";
 import StatusTimeline from "@/components/orders/StatusTimeline";
 import { FloatingInput } from "@/components/ui/forms";
 import Spinner from "@/components/ui/Spinner";
-import { formatAmount } from "@/utils/format";
+import { formatAmount, localName } from "@/utils/format";
 import { useLocale } from "next-intl";
 import { useState } from "react";
 
@@ -137,9 +137,7 @@ export default function TrackOrderPage() {
               {isBn ? "ডেলিভারি তথ্য" : "Delivery Info"}
             </p>
             <p className="text-sm font-medium text-gray-700">
-              {isBn
-                ? order.shipping_name_bn
-                : order.shipping_name_en || order.shipping_name_bn}
+              {localName(order.shipping_name_bn, order.shipping_name_en, isBn)}
             </p>
             <p className="text-sm text-gray-500">{order.shipping_phone}</p>
             <p className="text-sm text-gray-500">{order.shipping_address_bn}</p>

@@ -1,5 +1,5 @@
 "use client";
-import { formatAmount } from "@/utils/format";
+import { formatAmount, localName } from "@/utils/format";
 
 import {
     useDeliverOrderMutation,
@@ -130,9 +130,7 @@ export default function DeliveryOrderDetailPage({
           </h2>
           <div className="text-sm text-gray-600 space-y-1">
             <p className="font-medium text-gray-800">
-              {locale === "bn"
-                ? order.shipping_name_bn
-                : order.shipping_name_en}
+              {localName(order.shipping_name_bn, order.shipping_name_en, locale === "bn")}
             </p>
             <p>{order.shipping_phone}</p>
             <p>
@@ -161,9 +159,7 @@ export default function DeliveryOrderDetailPage({
             {order.items.map(item => (
               <div key={item.id} className="flex justify-between text-sm">
                 <span className="text-gray-700">
-                  {locale === "bn"
-                    ? item.product_name_bn
-                    : item.product_name_en}
+                  {localName(item.product_name_bn, item.product_name_en, locale === "bn")}
                   <span className="text-gray-400 ml-2">×{item.quantity}</span>
                 </span>
                 <span className="font-medium">

@@ -10,6 +10,7 @@ import StatusTimeline from "@/components/orders/StatusTimeline";
 import PageHeader from "@/components/ui/PageHeader";
 import { OrderDetailSkeleton } from "@/components/ui/skeletons";
 import { FileText } from "lucide-react";
+import { localName } from "@/utils/format";
 import { useLocale } from "next-intl";
 import { useState } from "react";
 
@@ -26,7 +27,7 @@ export default function AdminOrderDetailPage({ params }: { params: { id: string 
     <div>
       <PageHeader
         title={order.order_number}
-        description={`${locale === "bn" ? order.shipping_name_bn : order.shipping_name_en} · ${order.shipping_phone}`}
+        description={`${localName(order.shipping_name_bn, order.shipping_name_en, locale === 'bn')} · ${order.shipping_phone}`}
         showBack backHref={`/${locale}/admin/orders`}
         backLabel={locale === "bn" ? "অর্ডার তালিকা" : "Orders"}
         actions={

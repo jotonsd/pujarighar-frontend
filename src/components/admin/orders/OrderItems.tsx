@@ -2,7 +2,7 @@
 
 import { useLocale, useTranslations } from 'next-intl'
 import { SalesOrder } from '@/lib/types'
-import { formatAmount, formatNumber } from '@/utils/format'
+import { formatAmount, formatNumber, localName } from '@/utils/format'
 
 interface Props {
   order: SalesOrder
@@ -25,7 +25,7 @@ export default function OrderItems({ order }: Props) {
                     🎁 {locale === 'bn' ? 'প্যাকেজ' : 'Package'}
                   </span>
                 )}
-                {locale === 'bn' ? item.product_name_bn : item.product_name_en}
+                {localName(item.product_name_bn, item.product_name_en, locale === 'bn')}
                 <span className="text-gray-400 ml-1">×{formatNumber(Math.round(parseFloat(item.quantity)), locale)}</span>
               </span>
               <span className="font-bold">{formatAmount(item.line_total, locale)}</span>
@@ -36,7 +36,7 @@ export default function OrderItems({ order }: Props) {
                   <div key={i} className="flex items-center justify-between text-xs text-gray-500">
                     <span className="flex items-center gap-1.5">
                       <span className="w-1 h-1 rounded-full bg-amber-300 shrink-0" />
-                      {locale === 'bn' ? pi.component_name_bn : pi.component_name_en}
+                      {localName(pi.component_name_bn, pi.component_name_en, locale === 'bn')}
                       <span className="text-gray-400 font-mono">{pi.component_sku}</span>
                     </span>
                     <span className="text-gray-400 shrink-0">×{formatNumber(Math.round(parseFloat(pi.quantity)), locale)}</span>

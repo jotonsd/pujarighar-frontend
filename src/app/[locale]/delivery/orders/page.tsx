@@ -5,7 +5,7 @@ import OrderStatusBadge from "@/components/orders/OrderStatusBadge";
 import { ReusableTable, Column } from "@/components/ui/ReusableTable";
 import PageHeader from "@/components/ui/PageHeader";
 import { SalesOrder } from "@/lib/types";
-import { formatAmount, formatDate } from "@/utils/format";
+import { formatAmount, formatDate, localName } from "@/utils/format";
 import { useLocale } from "next-intl";
 import Link from "next/link";
 import { Eye } from "lucide-react";
@@ -42,12 +42,12 @@ export default function DeliveryOrdersPage() {
       accessor: o => (
         <div>
           <p className="text-sm font-medium text-gray-800">
-            {locale === "bn" ? o.shipping_name_bn : o.shipping_name_en}
+            {localName(o.shipping_name_bn, o.shipping_name_en, locale === 'bn')}
           </p>
           <p className="text-xs text-gray-500">{o.shipping_phone}</p>
         </div>
       ),
-      exportValue: o => `${locale === "bn" ? o.shipping_name_bn : o.shipping_name_en} · ${o.shipping_phone}`,
+      exportValue: o => `${localName(o.shipping_name_bn, o.shipping_name_en, locale === 'bn')} · ${o.shipping_phone}`,
     },
     {
       header: locale === "bn" ? "ঠিকানা" : "Address",

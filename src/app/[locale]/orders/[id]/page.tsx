@@ -1,5 +1,5 @@
 "use client";
-import { formatAmount, formatNumber } from "@/utils/format";
+import { formatAmount, formatNumber, localName } from "@/utils/format";
 
 import {
   useCancelOrderMutation,
@@ -134,9 +134,7 @@ export default function OrderDetailPage({
                           🎁
                         </span>
                       )}
-                      {locale === "bn"
-                        ? item.product_name_bn
-                        : item.product_name_en}
+                      {localName(item.product_name_bn, item.product_name_en, locale === "bn")}
                       <span className="text-gray-400 ml-1">
                         ×
                         {formatNumber(
@@ -188,9 +186,7 @@ export default function OrderDetailPage({
             </h2>
             <div className="text-sm text-gray-600 space-y-1">
               <p>
-                {locale === "bn"
-                  ? order.shipping_name_bn
-                  : order.shipping_name_en}
+                {localName(order.shipping_name_bn, order.shipping_name_en, locale === "bn")}
               </p>
               <p>{order.shipping_phone}</p>
               <p>

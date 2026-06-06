@@ -9,7 +9,8 @@ import { useGuestCartStore } from "@/store/guestCartStore";
 import { toast } from "@/store/toastStore";
 import {
   formatAmount,
-  formatNumber
+  formatNumber,
+  localName,
 } from "@/utils/format";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
@@ -50,7 +51,7 @@ export default function ProductCard({ product, locale }: Props) {
     );
   };
 
-  const name = locale === "bn" ? product.name_bn : product.name_en;
+  const name = localName(product.name_bn, product.name_en, locale === 'bn');
   const inStock = Number(product.stock_on_hand) > 0;
   const maxStock = Math.max(1, Number(product.stock_on_hand));
 

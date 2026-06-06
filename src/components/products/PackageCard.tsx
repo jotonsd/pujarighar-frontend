@@ -1,7 +1,7 @@
 'use client'
 
 import { Product } from '@/lib/types'
-import { formatAmount, formatNumber } from '@/utils/format'
+import { formatAmount, formatNumber, localName } from '@/utils/format'
 import Link from 'next/link'
 
 interface Props {
@@ -10,7 +10,7 @@ interface Props {
 }
 
 export default function PackageCard({ pkg, locale }: Props) {
-  const name = locale === 'bn' ? pkg.name_bn : pkg.name_en
+  const name = localName(pkg.name_bn, pkg.name_en, locale === 'bn')
 
   const originalPrice = pkg.package_items?.reduce(
     (sum, item) => sum + parseFloat(item.unit_price ?? '0') * Number(item.quantity),
