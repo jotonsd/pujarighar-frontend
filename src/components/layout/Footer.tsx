@@ -164,7 +164,7 @@ export default async function Footer() {
 
       {/* Divider */}
       <div className="border-t border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="max-w-7xl mx-auto px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-gray-500">
             © {year} PujariGhar.{" "}
             {bn ? "সর্বস্বত্ব সংরক্ষিত।" : "All rights reserved."}

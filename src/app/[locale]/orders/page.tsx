@@ -18,7 +18,7 @@ export default function OrdersPage() {
   const { data, isLoading } = useGetOrdersQuery({ page });
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-5">
+    <div className="max-w-7xl mx-auto px-4 py-3">
       <PageHeader title={t("order.title")} />
 
       {isLoading ? (

@@ -100,13 +100,13 @@ export default function ProductDetailPage({
   if (isLoading) return <ProductDetailSkeleton />;
   if (!product) return null;
 
-  const name = localName(product.name_bn, product.name_en, locale === 'bn');
+  const name = localName(product.name_bn, product.name_en, locale === "bn");
   const desc =
     locale === "bn" ? product.description_bn : product.description_en;
   const inStock = Number(product.stock_on_hand) > 0;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-5">
+    <div className="max-w-7xl mx-auto px-4 py-3">
       <button
         onClick={() => router.back()}
         className="text-amber-600 hover:underline mb-6 text-sm"
@@ -193,7 +193,13 @@ export default function ProductDetailPage({
           <p className="text-gray-500 text-sm mb-4">SKU: {product.sku}</p>
           <div className="flex items-center gap-2 flex-wrap mb-4">
             <span className="text-3xl font-bold text-amber-600">
-              {formatAmount(product.active_discount_type ? product.effective_price : product.unit_price, locale, 0)}
+              {formatAmount(
+                product.active_discount_type
+                  ? product.effective_price
+                  : product.unit_price,
+                locale,
+                0,
+              )}
             </span>
             {product.active_discount_type && (
               <>

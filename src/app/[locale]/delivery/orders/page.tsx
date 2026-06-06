@@ -2,30 +2,34 @@
 
 import { useGetOrdersQuery } from "@/api/orders/ordersApi";
 import OrderStatusBadge from "@/components/orders/OrderStatusBadge";
-import { ReusableTable, Column } from "@/components/ui/ReusableTable";
 import PageHeader from "@/components/ui/PageHeader";
+import { Column, ReusableTable } from "@/components/ui/ReusableTable";
 import { SalesOrder } from "@/lib/types";
 import { formatAmount, formatDate, localName } from "@/utils/format";
+import { Eye } from "lucide-react";
 import { useLocale } from "next-intl";
 import Link from "next/link";
-import { Eye } from "lucide-react";
 import { useState } from "react";
 
 const STATUS_FILTERS = [
-  { value: "ASSIGNED",   label_bn: "নির্ধারিত",       label_en: "Assigned"   },
-  { value: "ON_THE_WAY", label_bn: "পথে আছে",         label_en: "On the Way" },
-  { value: "DELIVERED",  label_bn: "ডেলিভারি হয়েছে",  label_en: "Delivered"  },
-  { value: "RETURNED",   label_bn: "ফেরত",             label_en: "Returned"   },
-  { value: "",           label_bn: "সব",               label_en: "All"        },
+  { value: "ASSIGNED", label_bn: "নির্ধারিত", label_en: "Assigned" },
+  { value: "ON_THE_WAY", label_bn: "পথে আছে", label_en: "On the Way" },
+  { value: "DELIVERED", label_bn: "ডেলিভারি হয়েছে", label_en: "Delivered" },
+  { value: "RETURNED", label_bn: "ফেরত", label_en: "Returned" },
+  { value: "", label_bn: "সব", label_en: "All" },
 ];
 
 export default function DeliveryOrdersPage() {
   const locale = useLocale();
   const [status, setStatus] = useState("ASSIGNED");
-  const [page, setPage]     = useState(1);
-  const [limit, setLimit]   = useState(10);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
 
-  const { data, isLoading } = useGetOrdersQuery({ status, page, page_size: limit });
+  const { data, isLoading } = useGetOrdersQuery({
+    status,
+    page,
+    page_size: limit,
+  });
 
   const columns: Column<SalesOrder>[] = [
     {
@@ -42,12 +46,13 @@ export default function DeliveryOrdersPage() {
       accessor: o => (
         <div>
           <p className="text-sm font-medium text-gray-800">
-            {localName(o.shipping_name_bn, o.shipping_name_en, locale === 'bn')}
+            {localName(o.shipping_name_bn, o.shipping_name_en, locale === "bn")}
           </p>
           <p className="text-xs text-gray-500">{o.shipping_phone}</p>
         </div>
       ),
-      exportValue: o => `${localName(o.shipping_name_bn, o.shipping_name_en, locale === 'bn')} · ${o.shipping_phone}`,
+      exportValue: o =>
+        `${localName(o.shipping_name_bn, o.shipping_name_en, locale === "bn")} · ${o.shipping_phone}`,
     },
     {
       header: locale === "bn" ? "ঠিকানা" : "Address",
@@ -56,7 +61,8 @@ export default function DeliveryOrdersPage() {
           {[o.shipping_district, o.shipping_thana].filter(Boolean).join(", ")}
         </p>
       ),
-      exportValue: o => [o.shipping_district, o.shipping_thana].filter(Boolean).join(", "),
+      exportValue: o =>
+        [o.shipping_district, o.shipping_thana].filter(Boolean).join(", "),
     },
     {
       header: locale === "bn" ? "মোট" : "Total",
@@ -75,21 +81,26 @@ export default function DeliveryOrdersPage() {
     {
       header: locale === "bn" ? "তারিখ" : "Date",
       accessor: o => (
-        <span className="text-xs text-gray-400">{formatDate(o.created_at, locale)}</span>
+        <span className="text-xs text-gray-400">
+          {formatDate(o.created_at, locale)}
+        </span>
       ),
       exportValue: o => new Date(o.created_at).toLocaleDateString(),
     },
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-5">
+    <div className="max-w-7xl mx-auto px-4 py-3">
       <PageHeader title={locale === "bn" ? "আমার ডেলিভারি" : "My Deliveries"} />
 
       <div className="flex gap-2 flex-wrap mb-4">
         {STATUS_FILTERS.map(f => (
           <button
             key={f.value}
-            onClick={() => { setStatus(f.value); setPage(1); }}
+            onClick={() => {
+              setStatus(f.value);
+              setPage(1);
+            }}
             className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
               status === f.value
                 ? "bg-amber-500 text-white"
@@ -111,9 +122,14 @@ export default function DeliveryOrdersPage() {
         currentPage={page}
         onPageChange={setPage}
         limit={limit}
-        onLimitChange={l => { setLimit(l); setPage(1); }}
+        onLimitChange={l => {
+          setLimit(l);
+          setPage(1);
+        }}
         exportFilename="deliveries"
-        emptyMessage={locale === "bn" ? "কোনো ডেলিভারি নেই" : "No deliveries found"}
+        emptyMessage={
+          locale === "bn" ? "কোনো ডেলিভারি নেই" : "No deliveries found"
+        }
         emptyIcon={<span className="text-2xl">📦</span>}
         quickActions={[
           {

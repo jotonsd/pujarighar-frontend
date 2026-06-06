@@ -21,7 +21,7 @@ export default function TrackingPage({ params }: { params: { id: string } }) {
     );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-5">
+    <div className="max-w-7xl mx-auto px-4 py-3">
       <div className="card max-w-2xl mx-auto space-y-5">
         {/* Header */}
         <div className="flex items-start justify-between">

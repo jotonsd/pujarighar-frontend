@@ -578,7 +578,7 @@ export default function CartPage() {
     }));
 
     return (
-      <div className="max-w-7xl mx-auto px-4 py-5">
+      <div className="max-w-7xl mx-auto px-4 py-3">
         {items.length === 0 ? (
           <div className="card text-center py-16 text-gray-400">
             <p className="text-4xl mb-4">🛒</p>
@@ -933,7 +933,7 @@ export default function CartPage() {
   }));
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-5">
+    <div className="max-w-7xl mx-auto px-4 py-3">
       <OfferBanners />
       {guestItems.length === 0 ? (
         <div className="card text-center py-16 text-gray-400">

@@ -107,7 +107,7 @@ export default function OrderDetailPage({
   if (!order) return null;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-5">
+    <div className="max-w-7xl mx-auto px-4 py-3">
       <PageHeader
         title={order.order_number}
         description={new Date(order.created_at).toLocaleString(
@@ -134,8 +134,12 @@ export default function OrderDetailPage({
                           🎁
                         </span>
                       )}
-                      {localName(item.product_name_bn, item.product_name_en, locale === "bn")}
-                      <span className="text-gray-400 ml-1">
+                      {localName(
+                        item.product_name_bn,
+                        item.product_name_en,
+                        locale === "bn",
+                      )}
+                      <span className="text-gray-400 ml-1 font-bold">
                         ×
                         {formatNumber(
                           Math.round(parseFloat(item.quantity)),
@@ -158,7 +162,7 @@ export default function OrderDetailPage({
                           {locale === "bn"
                             ? pi.component_name_bn
                             : pi.component_name_en}
-                          <span className="text-gray-400">
+                          <span className="text-gray-400 font-bold">
                             ×
                             {formatNumber(
                               Math.round(parseFloat(pi.quantity)),
@@ -186,7 +190,11 @@ export default function OrderDetailPage({
             </h2>
             <div className="text-sm text-gray-600 space-y-1">
               <p>
-                {localName(order.shipping_name_bn, order.shipping_name_en, locale === "bn")}
+                {localName(
+                  order.shipping_name_bn,
+                  order.shipping_name_en,
+                  locale === "bn",
+                )}
               </p>
               <p>{order.shipping_phone}</p>
               <p>
