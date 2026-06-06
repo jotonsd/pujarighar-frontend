@@ -40,7 +40,7 @@ export default function PackageCard({ pkg, locale }: Props) {
             <span className="absolute top-2 left-2 text-xs font-bold bg-amber-500 text-white px-2 py-0.5 rounded-full">
               {pkg.discount_type === 'PERCENTAGE'
                 ? `${formatNumber(pkg.discount_value, locale)}% ${locale === 'bn' ? 'ছাড়' : 'OFF'}`
-                : `৳${formatNumber(pkg.discount_value, locale)} ${locale === 'bn' ? 'ছাড়' : 'OFF'}`}
+                : `${formatAmount(pkg.discount_value, locale, 0)} ${locale === 'bn' ? 'ছাড়' : 'OFF'}`}
             </span>
           )}
         </div>

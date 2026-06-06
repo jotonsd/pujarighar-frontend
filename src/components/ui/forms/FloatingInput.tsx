@@ -40,7 +40,7 @@ function rawToFormattedCursor(formatted: string, rawPos: number): number {
 }
 
 const FloatingInput = forwardRef<HTMLInputElement, FloatingInputProps>(
-  ({ label, error, uppercase = false, className = '', onChange, icon, rightElement, type, value, ...props }, ref) => {
+  ({ label, error, uppercase = false, className = '', onChange, icon, rightElement, type, value, placeholder, ...props }, ref) => {
     const isNumber = type === 'number'
     const internalRef = useRef<HTMLInputElement>(null)
     const pendingCursor = useRef<number | null>(null)
@@ -100,10 +100,10 @@ const FloatingInput = forwardRef<HTMLInputElement, FloatingInputProps>(
             type={isNumber ? 'text' : type}
             inputMode={isNumber ? 'decimal' : undefined}
             value={displayValue}
-            className={`block pb-2 pt-3 w-full text-sm text-gray-900 bg-transparent rounded-lg border border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-amber-600 peer ${
+            className={`block pb-2 pt-3 w-full text-sm text-gray-900 bg-transparent rounded-lg border border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-amber-600 peer placeholder-transparent focus:placeholder-gray-400 ${
               error ? 'border-amber-500 focus:border-amber-500' : ''
             } ${icon ? 'pl-10' : 'pl-2.5'} ${rightElement ? 'pr-10' : 'pr-2.5'} ${className}`}
-            placeholder=" "
+            placeholder={placeholder ?? ' '}
             onChange={handleChange}
             {...props}
           />

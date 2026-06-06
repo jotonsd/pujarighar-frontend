@@ -35,7 +35,7 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale} className={locale === 'en' ? roboto.className : ''}>
-      <body>
+      <body suppressHydrationWarning>
         <NextIntlClientProvider messages={messages}>
           <Providers>
             <div className="min-h-screen flex flex-col">

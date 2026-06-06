@@ -191,28 +191,22 @@ export default function ProductDetailPage({
         <div>
           <h1 className="text-2xl font-bold text-gray-800 mb-2">{name}</h1>
           <p className="text-gray-500 text-sm mb-4">SKU: {product.sku}</p>
-          <div className="flex items-center gap-3 mb-4">
-            <div>
-              {product.active_discount_type ? (
-                <>
-                  <span className="text-3xl font-bold text-amber-600">
-                    {formatAmount(product.effective_price, locale, 0)}
-                  </span>
-                  <span className="text-sm text-gray-400 line-through ml-2">
-                    {formatAmount(product.unit_price, locale, 0)}
-                  </span>
-                  <span className="ml-2 text-xs font-bold bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full">
-                    {product.active_discount_type === "PERCENTAGE"
-                      ? `${formatAmount(Number(product.active_discount_value), locale, 0)}% ${locale === "bn" ? "ছাড়" : "OFF"}`
-                      : `৳${formatAmount(Number(product.active_discount_value), locale, 0)} ${locale === "bn" ? "ছাড়" : "OFF"}`}
-                  </span>
-                </>
-              ) : (
-                <span className="text-3xl font-bold text-amber-600">
+          <div className="flex items-center gap-2 flex-wrap mb-4">
+            <span className="text-3xl font-bold text-amber-600">
+              {formatAmount(product.active_discount_type ? product.effective_price : product.unit_price, locale, 0)}
+            </span>
+            {product.active_discount_type && (
+              <>
+                <span className="text-sm text-gray-400 line-through">
                   {formatAmount(product.unit_price, locale, 0)}
                 </span>
-              )}
-            </div>
+                <span className="text-xs font-bold bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full">
+                  {product.active_discount_type === "PERCENTAGE"
+                    ? `${formatNumber(Number(product.active_discount_value), locale)}% ${locale === "bn" ? "ছাড়" : "OFF"}`
+                    : `${formatAmount(Number(product.active_discount_value), locale, 0)} ${locale === "bn" ? "ছাড়" : "OFF"}`}
+                </span>
+              </>
+            )}
             {inStock ? (
               <Badge variant="green">{t("product.inStock")}</Badge>
             ) : (
@@ -242,14 +236,14 @@ export default function ProductDetailPage({
               <button
                 onClick={handleAddToCart}
                 disabled={adding}
-                className="btn-secondary flex-1"
+                className="btn-secondary flex-1 font-bold"
               >
                 {adding ? t("common.loading") : t("product.addToCart")}
               </button>
               <button
                 onClick={handleBuyNow}
                 disabled={adding}
-                className="btn-primary flex-1"
+                className="btn-primary flex-1 font-bold"
               >
                 {locale === "bn" ? "এখনই কিনুন" : "Buy Now"}
               </button>
