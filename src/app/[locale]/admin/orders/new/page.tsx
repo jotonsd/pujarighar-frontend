@@ -416,9 +416,11 @@ export default function POSPage() {
                       : "border-gray-200 text-gray-600 hover:border-amber-300"
                   }`}
                 >
-                  {z === "inside"
-                    ? `${locale === "bn" ? "ঢাকার ভিতরে" : "Inside Dhaka"} (৳${deliveryRates.inside_dhaka})`
-                    : `${locale === "bn" ? "ঢাকার বাইরে" : "Outside Dhaka"} (৳${deliveryRates.outside_dhaka})`}
+                  {z === "inside" ? (
+                    <>{locale === "bn" ? "ঢাকার ভিতরে" : "Inside Dhaka"} (<span className="font-bold">৳{formatNumber(deliveryRates.inside_dhaka, locale)}</span>)</>
+                  ) : (
+                    <>{locale === "bn" ? "ঢাকার বাইরে" : "Outside Dhaka"} (<span className="font-bold">৳{formatNumber(deliveryRates.outside_dhaka, locale)}</span>)</>
+                  )}
                 </button>
               ))}
             </div>

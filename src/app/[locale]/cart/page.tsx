@@ -277,6 +277,7 @@ function ConfirmModal({
   lines,
   subtotal,
   deliveryCharge,
+  deliveryAmount,
   grandTotal,
   paymentMethod,
   onConfirm,
@@ -287,6 +288,7 @@ function ConfirmModal({
   lines: { label: string; qty: number; price: string }[];
   subtotal: string;
   deliveryCharge: string;
+  deliveryAmount: number;
   grandTotal: string;
   paymentMethod: PaymentMethod;
   onConfirm: () => void;
@@ -302,10 +304,17 @@ function ConfirmModal({
 
         <div className="divide-y divide-gray-100 max-h-56 overflow-y-auto">
           {lines.map((l, i) => (
-            <div key={i} className="flex items-center justify-between py-2 text-sm">
-              <span className="text-gray-700 flex-1 truncate pr-2">{l.label}</span>
-              <span className="text-gray-400 text-xs mr-3">×{formatNumber(l.qty, locale)}</span>
-              <span className="font-semibold text-gray-800">{l.price}</span>
+            <div
+              key={i}
+              className="flex items-center justify-between py-2 text-sm"
+            >
+              <span className="text-gray-700 flex-1 truncate pr-2">
+                {l.label}
+              </span>
+              <span className="text-gray-400 text-xs font-bold mr-3">
+                ×{formatNumber(l.qty, locale)}
+              </span>
+              <span className="font-bold text-gray-800">{l.price}</span>
             </div>
           ))}
         </div>
@@ -313,16 +322,20 @@ function ConfirmModal({
         <div className="space-y-1.5 border-t border-gray-100 pt-2">
           <div className="flex items-center justify-between text-sm text-gray-500">
             <span>{locale === "bn" ? "সাবটোটাল" : "Subtotal"}</span>
-            <span>{subtotal}</span>
+            <span className="font-bold">{subtotal}</span>
           </div>
-          {parseFloat(deliveryCharge) > 0 && (
+          {deliveryAmount > 0 && (
             <div className="flex items-center justify-between text-sm text-gray-500">
-              <span>{locale === "bn" ? "ডেলিভারি চার্জ" : "Delivery Charge"}</span>
-              <span>{deliveryCharge}</span>
+              <span>
+                {locale === "bn" ? "ডেলিভারি চার্জ" : "Delivery Charge"}
+              </span>
+              <span className="font-bold">{deliveryCharge}</span>
             </div>
           )}
           <div className="flex items-center justify-between font-bold text-base border-t border-gray-100 pt-1.5">
-            <span className="text-gray-800">{locale === "bn" ? "সর্বমোট" : "Grand Total"}</span>
+            <span className="text-gray-800">
+              {locale === "bn" ? "সর্বমোট" : "Grand Total"}
+            </span>
             <span className="text-amber-600">{grandTotal}</span>
           </div>
         </div>
@@ -437,8 +450,12 @@ export default function CartPage() {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("COD");
-  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
-  const [deliveryZone, setDeliveryZone] = useState<"inside" | "outside">("outside");
+  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(
+    null,
+  );
+  const [deliveryZone, setDeliveryZone] = useState<"inside" | "outside">(
+    "outside",
+  );
   const { data: deliveryRates } = useGetDeliveryChargesQuery();
 
   // Auto-select default address when addresses load
@@ -760,15 +777,45 @@ export default function CartPage() {
                 {/* Zone selector */}
                 {deliveryRates && (
                   <div>
-                    <p className="text-xs text-gray-500 mb-1.5">{locale === "bn" ? "ডেলিভারি এলাকা" : "Delivery Zone"}</p>
+                    <p className="text-xs text-gray-500 mb-1.5">
+                      {locale === "bn" ? "ডেলিভারি এলাকা" : "Delivery Zone"}
+                    </p>
                     <div className="grid grid-cols-2 gap-2">
                       {(["inside", "outside"] as const).map(z => (
-                        <button key={z} type="button" onClick={() => setDeliveryZone(z)}
-                          className={`py-2 px-3 rounded-lg border text-xs font-medium transition-colors ${deliveryZone === z ? "border-amber-500 bg-amber-50 text-amber-700" : "border-gray-200 text-gray-600 hover:border-amber-300"}`}>
+                        <button
+                          key={z}
+                          type="button"
+                          onClick={() => setDeliveryZone(z)}
+                          className={`py-2 px-3 rounded-lg border text-xs font-medium transition-colors ${deliveryZone === z ? "border-amber-500 bg-amber-50 text-amber-700" : "border-gray-200 text-gray-600 hover:border-amber-300"}`}
+                        >
                           {z === "inside" ? (
-                            <>{locale === "bn" ? "ঢাকার ভিতরে" : "Inside Dhaka"} (<span className="font-bold">৳{formatNumber(deliveryRates.inside_dhaka, locale)}</span>)</>
+                            <>
+                              {locale === "bn" ? "ঢাকার ভিতরে" : "Inside Dhaka"}{" "}
+                              (
+                              <span className="font-bold">
+                                ৳
+                                {formatNumber(
+                                  deliveryRates.inside_dhaka,
+                                  locale,
+                                )}
+                              </span>
+                              )
+                            </>
                           ) : (
-                            <>{locale === "bn" ? "ঢাকার বাইরে" : "Outside Dhaka"} (<span className="font-bold">৳{formatNumber(deliveryRates.outside_dhaka, locale)}</span>)</>
+                            <>
+                              {locale === "bn"
+                                ? "ঢাকার বাইরে"
+                                : "Outside Dhaka"}{" "}
+                              (
+                              <span className="font-bold">
+                                ৳
+                                {formatNumber(
+                                  deliveryRates.outside_dhaka,
+                                  locale,
+                                )}
+                              </span>
+                              )
+                            </>
                           )}
                         </button>
                       ))}
@@ -781,8 +828,18 @@ export default function CartPage() {
                 </div>
                 {deliveryRates && (
                   <div className="flex justify-between text-sm text-gray-600">
-                    <span>{locale === "bn" ? "ডেলিভারি চার্জ" : "Delivery Charge"}</span>
-                    <span>{formatAmount(deliveryZone === "inside" ? deliveryRates.inside_dhaka : deliveryRates.outside_dhaka, locale, 0)}</span>
+                    <span>
+                      {locale === "bn" ? "ডেলিভারি চার্জ" : "Delivery Charge"}
+                    </span>
+                    <span>
+                      {formatAmount(
+                        deliveryZone === "inside"
+                          ? deliveryRates.inside_dhaka
+                          : deliveryRates.outside_dhaka,
+                        locale,
+                        0,
+                      )}
+                    </span>
                   </div>
                 )}
                 <div className="flex justify-between text-lg font-bold border-t border-gray-100 pt-2">
@@ -790,12 +847,22 @@ export default function CartPage() {
                   <span className="text-amber-600">
                     {formatAmount(
                       parseFloat(String(cart?.subtotal ?? 0)) +
-                      (deliveryRates ? parseFloat(deliveryZone === "inside" ? deliveryRates.inside_dhaka : deliveryRates.outside_dhaka) : 0),
+                        (deliveryRates
+                          ? parseFloat(
+                              deliveryZone === "inside"
+                                ? deliveryRates.inside_dhaka
+                                : deliveryRates.outside_dhaka,
+                            )
+                          : 0),
                       locale,
                     )}
                   </span>
                 </div>
-                <button onClick={openCheckoutFlow} disabled={addresses.length > 0 && !selectedAddressId} className="btn-primary w-full">
+                <button
+                  onClick={openCheckoutFlow}
+                  disabled={addresses.length > 0 && !selectedAddressId}
+                  className="btn-primary w-full"
+                >
                   {t("cart.checkout")}
                 </button>
               </div>
@@ -829,16 +896,31 @@ export default function CartPage() {
             onCancel={() => setShowPaymentModal(false)}
           />
         )}
-        {showConfirm && (() => {
-          const sub      = parseFloat(String(cart?.subtotal ?? 0));
-          const dc       = deliveryRates ? parseFloat(deliveryZone === "inside" ? deliveryRates.inside_dhaka : deliveryRates.outside_dhaka) : 0;
-          return (
-            <ConfirmModal locale={locale} lines={confirmLines} paymentMethod={paymentMethod}
-              subtotal={formatAmount(sub, locale)} deliveryCharge={formatAmount(dc, locale, 0)}
-              grandTotal={formatAmount(sub + dc, locale)}
-              onConfirm={handleCheckout} onCancel={() => setShowConfirm(false)} loading={checkingOut} />
-          );
-        })()}
+        {showConfirm &&
+          (() => {
+            const sub = parseFloat(String(cart?.subtotal ?? 0));
+            const dc = deliveryRates
+              ? parseFloat(
+                  deliveryZone === "inside"
+                    ? deliveryRates.inside_dhaka
+                    : deliveryRates.outside_dhaka,
+                )
+              : 0;
+            return (
+              <ConfirmModal
+                locale={locale}
+                lines={confirmLines}
+                paymentMethod={paymentMethod}
+                subtotal={formatAmount(sub, locale)}
+                deliveryCharge={formatAmount(dc, locale, 0)}
+                deliveryAmount={dc}
+                grandTotal={formatAmount(sub + dc, locale)}
+                onConfirm={handleCheckout}
+                onCancel={() => setShowConfirm(false)}
+                loading={checkingOut}
+              />
+            );
+          })()}
       </div>
     );
   }
@@ -972,7 +1054,9 @@ export default function CartPage() {
               >
                 {t("nav.login")}
               </Link>{" "}
-              {locale === "bn" ? "করুন দ্রুত চেকআউটের জন্য" : "for faster checkout"}
+              {locale === "bn"
+                ? "করুন দ্রুত চেকআউটের জন্য"
+                : "for faster checkout"}
             </p>
           </div>
 
@@ -1036,28 +1120,59 @@ export default function CartPage() {
             {/* Delivery zone selector */}
             {deliveryRates && (
               <div>
-                <p className="text-xs text-gray-500 mb-1.5">{locale === "bn" ? "ডেলিভারি এলাকা" : "Delivery Zone"}</p>
+                <p className="text-xs text-gray-500 mb-1.5">
+                  {locale === "bn" ? "ডেলিভারি এলাকা" : "Delivery Zone"}
+                </p>
                 <div className="grid grid-cols-2 gap-2">
                   {(["inside", "outside"] as const).map(z => (
-                    <button key={z} type="button" onClick={() => setDeliveryZone(z)}
-                      className={`py-2 px-3 rounded-lg border text-xs font-medium transition-colors ${deliveryZone === z ? "border-amber-500 bg-amber-50 text-amber-700" : "border-gray-200 text-gray-600 hover:border-amber-300"}`}>
+                    <button
+                      key={z}
+                      type="button"
+                      onClick={() => setDeliveryZone(z)}
+                      className={`py-2 px-3 rounded-lg border text-xs font-medium transition-colors ${deliveryZone === z ? "border-amber-500 bg-amber-50 text-amber-700" : "border-gray-200 text-gray-600 hover:border-amber-300"}`}
+                    >
                       {z === "inside" ? (
-                        <>{locale === "bn" ? "ঢাকার ভিতরে" : "Inside Dhaka"} (<span className="font-bold">৳{formatNumber(deliveryRates.inside_dhaka, locale)}</span>)</>
+                        <>
+                          {locale === "bn" ? "ঢাকার ভিতরে" : "Inside Dhaka"} (
+                          <span className="font-bold">
+                            ৳{formatNumber(deliveryRates.inside_dhaka, locale)}
+                          </span>
+                          )
+                        </>
                       ) : (
-                        <>{locale === "bn" ? "ঢাকার বাইরে" : "Outside Dhaka"} (<span className="font-bold">৳{formatNumber(deliveryRates.outside_dhaka, locale)}</span>)</>
+                        <>
+                          {locale === "bn" ? "ঢাকার বাইরে" : "Outside Dhaka"} (
+                          <span className="font-bold">
+                            ৳{formatNumber(deliveryRates.outside_dhaka, locale)}
+                          </span>
+                          )
+                        </>
                       )}
                     </button>
                   ))}
                 </div>
                 <div className="mt-2 flex justify-between text-sm font-semibold text-gray-700">
                   <span>{locale === "bn" ? "সর্বমোট" : "Grand Total"}</span>
-                  <span className="text-amber-600">
-                    {formatAmount(guestSubtotal() + parseFloat(deliveryZone === "inside" ? deliveryRates.inside_dhaka : deliveryRates.outside_dhaka), locale, 0)}
+                  <span className="text-amber-600 font-bold">
+                    {formatAmount(
+                      guestSubtotal() +
+                        parseFloat(
+                          deliveryZone === "inside"
+                            ? deliveryRates.inside_dhaka
+                            : deliveryRates.outside_dhaka,
+                        ),
+                      locale,
+                      0,
+                    )}
                   </span>
                 </div>
               </div>
             )}
-            <button type="submit" disabled={submitting} className="btn-primary w-full">
+            <button
+              type="submit"
+              disabled={submitting}
+              className="btn-primary w-full"
+            >
               {t("cart.placeOrder")}
             </button>
           </form>
@@ -1082,16 +1197,31 @@ export default function CartPage() {
           onCancel={() => setShowPaymentModal(false)}
         />
       )}
-      {showConfirm && (() => {
-        const sub = guestSubtotal();
-        const dc  = deliveryRates ? parseFloat(deliveryZone === "inside" ? deliveryRates.inside_dhaka : deliveryRates.outside_dhaka) : 0;
-        return (
-          <ConfirmModal locale={locale} lines={guestConfirmLines} paymentMethod={paymentMethod}
-            subtotal={formatAmount(sub, locale)} deliveryCharge={formatAmount(dc, locale, 0)}
-            grandTotal={formatAmount(sub + dc, locale)}
-            onConfirm={confirmGuestCheckout} onCancel={() => setShowConfirm(false)} loading={submitting} />
-        );
-      })()}
+      {showConfirm &&
+        (() => {
+          const sub = guestSubtotal();
+          const dc = deliveryRates
+            ? parseFloat(
+                deliveryZone === "inside"
+                  ? deliveryRates.inside_dhaka
+                  : deliveryRates.outside_dhaka,
+              )
+            : 0;
+          return (
+            <ConfirmModal
+              locale={locale}
+              lines={guestConfirmLines}
+              paymentMethod={paymentMethod}
+              subtotal={formatAmount(sub, locale)}
+              deliveryCharge={formatAmount(dc, locale, 0)}
+              deliveryAmount={dc}
+              grandTotal={formatAmount(sub + dc, locale)}
+              onConfirm={confirmGuestCheckout}
+              onCancel={() => setShowConfirm(false)}
+              loading={submitting}
+            />
+          );
+        })()}
     </div>
   );
 }
