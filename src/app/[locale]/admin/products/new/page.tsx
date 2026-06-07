@@ -1,5 +1,6 @@
 "use client";
 
+import { useGetBrandsQuery } from "@/api/brands/brandsApi";
 import { useGetCategoriesQuery } from "@/api/categories/categoriesApi";
 import {
     useAddProductImageMutation,
@@ -39,6 +40,7 @@ export default function NewProductPage() {
     description_en: "",
     sku: "",
     category: "",
+    brand: "",
     unit_bn: "পিস",
     unit_en: "piece",
   });
@@ -48,6 +50,7 @@ export default function NewProductPage() {
   const skuManualRef = useRef(false);
 
   const { data: categories = [] } = useGetCategoriesQuery();
+  const { data: brands = [] } = useGetBrandsQuery();
   const [createProduct, { isLoading }] = useCreateProductMutation();
   const [addImage] = useAddProductImageMutation();
 
@@ -134,7 +137,7 @@ export default function NewProductPage() {
             onChange={handleNameEnChange}
           />
         </div>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <div className="flex gap-2 items-start">
             <FloatingInput
               label={t("product.sku")}
@@ -166,6 +169,20 @@ export default function NewProductPage() {
             {categories.map(c => (
               <option key={c.id} value={c.id}>
                 {locale === "bn" ? c.name_bn : c.name_en}
+              </option>
+            ))}
+          </FloatingSelect>
+          <FloatingSelect
+            label={locale === "bn" ? "ব্র্যান্ড (ঐচ্ছিক)" : "Brand (optional)"}
+            value={form.brand}
+            onChange={val => setForm(p => ({ ...p, brand: val }))}
+            showClearButton={!!form.brand}
+            onClear={() => setForm(p => ({ ...p, brand: "" }))}
+          >
+            <option value="">{locale === "bn" ? "ব্র্যান্ড নির্বাচন করুন" : "Select brand"}</option>
+            {brands.map(b => (
+              <option key={b.id} value={b.id}>
+                {locale === "bn" ? b.name_bn : b.name_en}
               </option>
             ))}
           </FloatingSelect>

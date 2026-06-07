@@ -13,6 +13,7 @@ import { FloatingInput, FloatingSelect } from '@/components/ui/forms'
 import { Product } from '@/lib/types'
 import { toast } from '@/store/toastStore'
 import { formatNumber } from '@/utils/format'
+import { useGetBrandsQuery } from '@/api/brands/brandsApi'
 import { useGetCategoriesQuery } from '@/api/categories/categoriesApi'
 import { useGetProductsQuery, useUpdateProductMutation } from '@/api/products/productsApi'
 
@@ -23,11 +24,13 @@ export default function ProductList() {
   const [page, setPage]           = useState(1)
   const [search, setSearch]       = useState('')
   const [category, setCategory]   = useState('')
+  const [brand, setBrand]         = useState('')
   const [isPackage, setIsPackage] = useState('')
   const [limit, setLimit]         = useState(10)
 
   const { data: categories = [] } = useGetCategoriesQuery()
-  const { data, isLoading } = useGetProductsQuery({ page, search, category, is_package: isPackage, page_size: limit, include_inactive: true })
+  const { data: brands = [] }     = useGetBrandsQuery()
+  const { data, isLoading } = useGetProductsQuery({ page, search, category, brand, is_package: isPackage, page_size: limit, include_inactive: true })
   const [updateProduct] = useUpdateProductMutation()
 
   const handleToggleActive = async (p: Product) => {
@@ -52,6 +55,13 @@ export default function ProductList() {
       exportValue: p => locale === 'bn' ? p.category_name_bn : p.category_name_en,
     },
     {
+      header: locale === 'bn' ? 'ব্র্যান্ড' : 'Brand',
+      accessor: p => p.brand_name_bn || p.brand_name_en
+        ? <span className="text-xs font-semibold text-amber-600 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded-full">{locale === 'bn' ? (p.brand_name_bn ?? p.brand_name_en) : (p.brand_name_en ?? p.brand_name_bn)}</span>
+        : <span className="text-gray-300 text-xs">—</span>,
+      exportValue: p => locale === 'bn' ? (p.brand_name_bn ?? '') : (p.brand_name_en ?? ''),
+    },
+    {
       header: t('product.stock'),
       accessor: p => <Badge variant={Number(p.stock_on_hand) > 0 ? 'green' : 'red'}>{formatNumber(Math.round(Number(p.stock_on_hand)), locale)}</Badge>,
       exportValue: p => p.stock_on_hand,
@@ -71,7 +81,7 @@ export default function ProductList() {
       <PageHeader title={t('admin.products')} addLabel={t('common.create')}
         onAdd={() => router.push(`/${locale}/admin/products/new`)} />
 
-      <div className="mb-4 grid grid-cols-4 gap-3">
+      <div className="mb-4 grid grid-cols-5 gap-3">
         <div className="col-span-2">
           <FloatingInput label={t('common.search')} value={search}
             onChange={e => { setSearch(e.target.value); setPage(1) }} />
@@ -80,6 +90,11 @@ export default function ProductList() {
           onChange={val => { setCategory(val); setPage(1) }}>
           <option value="">{locale === 'bn' ? 'সব কেটাগরি' : 'All Categories'}</option>
           {categories.map(c => <option key={c.id} value={c.id}>{locale === 'bn' ? c.name_bn : c.name_en}</option>)}
+        </FloatingSelect>
+        <FloatingSelect label={locale === 'bn' ? 'ব্র্যান্ড' : 'Brand'} value={brand}
+          onChange={val => { setBrand(val); setPage(1) }}>
+          <option value="">{locale === 'bn' ? 'সব ব্র্যান্ড' : 'All Brands'}</option>
+          {brands.map(b => <option key={b.id} value={b.id}>{locale === 'bn' ? b.name_bn : b.name_en}</option>)}
         </FloatingSelect>
         <FloatingSelect label={locale === 'bn' ? 'ধরন' : 'Type'} value={isPackage}
           onChange={val => { setIsPackage(val); setPage(1) }}>

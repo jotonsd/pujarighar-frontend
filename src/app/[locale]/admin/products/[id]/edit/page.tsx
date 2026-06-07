@@ -1,17 +1,18 @@
 "use client";
 
+import { useGetBrandsQuery } from "@/api/brands/brandsApi";
 import { useGetCategoriesQuery } from "@/api/categories/categoriesApi";
 import {
-    useAddProductImageMutation,
-    useDeleteProductImageMutation,
-    useGetProductQuery,
-    useUpdateProductMutation,
+  useAddProductImageMutation,
+  useDeleteProductImageMutation,
+  useGetProductQuery,
+  useUpdateProductMutation,
 } from "@/api/products/productsApi";
 import {
-    FloatingInput,
-    FloatingSelect,
-    FloatingTextarea,
-    ToggleSwitch,
+  FloatingInput,
+  FloatingSelect,
+  FloatingTextarea,
+  ToggleSwitch,
 } from "@/components/ui/forms";
 import PageHeader from "@/components/ui/PageHeader";
 import Spinner from "@/components/ui/Spinner";
@@ -31,6 +32,7 @@ export default function EditProductPage({
 
   const { data: product, isLoading } = useGetProductQuery(params.id);
   const { data: categories = [] } = useGetCategoriesQuery();
+  const { data: brands = [] } = useGetBrandsQuery();
   const [updateProduct, { isLoading: saving }] = useUpdateProductMutation();
   const [addImage] = useAddProductImageMutation();
   const [deleteImage] = useDeleteProductImageMutation();
@@ -43,6 +45,7 @@ export default function EditProductPage({
     unit_bn: "",
     unit_en: "",
     category: "",
+    brand: "",
     is_active: true,
   });
 
@@ -60,6 +63,7 @@ export default function EditProductPage({
         unit_bn: product.unit_bn,
         unit_en: product.unit_en,
         category: product.category,
+        brand: product.brand ?? "",
         is_active: product.is_active,
       });
     }
@@ -140,18 +144,34 @@ export default function EditProductPage({
             value={form.name_en}
             onChange={f("name_en")}
           />
-        </div>
-        <FloatingSelect
-          label={t("product.category")}
-          value={form.category}
-          onChange={val => setForm(p => ({ ...p, category: val }))}
-        >
-          {categories.map(c => (
-            <option key={c.id} value={c.id}>
-              {locale === "bn" ? c.name_bn : c.name_en}
+          <FloatingSelect
+            label={t("product.category")}
+            value={form.category}
+            onChange={val => setForm(p => ({ ...p, category: val }))}
+          >
+            {categories.map(c => (
+              <option key={c.id} value={c.id}>
+                {locale === "bn" ? c.name_bn : c.name_en}
+              </option>
+            ))}
+          </FloatingSelect>
+          <FloatingSelect
+            label={locale === "bn" ? "ব্র্যান্ড (ঐচ্ছিক)" : "Brand (optional)"}
+            value={form.brand}
+            onChange={val => setForm(p => ({ ...p, brand: val }))}
+            showClearButton={!!form.brand}
+            onClear={() => setForm(p => ({ ...p, brand: "" }))}
+          >
+            <option value="">
+              {locale === "bn" ? "ব্র্যান্ড নির্বাচন করুন" : "Select brand"}
             </option>
-          ))}
-        </FloatingSelect>
+            {brands.map(b => (
+              <option key={b.id} value={b.id}>
+                {locale === "bn" ? b.name_bn : b.name_en}
+              </option>
+            ))}
+          </FloatingSelect>
+        </div>
         <FloatingTextarea
           label={`${t("product.description")} (বাংলা)`}
           value={form.description_bn}
