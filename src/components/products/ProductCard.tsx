@@ -7,11 +7,7 @@ import { useAuthStore } from "@/store/authStore";
 import { useCartStore } from "@/store/cartStore";
 import { useGuestCartStore } from "@/store/guestCartStore";
 import { toast } from "@/store/toastStore";
-import {
-  formatAmount,
-  formatNumber,
-  localName,
-} from "@/utils/format";
+import { formatAmount, formatNumber, localName } from "@/utils/format";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -51,7 +47,7 @@ export default function ProductCard({ product, locale }: Props) {
     );
   };
 
-  const name = localName(product.name_bn, product.name_en, locale === 'bn');
+  const name = localName(product.name_bn, product.name_en, locale === "bn");
   const inStock = Number(product.stock_on_hand) > 0;
   const maxStock = Math.max(1, Number(product.stock_on_hand));
 
@@ -170,7 +166,7 @@ export default function ProductCard({ product, locale }: Props) {
         <h3 className="font-medium text-gray-800 mb-1 line-clamp-2 text-sm">
           {name}
         </h3>
-        {product.review_count > 0 && (
+        {/* {product.review_count > 0 && (
           <div className="flex items-center gap-1 mb-1.5">
             <span className="flex gap-0.5">
               {[1,2,3,4,5].map(s => (
@@ -179,7 +175,7 @@ export default function ProductCard({ product, locale }: Props) {
             </span>
             <span className="text-xs text-gray-400">({product.review_count.toLocaleString(locale === 'bn' ? 'bn-BD' : 'en-US')})</span>
           </div>
-        )}
+        )} */}
         <p className="text-xs text-gray-400 mb-2">SKU: {product.sku}</p>
         <div className="flex items-center justify-between">
           <div>
