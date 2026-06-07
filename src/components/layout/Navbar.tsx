@@ -594,7 +594,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-white shadow-sm border-b border-amber-100 sticky top-0 z-50">
+    <nav className="bg-white shadow-sm border-b border-amber-100 sticky top-0 z-[1010]">
       {mobileOpen && (
         <MobileMenu
           locale={locale}
