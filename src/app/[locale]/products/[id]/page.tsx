@@ -3,6 +3,7 @@ import { formatAmount, formatNumber, localName } from "@/utils/format";
 
 import { useAddToCartMutation } from "@/api/cart/cartApi";
 import { useGetProductQuery } from "@/api/products/productsApi";
+import ProductReviews from "@/components/products/ProductReviews";
 import Badge from "@/components/ui/Badge";
 import OfferBanners from "@/components/products/OfferBanners";
 import { ArrowLeft } from "lucide-react";
@@ -189,7 +190,14 @@ export default function ProductDetailPage({
         </div>
         <div>
           <h1 className="text-2xl font-bold text-gray-800 mb-2">{name}</h1>
-          <p className="text-gray-500 text-sm mb-4">SKU: {product.sku}</p>
+          <div className="flex items-center gap-3 mb-4">
+            {(product.brand_name_bn || product.brand_name_en) && (
+              <span className="text-xs font-semibold text-amber-600 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-full">
+                {localName(product.brand_name_bn ?? '', product.brand_name_en ?? '', locale === 'bn')}
+              </span>
+            )}
+            <p className="text-gray-400 text-sm">SKU: {product.sku}</p>
+          </div>
           <div className="flex items-center gap-2 flex-wrap mb-4">
             <span className="text-3xl font-bold text-amber-600">
               {formatAmount(
@@ -263,6 +271,7 @@ export default function ProductDetailPage({
           )}
         </div>
       </div>
+      <ProductReviews productId={params.id} locale={locale} />
     </div>
   );
 }

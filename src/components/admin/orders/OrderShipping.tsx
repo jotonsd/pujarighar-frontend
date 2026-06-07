@@ -48,7 +48,7 @@ export default function OrderShipping({ order }: Props) {
     <div className="card">
       <div className="flex items-center justify-between mb-4">
         <h2 className="font-semibold text-gray-700">{t('order.shipping')}</h2>
-        {!editing && (
+        {!editing && !order.delivery && (
           <button
             onClick={() => setEditing(true)}
             className="inline-flex items-center gap-1 text-xs text-amber-600 hover:text-amber-700 border border-amber-200 bg-amber-50 hover:bg-amber-100 px-2.5 py-1 rounded-lg transition-colors"

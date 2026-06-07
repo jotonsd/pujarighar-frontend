@@ -1,5 +1,6 @@
 "use client";
 
+import { useGetBrandsQuery } from "@/api/brands/brandsApi";
 import { useGetCategoriesQuery } from "@/api/categories/categoriesApi";
 import { useGetProductsQuery } from "@/api/products/productsApi";
 import OfferBanners from "@/components/products/OfferBanners";
@@ -8,12 +9,41 @@ import { Checkbox, FloatingInput, FloatingSelect } from "@/components/ui/forms";
 import { FilterPanelSkeleton, ProductCardSkeleton } from "@/components/ui/skeletons";
 import { Product } from "@/lib/types";
 import { formatAmount } from "@/utils/format";
-import { SlidersHorizontal, X } from "lucide-react";
+import { ChevronDown, SlidersHorizontal, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 const PRICE_MAX = 5000;
+
+function CollapsibleSection({
+  label,
+  open,
+  onToggle,
+  children,
+}: {
+  label: string;
+  open: boolean;
+  onToggle: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <button
+        onClick={onToggle}
+        className="flex items-center justify-between w-full group"
+      >
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+          {label}
+        </p>
+        <ChevronDown
+          className={`w-3.5 h-3.5 text-gray-400 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+      {open && <div className="mt-3">{children}</div>}
+    </div>
+  );
+}
 
 function PriceRangeSlider({
   min,
@@ -80,11 +110,14 @@ export default function ProductsPage() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState(urlSearch);
   const [categories, setCategories] = useState<string[]>([]);
+  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [priceMin, setPriceMin] = useState(0);
   const [priceMax, setPriceMax] = useState(PRICE_MAX);
   const [sortOrder, setSortOrder] = useState<"" | "price_asc" | "price_desc">("");
   const [onlyOffers, setOnlyOffers] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [catOpen, setCatOpen] = useState(true);
+  const [brandOpen, setBrandOpen] = useState(true);
   const [allProducts, setAllProducts] = useState<Product[]>([]);
 
   // Refs so scroll handler always reads latest values without re-registering
@@ -98,11 +131,12 @@ export default function ProductsPage() {
   }, [urlSearch]);
 
   const isPriceFiltered = priceMin > 0 || priceMax < PRICE_MAX;
-  const hasFilter = !!(search || categories.length || isPriceFiltered || sortOrder || onlyOffers);
+  const hasFilter = !!(search || categories.length || selectedBrands.length || isPriceFiltered || sortOrder || onlyOffers);
 
   const resetFilters = () => {
     setSearch("");
     setCategories([]);
+    setSelectedBrands([]);
     setPriceMin(0);
     setPriceMax(PRICE_MAX);
     setSortOrder("");
@@ -124,6 +158,7 @@ export default function ProductsPage() {
     search,
     is_package: "false",
     category: categories.length ? categories.join(",") : undefined,
+    brand: selectedBrands.length ? selectedBrands.join(",") : undefined,
     min_price: priceMin > 0 ? String(priceMin) : undefined,
     max_price: priceMax < PRICE_MAX ? String(priceMax) : undefined,
     ordering: sortOrder || undefined,
@@ -131,6 +166,7 @@ export default function ProductsPage() {
   });
 
   const { data: allCategories = [] } = useGetCategoriesQuery();
+  const { data: allBrands = [] } = useGetBrandsQuery();
 
   const totalPages = data?.pagination?.total_pages ?? 1;
   const hasMore = page < totalPages;
@@ -242,10 +278,11 @@ export default function ProductsPage() {
           </span>
         </div>
       </div>
-      <div>
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
-          {locale === "bn" ? "কেটাগরি" : "Category"}
-        </p>
+      <CollapsibleSection
+        label={locale === "bn" ? "কেটাগরি" : "Category"}
+        open={catOpen}
+        onToggle={() => setCatOpen(p => !p)}
+      >
         <div className="max-h-80 overflow-y-auto pr-1 space-y-0.5 scrollbar-thin">
           {allCategories.map(cat => (
             <Checkbox
@@ -258,11 +295,7 @@ export default function ProductsPage() {
         </div>
         {categories.length > 0 && (
           <button
-            onClick={() => {
-              setCategories([]);
-              setPage(1);
-              setAllProducts([]);
-            }}
+            onClick={() => { setCategories([]); setPage(1); setAllProducts([]); }}
             className="mt-2 text-xs text-amber-600 hover:underline"
           >
             {locale === "bn"
@@ -270,7 +303,41 @@ export default function ProductsPage() {
               : `${categories.length} selected — clear`}
           </button>
         )}
-      </div>
+      </CollapsibleSection>
+      {allBrands.length > 0 && (
+        <CollapsibleSection
+          label={locale === "bn" ? "ব্র্যান্ড" : "Brand"}
+          open={brandOpen}
+          onToggle={() => setBrandOpen(p => !p)}
+        >
+          <div className="space-y-0.5">
+            {allBrands.map(brand => (
+              <Checkbox
+                key={brand.id}
+                checked={selectedBrands.includes(brand.id)}
+                onChange={() => {
+                  setSelectedBrands(prev =>
+                    prev.includes(brand.id) ? prev.filter(id => id !== brand.id) : [...prev, brand.id]
+                  );
+                  setPage(1);
+                  setAllProducts([]);
+                }}
+                label={locale === "bn" ? brand.name_bn : brand.name_en}
+              />
+            ))}
+          </div>
+          {selectedBrands.length > 0 && (
+            <button
+              onClick={() => { setSelectedBrands([]); setPage(1); setAllProducts([]); }}
+              className="mt-2 text-xs text-amber-600 hover:underline"
+            >
+              {locale === "bn"
+                ? `${selectedBrands.length}টি নির্বাচিত — মুছুন`
+                : `${selectedBrands.length} selected — clear`}
+            </button>
+          )}
+        </CollapsibleSection>
+      )}
       {hasFilter && (
         <button
           onClick={resetFilters}

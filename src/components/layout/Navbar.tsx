@@ -61,6 +61,18 @@ const SETTINGS_LINKS = [
     label_en: "Categories",
   },
   {
+    href: "/admin/settings/brands",
+    icon: "🔖",
+    label_bn: "ব্র্যান্ড",
+    label_en: "Brands",
+  },
+  {
+    href: "/admin/settings/reviews",
+    icon: "⭐",
+    label_bn: "রিভিউ",
+    label_en: "Reviews",
+  },
+  {
     href: "/admin/discounts",
     icon: "💸",
     label_bn: "ডিসকাউন্ট",

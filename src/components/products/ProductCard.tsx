@@ -170,6 +170,16 @@ export default function ProductCard({ product, locale }: Props) {
         <h3 className="font-medium text-gray-800 mb-1 line-clamp-2 text-sm">
           {name}
         </h3>
+        {product.review_count > 0 && (
+          <div className="flex items-center gap-1 mb-1.5">
+            <span className="flex gap-0.5">
+              {[1,2,3,4,5].map(s => (
+                <span key={s} className={`text-xs ${s <= Math.round(product.average_rating ?? 0) ? 'text-amber-400' : 'text-gray-200'}`}>★</span>
+              ))}
+            </span>
+            <span className="text-xs text-gray-400">({product.review_count.toLocaleString(locale === 'bn' ? 'bn-BD' : 'en-US')})</span>
+          </div>
+        )}
         <p className="text-xs text-gray-400 mb-2">SKU: {product.sku}</p>
         <div className="flex items-center justify-between">
           <div>

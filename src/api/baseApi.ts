@@ -56,6 +56,7 @@ export const baseApi = createApi({
   tagTypes: [
     'Products', 'Product',
     'Categories',
+    'Brands',
     'Cart',
     'Orders', 'Order', 'OrderLogs',
     'Users', 'User', 'DeliveryPersons',
@@ -69,6 +70,7 @@ export const baseApi = createApi({
     'Notifications',
     'Discounts',
     'DeliveryCharges',
+    'Reviews',
   ],
   endpoints: () => ({}),
 })

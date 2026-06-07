@@ -1,6 +1,7 @@
 "use client";
 
 import { useLookupUserByPhoneQuery } from "@/api/auth/authApi";
+import { useGetBrandsQuery } from "@/api/brands/brandsApi";
 import { useGetCategoriesQuery } from "@/api/categories/categoriesApi";
 import { useGetDeliveryChargesQuery } from "@/api/deliveryCharges/deliveryChargesApi";
 import { usePosCreateOrderMutation } from "@/api/orders/ordersApi";
@@ -87,6 +88,11 @@ function POSProductCard({
       <p className="text-xs font-medium text-gray-800 line-clamp-2 leading-tight">
         {name}
       </p>
+      {(product.brand_name_bn || product.brand_name_en) && (
+        <p className="text-[10px] text-amber-500 font-medium truncate mt-0.5">
+          {locale === "bn" ? (product.brand_name_bn || product.brand_name_en) : (product.brand_name_en || product.brand_name_bn)}
+        </p>
+      )}
       <p className="text-sm font-bold text-amber-600 mt-0.5">
         {formatAmount(product.unit_price, locale, 0)}
       </p>
@@ -120,14 +126,17 @@ export default function POSPage() {
   const [tab, setTab] = useState<Tab>("products");
   const [search, setSearch] = useState("");
   const [catFilter, setCatFilter] = useState("");
+  const [brandFilter, setBrandFilter] = useState("");
 
   const { data: productsData, isLoading } = useGetProductsQuery({
     search,
     category: catFilter || undefined,
+    brand: brandFilter || undefined,
     is_package: tab === "packages" ? "true" : "false",
     page_size: 25,
   });
   const { data: categories = [] } = useGetCategoriesQuery();
+  const { data: brands = [] } = useGetBrandsQuery();
 
   const products = productsData?.data ?? [];
 
@@ -260,6 +269,7 @@ export default function POSPage() {
                   setTab(t);
                   setSearch("");
                   setCatFilter("");
+                  setBrandFilter("");
                 }}
                 className={`px-4 py-1.5 rounded-md text-xs font-semibold transition-colors ${
                   tab === t
@@ -288,22 +298,40 @@ export default function POSPage() {
               />
             </div>
             {tab === "products" && (
-              <div className="w-44">
-                <FloatingSelect
-                  label={locale === "bn" ? "কেটাগরি" : "Category"}
-                  value={catFilter}
-                  onChange={val => setCatFilter(val)}
-                >
-                  <option value="">
-                    {locale === "bn" ? "সব কেটাগরি" : "All categories"}
-                  </option>
-                  {categories.map(c => (
-                    <option key={c.id} value={c.id}>
-                      {locale === "bn" ? c.name_bn : c.name_en}
+              <>
+                <div className="w-40">
+                  <FloatingSelect
+                    label={locale === "bn" ? "কেটাগরি" : "Category"}
+                    value={catFilter}
+                    onChange={val => setCatFilter(val)}
+                  >
+                    <option value="">
+                      {locale === "bn" ? "সব কেটাগরি" : "All categories"}
                     </option>
-                  ))}
-                </FloatingSelect>
-              </div>
+                    {categories.map(c => (
+                      <option key={c.id} value={c.id}>
+                        {locale === "bn" ? c.name_bn : c.name_en}
+                      </option>
+                    ))}
+                  </FloatingSelect>
+                </div>
+                <div className="w-36">
+                  <FloatingSelect
+                    label={locale === "bn" ? "ব্র্যান্ড" : "Brand"}
+                    value={brandFilter}
+                    onChange={val => setBrandFilter(val)}
+                  >
+                    <option value="">
+                      {locale === "bn" ? "সব ব্র্যান্ড" : "All brands"}
+                    </option>
+                    {brands.map(b => (
+                      <option key={b.id} value={b.id}>
+                        {locale === "bn" ? b.name_bn : b.name_en}
+                      </option>
+                    ))}
+                  </FloatingSelect>
+                </div>
+              </>
             )}
           </div>
         </div>

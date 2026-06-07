@@ -71,6 +71,16 @@ export interface Category {
   created_at: string
 }
 
+export interface Brand {
+  id: string
+  name_bn: string
+  name_en: string
+  slug: string
+  logo: string | null
+  is_active: boolean
+  created_at: string
+}
+
 export interface ProductImage {
   id: string
   image: string
@@ -102,6 +112,9 @@ export interface Product {
   category_name: string
   category_name_bn: string
   category_name_en: string
+  brand: string | null
+  brand_name_bn: string | null
+  brand_name_en: string | null
   unit_price: string
   cost_price: string
   unit_bn: string
@@ -117,6 +130,8 @@ export interface Product {
   stock_on_hand: string
   images: ProductImage[]
   package_items: PackageItem[]
+  average_rating: number | null
+  review_count: number
   created_at: string
   updated_at: string
 }
@@ -310,6 +325,22 @@ export interface JournalEntry {
   lines: JournalLine[]
   total_debit: string
   total_credit: string
+}
+
+// ─── Review ──────────────────────────────────────────────────────────────────
+
+export interface Review {
+  id: string
+  product_id: string
+  product_name_bn: string
+  product_name_en: string
+  order: string
+  user: string
+  user_name: string
+  rating: 1 | 2 | 3 | 4 | 5
+  comment: string
+  is_approved: boolean
+  created_at: string
 }
 
 // ─── API envelope ────────────────────────────────────────────────────────────

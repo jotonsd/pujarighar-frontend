@@ -6,6 +6,7 @@ import {
   useGetOrderQuery,
   useGetOrderStatusLogQuery,
 } from "@/api/orders/ordersApi";
+import OrderReviewSection from "@/components/orders/OrderReviewSection";
 import OrderStatusBadge from "@/components/orders/OrderStatusBadge";
 import StatusTimeline from "@/components/orders/StatusTimeline";
 import PageHeader from "@/components/ui/PageHeader";
@@ -210,6 +211,13 @@ export default function OrderDetailPage({
               )}
             </div>
           </div>
+          {user?.role === "CUSTOMER" && order.status === "DELIVERED" && (
+            <OrderReviewSection
+              orderId={order.id}
+              items={order.items}
+              locale={locale}
+            />
+          )}
           {user?.role === "CUSTOMER" && order.status === "PENDING" && (
             <button
               onClick={() => setShowCancelModal(true)}

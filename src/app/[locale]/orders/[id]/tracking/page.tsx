@@ -3,6 +3,7 @@
 import { useGetOrderTrackingQuery } from "@/api/orders/ordersApi";
 import OrderStatusBadge from "@/components/orders/OrderStatusBadge";
 import StatusTimeline from "@/components/orders/StatusTimeline";
+import OfferBanners from "@/components/products/OfferBanners";
 import Spinner from "@/components/ui/Spinner";
 import { localName } from "@/utils/format";
 import { useLocale } from "next-intl";
@@ -22,6 +23,9 @@ export default function TrackingPage({ params }: { params: { id: string } }) {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-3">
+      <div className="mb-4">
+        <OfferBanners />
+      </div>
       <div className="card max-w-2xl mx-auto space-y-5">
         {/* Header */}
         <div className="flex items-start justify-between">

@@ -72,10 +72,10 @@ const STATUS_META: Record<
   string,
   { label_bn: string; label_en: string; color: string }
 > = {
-  PENDING: { label_bn: "অপেক্ষমাণ", label_en: "Pending", color: "#f59e0b" },
+  PENDING: { label_bn: "পেন্ডিং", label_en: "Pending", color: "#f59e0b" },
   CONFIRMED: { label_bn: "নিশ্চিত", label_en: "Confirmed", color: "#3b82f6" },
   PACKED: { label_bn: "প্যাক করা", label_en: "Packed", color: "#8b5cf6" },
-  ASSIGNED: { label_bn: "বরাদ্দ", label_en: "Assigned", color: "#06b6d4" },
+  ASSIGNED: { label_bn: "এসাইন্ড", label_en: "Assigned", color: "#06b6d4" },
   ON_THE_WAY: { label_bn: "পথে আছে", label_en: "On the Way", color: "#f97316" },
   DELIVERED: {
     label_bn: "ডেলিভারি হয়েছে",

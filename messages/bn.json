@@ -99,7 +99,7 @@
     "items": "পণ্য",
     "shipping": "ডেলিভারি",
     "tracking": "ট্র্যাকিং",
-    "PENDING": "অপেক্ষমাণ",
+    "PENDING": "পেন্ডিং",
     "CONFIRMED": "নিশ্চিত",
     "PACKED": "প্যাক হয়েছে",
     "ASSIGNED": "ডেলিভারিম্যান নির্ধারিত",
@@ -136,7 +136,7 @@
     "categories": "কেটাগরি",
     "todayOrders": "আজকের অর্ডার",
     "todayRevenue": "আজকের আয়",
-    "pendingOrders": "মুলতুবি অর্ডার",
+    "pendingOrders": "পেন্ডিং অর্ডার",
     "lowStock": "কম স্টক",
     "totalCustomers": "মোট গ্রাহক",
     "totalProducts": "মোট পণ্য"

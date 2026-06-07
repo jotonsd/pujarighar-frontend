@@ -3,6 +3,7 @@
 import { useTrackByOrderNumberQuery } from "@/api/orders/ordersApi";
 import OrderStatusBadge from "@/components/orders/OrderStatusBadge";
 import StatusTimeline from "@/components/orders/StatusTimeline";
+import OfferBanners from "@/components/products/OfferBanners";
 import { FloatingInput } from "@/components/ui/forms";
 import Spinner from "@/components/ui/Spinner";
 import { formatAmount, localName } from "@/utils/format";
@@ -40,6 +41,7 @@ export default function TrackOrderPage() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-5 space-y-4">
+      <OfferBanners />
       {/* Search form */}
       <div className="card space-y-4">
         <div className="flex items-center gap-3 mb-2">

@@ -2,6 +2,8 @@
 
 import { useAddToCartMutation } from "@/api/cart/cartApi";
 import { useGetProductQuery } from "@/api/products/productsApi";
+import OfferBanners from "@/components/products/OfferBanners";
+import ProductReviews from "@/components/products/ProductReviews";
 import Badge from "@/components/ui/Badge";
 import Spinner from "@/components/ui/Spinner";
 import { useAuthStore } from "@/store/authStore";
@@ -9,6 +11,7 @@ import { useCartStore } from "@/store/cartStore";
 import { useGuestCartStore } from "@/store/guestCartStore";
 import { toast } from "@/store/toastStore";
 import { formatAmount, formatNumber, localName } from "@/utils/format";
+import { ArrowLeft } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -95,13 +98,10 @@ export default function PackageDetailPage({
   const savings = originalTotal - finalPrice;
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-8">
-      <button
-        onClick={() => router.back()}
-        className="text-amber-600 hover:underline mb-6 text-sm flex items-center gap-1"
-      >
-        ← {t("common.back")}
-      </button>
+    <div className="max-w-7xl mx-auto px-4 py-3">
+      <div className="mb-4">
+        <OfferBanners />
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Left — image */}
@@ -200,6 +200,13 @@ export default function PackageDetailPage({
               >
                 {locale === "bn" ? "এখনই কিনুন" : "Buy Now"}
               </button>
+              <button
+                onClick={() => router.back()}
+                className="flex-1 font-bold inline-flex items-center justify-center gap-1.5 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                {locale === "bn" ? "আরো কিনুন" : "Shop More"}
+              </button>
             </div>
           )}
         </div>
@@ -243,6 +250,7 @@ export default function PackageDetailPage({
           </div>
         </div>
       )}
+      <ProductReviews productId={params.id} locale={locale} />
     </div>
   );
 }

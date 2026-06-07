@@ -7,7 +7,7 @@ interface Props {
 }
 
 const STATUS_LABELS: Record<string, { bn: string; en: string }> = {
-  PENDING: { bn: "অপেক্ষমাণ", en: "Pending" },
+  PENDING: { bn: "পেন্ডিং", en: "Pending" },
   CONFIRMED: { bn: "নিশ্চিত", en: "Confirmed" },
   PACKED: { bn: "প্যাক হয়েছে", en: "Packed" },
   ASSIGNED: { bn: "ডেলিভারিম্যান নির্ধারিত", en: "Assigned" },

@@ -47,9 +47,19 @@ export default function PackageCard({ pkg, locale }: Props) {
 
         {/* Info */}
         <div className="p-3">
-          <p className="text-sm font-semibold text-gray-800 line-clamp-2 leading-snug mb-2">
+          <p className="text-sm font-semibold text-gray-800 line-clamp-2 leading-snug mb-1.5">
             {name}
           </p>
+          {pkg.review_count > 0 && (
+            <div className="flex items-center gap-1 mb-1.5">
+              <span className="flex gap-0.5">
+                {[1,2,3,4,5].map(s => (
+                  <span key={s} className={`text-xs ${s <= Math.round(pkg.average_rating ?? 0) ? 'text-amber-400' : 'text-gray-200'}`}>★</span>
+                ))}
+              </span>
+              <span className="text-xs text-gray-400">({pkg.review_count.toLocaleString(locale === 'bn' ? 'bn-BD' : 'en-US')})</span>
+            </div>
+          )}
 
           {/* Items count */}
           {pkg.package_items?.length > 0 && (
