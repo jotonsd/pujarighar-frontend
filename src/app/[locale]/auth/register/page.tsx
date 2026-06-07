@@ -5,6 +5,7 @@ import { FloatingInput } from '@/components/ui/forms'
 import { useAuthStore } from '@/store/authStore'
 import { toast } from '@/store/toastStore'
 import { useLocale, useTranslations } from 'next-intl'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
@@ -44,7 +45,7 @@ export default function RegisterPage() {
         <div className="absolute w-48 h-48 rounded-full bg-white/10 bottom-10 -right-10" />
         <div className="absolute w-32 h-32 rounded-full bg-amber-400/40 top-1/2 left-1/3" />
         <div className="relative z-10 text-center px-10">
-          <p className="text-5xl mb-5">🪔</p>
+          <Image src="/assets/logo/favicon.png" alt="PujariGhar" width={0} height={0} sizes="100vw" className="h-16 w-auto mx-auto mb-5" />
           <h2 className="text-3xl font-bold text-white leading-snug">
             {isBn ? 'যোগ দিন আমাদের সাথে' : 'Join PujariGhar'}
           </h2>
@@ -70,8 +71,7 @@ export default function RegisterPage() {
         <div className="w-full max-w-md">
           {/* Logo — mobile only */}
           <div className="lg:hidden text-center mb-8">
-            <p className="text-4xl mb-2">🪔</p>
-            <h1 className="text-xl font-bold text-amber-600">PujariGhar</h1>
+            <Image src="/assets/logo/pujarighar.png" alt="PujariGhar" width={0} height={0} sizes="100vw" className="h-14 w-auto mx-auto" />
           </div>
 
           <div className="mb-7">

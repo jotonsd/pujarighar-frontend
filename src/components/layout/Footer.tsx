@@ -1,4 +1,5 @@
 import { getLocale } from "next-intl/server";
+import Image from "next/image";
 import Link from "next/link";
 
 export default async function Footer() {
@@ -13,9 +14,8 @@ export default async function Footer() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Brand */}
           <div className="lg:col-span-1">
-            <div className="flex items-center gap-2 mb-4">
-              <span className="text-2xl">🪔</span>
-              <span className="text-xl font-bold text-white">PujariGhar</span>
+            <div className="mb-4">
+              <Image src="/assets/logo/pujarighar.png" alt="PujariGhar" width={0} height={0} sizes="100vw" className="h-12 w-auto brightness-0 invert" />
             </div>
             <p className="text-sm text-gray-400 leading-relaxed mb-5">
               {bn
@@ -189,15 +189,18 @@ export default async function Footer() {
               {bn ? "রিটার্ন নীতি" : "Return Policy"}
             </Link>
           </div>
-          <div className="flex items-center gap-1.5 text-xs text-gray-600">
-            <span>{bn ? "পেমেন্ট পদ্ধতি:" : "Payment:"}</span>
-            {["bKash", "Nagad", "COD"].map(p => (
-              <span
-                key={p}
-                className="bg-gray-800 px-2 py-0.5 rounded text-gray-400"
-              >
-                {p}
-              </span>
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-xs text-gray-600">{bn ? "পেমেন্ট:" : "Payment:"}</span>
+            {[
+              { src: "/assets/payments/bkash.png",     alt: "bKash"      },
+              { src: "/assets/payments/nagad.webp",     alt: "Nagad"      },
+              { src: "/assets/payments/visa.png",       alt: "Visa"       },
+              { src: "/assets/payments/mastercard.png", alt: "Mastercard" },
+              { src: "/assets/payments/amex.webp",      alt: "Amex"       },
+            ].map(pm => (
+              <div key={pm.alt} className="flex items-center justify-center">
+                <Image src={pm.src} alt={pm.alt} width={0} height={0} sizes="100vw" className="h-5 w-auto object-contain" />
+              </div>
             ))}
           </div>
         </div>
