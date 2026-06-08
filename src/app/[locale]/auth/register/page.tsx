@@ -1,154 +1,206 @@
-'use client'
+"use client";
 
-import { useRegisterMutation } from '@/api/auth/authApi'
-import { FloatingInput } from '@/components/ui/forms'
-import { useAuthStore } from '@/store/authStore'
-import { toast } from '@/store/toastStore'
-import { useLocale, useTranslations } from 'next-intl'
-import Image from 'next/image'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useRegisterMutation } from "@/api/auth/authApi";
+import { FloatingInput } from "@/components/ui/forms";
+import { useAuthStore } from "@/store/authStore";
+import { toast } from "@/store/toastStore";
+import { useLocale, useTranslations } from "next-intl";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function RegisterPage() {
-  const t       = useTranslations()
-  const locale  = useLocale()
-  const router  = useRouter()
-  const setAuth = useAuthStore((s) => s.setAuth)
-  const isBn    = locale === 'bn'
+  const t = useTranslations();
+  const locale = useLocale();
+  const router = useRouter();
+  const setAuth = useAuthStore(s => s.setAuth);
+  const isBn = locale === "bn";
 
-  const [form, setForm] = useState({ email: '', phone: '', password: '', full_name_bn: '', full_name_en: '' })
-  const [register, { isLoading }] = useRegisterMutation()
+  const [form, setForm] = useState({
+    email: "",
+    phone: "",
+    password: "",
+    full_name_bn: "",
+    full_name_en: "",
+  });
+  const [register, { isLoading }] = useRegisterMutation();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     try {
-      const data = await register(form).unwrap()
-      setAuth(data.user, data.access, data.refresh)
-      toast.success(isBn ? 'নিবন্ধন সফল হয়েছে' : 'Registration successful')
-      router.push(`/${locale}`)
+      const data = await register(form).unwrap();
+      setAuth(data.user, data.access, data.refresh);
+      toast.success(isBn ? "নিবন্ধন সফল হয়েছে" : "Registration successful");
+      router.push(`/${locale}`);
     } catch (err: unknown) {
-      const e = err as { data?: { errors?: { details?: { message_bn?: string; message_en?: string } } } }
-      toast.error(isBn
-        ? (e.data?.errors?.details?.message_bn ?? 'নিবন্ধন ব্যর্থ হয়েছে')
-        : (e.data?.errors?.details?.message_en ?? 'Registration failed'))
+      const e = err as {
+        data?: {
+          errors?: { details?: { message_bn?: string; message_en?: string } };
+        };
+      };
+      toast.error(
+        isBn
+          ? (e.data?.errors?.details?.message_bn ?? "নিবন্ধন ব্যর্থ হয়েছে")
+          : (e.data?.errors?.details?.message_en ?? "Registration failed"),
+      );
     }
-  }
+  };
 
-  const f = (key: string) => (e: React.ChangeEvent<HTMLInputElement>) => setForm({ ...form, [key]: e.target.value })
+  const f = (key: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    setForm({ ...form, [key]: e.target.value });
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex">
+    <div className="min-h-[calc(100vh-4rem)] flex bg-gray-50 lg:bg-transparent">
       {/* Left decorative panel — hidden on mobile */}
       <div className="hidden lg:flex lg:w-2/5 bg-gradient-to-br from-amber-500 to-amber-700 items-center justify-center relative overflow-hidden">
         <div className="absolute w-72 h-72 rounded-full bg-white/10 -top-16 -left-16" />
         <div className="absolute w-48 h-48 rounded-full bg-white/10 bottom-10 -right-10" />
         <div className="absolute w-32 h-32 rounded-full bg-amber-400/40 top-1/2 left-1/3" />
+
         <div className="relative z-10 text-center px-10">
-          <Image src="/assets/logo/favicon.png" alt="PujariGhar" width={0} height={0} sizes="100vw" className="h-16 w-auto mx-auto mb-5" />
+          <div className="relative w-20 h-20 mx-auto mb-5">
+            <Image
+              src="/assets/logo/favicon.png"
+              alt="PujariGhar"
+              fill
+              className="object-contain"
+            />
+          </div>
           <h2 className="text-3xl font-bold text-white leading-snug">
-            {isBn ? 'যোগ দিন আমাদের সাথে' : 'Join PujariGhar'}
+            {isBn ? "যোগ দিন আমাদের সাথে" : "Join PujariGhar"}
           </h2>
           <p className="mt-3 text-amber-100 text-sm leading-relaxed">
             {isBn
-              ? 'নিবন্ধন করুন এবং সেরা পূজার সামগ্রী উপভোগ করুন।'
-              : 'Register and enjoy the best puja essentials.'}
+              ? "নিবন্ধন করুন এবং সেরা পূজার সামগ্রী উপভোগ করুন।"
+              : "Register and enjoy the best puja essentials."}
           </p>
-          <div className="mt-6 flex flex-col gap-2 text-left">
+          <div className="mt-8 flex flex-col gap-3 text-left max-w-xs mx-auto">
             {[
-              isBn ? '✓ দ্রুত চেকআউট' : '✓ Fast checkout',
-              isBn ? '✓ অর্ডার ট্র্যাকিং' : '✓ Order tracking',
-              isBn ? '✓ বিশেষ অফার' : '✓ Exclusive offers',
+              isBn ? "✓ দ্রুত চেকআউট" : "✓ Fast checkout",
+              isBn ? "✓ অর্ডার ট্র্যাকিং" : "✓ Order tracking",
+              isBn ? "✓ বিশেষ অফার" : "✓ Exclusive offers",
             ].map(item => (
-              <span key={item} className="text-amber-100 text-sm">{item}</span>
+              <span
+                key={item}
+                className="text-amber-50 text-sm font-medium bg-white/10 py-2 px-4 rounded-lg backdrop-blur-sm"
+              >
+                {item}
+              </span>
             ))}
           </div>
         </div>
       </div>
 
       {/* Right form panel */}
-      <div className="w-full lg:w-3/5 flex items-center justify-center px-6 py-12 bg-gray-50">
-        <div className="w-full max-w-md">
+      <div className="w-full lg:w-3/5 flex items-center justify-center px-4 py-8 sm:px-6 lg:px-12 bg-gray-50">
+        <div className="w-full max-w-md bg-white lg:bg-transparent p-6 sm:p-8 lg:p-0 rounded-2xl shadow-sm lg:shadow-none border border-gray-100 lg:border-none relative overflow-hidden">
+          {/* Mobile Top Accent */}
+          <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-amber-500 to-amber-600 lg:hidden" />
+
           {/* Logo — mobile only */}
-          <div className="lg:hidden text-center mb-8">
-            <Image src="/assets/logo/pujarighar.png" alt="PujariGhar" width={0} height={0} sizes="100vw" className="h-14 w-auto mx-auto" />
+          <div className="lg:hidden text-center mb-6 pt-2">
+            <div className="relative w-40 h-14 mx-auto">
+              <Image
+                src="/assets/logo/pujarighar.png"
+                alt="PujariGhar"
+                fill
+                className="object-contain"
+                priority
+              />
+            </div>
           </div>
 
-          <div className="mb-7">
-            <h2 className="text-2xl font-bold text-gray-900">
-              {isBn ? 'নতুন অ্যাকাউন্ট তৈরি করুন' : 'Create your account'}
+          <div className="mb-8 text-center lg:text-left">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">
+              {isBn ? "নতুন অ্যাকাউন্ট তৈরি করুন" : "Create your account"}
             </h2>
-            <p className="text-sm text-gray-500 mt-1">
-              {isBn ? 'নিচে আপনার তথ্য পূরণ করুন' : 'Fill in your details below to get started'}
+            <p className="text-sm text-gray-500 mt-2">
+              {isBn
+                ? "নিচে আপনার তথ্য পূরণ করুন"
+                : "Fill in your details below to get started"}
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <FloatingInput
-                label={t('auth.fullNameBn')}
+                label={t("auth.fullNameBn")}
                 required
                 value={form.full_name_bn}
-                onChange={f('full_name_bn')}
+                onChange={f("full_name_bn")}
               />
               <FloatingInput
-                label={t('auth.fullNameEn')}
+                label={t("auth.fullNameEn")}
                 value={form.full_name_en}
-                onChange={f('full_name_en')}
+                onChange={f("full_name_en")}
               />
             </div>
+
             <FloatingInput
-              label={t('auth.email')}
+              label={t("auth.email")}
               type="email"
               required
               value={form.email}
-              onChange={f('email')}
+              onChange={f("email")}
             />
+
             <FloatingInput
-              label={t('auth.phone')}
+              label={t("auth.phone")}
               required
               value={form.phone}
-              onChange={f('phone')}
+              onChange={f("phone")}
               placeholder="01XXXXXXXXX"
             />
+
             <FloatingInput
-              label={t('auth.password')}
+              label={t("auth.password")}
               type="password"
               required
               value={form.password}
-              onChange={f('password')}
+              onChange={f("password")}
             />
 
             <button
               type="submit"
               disabled={isLoading}
-              className="btn-primary w-full py-3 text-base"
+              className="btn-primary w-full py-3.5 px-4 text-base font-semibold rounded-xl shadow-sm transition-all duration-200 active:scale-[0.99] disabled:opacity-70"
             >
               {isLoading
-                ? (isBn ? 'নিবন্ধন হচ্ছে...' : 'Creating account...')
-                : (isBn ? 'নিবন্ধন করুন' : 'Create Account')}
+                ? isBn
+                  ? "নিবন্ধন হচ্ছে..."
+                  : "Creating account..."
+                : isBn
+                  ? "নিবন্ধন করুন"
+                  : "Create Account"}
             </button>
           </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-500">
-              {isBn ? 'ইতিমধ্যে অ্যাকাউন্ট আছে?' : 'Already have an account?'}{' '}
-              <Link href={`/${locale}/auth/login`} className="text-amber-600 hover:text-amber-700 font-medium hover:underline">
-                {isBn ? 'লগইন করুন' : 'Sign in'}
-              </Link>
-            </p>
+          <div className="mt-6 text-center text-sm">
+            <span className="text-gray-500">
+              {isBn
+                ? "ইতিমধ্যে অ্যাকাউন্ট আছে?"
+                : "Already have an account?"}{" "}
+            </span>
+            <Link
+              href={`/${locale}/auth/login`}
+              className="text-amber-600 hover:text-amber-700 font-semibold transition-colors hover:underline"
+            >
+              {isBn ? "লগইন করুন" : "Sign in"}
+            </Link>
           </div>
 
-          <div className="mt-8 pt-6 border-t border-gray-200">
+          <div className="mt-8 pt-5 border-t border-gray-100 lg:border-gray-200">
             <Link
               href={`/${locale}`}
-              className="flex items-center justify-center gap-2 text-sm text-gray-400 hover:text-gray-600 transition-colors"
+              className="flex items-center justify-center gap-2 text-sm font-medium text-gray-400 hover:text-gray-600 transition-colors"
             >
-              ← {isBn ? 'হোমে ফিরুন' : 'Back to Home'}
+              <span>←</span>
+              <span>{isBn ? "হোমে ফিরুন" : "Back to Home"}</span>
             </Link>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
