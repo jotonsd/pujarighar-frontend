@@ -25,7 +25,7 @@ export default function PackageCard({ pkg, locale }: Props) {
 
   return (
     <Link href={`/${locale}/packages/${pkg.id}`} className="group block">
-      <div className="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+      <div className="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-100 hover:shadow-md transition-shadow flex flex-col">
         {/* Image */}
         <div className="h-36 md:h-56 bg-amber-50 relative overflow-hidden">
           {pkg.images?.[0] ? (
@@ -50,22 +50,11 @@ export default function PackageCard({ pkg, locale }: Props) {
         </div>
 
         {/* Info */}
-        <div className="p-3">
+        <div className="p-3 pb-2 flex-1">
           <p className="text-sm font-semibold text-gray-800 line-clamp-2 leading-snug mb-1.5">
             {name}
           </p>
-          {/* {pkg.review_count > 0 && (
-            <div className="flex items-center gap-1 mb-1.5">
-              <span className="flex gap-0.5">
-                {[1,2,3,4,5].map(s => (
-                  <span key={s} className={`text-xs ${s <= Math.round(pkg.average_rating ?? 0) ? 'text-amber-400' : 'text-gray-200'}`}>★</span>
-                ))}
-              </span>
-              <span className="text-xs text-gray-400">({pkg.review_count.toLocaleString(locale === 'bn' ? 'bn-BD' : 'en-US')})</span>
-            </div>
-          )} */}
 
-          {/* Items count */}
           {pkg.package_items?.length > 0 && (
             <p className="text-xs text-gray-400 mb-2">
               {formatNumber(pkg.package_items.length, locale)}{" "}
@@ -73,22 +62,23 @@ export default function PackageCard({ pkg, locale }: Props) {
             </p>
           )}
 
-          {/* Price + Details */}
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-base font-bold text-amber-600">
-                {formatAmount(finalPrice, locale, 0)}
-              </span>
-              {hasDiscount && (
-                <span className="text-xs text-gray-400 line-through">
-                  {formatAmount(originalPrice, locale, 0)}
-                </span>
-              )}
-            </div>
-            <span className="shrink-0 text-xs font-semibold px-3 py-1.5 rounded-lg bg-amber-500 text-white group-hover:bg-amber-600 transition-colors">
-              {locale === "bn" ? "বিস্তারিত" : "Details"}
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-base font-bold text-amber-600">
+              {formatAmount(finalPrice, locale, 0)}
             </span>
+            {hasDiscount && (
+              <span className="text-xs text-gray-400 line-through">
+                {formatAmount(originalPrice, locale, 0)}
+              </span>
+            )}
           </div>
+        </div>
+
+        {/* Details button */}
+        <div className="px-3 pb-3">
+          <span className="block w-full text-center text-[10px] font-bold py-1.5 rounded bg-amber-500 text-white group-hover:bg-amber-600 transition-colors">
+            {locale === "bn" ? "বিস্তারিত" : "Details"}
+          </span>
         </div>
       </div>
     </Link>

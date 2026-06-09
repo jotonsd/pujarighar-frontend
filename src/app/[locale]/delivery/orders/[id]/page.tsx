@@ -12,6 +12,7 @@ import {
 import OrderStatusBadge from "@/components/orders/OrderStatusBadge";
 import StatusTimeline from "@/components/orders/StatusTimeline";
 import PageHeader from "@/components/ui/PageHeader";
+import ConfirmModal from "@/components/ui/ConfirmModal";
 import PaymentConfirmModal from "@/components/ui/PaymentConfirmModal";
 import { DeliveryOrderDetailSkeleton } from "@/components/ui/skeletons";
 import { toast } from "@/store/toastStore";
@@ -36,6 +37,7 @@ export default function DeliveryOrderDetailPage({
   const [markPaid, { isLoading: markingPaid }] = useMarkCodPaidMutation();
 
   const [showPayModal, setShowPayModal] = useState(false);
+  const [showReturnModal, setShowReturnModal] = useState(false);
 
   const isPending = dispatching || delivering || returning || markingPaid;
   const loading = locale === "bn" ? "লোড হচ্ছে..." : "Loading...";
@@ -117,17 +119,7 @@ export default function DeliveryOrderDetailPage({
           )}
         {order.status === "DELIVERED" && (
           <button
-            onClick={() => {
-              if (
-                confirm(
-                  locale === "bn" ? "ফেরত নিশ্চিত করুন?" : "Confirm return?",
-                )
-              )
-                doAction(
-                  () => returnOrd({ id: params.id }).unwrap(),
-                  locale === "bn" ? "ফেরত দেওয়া হয়েছে" : "Marked as Returned",
-                );
-            }}
+            onClick={() => setShowReturnModal(true)}
             disabled={isPending}
             className="flex-1 py-2 px-4 rounded-lg bg-amber-50 text-amber-600 border border-amber-200 hover:bg-amber-100 font-medium transition-colors"
           >
@@ -139,6 +131,26 @@ export default function DeliveryOrderDetailPage({
           </button>
         )}
       </div>
+
+      {showReturnModal && (
+        <ConfirmModal
+          icon="↩"
+          title={locale === "bn" ? "ফেরত নিশ্চিত করুন?" : "Confirm return?"}
+          description={locale === "bn" ? "এই অর্ডারটি ফেরত হিসেবে চিহ্নিত হবে।" : "This order will be marked as returned."}
+          confirmLabel={locale === "bn" ? "হ্যাঁ, ফেরত দিন" : "Yes, Return"}
+          cancelLabel={locale === "bn" ? "বাতিল" : "Cancel"}
+          confirmClassName="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2.5 rounded-xl transition-colors text-sm"
+          loading={returning}
+          onCancel={() => setShowReturnModal(false)}
+          onConfirm={async () => {
+            await doAction(
+              () => returnOrd({ id: params.id }).unwrap(),
+              locale === "bn" ? "ফেরত দেওয়া হয়েছে" : "Marked as Returned",
+            );
+            setShowReturnModal(false);
+          }}
+        />
+      )}
 
       {showPayModal && order && (
         <PaymentConfirmModal

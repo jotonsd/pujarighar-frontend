@@ -207,7 +207,7 @@ export default function ProductCard({ product, locale }: Props) {
       </Link>
 
       <div className="px-3 pb-3">
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1">
           {inStock && (
             <>
               <button
@@ -230,7 +230,7 @@ export default function ProductCard({ product, locale }: Props) {
           <button
             onClick={handleAddToCart}
             disabled={!inStock || adding}
-            className={`flex-1 h-6 px-2 rounded text-xs font-bold whitespace-nowrap transition-colors ${
+            className={`flex-1 h-6 rounded text-[10px] font-bold transition-colors ${
               inStock
                 ? "bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-white"
                 : "bg-gray-100 text-gray-400 cursor-not-allowed"

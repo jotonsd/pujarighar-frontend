@@ -93,9 +93,20 @@ function POSProductCard({
           {locale === "bn" ? (product.brand_name_bn || product.brand_name_en) : (product.brand_name_en || product.brand_name_bn)}
         </p>
       )}
-      <p className="text-sm font-bold text-amber-600 mt-0.5">
-        {formatAmount(product.unit_price, locale, 0)}
-      </p>
+      {product.active_discount_type ? (
+        <div className="mt-0.5 flex items-baseline gap-1">
+          <p className="text-sm font-bold text-amber-600">
+            {formatAmount(product.effective_price, locale, 0)}
+          </p>
+          <p className="text-[10px] text-gray-400 line-through">
+            {formatAmount(product.unit_price, locale, 0)}
+          </p>
+        </div>
+      ) : (
+        <p className="text-sm font-bold text-amber-600 mt-0.5">
+          {formatAmount(product.unit_price, locale, 0)}
+        </p>
+      )}
       {inCart && (
         <p className="text-xs text-amber-600 font-bold mt-0.5">
           {locale === "bn"
@@ -174,7 +185,7 @@ export default function POSPage() {
     setCart(c => c.filter(l => l.product.id !== productId));
 
   const subtotal = cart.reduce(
-    (s, l) => s + parseFloat(l.product.unit_price) * l.quantity,
+    (s, l) => s + parseFloat(l.product.effective_price) * l.quantity,
     0,
   );
 
@@ -400,7 +411,7 @@ export default function POSPage() {
                           : line.product.name_en}
                       </p>
                       <p className="text-xs text-gray-500">
-                        {formatAmount(line.product.unit_price, locale, 0)}
+                        {formatAmount(line.product.effective_price, locale, 0)}
                       </p>
                     </div>
                     <div className="flex items-center gap-1 shrink-0">
@@ -434,7 +445,7 @@ export default function POSPage() {
                     </div>
                     <p className="text-xs font-bold text-amber-600 w-14 text-right shrink-0">
                       {formatAmount(
-                        parseFloat(line.product.unit_price) * line.quantity,
+                        parseFloat(line.product.effective_price) * line.quantity,
                         locale,
                         0,
                       )}
