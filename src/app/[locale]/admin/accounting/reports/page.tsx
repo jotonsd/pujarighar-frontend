@@ -85,37 +85,42 @@ export default function ReportsPage() {
           <TableSkeleton columns={2} rows={3} />
         ) : (
           pl && (
-            <div className="card max-w-sm">
-              {[
-                {
-                  label: t("revenue"),
-                  value: pl.revenue,
-                  color: "text-green-600",
-                },
-                {
-                  label: t("expense"),
-                  value: pl.expense,
-                  color: "text-amber-500",
-                },
-                {
-                  label: t("netProfit"),
-                  value: pl.net_profit,
-                  color:
-                    Number(pl.net_profit) >= 0
-                      ? "text-green-700"
-                      : "text-amber-700",
-                },
-              ].map(({ label, value, color }) => (
-                <div
-                  key={label}
-                  className="flex justify-between py-3 border-b last:border-0"
-                >
-                  <span className="text-gray-700">{label}</span>
-                  <span className={`font-bold ${color}`}>
-                    {formatAmount(value, locale)}
-                  </span>
+            <div className="space-y-4 max-w-sm">
+              <div className="card">
+                {[
+                  { label: t("revenue"), value: pl.revenue, color: "text-green-600" },
+                  { label: t("expense"), value: pl.expense, color: "text-amber-500" },
+                  {
+                    label: t("netProfit"),
+                    value: pl.net_profit,
+                    color: Number(pl.net_profit) >= 0 ? "text-green-700" : "text-amber-700",
+                  },
+                ].map(({ label, value, color }) => (
+                  <div key={label} className="flex justify-between py-3 border-b last:border-0">
+                    <span className="text-gray-700">{label}</span>
+                    <span className={`font-bold ${color}`}>{formatAmount(value, locale)}</span>
+                  </div>
+                ))}
+              </div>
+
+              {pl.equity_shares && pl.equity_shares.length > 0 && (
+                <div className="card">
+                  <h3 className="text-sm font-semibold text-gray-700 mb-3">
+                    {locale === "bn" ? "অংশীদারদের লাভ বণ্টন" : "Partner Profit Distribution"}
+                  </h3>
+                  {pl.equity_shares.map(s => (
+                    <div key={s.partner_id} className="flex justify-between py-2.5 border-b last:border-0">
+                      <div>
+                        <p className="text-sm text-gray-800">{locale === "bn" ? s.name_bn || s.name_en : s.name_en || s.name_bn}</p>
+                        <p className="text-xs text-amber-500">{s.percentage}%</p>
+                      </div>
+                      <span className={`font-bold text-sm ${Number(s.share_amount) >= 0 ? "text-green-700" : "text-amber-700"}`}>
+                        {formatAmount(s.share_amount, locale)}
+                      </span>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              )}
             </div>
           )
         ))}

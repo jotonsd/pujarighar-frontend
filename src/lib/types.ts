@@ -136,11 +136,68 @@ export interface Product {
   updated_at: string
 }
 
+export interface Supplier {
+  id: string
+  name_bn: string
+  name_en: string
+  phone: string
+  address: string
+  is_active: boolean
+  created_at: string
+}
+
+export interface Partner {
+  id: string
+  name_bn: string
+  name_en: string
+  equity_percentage: string
+  invested_amount: string
+  is_active: boolean
+  created_at: string
+  total_share: string
+  total_paid: string
+  total_balance: string
+}
+
+export interface PartnerProfitPayment {
+  id: string
+  partner: string
+  partner_name: string
+  year: number
+  month: number
+  total_profit: string
+  share_amount: string
+  paid_amount: string
+  balance: string
+  paid_date: string | null
+  note: string
+  created_at: string
+}
+
+export interface PartnerPaymentsData {
+  payments: PartnerProfitPayment[]
+  total_share: string
+  total_paid: string
+}
+
+export interface EquityShare {
+  partner_id: string
+  name_bn: string
+  name_en: string
+  percentage: string
+  share_amount: string
+}
+
 export interface StockMovement {
   id: string
   product: string
   movement_type: 'PURCHASE' | 'SALE' | 'RETURN' | 'ADJUSTMENT'
   quantity: string
+  unit_cost: string
+  supplier: string | null
+  supplier_name: string
+  supplier_display: string
+  payment_method: 'CASH' | 'CREDIT'
   reference_id: string | null
   note_bn: string
   note_en: string

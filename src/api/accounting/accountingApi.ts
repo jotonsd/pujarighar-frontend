@@ -3,6 +3,21 @@ import { Account, JournalEntry, ApiMeta } from '@/lib/types'
 
 interface JournalListResponse { data: JournalEntry[]; meta: ApiMeta }
 
+export interface ManualJournalLine {
+  account_code: string
+  debit: string
+  credit: string
+  memo_bn?: string
+  memo_en?: string
+}
+
+export interface CreateManualJournalPayload {
+  description_bn: string
+  description_en?: string
+  reference_type: 'EXPENSE' | 'EQUITY' | 'ADJUSTMENT' | 'PURCHASE'
+  lines: ManualJournalLine[]
+}
+
 interface LedgerLine {
   date: string; entry_number: string; description: string
   debit: string; credit: string; balance: string
@@ -18,7 +33,12 @@ interface TrialBalanceRow {
   debit: string
   credit: string
 }
-interface ProfitLossData { revenue: string; expense: string; net_profit: string }
+interface ProfitLossData {
+  revenue: string
+  expense: string
+  net_profit: string
+  equity_shares: { partner_id: string; name_bn: string; name_en: string; percentage: string; share_amount: string }[]
+}
 
 export const accountingApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
@@ -71,6 +91,16 @@ export const accountingApi = baseApi.injectEndpoints({
       transformResponse: (res: { data: unknown }) => res.data,
     }),
 
+    createManualJournal: build.mutation<JournalEntry, CreateManualJournalPayload>({
+      query: (body) => ({
+        url: '/api/accounting/journal-entries/create/',
+        method: 'POST',
+        body,
+      }),
+      transformResponse: (res: { data: JournalEntry }) => res.data,
+      invalidatesTags: ['JournalEntries'],
+    }),
+
   }),
   overrideExisting: false,
 })
@@ -82,4 +112,5 @@ export const {
   useGetTrialBalanceQuery,
   useGetProfitLossQuery,
   useGetSalesSummaryQuery,
+  useCreateManualJournalMutation,
 } = accountingApi

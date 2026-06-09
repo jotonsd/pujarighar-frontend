@@ -15,7 +15,7 @@ export const stockApi = baseApi.injectEndpoints({
       providesTags: (_r, _e, productId) => [{ type: 'Stock', id: productId }],
     }),
 
-    adjustStock: build.mutation<void, { productId: string; movement_type: string; quantity: number; unit_cost?: number; unit_price?: number; note_bn?: string; note_en?: string }>({
+    adjustStock: build.mutation<void, { productId: string; movement_type: string; quantity: number; unit_cost?: number; unit_price?: number; supplier_id?: string; supplier_name?: string; payment_method?: 'CASH' | 'CREDIT'; note_bn?: string; note_en?: string }>({
       query: ({ productId, ...body }) => ({
         url: `/api/products/${productId}/stock/adjust/`,
         method: 'POST',

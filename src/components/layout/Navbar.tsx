@@ -84,6 +84,18 @@ const SETTINGS_LINKS = [
     label_bn: "ডেলিভারি চার্জ",
     label_en: "Delivery Charges",
   },
+  {
+    href: "/admin/settings/suppliers",
+    icon: "🏭",
+    label_bn: "সরবরাহকারী",
+    label_en: "Suppliers",
+  },
+  {
+    href: "/admin/settings/partners",
+    icon: "🤝",
+    label_bn: "অংশীদার",
+    label_en: "Partners",
+  },
 ];
 
 const ACCOUNTING_LINKS = [
