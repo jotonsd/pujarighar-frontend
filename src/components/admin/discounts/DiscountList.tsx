@@ -78,7 +78,35 @@ export default function DiscountList() {
       exportValue: d => d.note,
     },
     {
-      header: isBn ? "তারিখ" : "Date",
+      header: isBn ? "মেয়াদ" : "Validity",
+      accessor: d => {
+        if (!d.start_date && !d.end_date) return <span className="text-gray-300 text-xs">—</span>
+        const today = new Date(); today.setHours(0,0,0,0)
+        const expired = d.end_date && new Date(d.end_date) < today
+        const notStarted = d.start_date && new Date(d.start_date) > today
+        return (
+          <div className="text-xs space-y-0.5">
+            {d.start_date && (
+              <p className="text-gray-500">{isBn ? 'শুরু: ' : 'From: '}<span className="font-medium text-gray-700">{formatDate(d.start_date, locale)}</span></p>
+            )}
+            {d.end_date && (
+              <p className={expired ? 'text-red-500' : 'text-gray-500'}>
+                {isBn ? 'শেষ: ' : 'To: '}
+                <span className={`font-medium ${expired ? 'text-red-600' : 'text-gray-700'}`}>{formatDate(d.end_date, locale)}</span>
+              </p>
+            )}
+            {(expired || notStarted) && (
+              <span className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold ${expired ? 'bg-red-50 text-red-600' : 'bg-yellow-50 text-yellow-700'}`}>
+                {expired ? (isBn ? 'মেয়াদ শেষ' : 'Expired') : (isBn ? 'শুরু হয়নি' : 'Not started')}
+              </span>
+            )}
+          </div>
+        )
+      },
+      exportValue: d => [d.start_date, d.end_date].filter(Boolean).join(' → '),
+    },
+    {
+      header: isBn ? "তারিখ" : "Created",
       accessor: d => (
         <span className="text-xs text-gray-400">
           {formatDate(d.created_at, locale)}

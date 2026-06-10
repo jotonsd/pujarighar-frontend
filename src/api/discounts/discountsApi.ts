@@ -10,6 +10,8 @@ export interface Discount {
   discount_value: string
   note: string
   is_active: boolean
+  start_date: string | null
+  end_date: string | null
   created_at: string
 }
 
@@ -26,7 +28,7 @@ export const discountsApi = baseApi.injectEndpoints({
       providesTags: ['Discounts'],
     }),
 
-    createDiscount: build.mutation<Discount, { product: string; discount_type: string; discount_value: string; note?: string }>({
+    createDiscount: build.mutation<Discount, { product: string; discount_type: string; discount_value: string; note?: string; start_date?: string | null; end_date?: string | null }>({
       query: (body) => ({ url: '/api/discounts/create/', method: 'POST', body }),
       transformResponse: (res: { data: Discount }) => res.data,
       invalidatesTags: ['Discounts', 'Products'],
