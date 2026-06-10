@@ -1,6 +1,7 @@
 "use client";
 import { formatAmount } from "@/utils/format";
 
+import { useGetMeQuery } from "@/api/auth/authApi";
 import {
   useCheckoutMutation,
   useGetCartQuery,
@@ -276,8 +277,10 @@ function ConfirmModal({
   locale,
   lines,
   subtotal,
+  discount,
   deliveryCharge,
   deliveryAmount,
+  cashbackUsed,
   grandTotal,
   paymentMethod,
   onConfirm,
@@ -287,8 +290,10 @@ function ConfirmModal({
   locale: string;
   lines: { label: string; qty: number; price: string }[];
   subtotal: string;
+  discount: number;
   deliveryCharge: string;
   deliveryAmount: number;
+  cashbackUsed: number;
   grandTotal: string;
   paymentMethod: PaymentMethod;
   onConfirm: () => void;
@@ -324,12 +329,24 @@ function ConfirmModal({
             <span>{locale === "bn" ? "সাবটোটাল" : "Subtotal"}</span>
             <span className="font-bold">{subtotal}</span>
           </div>
+          {discount > 0 && (
+            <div className="flex items-center justify-between text-sm text-green-600">
+              <span>{locale === "bn" ? "ছাড়" : "Discount"}</span>
+              <span className="font-bold">− {formatAmount(discount, locale)}</span>
+            </div>
+          )}
           {deliveryAmount > 0 && (
             <div className="flex items-center justify-between text-sm text-gray-500">
               <span>
                 {locale === "bn" ? "ডেলিভারি চার্জ" : "Delivery Charge"}
               </span>
               <span className="font-bold">{deliveryCharge}</span>
+            </div>
+          )}
+          {cashbackUsed > 0 && (
+            <div className="flex items-center justify-between text-sm text-purple-600">
+              <span>{locale === "bn" ? "ক্যাশব্যাক ব্যবহার" : "Cashback Used"}</span>
+              <span className="font-bold">− {formatAmount(cashbackUsed, locale)}</span>
             </div>
           )}
           <div className="flex items-center justify-between font-bold text-base border-t border-gray-100 pt-1.5">
@@ -458,6 +475,7 @@ export default function CartPage() {
     "inside",
   );
   const { data: deliveryRates } = useGetDeliveryChargesQuery();
+  const { data: me } = useGetMeQuery(undefined, { skip: !isAuthenticated });
 
   // Auto-select default address when addresses load
   useEffect(() => {
@@ -575,7 +593,10 @@ export default function CartPage() {
     const confirmLines = items.map(i => ({
       label: locale === "bn" ? i.product_name_bn : i.product_name_en,
       qty: Math.round(Number(i.quantity)),
-      price: formatAmount(i.line_total, locale, 0),
+      price: formatAmount(
+        parseFloat(i.original_unit_price || i.unit_price) * parseFloat(i.quantity),
+        locale, 0,
+      ),
     }));
 
     return (
@@ -879,20 +900,40 @@ export default function CartPage() {
                     </span>
                   </div>
                 )}
+                {(() => {
+                  const sub = parseFloat(String(cart?.subtotal ?? 0));
+                  const dc = deliveryRates
+                    ? parseFloat(
+                        deliveryZone === "inside"
+                          ? deliveryRates.inside_dhaka
+                          : deliveryRates.outside_dhaka,
+                      )
+                    : 0;
+                  const cashbackBalance = parseFloat(me?.profile.cashback_balance || "0");
+                  const cashbackToUse = Math.min(cashbackBalance, sub + dc);
+                  return cashbackToUse > 0 ? (
+                    <div className="flex justify-between text-sm text-purple-600 font-bold">
+                      <span>{locale === "bn" ? "ক্যাশব্যাক প্রযোজ্য" : "Cashback Applied"}</span>
+                      <span>− {formatAmount(cashbackToUse, locale)}</span>
+                    </div>
+                  ) : null;
+                })()}
                 <div className="flex justify-between text-lg font-bold border-t border-gray-100 pt-2">
                   <span>{locale === "bn" ? "সর্বমোট" : "Grand Total"}</span>
                   <span className="text-amber-600">
-                    {formatAmount(
-                      parseFloat(String(cart?.subtotal ?? 0)) +
-                        (deliveryRates
-                          ? parseFloat(
-                              deliveryZone === "inside"
-                                ? deliveryRates.inside_dhaka
-                                : deliveryRates.outside_dhaka,
-                            )
-                          : 0),
-                      locale,
-                    )}
+                    {(() => {
+                      const sub = parseFloat(String(cart?.subtotal ?? 0));
+                      const dc = deliveryRates
+                        ? parseFloat(
+                            deliveryZone === "inside"
+                              ? deliveryRates.inside_dhaka
+                              : deliveryRates.outside_dhaka,
+                          )
+                        : 0;
+                      const cashbackBalance = parseFloat(me?.profile.cashback_balance || "0");
+                      const cashbackToUse = Math.min(cashbackBalance, sub + dc);
+                      return formatAmount(sub + dc - cashbackToUse, locale);
+                    })()}
                   </span>
                 </div>
                 {cart?.discount_amount &&
@@ -952,15 +993,20 @@ export default function CartPage() {
                     : deliveryRates.outside_dhaka,
                 )
               : 0;
+            const discountAmt = parseFloat(cart?.discount_amount || "0");
+            const cashbackBalance = parseFloat(me?.profile.cashback_balance || "0");
+            const cashbackToUse = Math.min(cashbackBalance, sub + dc);
             return (
               <ConfirmModal
                 locale={locale}
                 lines={confirmLines}
                 paymentMethod={paymentMethod}
-                subtotal={formatAmount(sub, locale)}
+                subtotal={formatAmount(sub + discountAmt, locale)}
+                discount={discountAmt}
                 deliveryCharge={formatAmount(dc, locale, 0)}
                 deliveryAmount={dc}
-                grandTotal={formatAmount(sub + dc, locale)}
+                cashbackUsed={cashbackToUse}
+                grandTotal={formatAmount(sub + dc - cashbackToUse, locale)}
                 onConfirm={handleCheckout}
                 onCancel={() => setShowConfirm(false)}
                 loading={checkingOut}
@@ -975,7 +1021,7 @@ export default function CartPage() {
   const guestConfirmLines = guestItems.map(i => ({
     label: locale === "bn" ? i.name_bn : i.name_en,
     qty: i.quantity,
-    price: formatAmount(parseFloat(i.unit_price) * i.quantity, locale, 0),
+    price: formatAmount(parseFloat(i.original_unit_price || i.unit_price) * i.quantity, locale, 0),
   }));
 
   return (
@@ -1322,9 +1368,11 @@ export default function CartPage() {
               locale={locale}
               lines={guestConfirmLines}
               paymentMethod={paymentMethod}
-              subtotal={formatAmount(sub, locale)}
+              subtotal={formatAmount(sub + guestDiscountAmount(), locale)}
+              discount={guestDiscountAmount()}
               deliveryCharge={formatAmount(dc, locale, 0)}
               deliveryAmount={dc}
+              cashbackUsed={0}
               grandTotal={formatAmount(sub + dc, locale)}
               onConfirm={confirmGuestCheckout}
               onCancel={() => setShowConfirm(false)}

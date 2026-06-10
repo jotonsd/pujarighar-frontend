@@ -411,6 +411,8 @@ export interface SalesOrder {
   tax_amount: string
   delivery_charge: string
   grand_total: string
+  cashback_used: string
+  cashback_amount: string
   notes_bn: string
   notes_en: string
   items: SalesOrderItem[]

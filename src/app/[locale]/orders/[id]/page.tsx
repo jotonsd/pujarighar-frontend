@@ -223,6 +223,12 @@ export default function OrderDetailPage({
                   <span className="font-bold">{formatAmount(order.delivery_charge, locale)}</span>
                 </div>
               )}
+              {parseFloat(order.cashback_used || "0") > 0 && (
+                <div className="flex justify-between text-sm text-purple-600">
+                  <span>{locale === "bn" ? "ক্যাশব্যাক ব্যবহার" : "Cashback Used"}</span>
+                  <span className="font-bold">− {formatAmount(order.cashback_used, locale)}</span>
+                </div>
+              )}
               <div className="flex justify-between font-bold">
                 <span>{t("order.total")}</span>
                 <span className="text-amber-600">
