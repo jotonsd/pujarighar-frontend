@@ -144,6 +144,7 @@ export interface Product {
   discount_type: 'NONE' | 'PERCENTAGE' | 'FLAT'
   discount_value: string
   effective_price: string
+  original_price: string
   active_discount_type: 'PERCENTAGE' | 'FLAT' | null
   active_discount_value: string | null
   is_active: boolean
@@ -291,6 +292,7 @@ export interface CartItem {
   product_name_bn: string
   product_name_en: string
   unit_price: string
+  original_unit_price: string
   quantity: string
   line_total: string
   stock_on_hand: string
@@ -303,6 +305,7 @@ export interface Cart {
   id: string
   items: CartItem[]
   subtotal: string
+  discount_amount: string
   item_count: number
 }
 

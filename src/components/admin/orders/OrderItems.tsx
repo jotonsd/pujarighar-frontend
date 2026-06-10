@@ -35,27 +35,17 @@ export default function OrderItems({ order }: Props) {
                 </span>
               </span>
               <span className="text-right shrink-0">
-                {item.original_unit_price &&
-                  parseFloat(item.original_unit_price) > parseFloat(item.unit_price) && (
-                  <span className="block text-xs text-gray-400 line-through">
-                    {formatAmount(
-                      String(parseFloat(item.original_unit_price) * parseFloat(item.quantity)),
-                      locale,
-                    )}
-                  </span>
-                )}
-                <span className="font-bold">{formatAmount(item.line_total, locale)}</span>
-                {item.original_unit_price &&
-                  parseFloat(item.original_unit_price) > parseFloat(item.unit_price) && (
-                  <span className="block text-xs text-green-600 font-semibold">
-                    − {formatAmount(
-                      String(
-                        (parseFloat(item.original_unit_price) - parseFloat(item.unit_price)) *
-                        parseFloat(item.quantity)
-                      ),
-                      locale,
-                    )} {locale === "bn" ? "ছাড়" : "off"}
-                  </span>
+                {item.original_unit_price && parseFloat(item.original_unit_price) > parseFloat(item.unit_price) ? (
+                  <>
+                    <span className="block font-bold text-gray-800">
+                      {formatAmount(String(parseFloat(item.original_unit_price) * parseFloat(item.quantity)), locale)}
+                    </span>
+                    <span className="block text-xs text-green-600 font-bold">
+                      − {formatAmount(String((parseFloat(item.original_unit_price) - parseFloat(item.unit_price)) * parseFloat(item.quantity)), locale)} {locale === "bn" ? "ছাড়" : "off"}
+                    </span>
+                  </>
+                ) : (
+                  <span className="font-bold">{formatAmount(item.line_total, locale)}</span>
                 )}
               </span>
             </div>
@@ -93,7 +83,12 @@ export default function OrderItems({ order }: Props) {
         <hr className="my-2" />
         <div className="flex justify-between text-sm text-gray-500">
           <span>{locale === "bn" ? "সাবটোটাল" : "Subtotal"}</span>
-          <span className="font-bold">{formatAmount(order.subtotal, locale)}</span>
+          <span className="font-bold">
+            {formatAmount(
+              String(parseFloat(order.subtotal) + parseFloat(order.discount_amount || "0")),
+              locale,
+            )}
+          </span>
         </div>
         {parseFloat(order.discount_amount) > 0 && (
           <div className="flex justify-between text-sm text-green-600">

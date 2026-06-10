@@ -3,6 +3,11 @@ import { Product, ProductImage, ApiMeta } from '@/lib/types'
 
 interface ProductListResponse { data: Product[]; pagination: ApiMeta }
 
+export interface CategoryWithProducts {
+  category: { id: string; name_bn: string; name_en: string; icon: string; slug: string }
+  products: Product[]
+}
+
 export const productsApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
 
@@ -97,6 +102,11 @@ export const productsApi = baseApi.injectEndpoints({
       ],
     }),
 
+    getPopularByCategory: build.query<{ data: CategoryWithProducts[] }, void>({
+      query: () => '/api/products/popular-by-category/',
+      providesTags: ['Products'],
+    }),
+
   }),
   overrideExisting: false,
 })
@@ -121,4 +131,5 @@ export const {
   useGetPackageItemsQuery,
   useAddPackageItemMutation,
   useDeletePackageItemMutation,
+  useGetPopularByCategoryQuery,
 } = productsApi

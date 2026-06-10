@@ -408,6 +408,7 @@ export default function CartPage() {
   const guestUpdateQty = useGuestCartStore(s => s.updateQty);
   const guestClear = useGuestCartStore(s => s.clear);
   const guestSubtotal = useGuestCartStore(s => s.subtotal);
+  const guestDiscountAmount = useGuestCartStore(s => s.discountAmount);
 
   const { data: cart, isLoading } = useGetCartQuery(undefined, {
     skip: !isAuthenticated,
@@ -617,8 +618,29 @@ export default function CartPage() {
                           <p className="font-medium text-gray-800 text-sm truncate">
                             {name}
                           </p>
-                          <p className="text-xs text-gray-400">
-                            {formatAmount(item.unit_price, locale, 0)}
+                          <p className="text-xs text-gray-400 flex items-center gap-1">
+                            {item.original_unit_price &&
+                              parseFloat(item.original_unit_price) >
+                                parseFloat(item.unit_price) && (
+                                <span className="line-through">
+                                  {formatAmount(
+                                    item.original_unit_price,
+                                    locale,
+                                    0,
+                                  )}
+                                </span>
+                              )}
+                            <span
+                              className={
+                                item.original_unit_price &&
+                                parseFloat(item.original_unit_price) >
+                                  parseFloat(item.unit_price)
+                                  ? "text-green-600 font-medium"
+                                  : ""
+                              }
+                            >
+                              {formatAmount(item.unit_price, locale, 0)}
+                            </span>
                           </p>
                         </div>
                         {/* Qty stepper */}
@@ -822,12 +844,27 @@ export default function CartPage() {
                     </div>
                   </div>
                 )}
-                <div className="flex justify-between text-sm text-gray-600">
+                <div className="flex justify-between font-bold  text-sm text-gray-600">
                   <span>{t("cart.subtotal")}</span>
-                  <span>{formatAmount(cart?.subtotal ?? 0, locale)}</span>
+                  <span>
+                    {formatAmount(
+                      parseFloat(String(cart?.subtotal ?? 0)) +
+                        parseFloat(String(cart?.discount_amount ?? 0)),
+                      locale,
+                    )}
+                  </span>
                 </div>
+                {cart?.discount_amount &&
+                  parseFloat(cart.discount_amount) > 0 && (
+                    <div className="flex justify-between text-sm text-green-600 font-bold">
+                      <span>{locale === "bn" ? "ছাড়" : "Discount"}</span>
+                      <span>
+                        − {formatAmount(cart.discount_amount, locale)}
+                      </span>
+                    </div>
+                  )}
                 {deliveryRates && (
-                  <div className="flex justify-between text-sm text-gray-600">
+                  <div className="flex justify-between font-bold text-sm text-gray-600">
                     <span>
                       {locale === "bn" ? "ডেলিভারি চার্জ" : "Delivery Charge"}
                     </span>
@@ -858,6 +895,15 @@ export default function CartPage() {
                     )}
                   </span>
                 </div>
+                {cart?.discount_amount &&
+                  parseFloat(cart.discount_amount) > 0 && (
+                    <div className="flex items-center justify-center gap-1.5 bg-green-50 border border-green-100 rounded-lg px-3 py-2 text-xs font-bold text-green-700">
+                      🎉{" "}
+                      {locale === "bn"
+                        ? `আপনি ${formatAmount(cart.discount_amount, locale)} সাশ্রয় করছেন!`
+                        : `You're saving ${formatAmount(cart.discount_amount, locale)}!`}
+                    </div>
+                  )}
                 <button
                   onClick={openCheckoutFlow}
                   disabled={addresses.length > 0 && !selectedAddressId}
@@ -970,8 +1016,27 @@ export default function CartPage() {
                         <p className="font-medium text-gray-800 text-sm truncate">
                           {name}
                         </p>
-                        <p className="text-xs text-gray-400">
-                          {formatAmount(item.unit_price, locale, 0)}
+                        <p className="text-xs text-gray-400 flex items-center gap-1">
+                          {parseFloat(item.original_unit_price) >
+                            parseFloat(item.unit_price) && (
+                            <span className="line-through">
+                              {formatAmount(
+                                item.original_unit_price,
+                                locale,
+                                0,
+                              )}
+                            </span>
+                          )}
+                          <span
+                            className={
+                              parseFloat(item.original_unit_price) >
+                              parseFloat(item.unit_price)
+                                ? "text-green-600 font-medium"
+                                : ""
+                            }
+                          >
+                            {formatAmount(item.unit_price, locale, 0)}
+                          </span>
                         </p>
                       </div>
                       <div className="flex items-center gap-1 shrink-0">
@@ -1160,20 +1225,56 @@ export default function CartPage() {
                     </button>
                   ))}
                 </div>
-                <div className="mt-2 flex justify-between text-sm font-semibold text-gray-700">
-                  <span>{locale === "bn" ? "সর্বমোট" : "Grand Total"}</span>
-                  <span className="text-amber-600 font-bold">
-                    {formatAmount(
-                      guestSubtotal() +
-                        parseFloat(
-                          deliveryZone === "inside"
-                            ? deliveryRates.inside_dhaka
-                            : deliveryRates.outside_dhaka,
-                        ),
-                      locale,
-                      0,
-                    )}
-                  </span>
+                <div className="mt-2 space-y-1.5">
+                  <div className="flex justify-between font-bold text-sm text-gray-600">
+                    <span>{locale === "bn" ? "সাবটোটাল" : "Subtotal"}</span>
+                    <span>{formatAmount(guestSubtotal() + guestDiscountAmount(), locale, 0)}</span>
+                  </div>
+                  {guestDiscountAmount() > 0 && (
+                    <div className="flex justify-between text-sm text-green-600 font-bold">
+                      <span>{locale === "bn" ? "ছাড়" : "Discount"}</span>
+                      <span>
+                        − {formatAmount(guestDiscountAmount(), locale, 0)}
+                      </span>
+                    </div>
+                  )}
+                  <div className="flex justify-between font-bold text-sm text-gray-600">
+                    <span>
+                      {locale === "bn" ? "ডেলিভারি চার্জ" : "Delivery Charge"}
+                    </span>
+                    <span>
+                      {formatAmount(
+                        deliveryZone === "inside"
+                          ? deliveryRates.inside_dhaka
+                          : deliveryRates.outside_dhaka,
+                        locale,
+                        0,
+                      )}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-sm font-bold border-t border-gray-100 pt-1.5">
+                    <span>{locale === "bn" ? "সর্বমোট" : "Grand Total"}</span>
+                    <span className="text-amber-600">
+                      {formatAmount(
+                        guestSubtotal() +
+                          parseFloat(
+                            deliveryZone === "inside"
+                              ? deliveryRates.inside_dhaka
+                              : deliveryRates.outside_dhaka,
+                          ),
+                        locale,
+                        0,
+                      )}
+                    </span>
+                  </div>
+                  {guestDiscountAmount() > 0 && (
+                    <div className="flex items-center justify-center gap-1.5 bg-green-50 border border-green-100 rounded-lg px-3 py-2 text-xs font-bold text-green-700">
+                      🎉{" "}
+                      {locale === "bn"
+                        ? `আপনি ${formatAmount(guestDiscountAmount(), locale, 0)} সাশ্রয় করছেন!`
+                        : `You're saving ${formatAmount(guestDiscountAmount(), locale, 0)}!`}
+                    </div>
+                  )}
                 </div>
               </div>
             )}

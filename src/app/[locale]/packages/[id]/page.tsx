@@ -42,13 +42,14 @@ export default function PackageDetailPage({
     if (!pkg) return;
     if (!isAuthenticated) {
       guestAddItem({
-        product_id: pkg.id,
-        name_bn: pkg.name_bn,
-        name_en: pkg.name_en,
-        unit_price: pkg.unit_price,
-        stock: Number(pkg.stock_on_hand),
-        is_package: true,
-        package_items: (pkg.package_items ?? []).map(pi => ({
+        product_id:          pkg.id,
+        name_bn:             pkg.name_bn,
+        name_en:             pkg.name_en,
+        unit_price:          String(pkg.effective_price ?? pkg.unit_price),
+        original_unit_price: String(pkg.original_price ?? pkg.unit_price),
+        stock:               Number(pkg.stock_on_hand),
+        is_package:          true,
+        package_items:       (pkg.package_items ?? []).map(pi => ({
           component_name_bn: pi.component_name_bn,
           component_name_en: pi.component_name_en,
           quantity: String(pi.quantity),

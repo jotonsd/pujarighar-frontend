@@ -1,7 +1,7 @@
 import HeroSlider from "@/components/home/HeroSlider";
+import HomeCategoryProducts from "@/components/home/HomeCategoryProducts";
 import HomeOffers from "@/components/home/HomeOffers";
 import HomePackages from "@/components/home/HomePackages";
-import HomeProducts from "@/components/home/HomeProducts";
 import OfferBanners from "@/components/products/OfferBanners";
 import { getLocale } from "next-intl/server";
 
@@ -46,8 +46,8 @@ export default async function HomePage() {
       {/* Offers — discounted products */}
       <HomeOffers />
 
-      {/* Products — 18 items, 6 per row */}
-      <HomeProducts />
+      {/* Products — category-wise, top 12 by sales */}
+      <HomeCategoryProducts />
 
       {/* Authentic products section */}
       <section>

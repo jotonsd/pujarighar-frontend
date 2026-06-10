@@ -44,13 +44,14 @@ export default function ProductDetailPage({
     if (!product) return;
     if (!isAuthenticated) {
       guestAddItem({
-        product_id: product.id,
-        name_bn: product.name_bn,
-        name_en: product.name_en,
-        unit_price: product.unit_price,
-        stock: Number(product.stock_on_hand),
-        is_package: false,
-        package_items: [],
+        product_id:          product.id,
+        name_bn:             product.name_bn,
+        name_en:             product.name_en,
+        unit_price:          String(product.effective_price ?? product.unit_price),
+        original_unit_price: String(product.original_price ?? product.unit_price),
+        stock:               Number(product.stock_on_hand),
+        is_package:          false,
+        package_items:       [],
       });
       toast.success(locale === "bn" ? "কার্টে যোগ হয়েছে" : "Added to cart");
       return;

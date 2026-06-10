@@ -78,14 +78,15 @@ export default function ProductCard({ product, locale }: Props) {
       setLocalAdding(true);
       guestAddItem(
         {
-          product_id: product.id,
-          name_bn: product.name_bn,
-          name_en: product.name_en,
-          unit_price: product.unit_price,
-          stock: Number(product.stock_on_hand),
-          is_package: false,
-          package_items: [],
-          image: product.images?.[0]?.image,
+          product_id:          product.id,
+          name_bn:             product.name_bn,
+          name_en:             product.name_en,
+          unit_price:          String(product.effective_price ?? product.unit_price),
+          original_unit_price: String(product.original_price ?? product.unit_price),
+          stock:               Number(product.stock_on_hand),
+          is_package:          false,
+          package_items:       [],
+          image:               product.images?.[0]?.image,
         },
         qty,
       );

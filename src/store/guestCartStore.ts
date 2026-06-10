@@ -8,25 +8,27 @@ export interface GuestCartPackageItem {
 }
 
 export interface GuestCartItem {
-  product_id:    string
-  name_bn:       string
-  name_en:       string
-  unit_price:    string
-  quantity:      number
-  stock:         number
-  is_package:    boolean
-  package_items: GuestCartPackageItem[]
-  image?:        string
+  product_id:          string
+  name_bn:             string
+  name_en:             string
+  unit_price:          string   // effective (discounted) price
+  original_unit_price: string   // original price before discount
+  quantity:            number
+  stock:               number
+  is_package:          boolean
+  package_items:       GuestCartPackageItem[]
+  image?:              string
 }
 
 interface GuestCartState {
-  items: GuestCartItem[]
-  addItem:    (item: Omit<GuestCartItem, 'quantity'>, qty?: number) => void
-  updateQty:  (product_id: string, quantity: number) => void
-  removeItem: (product_id: string) => void
-  clear:      () => void
-  totalItems: () => number
-  subtotal:   () => number
+  items:          GuestCartItem[]
+  addItem:        (item: Omit<GuestCartItem, 'quantity'>, qty?: number) => void
+  updateQty:      (product_id: string, quantity: number) => void
+  removeItem:     (product_id: string) => void
+  clear:          () => void
+  totalItems:     () => number
+  subtotal:       () => number
+  discountAmount: () => number
 }
 
 export const useGuestCartStore = create<GuestCartState>()(
@@ -74,6 +76,14 @@ export const useGuestCartStore = create<GuestCartState>()(
         return get().items.reduce(
           (sum, i) => sum + parseFloat(i.unit_price) * i.quantity, 0,
         )
+      },
+
+      discountAmount() {
+        return get().items.reduce((sum, i) => {
+          const orig = parseFloat(i.original_unit_price)
+          const eff  = parseFloat(i.unit_price)
+          return sum + Math.max(orig - eff, 0) * i.quantity
+        }, 0)
       },
     }),
     { name: 'pujarighar-guest-cart' },
