@@ -202,6 +202,10 @@ const REF_BADGE: Record<string, { variant: BadgeVariant; label_bn: string; label
   EQUITY:           { variant: 'blue',   label_bn: 'ইক্যুইটি',           label_en: 'Equity' },
   ADJUSTMENT:       { variant: 'gray',   label_bn: 'সমন্বয়',             label_en: 'Adjustment' },
   SUPPLIER_PAYMENT: { variant: 'green',  label_bn: 'সরবরাহকারী পেমেন্ট', label_en: 'Supplier Payment' },
+  CAPITAL:          { variant: 'blue',   label_bn: 'মূলধন বিনিয়োগ',      label_en: 'Capital Contribution' },
+  LOAN_RECEIVED:    { variant: 'blue',   label_bn: 'ঋণ গ্রহণ',            label_en: 'Loan Received' },
+  LOAN_INTEREST:    { variant: 'orange', label_bn: 'সুদ পরিশোধ',          label_en: 'Interest Payment' },
+  LOAN_PRINCIPAL:   { variant: 'yellow', label_bn: 'ঋণ পরিশোধ',           label_en: 'Principal Repayment' },
 }
 
 export default function JournalPage() {
@@ -219,6 +223,7 @@ export default function JournalPage() {
     <div>
       <PageHeader
         title={t('journal')}
+        description={isBn ? 'সকল জার্নাল এন্ট্রি দেখুন ও ম্যানুয়াল এন্ট্রি তৈরি করুন' : 'View all journal entries and create manual entries'}
         addLabel={isBn ? '+ নতুন এন্ট্রি' : '+ New Entry'}
         onAdd={() => setShowForm(true)}
       />

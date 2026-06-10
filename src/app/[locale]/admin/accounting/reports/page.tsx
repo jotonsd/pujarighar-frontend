@@ -30,7 +30,10 @@ export default function ReportsPage() {
 
   return (
     <div>
-      <PageHeader title={locale === "bn" ? "রিপোর্ট" : "Reports"} />
+      <PageHeader
+        title={locale === "bn" ? "রিপোর্ট" : "Reports"}
+        description={locale === "bn" ? "লাভ-ক্ষতি, ট্রায়াল ব্যালেন্স ও বিক্রয় বিশ্লেষণ" : "Profit & loss, trial balance and sales analysis"}
+      />
 
       <div className="flex gap-2 mb-6 border-b">
         {(["pl", "tb", "sales"] as const).map(s => (

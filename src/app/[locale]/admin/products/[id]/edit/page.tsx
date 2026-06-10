@@ -127,6 +127,7 @@ export default function EditProductPage({
     <div className="max-w-7xl">
       <PageHeader
         title={`${t("common.edit")} ${t("product.title")}`}
+        description={locale === 'bn' ? 'পণ্যের তথ্য, ছবি ও স্টক আপডেট করুন' : 'Update product details, images and stock'}
         showBack
         backHref={`/${locale}/admin/products`}
         backLabel={t("common.cancel")}

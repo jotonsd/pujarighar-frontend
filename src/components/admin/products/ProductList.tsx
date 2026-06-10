@@ -78,8 +78,12 @@ export default function ProductList() {
 
   return (
     <div>
-      <PageHeader title={t('admin.products')} addLabel={t('common.create')}
-        onAdd={() => router.push(`/${locale}/admin/products/new`)} />
+      <PageHeader
+        title={t('admin.products')}
+        description={locale === 'bn' ? 'সকল পণ্য দেখুন, সম্পাদনা করুন ও নতুন পণ্য যোগ করুন' : 'Browse, edit and add products to your catalog'}
+        addLabel={t('common.create')}
+        onAdd={() => router.push(`/${locale}/admin/products/new`)}
+      />
 
       <div className="mb-4 grid grid-cols-5 gap-3">
         <div className="col-span-2">

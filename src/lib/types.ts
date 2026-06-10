@@ -222,6 +222,42 @@ export interface EquityShare {
   share_amount: string
 }
 
+export interface LoanInvestor {
+  id: string
+  name_bn: string
+  name_en: string
+  phone: string
+  principal: string
+  interest_rate: string
+  loan_date: string
+  due_date: string | null
+  is_active: boolean
+  note: string
+  created_at: string
+  total_interest_paid: string
+  total_principal_paid: string
+  remaining_principal: string
+}
+
+export interface LoanPayment {
+  id: string
+  loan: string
+  loan_name: string
+  payment_type: 'INTEREST' | 'PRINCIPAL'
+  amount: string
+  paid_date: string
+  note: string
+  created_at: string
+}
+
+export interface LoanPaymentsData {
+  loan: LoanInvestor
+  payments: LoanPayment[]
+  total_interest: string
+  total_principal: string
+  remaining_principal: string
+}
+
 export interface StockMovement {
   id: string
   product: string

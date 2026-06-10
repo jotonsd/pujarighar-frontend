@@ -91,7 +91,10 @@ export default function DeliveryOrdersPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-3">
-      <PageHeader title={locale === "bn" ? "আমার ডেলিভারি" : "My Deliveries"} />
+      <PageHeader
+        title={locale === "bn" ? "আমার ডেলিভারি" : "My Deliveries"}
+        description={locale === "bn" ? "আপনার নিকট নির্ধারিত ডেলিভারি অর্ডারগুলো দেখুন" : "View orders assigned to you for delivery"}
+      />
 
       <div className="flex gap-2 flex-wrap mb-4">
         {STATUS_FILTERS.map(f => (

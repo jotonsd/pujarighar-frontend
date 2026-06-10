@@ -120,6 +120,7 @@ export default function NewProductPage() {
     <div className="max-w-7xl">
       <PageHeader
         title={`${t("common.create")} ${t("product.title")}`}
+        description={locale === 'bn' ? 'ক্যাটালগে নতুন পণ্য যোগ করুন' : 'Add a new product to your catalog'}
         showBack
       />
       <div className="card space-y-4">

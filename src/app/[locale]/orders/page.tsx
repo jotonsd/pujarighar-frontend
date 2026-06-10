@@ -19,7 +19,10 @@ export default function OrdersPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-3">
-      <PageHeader title={t("order.title")} />
+      <PageHeader
+        title={t("order.title")}
+        description={locale === 'bn' ? 'আপনার সকল অর্ডারের তালিকা ও বর্তমান অবস্থা' : 'View all your orders and their current status'}
+      />
 
       {isLoading ? (
         <Spinner />

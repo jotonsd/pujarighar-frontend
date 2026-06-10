@@ -52,12 +52,16 @@ export default function UserList() {
 
   return (
     <div>
-      <PageHeader title={t('admin.users')} actions={
-        <Link href={`/${locale}/admin/users/new`}
-          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-amber-600 hover:bg-amber-700 text-white transition-colors">
-          {t('common.create')}
-        </Link>
-      } />
+      <PageHeader
+        title={t('admin.users')}
+        description={locale === 'bn' ? 'সকল ব্যবহারকারীর তালিকা, ভূমিকা ও অ্যাকাউন্ট পরিচালনা' : 'Manage all user accounts, roles and access'}
+        actions={
+          <Link href={`/${locale}/admin/users/new`}
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-amber-600 hover:bg-amber-700 text-white transition-colors">
+            {t('common.create')}
+          </Link>
+        }
+      />
 
       <div className="flex gap-3 mb-4 flex-wrap">
         <div className="w-64">

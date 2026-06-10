@@ -318,6 +318,7 @@ export default function SuppliersPage() {
     <div className="max-w-7xl">
       <PageHeader
         title={isBn ? "সরবরাহকারী" : "Suppliers"}
+        description={isBn ? "সরবরাহকারী ও তাদের বকেয়া পেমেন্ট পরিচালনা করুন" : "Manage suppliers and track outstanding credit payments"}
         addLabel={isBn ? "+ যোগ করুন" : "+ Add"}
         onAdd={openCreate}
       />

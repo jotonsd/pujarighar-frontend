@@ -70,7 +70,9 @@ export default function OrderList() {
 
   return (
     <div>
-      <PageHeader title={t('admin.orders')}
+      <PageHeader
+        title={t('admin.orders')}
+        description={locale === 'bn' ? 'সকল গ্রাহকের অর্ডার দেখুন, প্রক্রিয়া করুন ও পরিচালনা করুন' : 'View, process and manage all customer orders'}
         addLabel={locale === 'bn' ? 'নতুন অর্ডার (POS)' : 'New Order (POS)'}
         onAdd={() => router.push(`/${locale}/admin/orders/new`)}
         actions={

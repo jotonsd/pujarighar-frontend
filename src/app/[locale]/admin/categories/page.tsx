@@ -52,6 +52,7 @@ export default function CategoriesPage() {
     <div>
       <PageHeader
         title={locale === "bn" ? "কেটাগরি" : "Categories"}
+        description={locale === "bn" ? "পণ্যের কেটাগরি তৈরি ও পরিচালনা করুন" : "Create and manage product categories"}
         addLabel={showCreate ? t("common.cancel") : t("common.create")}
         onAdd={() => setShowCreate(s => !s)} />
 

@@ -45,7 +45,10 @@ export default function ProfilePage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-3">
-      <PageHeader title={t("profile.title")} />
+      <PageHeader
+        title={t("profile.title")}
+        description={locale === 'bn' ? 'আপনার ব্যক্তিগত তথ্য ও ঠিকানা আপডেট করুন' : 'Update your personal information and address'}
+      />
       <div className="card space-y-4">
         <div className="grid grid-cols-2 gap-3">
           <FloatingInput

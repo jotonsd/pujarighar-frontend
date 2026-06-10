@@ -91,6 +91,7 @@ export default function BrandsPage() {
     <div>
       <PageHeader
         title={isBn ? "ব্র্যান্ড" : "Brands"}
+        description={isBn ? "পণ্যের ব্র্যান্ড তৈরি ও পরিচালনা করুন" : "Create and manage product brands"}
         addLabel={showCreate ? (isBn ? "বাতিল" : "Cancel") : (isBn ? "নতুন ব্র্যান্ড" : "New Brand")}
         onAdd={() => setShowCreate(s => !s)}
       />

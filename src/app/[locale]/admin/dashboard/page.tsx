@@ -126,7 +126,10 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-5">
-      <PageHeader title={t("dashboard")} />
+      <PageHeader
+        title={t("dashboard")}
+        description={isBn ? "ব্যবসার সার্বিক অবস্থার সংক্ষিপ্ত চিত্র" : "Overview of your business performance"}
+      />
 
       {/* Stat cards */}
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">

@@ -67,7 +67,10 @@ export default function LedgerPage() {
 
   return (
     <div>
-      <PageHeader title={t('ledger')} />
+      <PageHeader
+        title={t('ledger')}
+        description={locale === 'bn' ? 'হিসাব খাত নির্বাচন করে বিস্তারিত লেনদেন দেখুন' : 'Select an account to view its detailed transaction history'}
+      />
       <div className="flex gap-3 mb-4 flex-wrap items-end">
         <div className="w-72">
           <FloatingSelect label={t('account')} value={accountId} onChange={(val) => setAccountId(val)}>

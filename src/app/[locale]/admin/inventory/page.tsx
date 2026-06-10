@@ -14,7 +14,10 @@ export default function InventoryPage() {
 
   return (
     <div>
-      <PageHeader title={t("admin.inventory")} />
+      <PageHeader
+        title={t("admin.inventory")}
+        description={locale === 'bn' ? 'পণ্য নির্বাচন করে স্টক সমন্বয় ও ক্রয় রেকর্ড করুন' : 'Select a product to adjust stock or record a purchase'}
+      />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <ProductSelector selected={selected} onSelect={setSelected} />
         {selected ? (

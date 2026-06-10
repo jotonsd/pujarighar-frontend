@@ -36,7 +36,11 @@ export default function NewUserPage() {
 
   return (
     <div className="max-w-7xl">
-      <PageHeader title={`${t('common.create')} ${locale === 'bn' ? 'ব্যবহারকারী' : 'User'}`} showBack />
+      <PageHeader
+        title={`${t('common.create')} ${locale === 'bn' ? 'ব্যবহারকারী' : 'User'}`}
+        description={locale === 'bn' ? 'নতুন ব্যবহারকারী অ্যাকাউন্ট তৈরি করুন ও ভূমিকা নির্ধারণ করুন' : 'Create a new user account and assign their role'}
+        showBack
+      />
       {error && <p className="text-amber-500 text-sm mb-4 bg-amber-50 p-3 rounded-lg">{error}</p>}
 
       <div className="card space-y-4">
