@@ -454,7 +454,7 @@ export default function CartPage() {
     null,
   );
   const [deliveryZone, setDeliveryZone] = useState<"inside" | "outside">(
-    "outside",
+    "inside",
   );
   const { data: deliveryRates } = useGetDeliveryChargesQuery();
 

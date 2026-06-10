@@ -5,8 +5,10 @@ import {
   useDeleteDiscountMutation,
   useGetDiscountsQuery,
   useToggleDiscountMutation,
+  useUpdateDiscountMutation,
 } from "@/api/discounts/discountsApi";
 import ToggleSwitch from "@/components/ui/forms/ToggleSwitch";
+import { FloatingInput, FloatingSelect, FloatingDatePicker } from "@/components/ui/forms";
 import {
   Column,
   QuickAction,
@@ -14,8 +16,142 @@ import {
 } from "@/components/ui/ReusableTable";
 import { toast } from "@/store/toastStore";
 import { formatAmount, formatDate, formatNumber } from "@/utils/format";
-import { Trash2 } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import { useLocale } from "next-intl";
+import { useState } from "react";
+
+type EditForm = {
+  discount_type: string;
+  discount_value: string;
+  note: string;
+  start_date: string;
+  end_date: string;
+};
+
+function EditModal({
+  discount,
+  isBn,
+  onClose,
+}: {
+  discount: Discount;
+  isBn: boolean;
+  onClose: () => void;
+}) {
+  const [form, setForm] = useState<EditForm>({
+    discount_type:  discount.discount_type,
+    discount_value: discount.discount_value,
+    note:           discount.note,
+    start_date:     discount.start_date ?? "",
+    end_date:       discount.end_date   ?? "",
+  });
+  const [update, { isLoading }] = useUpdateDiscountMutation();
+
+  const set = (key: keyof EditForm, val: string) =>
+    setForm(f => ({ ...f, [key]: val }));
+
+  const handleSave = async () => {
+    if (!form.discount_value) return;
+    try {
+      await update({
+        id:             discount.id,
+        discount_type:  form.discount_type,
+        discount_value: form.discount_value,
+        note:           form.note,
+        start_date:     form.start_date || null,
+        end_date:       form.end_date   || null,
+      }).unwrap();
+      toast.success(isBn ? "আপডেট হয়েছে" : "Discount updated");
+      onClose();
+    } catch {
+      toast.error(isBn ? "ব্যর্থ হয়েছে" : "Update failed");
+    }
+  };
+
+  const startDateObj = form.start_date ? new Date(form.start_date) : undefined;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg">
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+          <h2 className="text-base font-bold text-gray-900">
+            {isBn ? "ডিসকাউন্ট সম্পাদনা" : "Edit Discount"}
+          </h2>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="p-6 space-y-4">
+          <div className="px-3 py-2 bg-gray-50 rounded-lg text-xs text-gray-500">
+            {isBn ? "পণ্য: " : "Product: "}
+            <span className="font-semibold text-gray-700">
+              {isBn ? discount.product_name_bn : discount.product_name_en}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <FloatingSelect
+              label={isBn ? "ছাড়ের ধরন" : "Discount Type"}
+              value={form.discount_type}
+              onChange={val => set("discount_type", val)}
+            >
+              <option value="PERCENTAGE">{isBn ? "শতাংশ (%)" : "Percentage (%)"}</option>
+              <option value="FLAT">{isBn ? "নির্দিষ্ট পরিমাণ (৳)" : "Flat Amount (৳)"}</option>
+            </FloatingSelect>
+
+            <FloatingInput
+              label={form.discount_type === "PERCENTAGE"
+                ? (isBn ? "ছাড় (%)" : "Discount (%)")
+                : (isBn ? "ছাড় (৳)" : "Discount (৳)")}
+              type="number"
+              min="0"
+              step="0.01"
+              value={form.discount_value}
+              onChange={e => set("discount_value", e.target.value)}
+            />
+
+            <FloatingDatePicker
+              label={isBn ? "শুরুর তারিখ" : "Start Date"}
+              value={form.start_date}
+              onChange={val => set("start_date", val)}
+              clearable
+            />
+            <FloatingDatePicker
+              label={isBn ? "শেষের তারিখ" : "End Date"}
+              value={form.end_date}
+              onChange={val => set("end_date", val)}
+              minDate={startDateObj}
+              clearable
+            />
+          </div>
+
+          <FloatingInput
+            label={isBn ? "নোট (ঐচ্ছিক)" : "Note (optional)"}
+            value={form.note}
+            onChange={e => set("note", e.target.value)}
+          />
+        </div>
+
+        {/* Footer */}
+        <div className="flex gap-3 px-6 py-4 border-t border-gray-100">
+          <button onClick={handleSave} disabled={isLoading} className="btn-primary flex-1">
+            {isLoading
+              ? (isBn ? "সংরক্ষণ হচ্ছে..." : "Saving...")
+              : (isBn ? "সংরক্ষণ করুন" : "Save Changes")}
+          </button>
+          <button onClick={onClose} className="btn-secondary flex-1">
+            {isBn ? "বাতিল" : "Cancel"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function DiscountList() {
   const locale = useLocale();
@@ -24,6 +160,8 @@ export default function DiscountList() {
   const { data: discounts = [], isLoading } = useGetDiscountsQuery({});
   const [toggle] = useToggleDiscountMutation();
   const [remove] = useDeleteDiscountMutation();
+
+  const [editTarget, setEditTarget] = useState<Discount | null>(null);
 
   const handleToggle = async (id: string) => {
     try {
@@ -80,37 +218,43 @@ export default function DiscountList() {
     {
       header: isBn ? "মেয়াদ" : "Validity",
       accessor: d => {
-        if (!d.start_date && !d.end_date) return <span className="text-gray-300 text-xs">—</span>
-        const today = new Date(); today.setHours(0,0,0,0)
-        const expired = d.end_date && new Date(d.end_date) < today
-        const notStarted = d.start_date && new Date(d.start_date) > today
+        if (!d.start_date && !d.end_date) return <span className="text-gray-300 text-xs">—</span>;
+        const today = new Date(); today.setHours(0, 0, 0, 0);
+        const parseLocal = (s: string) => { const [y, m, day] = s.split('-').map(Number); return new Date(y, m - 1, day); };
+        const expired = d.end_date && parseLocal(d.end_date) < today;
+        const notStarted = d.start_date && parseLocal(d.start_date) > today;
         return (
           <div className="text-xs space-y-0.5">
             {d.start_date && (
-              <p className="text-gray-500">{isBn ? 'শুরু: ' : 'From: '}<span className="font-medium text-gray-700">{formatDate(d.start_date, locale)}</span></p>
+              <p className="text-gray-500">
+                {isBn ? "শুরু: " : "From: "}
+                <span className="font-medium text-gray-700">{formatDate(d.start_date, locale)}</span>
+              </p>
             )}
             {d.end_date && (
-              <p className={expired ? 'text-red-500' : 'text-gray-500'}>
-                {isBn ? 'শেষ: ' : 'To: '}
-                <span className={`font-medium ${expired ? 'text-red-600' : 'text-gray-700'}`}>{formatDate(d.end_date, locale)}</span>
+              <p className={expired ? "text-red-500" : "text-gray-500"}>
+                {isBn ? "শেষ: " : "To: "}
+                <span className={`font-medium ${expired ? "text-red-600" : "text-gray-700"}`}>
+                  {formatDate(d.end_date, locale)}
+                </span>
               </p>
             )}
             {(expired || notStarted) && (
-              <span className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold ${expired ? 'bg-red-50 text-red-600' : 'bg-yellow-50 text-yellow-700'}`}>
-                {expired ? (isBn ? 'মেয়াদ শেষ' : 'Expired') : (isBn ? 'শুরু হয়নি' : 'Not started')}
+              <span className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold ${expired ? "bg-red-50 text-red-600" : "bg-yellow-50 text-yellow-700"}`}>
+                {expired
+                  ? (isBn ? "মেয়াদ শেষ" : "Expired")
+                  : (isBn ? "শুরু হয়নি" : "Not started")}
               </span>
             )}
           </div>
-        )
+        );
       },
-      exportValue: d => [d.start_date, d.end_date].filter(Boolean).join(' → '),
+      exportValue: d => [d.start_date, d.end_date].filter(Boolean).join(" → "),
     },
     {
       header: isBn ? "তারিখ" : "Created",
       accessor: d => (
-        <span className="text-xs text-gray-400">
-          {formatDate(d.created_at, locale)}
-        </span>
+        <span className="text-xs text-gray-400">{formatDate(d.created_at, locale)}</span>
       ),
       exportValue: d => new Date(d.created_at).toLocaleDateString(),
     },
@@ -130,6 +274,11 @@ export default function DiscountList() {
 
   const quickActions: QuickAction<Discount>[] = [
     {
+      label: isBn ? "সম্পাদনা" : "Edit",
+      icon: <Pencil className="w-3.5 h-3.5" />,
+      onClick: d => setEditTarget(d),
+    },
+    {
       label: isBn ? "মুছুন" : "Delete",
       icon: <Trash2 className="w-3.5 h-3.5" />,
       onClick: d => handleDelete(d.id),
@@ -139,14 +288,24 @@ export default function DiscountList() {
   ];
 
   return (
-    <ReusableTable
-      data={discounts}
-      columns={columns}
-      keyExtractor={d => d.id}
-      isLoading={isLoading}
-      quickActions={quickActions}
-      emptyMessage={isBn ? "কোনো ডিসকাউন্ট নেই" : "No discounts yet"}
-      exportFilename="discounts"
-    />
+    <>
+      <ReusableTable
+        data={discounts}
+        columns={columns}
+        keyExtractor={d => d.id}
+        isLoading={isLoading}
+        quickActions={quickActions}
+        emptyMessage={isBn ? "কোনো ডিসকাউন্ট নেই" : "No discounts yet"}
+        exportFilename="discounts"
+      />
+
+      {editTarget && (
+        <EditModal
+          discount={editTarget}
+          isBn={isBn}
+          onClose={() => setEditTarget(null)}
+        />
+      )}
+    </>
   );
 }

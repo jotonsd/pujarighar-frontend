@@ -352,6 +352,7 @@ export interface SalesOrderItem {
   product: string
   product_name_bn: string
   product_name_en: string
+  original_unit_price: string | null
   unit_price: string
   quantity: string
   line_total: string

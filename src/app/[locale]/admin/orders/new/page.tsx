@@ -93,7 +93,7 @@ function POSProductCard({
           {locale === "bn" ? (product.brand_name_bn || product.brand_name_en) : (product.brand_name_en || product.brand_name_bn)}
         </p>
       )}
-      {product.active_discount_type ? (
+      {product.active_discount_type && parseFloat(String(product.effective_price)) < parseFloat(String(product.unit_price)) ? (
         <div className="mt-0.5 flex items-baseline gap-1">
           <p className="text-sm font-bold text-amber-600">
             {formatAmount(product.effective_price, locale, 0)}
@@ -104,7 +104,7 @@ function POSProductCard({
         </div>
       ) : (
         <p className="text-sm font-bold text-amber-600 mt-0.5">
-          {formatAmount(product.unit_price, locale, 0)}
+          {formatAmount(product.effective_price ?? product.unit_price, locale, 0)}
         </p>
       )}
       {inCart && (
@@ -191,7 +191,7 @@ export default function POSPage() {
 
   const [applyDelivery, setApplyDelivery] = useState(true);
   const [deliveryZone, setDeliveryZone] = useState<"inside" | "outside">(
-    "outside",
+    "inside",
   );
   const { data: deliveryRates } = useGetDeliveryChargesQuery();
 

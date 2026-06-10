@@ -9,10 +9,12 @@ import {
 import OrderReviewSection from "@/components/orders/OrderReviewSection";
 import OrderStatusBadge from "@/components/orders/OrderStatusBadge";
 import StatusTimeline from "@/components/orders/StatusTimeline";
+import InvoiceModal from "@/components/admin/orders/InvoiceModal";
 import PageHeader from "@/components/ui/PageHeader";
 import Spinner from "@/components/ui/Spinner";
 import { useAuthStore } from "@/store/authStore";
 import { toast } from "@/store/toastStore";
+import { FileText } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -89,6 +91,7 @@ export default function OrderDetailPage({
   const [cancelOrder, { isLoading: cancelling }] = useCancelOrderMutation();
 
   const [showCancelModal, setShowCancelModal] = useState(false);
+  const [showInvoice, setShowInvoice] = useState(false);
 
   const handleCancel = async () => {
     try {
@@ -116,7 +119,18 @@ export default function OrderDetailPage({
         )}
         showBack
         backLabel={t("common.back")}
-        actions={<OrderStatusBadge status={order.status} locale={locale} />}
+        actions={
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowInvoice(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+            >
+              <FileText className="w-3.5 h-3.5" />
+              {locale === "bn" ? "চালান" : "Invoice"}
+            </button>
+            <OrderStatusBadge status={order.status} locale={locale} />
+          </div>
+        }
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -148,8 +162,29 @@ export default function OrderDetailPage({
                         )}
                       </span>
                     </span>
-                    <span className="font-medium">
-                      {formatAmount(item.line_total, locale)}
+                    <span className="text-right shrink-0">
+                      {item.original_unit_price &&
+                        parseFloat(item.original_unit_price) > parseFloat(item.unit_price) && (
+                        <span className="block text-xs text-gray-400 line-through">
+                          {formatAmount(
+                            String(parseFloat(item.original_unit_price) * parseFloat(item.quantity)),
+                            locale,
+                          )}
+                        </span>
+                      )}
+                      <span className="font-medium">{formatAmount(item.line_total, locale)}</span>
+                      {item.original_unit_price &&
+                        parseFloat(item.original_unit_price) > parseFloat(item.unit_price) && (
+                        <span className="block text-xs text-green-600 font-semibold">
+                          − {formatAmount(
+                            String(
+                              (parseFloat(item.original_unit_price) - parseFloat(item.unit_price)) *
+                              parseFloat(item.quantity)
+                            ),
+                            locale,
+                          )} {locale === "bn" ? "ছাড়" : "off"}
+                        </span>
+                      )}
                     </span>
                   </div>
                   {item.is_package && item.package_items?.length > 0 && (
@@ -177,6 +212,22 @@ export default function OrderDetailPage({
                 </div>
               ))}
               <hr className="my-2" />
+              <div className="flex justify-between text-sm text-gray-500">
+                <span>{locale === "bn" ? "সাবটোটাল" : "Subtotal"}</span>
+                <span className="font-bold">{formatAmount(order.subtotal, locale)}</span>
+              </div>
+              {parseFloat(order.discount_amount) > 0 && (
+                <div className="flex justify-between text-sm text-green-600">
+                  <span>{locale === "bn" ? "ডিসকাউন্ট" : "Discount"}</span>
+                  <span className="font-bold">− {formatAmount(order.discount_amount, locale)}</span>
+                </div>
+              )}
+              {parseFloat(order.delivery_charge) > 0 && (
+                <div className="flex justify-between text-sm text-gray-500">
+                  <span>{locale === "bn" ? "ডেলিভারি চার্জ" : "Delivery Charge"}</span>
+                  <span className="font-bold">{formatAmount(order.delivery_charge, locale)}</span>
+                </div>
+              )}
               <div className="flex justify-between font-bold">
                 <span>{t("order.total")}</span>
                 <span className="text-amber-600">
@@ -268,6 +319,14 @@ export default function OrderDetailPage({
           </p>
         </div>
       </div>
+
+      {showInvoice && (
+        <InvoiceModal
+          orderId={order.id}
+          orderNumber={order.order_number}
+          onClose={() => setShowInvoice(false)}
+        />
+      )}
     </div>
   );
 }

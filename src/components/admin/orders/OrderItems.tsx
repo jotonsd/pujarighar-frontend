@@ -19,7 +19,7 @@ export default function OrderItems({ order }: Props) {
         {order.items.map(item => (
           <div key={item.id} className="space-y-1.5">
             <div className="flex justify-between text-sm">
-              <span className="text-gray-700 flex items-center gap-1.5">
+              <span className="text-gray-700 flex items-center gap-1.5 flex-wrap">
                 {item.is_package && (
                   <span className="text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full font-medium">
                     🎁 {locale === "bn" ? "প্যাকেজ" : "Package"}
@@ -34,8 +34,29 @@ export default function OrderItems({ order }: Props) {
                   ×{formatNumber(Math.round(parseFloat(item.quantity)), locale)}
                 </span>
               </span>
-              <span className="font-bold">
-                {formatAmount(item.line_total, locale)}
+              <span className="text-right shrink-0">
+                {item.original_unit_price &&
+                  parseFloat(item.original_unit_price) > parseFloat(item.unit_price) && (
+                  <span className="block text-xs text-gray-400 line-through">
+                    {formatAmount(
+                      String(parseFloat(item.original_unit_price) * parseFloat(item.quantity)),
+                      locale,
+                    )}
+                  </span>
+                )}
+                <span className="font-bold">{formatAmount(item.line_total, locale)}</span>
+                {item.original_unit_price &&
+                  parseFloat(item.original_unit_price) > parseFloat(item.unit_price) && (
+                  <span className="block text-xs text-green-600 font-semibold">
+                    − {formatAmount(
+                      String(
+                        (parseFloat(item.original_unit_price) - parseFloat(item.unit_price)) *
+                        parseFloat(item.quantity)
+                      ),
+                      locale,
+                    )} {locale === "bn" ? "ছাড়" : "off"}
+                  </span>
+                )}
               </span>
             </div>
             {item.is_package && item.package_items?.length > 0 && (
@@ -70,14 +91,20 @@ export default function OrderItems({ order }: Props) {
           </div>
         ))}
         <hr className="my-2" />
+        <div className="flex justify-between text-sm text-gray-500">
+          <span>{locale === "bn" ? "সাবটোটাল" : "Subtotal"}</span>
+          <span className="font-bold">{formatAmount(order.subtotal, locale)}</span>
+        </div>
+        {parseFloat(order.discount_amount) > 0 && (
+          <div className="flex justify-between text-sm text-green-600">
+            <span>{locale === "bn" ? "ডিসকাউন্ট" : "Discount"}</span>
+            <span className="font-bold">− {formatAmount(order.discount_amount, locale)}</span>
+          </div>
+        )}
         {parseFloat(order.delivery_charge) > 0 && (
           <div className="flex justify-between text-sm text-gray-500">
-            <span>
-              {locale === "bn" ? "ডেলিভারি চার্জ" : "Delivery Charge"}
-            </span>
-            <span className="font-bold text-sm">
-              {formatAmount(order.delivery_charge, locale)}
-            </span>
+            <span>{locale === "bn" ? "ডেলিভারি চার্জ" : "Delivery Charge"}</span>
+            <span className="font-bold text-sm">{formatAmount(order.delivery_charge, locale)}</span>
           </div>
         )}
         <div className="flex justify-between font-bold">

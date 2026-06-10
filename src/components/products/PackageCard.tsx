@@ -62,20 +62,26 @@ export default function PackageCard({ pkg, locale }: Props) {
             </p>
           )}
 
-          <div className="flex items-baseline gap-1.5">
-            <span className="text-base font-bold text-amber-600">
-              {formatAmount(finalPrice, locale, 0)}
-            </span>
-            {hasDiscount && (
-              <span className="text-xs text-gray-400 line-through">
-                {formatAmount(originalPrice, locale, 0)}
+          {/* Mobile: price stacked, button below — Desktop: price + button in same row */}
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-base font-bold text-amber-600">
+                {formatAmount(finalPrice, locale, 0)}
               </span>
-            )}
+              {hasDiscount && (
+                <span className="text-xs text-gray-400 line-through">
+                  {formatAmount(originalPrice, locale, 0)}
+                </span>
+              )}
+            </div>
+            <span className="hidden md:inline-flex items-center justify-center text-[10px] font-bold px-3 py-1.5 rounded bg-amber-500 text-white group-hover:bg-amber-600 transition-colors whitespace-nowrap shrink-0">
+              {locale === "bn" ? "বিস্তারিত" : "Details"}
+            </span>
           </div>
         </div>
 
-        {/* Details button */}
-        <div className="px-3 pb-3">
+        {/* Details button — mobile only */}
+        <div className="px-3 pb-3 md:hidden">
           <span className="block w-full text-center text-[10px] font-bold py-1.5 rounded bg-amber-500 text-white group-hover:bg-amber-600 transition-colors">
             {locale === "bn" ? "বিস্তারিত" : "Details"}
           </span>
