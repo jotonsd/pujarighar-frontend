@@ -1,5 +1,5 @@
 import { baseApi } from '@/api/baseApi'
-import { Supplier } from '@/lib/types'
+import { Supplier, SupplierPayment } from '@/lib/types'
 
 export const suppliersApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
@@ -28,6 +28,35 @@ export const suppliersApi = baseApi.injectEndpoints({
       invalidatesTags: ['Suppliers'],
     }),
 
+    getSupplierPayments: build.query<{ payments: SupplierPayment[]; supplier: Supplier }, string>({
+      query: (id) => `/api/suppliers/${id}/payments/`,
+      transformResponse: (res: { data: { payments: SupplierPayment[]; supplier: Supplier } }) => res.data,
+      providesTags: (_r, _e, id) => [{ type: 'Suppliers', id: `payments-${id}` }],
+    }),
+
+    createSupplierPayment: build.mutation<SupplierPayment, { supplierId: string; amount: string; paid_date: string; note?: string }>({
+      query: ({ supplierId, ...body }) => ({
+        url: `/api/suppliers/${supplierId}/payments/create/`,
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: (_r, _e, { supplierId }) => [
+        'Suppliers',
+        { type: 'Suppliers', id: `payments-${supplierId}` },
+      ],
+    }),
+
+    deleteSupplierPayment: build.mutation<void, { supplierId: string; paymentId: string }>({
+      query: ({ supplierId, paymentId }) => ({
+        url: `/api/suppliers/${supplierId}/payments/${paymentId}/delete/`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: (_r, _e, { supplierId }) => [
+        'Suppliers',
+        { type: 'Suppliers', id: `payments-${supplierId}` },
+      ],
+    }),
+
   }),
   overrideExisting: false,
 })
@@ -37,4 +66,7 @@ export const {
   useCreateSupplierMutation,
   useUpdateSupplierMutation,
   useDeleteSupplierMutation,
+  useGetSupplierPaymentsQuery,
+  useCreateSupplierPaymentMutation,
+  useDeleteSupplierPaymentMutation,
 } = suppliersApi

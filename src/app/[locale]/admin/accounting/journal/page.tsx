@@ -195,12 +195,13 @@ function ManualEntryModal({ onClose, isBn }: { onClose: () => void; isBn: boolea
 // ─── Page ─────────────────────────────────────────────────────────────────────
 type BadgeVariant = 'green' | 'red' | 'yellow' | 'blue' | 'gray' | 'orange'
 const REF_BADGE: Record<string, { variant: BadgeVariant; label_bn: string; label_en: string }> = {
-  PAYMENT:    { variant: 'green',  label_bn: 'পেমেন্ট',    label_en: 'Payment' },
-  PURCHASE:   { variant: 'blue',   label_bn: 'ক্রয়',       label_en: 'Purchase' },
-  RETURN:     { variant: 'yellow', label_bn: 'ফেরত',        label_en: 'Return' },
-  EXPENSE:    { variant: 'orange', label_bn: 'খরচ',         label_en: 'Expense' },
-  EQUITY:     { variant: 'blue',   label_bn: 'ইক্যুইটি',   label_en: 'Equity' },
-  ADJUSTMENT: { variant: 'gray',   label_bn: 'সমন্বয়',     label_en: 'Adjustment' },
+  PAYMENT:          { variant: 'green',  label_bn: 'পেমেন্ট',             label_en: 'Payment' },
+  PURCHASE:         { variant: 'blue',   label_bn: 'ক্রয়',               label_en: 'Purchase' },
+  RETURN:           { variant: 'yellow', label_bn: 'ফেরত',                label_en: 'Return' },
+  EXPENSE:          { variant: 'orange', label_bn: 'খরচ',                 label_en: 'Expense' },
+  EQUITY:           { variant: 'blue',   label_bn: 'ইক্যুইটি',           label_en: 'Equity' },
+  ADJUSTMENT:       { variant: 'gray',   label_bn: 'সমন্বয়',             label_en: 'Adjustment' },
+  SUPPLIER_PAYMENT: { variant: 'green',  label_bn: 'সরবরাহকারী পেমেন্ট', label_en: 'Supplier Payment' },
 }
 
 export default function JournalPage() {

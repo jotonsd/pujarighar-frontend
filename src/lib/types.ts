@@ -46,6 +46,24 @@ export interface Profile {
   updated_at: string
 }
 
+export interface NavLinkItem {
+  type: 'link'
+  href: string
+  icon: string
+  label_bn: string
+  label_en: string
+}
+
+export interface NavGroupItem {
+  type: 'group'
+  icon: string
+  label_bn: string
+  label_en: string
+  items: Omit<NavLinkItem, 'type'>[]
+}
+
+export type NavItem = NavLinkItem | NavGroupItem
+
 export interface User {
   id: string
   email: string
@@ -55,6 +73,7 @@ export interface User {
   is_active: boolean
   date_joined: string
   profile: Profile
+  nav_menu?: NavItem[]
 }
 
 // ─── Product ─────────────────────────────────────────────────────────────────
@@ -143,6 +162,21 @@ export interface Supplier {
   phone: string
   address: string
   is_active: boolean
+  created_at: string
+  total_credit: string
+  total_paid: string
+  total_balance: string
+}
+
+export interface SupplierPayment {
+  id: string
+  supplier: string
+  supplier_name: string
+  amount: string
+  paid_date: string
+  note: string
+  created_by: string
+  created_by_email: string
   created_at: string
 }
 
