@@ -42,6 +42,7 @@ export interface Profile {
   district: string
   thana: string
   post_code: string
+  cashback_balance: string
   created_at: string
   updated_at: string
 }

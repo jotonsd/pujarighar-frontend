@@ -6,6 +6,7 @@ import { NavGroupItem, NavItem, User } from "@/lib/types";
 import { useAuthStore } from "@/store/authStore";
 import { useCartStore } from "@/store/cartStore";
 import { useGuestCartStore } from "@/store/guestCartStore";
+import { formatAmount } from "@/utils/format";
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
@@ -126,9 +127,18 @@ function ProfileDropdown({
   const initials = (user.profile?.full_name_en || user.email || "?")
     .charAt(0)
     .toUpperCase();
+  const balance = parseFloat(user.profile?.cashback_balance ?? "0");
+  const isBn = locale === "bn";
 
   return (
-    <div className="relative">
+    <div className="relative flex items-center gap-1.5">
+      {/* Cashback balance chip — always visible for customers */}
+      {user.role === "CUSTOMER" && (
+        <span className="flex items-center gap-1 px-2 h-8 bg-amber-50 border border-amber-200 rounded-md text-xs font-bold text-amber-700 whitespace-nowrap">
+          {formatAmount(balance, locale, 0)}
+        </span>
+      )}
+
       <button
         onClick={() => setOpen(o => !o)}
         className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-amber-600 transition-colors"
@@ -150,8 +160,8 @@ function ProfileDropdown({
       {open && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50">
-            <div className="px-4 py-2 border-b border-gray-50">
+          <div className="absolute right-0 top-full mt-2 w-52 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50">
+            <div className="px-4 py-2.5 border-b border-gray-50">
               <p className="text-xs font-medium text-gray-800 truncate">
                 {user.profile?.full_name_bn || user.profile?.full_name_en || "—"}
               </p>
@@ -159,6 +169,18 @@ function ProfileDropdown({
               <p className="text-xs text-amber-500 font-medium mt-0.5">
                 {user.role}
               </p>
+              {user.role === "CUSTOMER" && (
+                <div className="mt-1.5 flex items-center gap-1.5 bg-amber-50 rounded-lg px-2 py-1.5">
+                  <div>
+                    <p className="text-[10px] text-amber-600 leading-none">
+                      {isBn ? "ক্যাশব্যাক ব্যালেন্স" : "Cashback Balance"}
+                    </p>
+                    <p className="text-xs font-bold text-amber-700 leading-tight mt-0.5">
+                      {formatAmount(balance, locale, 0)}
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
 
             <Link
@@ -322,6 +344,14 @@ function MobileMenu({
               <p className="text-xs text-gray-500 truncate">
                 {currentUser.profile?.full_name_bn || currentUser.email}
               </p>
+              {currentUser.role === "CUSTOMER" && (
+                <div className="flex items-center gap-1.5 bg-amber-50 rounded-lg px-2.5 py-1.5">
+                  <div>
+                    <p className="text-[10px] text-amber-600">{locale === "bn" ? "ক্যাশব্যাক" : "Cashback Balance"}</p>
+                    <p className="text-xs font-bold text-amber-700">{formatAmount(currentUser.profile?.cashback_balance ?? "0", locale, 0)}</p>
+                  </div>
+                </div>
+              )}
               <div className="flex gap-2 mt-2">
                 <Link
                   href={`/${locale}/profile`}

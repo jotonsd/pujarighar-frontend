@@ -81,14 +81,20 @@ export const accountingApi = baseApi.injectEndpoints({
       transformResponse: (res: { data: ProfitLossData }) => res.data,
     }),
 
-    getSalesSummary: build.query<unknown, { from?: string; to?: string }>({
-      query: ({ from = '', to = '' } = {}) => {
+    getSalesSummary: build.query<{
+      rows: { period: string; total_revenue: string; order_count: number }[];
+      total_revenue: string;
+      total_orders: number;
+      avg_order: string;
+    }, { from?: string; to?: string; group_by?: string }>({
+      query: ({ from = '', to = '', group_by = 'day' } = {}) => {
         const p = new URLSearchParams()
-        if (from) p.set('from', from)
-        if (to)   p.set('to', to)
+        if (from)     p.set('from', from)
+        if (to)       p.set('to', to)
+        if (group_by) p.set('group_by', group_by)
         return `/api/accounting/reports/sales-summary/?${p}`
       },
-      transformResponse: (res: { data: unknown }) => res.data,
+      transformResponse: (res: { data: { rows: { period: string; total_revenue: string; order_count: number }[]; total_revenue: string; total_orders: number; avg_order: string } }) => res.data,
     }),
 
     createManualJournal: build.mutation<JournalEntry, CreateManualJournalPayload>({

@@ -6,14 +6,12 @@ import {
   useDispatchOrderMutation,
   useGetOrderQuery,
   useGetOrderStatusLogQuery,
-  useMarkCodPaidMutation,
   useReturnOrderMutation,
 } from "@/api/orders/ordersApi";
 import OrderStatusBadge from "@/components/orders/OrderStatusBadge";
 import StatusTimeline from "@/components/orders/StatusTimeline";
 import PageHeader from "@/components/ui/PageHeader";
 import ConfirmModal from "@/components/ui/ConfirmModal";
-import PaymentConfirmModal from "@/components/ui/PaymentConfirmModal";
 import { DeliveryOrderDetailSkeleton } from "@/components/ui/skeletons";
 import { toast } from "@/store/toastStore";
 import { useLocale } from "next-intl";
@@ -34,12 +32,10 @@ export default function DeliveryOrderDetailPage({
   const [dispatch, { isLoading: dispatching }] = useDispatchOrderMutation();
   const [deliver, { isLoading: delivering }] = useDeliverOrderMutation();
   const [returnOrd, { isLoading: returning }] = useReturnOrderMutation();
-  const [markPaid, { isLoading: markingPaid }] = useMarkCodPaidMutation();
-
-  const [showPayModal, setShowPayModal] = useState(false);
+const [showDeliverModal, setShowDeliverModal] = useState(false);
   const [showReturnModal, setShowReturnModal] = useState(false);
 
-  const isPending = dispatching || delivering || returning || markingPaid;
+  const isPending = dispatching || delivering || returning;
   const loading = locale === "bn" ? "লোড হচ্ছে..." : "Loading...";
 
   const doAction = async (fn: () => Promise<unknown>, msg: string) => {
@@ -90,33 +86,13 @@ export default function DeliveryOrderDetailPage({
         )}
         {order.status === "ON_THE_WAY" && (
           <button
-            onClick={() =>
-              doAction(
-                () => deliver(params.id).unwrap(),
-                locale === "bn" ? "ডেলিভারি সম্পন্ন" : "Marked as Delivered",
-              )
-            }
+            onClick={() => setShowDeliverModal(true)}
             disabled={isPending}
             className="btn-primary flex-1"
           >
-            {isPending
-              ? loading
-              : locale === "bn"
-                ? "✅ ডেলিভারি সম্পন্ন"
-                : "✅ Mark as Delivered"}
+            {locale === "bn" ? "✅ ডেলিভারি সম্পন্ন" : "✅ Mark as Delivered"}
           </button>
         )}
-        {(order.status === "ON_THE_WAY" || order.status === "DELIVERED") &&
-          order.payment_method === "COD" &&
-          order.payment_status === "UNPAID" && (
-            <button
-              onClick={() => setShowPayModal(true)}
-              disabled={isPending}
-              className="flex-1 py-2 px-4 rounded-lg bg-green-600 hover:bg-green-700 text-white font-medium transition-colors"
-            >
-              {locale === "bn" ? "💵 পেমেন্ট নিশ্চিত করুন" : "💵 Mark as Paid"}
-            </button>
-          )}
         {order.status === "DELIVERED" && (
           <button
             onClick={() => setShowReturnModal(true)}
@@ -131,6 +107,26 @@ export default function DeliveryOrderDetailPage({
           </button>
         )}
       </div>
+
+      {showDeliverModal && (
+        <ConfirmModal
+          icon="✅"
+          title={locale === "bn" ? "ডেলিভারি নিশ্চিত করুন?" : "Confirm delivery?"}
+          description={locale === "bn" ? "পণ্যটি সফলভাবে গ্রাহকের কাছে পৌঁছে দিয়েছেন?" : "Have you successfully delivered the order to the customer?"}
+          confirmLabel={locale === "bn" ? "হ্যাঁ, ডেলিভারি হয়েছে" : "Yes, Delivered"}
+          cancelLabel={locale === "bn" ? "বাতিল" : "Cancel"}
+          confirmClassName="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-2.5 rounded-xl transition-colors text-sm"
+          loading={delivering}
+          onCancel={() => setShowDeliverModal(false)}
+          onConfirm={async () => {
+            await doAction(
+              () => deliver(params.id).unwrap(),
+              locale === "bn" ? "ডেলিভারি সম্পন্ন" : "Marked as Delivered",
+            );
+            setShowDeliverModal(false);
+          }}
+        />
+      )}
 
       {showReturnModal && (
         <ConfirmModal
@@ -152,22 +148,6 @@ export default function DeliveryOrderDetailPage({
         />
       )}
 
-      {showPayModal && order && (
-        <PaymentConfirmModal
-          locale={locale}
-          orderNumber={order.order_number}
-          amount={formatAmount(order.grand_total, locale, 0)}
-          loading={markingPaid}
-          onCancel={() => setShowPayModal(false)}
-          onConfirm={async () => {
-            await doAction(
-              () => markPaid(params.id).unwrap(),
-              locale === "bn" ? "পেমেন্ট নিশ্চিত হয়েছে" : "Payment confirmed",
-            );
-            setShowPayModal(false);
-          }}
-        />
-      )}
 
       <div className="grid grid-cols-1 gap-3">
         <div className="card">

@@ -9,15 +9,19 @@ import { FloatingDatePicker } from "@/components/ui/forms";
 import PageHeader from "@/components/ui/PageHeader";
 import TableSkeleton from "@/components/ui/skeletons";
 import { useLocale, useTranslations } from "next-intl";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 export default function ReportsPage() {
   const t = useTranslations("accounting");
   const locale = useLocale();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const tab = (searchParams.get("tab") as "pl" | "tb" | "sales") || "pl";
+  const setTab = (s: "pl" | "tb" | "sales") => router.replace(`?tab=${s}`);
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [asOf, setAsOf] = useState("");
-  const [tab, setTab] = useState<"pl" | "tb" | "sales">("pl");
 
   const { data: pl, isLoading: plLoading } = useGetProfitLossQuery(
     { from, to },
