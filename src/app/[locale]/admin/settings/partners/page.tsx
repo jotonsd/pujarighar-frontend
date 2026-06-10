@@ -314,7 +314,7 @@ function PaymentHistoryModal({
             <h2 className="font-bold text-gray-800">{partner.name_bn}</h2>
             <p className="text-xs text-gray-400">
               {partner.name_en && `${partner.name_en} · `}
-              {partner.equity_percentage}% {isBn ? "ইক্যুইটি" : "equity"}
+              {formatNumber(partner.equity_percentage, locale)}% {isBn ? "ইক্যুইটি" : "equity"}
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -435,7 +435,7 @@ function PaymentHistoryModal({
                       <div className="text-right">
                         <p className="text-xs text-gray-400 mb-0.5">
                           {isBn
-                            ? `অংশীদারের প্রাপ্য (${partner.equity_percentage}%)`
+                            ? `অংশীদারের প্রাপ্য (${formatNumber(partner.equity_percentage, locale)}%)`
                             : `Share (${partner.equity_percentage}%)`}
                         </p>
                         <p className="text-xl font-bold text-amber-600">

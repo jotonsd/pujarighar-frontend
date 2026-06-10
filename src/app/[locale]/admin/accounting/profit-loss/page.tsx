@@ -1,5 +1,5 @@
 "use client";
-import { formatAmount } from "@/utils/format";
+import { formatAmount, formatNumber } from "@/utils/format";
 import { useGetProfitLossQuery } from "@/api/accounting/accountingApi";
 import { FloatingDatePicker } from "@/components/ui/forms";
 import PageHeader from "@/components/ui/PageHeader";
@@ -61,7 +61,7 @@ export default function ProfitLossPage() {
                 <div key={s.partner_id} className="flex justify-between py-3 border-b last:border-0">
                   <div>
                     <p className="text-sm text-gray-800">{locale === "bn" ? s.name_bn || s.name_en : s.name_en || s.name_bn}</p>
-                    <p className="text-xs text-amber-500">{s.percentage}%</p>
+                    <p className="text-xs text-amber-500">{formatNumber(s.percentage, locale)}%</p>
                   </div>
                   <span className={`font-bold text-sm ${Number(s.share_amount) >= 0 ? "text-green-700" : "text-red-600"}`}>
                     {formatAmount(s.share_amount, locale)}
