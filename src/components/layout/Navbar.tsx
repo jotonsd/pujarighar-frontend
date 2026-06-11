@@ -143,8 +143,11 @@ function ProfileDropdown({
         onClick={() => setOpen(o => !o)}
         className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-amber-600 transition-colors"
       >
-        <span className="w-8 h-8 rounded-full bg-amber-100 text-amber-700 font-bold flex items-center justify-center text-sm">
-          {initials}
+        <span className="w-8 h-8 rounded-full bg-amber-100 text-amber-700 font-bold flex items-center justify-center text-sm overflow-hidden shrink-0">
+          {user.profile?.avatar ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={user.profile.avatar} alt={initials} className="w-full h-full object-cover" />
+          ) : initials}
         </span>
         <svg
           className={`w-3.5 h-3.5 transition-transform ${open ? "rotate-180" : ""}`}
@@ -166,9 +169,7 @@ function ProfileDropdown({
                 {user.profile?.full_name_bn || user.profile?.full_name_en || "—"}
               </p>
               <p className="text-xs text-gray-400 truncate">{user.email}</p>
-              <p className="text-xs text-amber-500 font-medium mt-0.5">
-                {user.role}
-              </p>
+              <p className="text-xs text-amber-500 font-medium mt-0.5">{user.role}</p>
               {user.role === "CUSTOMER" && (
                 <div className="mt-1.5 flex items-center gap-1.5 bg-amber-50 rounded-lg px-2 py-1.5">
                   <div>
@@ -341,9 +342,19 @@ function MobileMenu({
         <div className="border-t border-gray-100 p-4">
           {currentUser ? (
             <div className="space-y-1">
-              <p className="text-xs text-gray-500 truncate">
-                {currentUser.profile?.full_name_bn || currentUser.email}
-              </p>
+              <div className="flex items-center gap-2.5 mb-1">
+                <span className="w-9 h-9 rounded-full bg-amber-100 text-amber-700 font-bold flex items-center justify-center text-sm overflow-hidden shrink-0">
+                  {currentUser.profile?.avatar ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={currentUser.profile.avatar} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    (currentUser.profile?.full_name_bn || currentUser.email || "U")[0].toUpperCase()
+                  )}
+                </span>
+                <p className="text-xs text-gray-700 font-medium truncate">
+                  {currentUser.profile?.full_name_bn || currentUser.email}
+                </p>
+              </div>
               {currentUser.role === "CUSTOMER" && (
                 <div className="flex items-center gap-1.5 bg-amber-50 rounded-lg px-2.5 py-1.5">
                   <div>

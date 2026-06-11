@@ -301,6 +301,7 @@ export default function OrderDetailPage({
                     name_bn: order.delivery.delivery_person_name_bn,
                     name_en: order.delivery.delivery_person_name_en,
                     phone: order.delivery.delivery_person_phone,
+                    avatar: order.delivery.delivery_person_avatar ?? null,
                     assigned_at: order.delivery.assigned_at,
                     picked_up_at: order.delivery.picked_up_at,
                     delivered_at: order.delivery.delivered_at,

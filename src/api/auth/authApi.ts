@@ -24,7 +24,7 @@ export const authApi = baseApi.injectEndpoints({
       providesTags: ['User'],
     }),
 
-    updateMe: build.mutation<User, Partial<User['profile']>>({
+    updateMe: build.mutation<User, FormData | Partial<User['profile']>>({
       query: (body) => ({ url: '/api/users/me/update/', method: 'PATCH', body }),
       transformResponse: (res: { data: User }) => res.data,
       invalidatesTags: ['User'],

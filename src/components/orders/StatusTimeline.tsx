@@ -56,13 +56,22 @@ export default function StatusTimeline({ logs, locale, deliveryInfo }: Props) {
 
             {/* Delivery person — before the timestamp */}
             {log.to_status === "ASSIGNED" && deliveryInfo && (
-              <p className="text-xs text-gray-600 mt-0.5">
-                🚚{" "}
-                {isBn
-                  ? deliveryInfo.name_bn || deliveryInfo.name_en
-                  : deliveryInfo.name_en || deliveryInfo.name_bn}{" "}
-                ({deliveryInfo.phone})
-              </p>
+              <div className="flex items-center gap-2 mt-1">
+                {deliveryInfo.avatar ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={deliveryInfo.avatar} alt="" className="w-7 h-7 rounded-full object-cover shrink-0" />
+                ) : (
+                  <div className="w-7 h-7 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-xs font-bold shrink-0">
+                    {(deliveryInfo.name_bn || deliveryInfo.name_en || "D")[0].toUpperCase()}
+                  </div>
+                )}
+                <p className="text-xs text-gray-600">
+                  {isBn
+                    ? deliveryInfo.name_bn || deliveryInfo.name_en
+                    : deliveryInfo.name_en || deliveryInfo.name_bn}{" "}
+                  · {deliveryInfo.phone}
+                </p>
+              </div>
             )}
 
             <p className="text-xs text-gray-400">

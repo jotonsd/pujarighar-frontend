@@ -315,6 +315,7 @@ export interface DeliveryInfo {
   name_bn: string
   name_en: string
   phone: string
+  avatar: string | null
   assigned_at: string | null
   picked_up_at: string | null
   delivered_at: string | null
@@ -383,6 +384,7 @@ export interface DeliveryAssignment {
   delivery_person_name: string
   delivery_person_name_bn: string
   delivery_person_name_en: string
+  delivery_person_avatar: string | null
   assigned_at: string
   picked_up_at: string | null
   delivered_at: string | null
