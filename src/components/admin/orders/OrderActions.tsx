@@ -79,9 +79,9 @@ function DeliveryPersonDropdown({
 function Avatar({ src, name }: { src: string | null; name: string }) {
   return src ? (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={src} alt={name} className="w-7 h-7 rounded-full object-cover shrink-0" />
+    <img src={src} alt={name} className="w-5 h-5 rounded-full object-cover shrink-0" />
   ) : (
-    <div className="w-7 h-7 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-xs font-bold shrink-0">
+    <div className="w-5 h-5 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-xs font-bold shrink-0">
       {name[0]?.toUpperCase()}
     </div>
   )
@@ -102,6 +102,13 @@ export default function OrderActions({ order, orderId }: Props) {
   const [markPaid, { isLoading: markingPaid }]    = useMarkCodPaidMutation()
 
   const loading = confirming || packing || assigning || cancelling || markingPaid
+
+  const hasPayAction = order.payment_method === 'COD' && order.payment_status === 'UNPAID' && !['CANCELLED', 'RETURNED'].includes(order.status)
+  const hasStatusAction = ['PENDING', 'CONFIRMED', 'PACKED'].includes(order.status)
+  const hasCancelAction = !['ASSIGNED', 'ON_THE_WAY', 'DELIVERED', 'RETURNED', 'CANCELLED'].includes(order.status)
+  const hasAnyAction = hasPayAction || hasStatusAction || hasCancelAction
+
+  if (!hasAnyAction) return null
 
   const doAction = async (fn: () => Promise<unknown>, successMsg: string) => {
     try { await fn(); toast.success(successMsg) }

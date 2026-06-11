@@ -92,7 +92,9 @@ export default function OrderList() {
         } />
 
       {showFilters && (
-        <form onSubmit={e => { e.preventDefault(); handleSubmit() }}
+        <form
+          onSubmit={e => { e.preventDefault(); handleSubmit() }}
+          onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleSubmit() } }}
           className="mb-5 p-4 bg-white rounded-2xl grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
           <FloatingInput label={locale === 'bn' ? 'অর্ডার নম্বর' : 'Order Number'} value={draft.order_number} onChange={e => set('order_number')(e.target.value)} />
           <FloatingInput label={locale === 'bn' ? 'ফোন নম্বর' : 'Phone Number'} value={draft.phone} onChange={e => set('phone')(e.target.value)} />
