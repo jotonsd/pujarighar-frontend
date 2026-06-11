@@ -9,7 +9,7 @@ export const authApi = baseApi.injectEndpoints({
       transformResponse: (res: { data: AuthResponse }) => res.data,
     }),
 
-    register: build.mutation<AuthResponse, { email: string; phone: string; password: string; full_name_bn: string; full_name_en?: string }>({
+    register: build.mutation<AuthResponse, { email: string; phone: string; password: string; full_name_bn: string; full_name_en?: string; referral_code?: string }>({
       query: (body) => ({ url: '/api/auth/register/', method: 'POST', body }),
       transformResponse: (res: { data: AuthResponse }) => res.data,
     }),

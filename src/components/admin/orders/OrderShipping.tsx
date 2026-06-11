@@ -123,7 +123,7 @@ export default function OrderShipping({ order }: Props) {
           {(order.shipping_address_bn || order.shipping_address_en) && (
             <div className="col-span-2">
               <p className="text-xs text-gray-400 mb-0.5">{isBn ? 'ঠিকানা' : 'Address'}</p>
-              <p className="font-medium text-gray-800">{isBn ? order.shipping_address_bn : order.shipping_address_en}</p>
+              <p className="font-medium text-gray-800">{isBn ? (order.shipping_address_bn || order.shipping_address_en) : (order.shipping_address_en || order.shipping_address_bn)}</p>
             </div>
           )}
           {order.shipping_district && (

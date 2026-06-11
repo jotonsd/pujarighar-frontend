@@ -173,16 +173,33 @@ function ProfileDropdown({
               <p className="text-xs text-gray-400 truncate">{user.email}</p>
               <p className="text-xs text-amber-500 font-medium mt-0.5">{user.role}</p>
               {user.role === "CUSTOMER" && (
-                <div className="mt-1.5 flex items-center gap-1.5 bg-amber-50 rounded-lg px-2 py-1.5">
-                  <div>
-                    <p className="text-[10px] text-amber-600 leading-none">
-                      {isBn ? "ক্যাশব্যাক ব্যালেন্স" : "Cashback Balance"}
-                    </p>
-                    <p className="text-xs font-bold text-amber-700 leading-tight mt-0.5">
-                      {formatAmount(balance, locale, 0)}
-                    </p>
+                <>
+                  <div className="mt-1.5 flex items-center gap-1.5 bg-amber-50 rounded-lg px-2 py-1.5">
+                    <div>
+                      <p className="text-[10px] text-amber-600 leading-none">
+                        {isBn ? "ক্যাশব্যাক ব্যালেন্স" : "Cashback Balance"}
+                      </p>
+                      <p className="text-xs font-bold text-amber-700 leading-tight mt-0.5">
+                        {formatAmount(balance, locale, 0)}
+                      </p>
+                    </div>
                   </div>
-                </div>
+                  {user.referral_code && (
+                    <div className="mt-1.5 bg-gray-50 rounded-lg px-2 py-1.5">
+                      <p className="text-[10px] text-gray-400 leading-none mb-1">
+                        {isBn ? "রেফারেল কোড" : "Referral Code"}
+                      </p>
+                      <button
+                        onClick={() => { navigator.clipboard.writeText(user.referral_code); }}
+                        className="flex items-center gap-1.5 w-full"
+                        title={isBn ? "কপি করুন" : "Copy"}
+                      >
+                        <span className="text-xs font-mono font-bold text-gray-700 tracking-widest">{user.referral_code}</span>
+                        <span className="text-[10px] text-gray-400 ml-auto">📋</span>
+                      </button>
+                    </div>
+                  )}
+                </>
               )}
             </div>
 

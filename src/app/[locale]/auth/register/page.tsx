@@ -23,32 +23,74 @@ export default function RegisterPage() {
     password: "",
     full_name_bn: "",
     full_name_en: "",
+    referral_code: "",
   });
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [register, { isLoading }] = useRegisterMutation();
+
+  const API_ERROR_LABELS: Record<string, { bn: string; en: string }> = {
+    email:         { bn: "ইমেইল ইতিমধ্যে ব্যবহৃত হয়েছে", en: "Email is already registered" },
+    phone:         { bn: "এই ফোন নম্বরে ইতিমধ্যে অ্যাকাউন্ট আছে", en: "Phone number is already registered" },
+    password:      { bn: "পাসওয়ার্ড সঠিক নয়", en: "Password is invalid" },
+    referral_code: { bn: "রেফারেল কোড সঠিক নয়", en: "Invalid referral code" },
+  };
+
+  const validate = (): Record<string, string> => {
+    const e: Record<string, string> = {};
+    if (!form.full_name_bn.trim())
+      e.full_name_bn = isBn ? "নাম (বাংলা) আবশ্যক" : "Bangla name is required";
+    if (!form.email.trim())
+      e.email = isBn ? "ইমেইল আবশ্যক" : "Email is required";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
+      e.email = isBn ? "সঠিক ইমেইল লিখুন" : "Enter a valid email address";
+    if (!form.phone.trim())
+      e.phone = isBn ? "ফোন নম্বর আবশ্যক" : "Phone number is required";
+    else if (!/^01[3-9]\d{8}$/.test(form.phone))
+      e.phone = isBn ? "সঠিক বাংলাদেশি নম্বর লিখুন (01XXXXXXXXX)" : "Enter a valid BD number (01XXXXXXXXX)";
+    if (!form.password)
+      e.password = isBn ? "পাসওয়ার্ড আবশ্যক" : "Password is required";
+    else if (form.password.length < 8)
+      e.password = isBn ? "পাসওয়ার্ড কমপক্ষে ৮ অক্ষরের হতে হবে" : "Password must be at least 8 characters";
+    if (form.referral_code && form.referral_code.length !== 8)
+      e.referral_code = isBn ? "রেফারেল কোড ৮ অক্ষরের হতে হবে" : "Referral code must be 8 characters";
+    return e;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const errors = validate();
+    if (Object.keys(errors).length > 0) { setFieldErrors(errors); return; }
+    setFieldErrors({});
     try {
       const data = await register(form).unwrap();
       setAuth(data.user, data.access, data.refresh);
       toast.success(isBn ? "নিবন্ধন সফল হয়েছে" : "Registration successful");
       router.push(`/${locale}`);
     } catch (err: unknown) {
-      const e = err as {
-        data?: {
-          errors?: { details?: { message_bn?: string; message_en?: string } };
-        };
-      };
-      toast.error(
-        isBn
-          ? (e.data?.errors?.details?.message_bn ?? "নিবন্ধন ব্যর্থ হয়েছে")
-          : (e.data?.errors?.details?.message_en ?? "Registration failed"),
-      );
+      const e = err as { data?: { errors?: Record<string, unknown> } };
+      const errors = e.data?.errors ?? {};
+      const mapped: Record<string, string> = {};
+
+      for (const [field, messages] of Object.entries(errors)) {
+        const arr = Array.isArray(messages) ? messages : [messages];
+        const firstMsg = typeof arr[0] === "string" ? arr[0] : (arr[0] as { message_bn?: string; message_en?: string })?.[isBn ? "message_bn" : "message_en"] ?? "";
+        mapped[field] = API_ERROR_LABELS[field]
+          ? (isBn ? API_ERROR_LABELS[field].bn : API_ERROR_LABELS[field].en)
+          : firstMsg;
+      }
+
+      if (Object.keys(mapped).length > 0) {
+        setFieldErrors(mapped);
+      } else {
+        toast.error(isBn ? "নিবন্ধন ব্যর্থ হয়েছে" : "Registration failed");
+      }
     }
   };
 
-  const f = (key: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
+  const f = (key: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [key]: e.target.value });
+    if (fieldErrors[key]) setFieldErrors(prev => { const n = { ...prev }; delete n[key]; return n; });
+  };
 
   return (
     <div className="min-h-[calc(100vh-4rem)] flex bg-gray-50 lg:bg-transparent">
@@ -126,39 +168,52 @@ export default function RegisterPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <FloatingInput
                 label={t("auth.fullNameBn")}
-                required
+               
                 value={form.full_name_bn}
                 onChange={f("full_name_bn")}
+                error={fieldErrors.full_name_bn}
               />
               <FloatingInput
                 label={t("auth.fullNameEn")}
                 value={form.full_name_en}
                 onChange={f("full_name_en")}
+                error={fieldErrors.full_name_en}
               />
             </div>
 
             <FloatingInput
               label={t("auth.email")}
               type="email"
-              required
+             
               value={form.email}
               onChange={f("email")}
+              error={fieldErrors.email}
             />
 
             <FloatingInput
               label={t("auth.phone")}
-              required
+             
               value={form.phone}
               onChange={f("phone")}
               placeholder="01XXXXXXXXX"
+              error={fieldErrors.phone}
             />
 
             <FloatingInput
               label={t("auth.password")}
               type="password"
-              required
+             
               value={form.password}
               onChange={f("password")}
+              error={fieldErrors.password}
+            />
+
+            <FloatingInput
+              label={isBn ? "রেফারেল কোড (ঐচ্ছিক)" : "Referral Code (optional)"}
+              value={form.referral_code}
+              onChange={f("referral_code")}
+              placeholder="XXXXXXXX"
+              error={fieldErrors.referral_code}
             />
 
             <button

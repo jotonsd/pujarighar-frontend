@@ -333,6 +333,16 @@ const REF_BADGE: Record<
     label_bn: "ক্যাশব্যাক",
     label_en: "Cashback",
   },
+  REFERRAL: {
+    variant: "purple",
+    label_bn: "রেফারেল বোনাস",
+    label_en: "Referral Bonus",
+  },
+  REFERRAL_REVERSAL: {
+    variant: "yellow",
+    label_bn: "রেফারেল বিপরীত",
+    label_en: "Referral Reversal",
+  },
 };
 
 export default function JournalPage() {

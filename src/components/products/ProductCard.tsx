@@ -7,6 +7,7 @@ import { useAuthStore } from "@/store/authStore";
 import { useCartStore } from "@/store/cartStore";
 import { useGuestCartStore } from "@/store/guestCartStore";
 import { toast } from "@/store/toastStore";
+import OfferBadge from "@/components/ui/OfferBadge";
 import { formatAmount, formatNumber, localName } from "@/utils/format";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
@@ -50,6 +51,11 @@ export default function ProductCard({ product, locale }: Props) {
   const name = localName(product.name_bn, product.name_en, locale === "bn");
   const inStock = Number(product.stock_on_hand) > 0;
   const maxStock = Math.max(1, Number(product.stock_on_hand));
+
+  const _orig     = parseFloat(String(product.unit_price));
+  const _eff      = parseFloat(String(product.effective_price));
+  const offerDiff = product.active_discount_type && _eff < _orig ? Math.round(_orig - _eff) : 0;
+  const offerPct  = product.active_discount_type && _orig > 0   ? Math.round((_orig - _eff) / _orig * 100) : 0;
 
   const { isAuthenticated } = useAuthStore();
   const guestAddItem = useGuestCartStore(s => s.addItem);
@@ -110,12 +116,23 @@ export default function ProductCard({ product, locale }: Props) {
   };
 
   return (
+    <div className="relative">
+      {offerDiff > 0 && (
+        <OfferBadge
+          discountType={product.active_discount_type ?? ''}
+          pct={offerPct}
+          diff={offerDiff}
+          locale={locale}
+          className="absolute top-1 right-1 z-10"
+        />
+      )}
     <div className="card hover:shadow-md transition-shadow group flex flex-col p-0 overflow-hidden">
       <Link
         href={`/${locale}/products/${product.id}`}
         className="block p-4 flex-1"
       >
-        <div className="aspect-square bg-amber-50 rounded-lg relative overflow-hidden mb-4">
+        <div className="relative mb-4">
+          <div className="aspect-square bg-amber-50 rounded-lg overflow-hidden">
           {images.length > 0 ? (
             <>
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -163,6 +180,7 @@ export default function ProductCard({ product, locale }: Props) {
               🪔
             </div>
           )}
+          </div>
         </div>
         <h3 className="font-medium text-gray-800 mb-1 line-clamp-2 text-sm">
           {name}
@@ -245,6 +263,7 @@ export default function ProductCard({ product, locale }: Props) {
           </button>
         </div>
       </div>
+    </div>
     </div>
   );
 }

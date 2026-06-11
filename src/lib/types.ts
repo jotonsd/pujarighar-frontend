@@ -73,6 +73,7 @@ export interface User {
   preferred_language: Locale
   is_active: boolean
   date_joined: string
+  referral_code: string
   profile: Profile
   nav_menu?: NavItem[]
 }

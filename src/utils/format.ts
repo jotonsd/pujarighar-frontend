@@ -37,7 +37,7 @@ export function formatNumber(value: number | string, locale: string): string {
  * Pick the localised name with fallback: bn→en in Bangla mode, en→bn otherwise.
  */
 export function localName(bn: string | null | undefined, en: string | null | undefined, isBn: boolean): string {
-  return (isBn ? (bn || en) : en) ?? ''
+  return (isBn ? (bn || en) : (en || bn)) ?? ''
 }
 
 /**

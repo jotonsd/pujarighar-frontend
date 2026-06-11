@@ -1,5 +1,6 @@
 "use client";
 
+import OfferBadge from "@/components/ui/OfferBadge";
 import { Product } from "@/lib/types";
 import { formatAmount, formatNumber, localName } from "@/utils/format";
 import Link from "next/link";
@@ -23,8 +24,20 @@ export default function PackageCard({ pkg, locale }: Props) {
   const hasDiscount =
     pkg.discount_type !== "NONE" && originalPrice > finalPrice;
 
+  const diff = Math.round(originalPrice - finalPrice)
+  const pct  = originalPrice > 0 ? Math.round((originalPrice - finalPrice) / originalPrice * 100) : 0
+
   return (
-    <Link href={`/${locale}/packages/${pkg.id}`} className="group block">
+    <Link href={`/${locale}/packages/${pkg.id}`} className="group block relative">
+      {hasDiscount && diff > 0 && (
+        <OfferBadge
+          discountType={pkg.discount_type}
+          pct={pct}
+          diff={diff}
+          locale={locale}
+          className="absolute top-1 right-1 z-10"
+        />
+      )}
       <div className="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-100 hover:shadow-md transition-shadow flex flex-col">
         {/* Image */}
         <div className="h-36 md:h-56 bg-amber-50 relative overflow-hidden">
@@ -39,13 +52,6 @@ export default function PackageCard({ pkg, locale }: Props) {
             <div className="w-full h-full flex items-center justify-center text-4xl">
               🎁
             </div>
-          )}
-          {hasDiscount && (
-            <span className="absolute top-2 left-2 text-xs font-bold bg-amber-500 text-white px-2 py-0.5 rounded-full">
-              {pkg.discount_type === "PERCENTAGE"
-                ? `${formatNumber(pkg.discount_value, locale)}% ${locale === "bn" ? "ছাড়" : "OFF"}`
-                : `${formatAmount(pkg.discount_value, locale, 0)} ${locale === "bn" ? "ছাড়" : "OFF"}`}
-            </span>
           )}
         </div>
 
