@@ -114,7 +114,7 @@ export default function ProductDetailPage({
       <div className="mb-4">
         <OfferBanners />
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-3">
           {/* Main image */}
           <div className="aspect-square bg-gray-100 rounded-xl overflow-hidden relative group">
@@ -229,45 +229,49 @@ export default function ProductDetailPage({
           </div>
           {desc && <p className="text-gray-600 mb-6 leading-relaxed">{desc}</p>}
           {inStock && (
-            <div className="flex items-center gap-3 mb-6">
-              <div className="flex items-center border rounded-lg overflow-hidden">
+            <div className="space-y-3 mb-6">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center border rounded-lg overflow-hidden shrink-0">
+                  <button
+                    onClick={() => setQty(Math.max(1, qty - 1))}
+                    className="px-3 py-2 hover:bg-gray-50"
+                  >
+                    −
+                  </button>
+                  <span className="px-4 py-2 border-x font-bold">
+                    {formatNumber(qty, locale)}
+                  </span>
+                  <button
+                    onClick={() => setQty(qty + 1)}
+                    className="px-3 py-2 hover:bg-gray-50"
+                  >
+                    +
+                  </button>
+                </div>
                 <button
-                  onClick={() => setQty(Math.max(1, qty - 1))}
-                  className="px-3 py-2 hover:bg-gray-50"
+                  onClick={handleAddToCart}
+                  disabled={adding}
+                  className="btn-secondary flex-1 font-bold"
                 >
-                  −
-                </button>
-                <span className="px-4 py-2 border-x font-bold">
-                  {formatNumber(qty, locale)}
-                </span>
-                <button
-                  onClick={() => setQty(qty + 1)}
-                  className="px-3 py-2 hover:bg-gray-50"
-                >
-                  +
+                  {adding ? t("common.loading") : t("product.addToCart")}
                 </button>
               </div>
-              <button
-                onClick={handleAddToCart}
-                disabled={adding}
-                className="btn-secondary flex-1 font-bold"
-              >
-                {adding ? t("common.loading") : t("product.addToCart")}
-              </button>
-              <button
-                onClick={handleBuyNow}
-                disabled={adding}
-                className="btn-primary flex-1 font-bold"
-              >
-                {locale === "bn" ? "এখনই কিনুন" : "Buy Now"}
-              </button>
-              <button
-                onClick={() => router.back()}
-                className="flex-1 font-bold inline-flex items-center justify-center gap-1.5 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                {locale === "bn" ? "আরো কিনুন" : "Shop More"}
-              </button>
+              <div className="flex gap-3">
+                <button
+                  onClick={handleBuyNow}
+                  disabled={adding}
+                  className="btn-primary flex-1 font-bold"
+                >
+                  {locale === "bn" ? "এখনই কিনুন" : "Buy Now"}
+                </button>
+                <button
+                  onClick={() => router.back()}
+                  className="flex-1 font-bold inline-flex items-center justify-center gap-1.5 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  {locale === "bn" ? "আরো কিনুন" : "Shop More"}
+                </button>
+              </div>
             </div>
           )}
         </div>

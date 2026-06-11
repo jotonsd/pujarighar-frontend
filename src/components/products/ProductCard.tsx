@@ -240,7 +240,7 @@ export default function ProductCard({ product, locale }: Props) {
             {adding
               ? "..."
               : inStock
-                ? t("product.addToCart")
+                ? locale === "bn" ? "কার্টে যোগ" : "Add to Cart"
                 : t("product.outOfStock")}
           </button>
         </div>

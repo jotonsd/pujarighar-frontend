@@ -30,7 +30,7 @@ export default function HomeOffers() {
           </span>
         </div>
         <Link
-          href={`/${locale}/products`}
+          href={`/${locale}/products?offers=true`}
           className="text-sm text-amber-600 hover:underline font-medium"
         >
           {locale === "bn" ? "সব দেখুন →" : "View all →"}

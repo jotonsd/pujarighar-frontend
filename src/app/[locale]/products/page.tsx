@@ -106,15 +106,17 @@ export default function ProductsPage() {
   const locale = useLocale();
   const searchParams = useSearchParams();
   const urlSearch = searchParams.get("search") ?? "";
+  const urlCategory = searchParams.get("category") ?? "";
+  const urlOffers = searchParams.get("offers") === "true";
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState(urlSearch);
-  const [categories, setCategories] = useState<string[]>([]);
+  const [categories, setCategories] = useState<string[]>(urlCategory ? [urlCategory] : []);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [priceMin, setPriceMin] = useState(0);
   const [priceMax, setPriceMax] = useState(PRICE_MAX);
   const [sortOrder, setSortOrder] = useState<"" | "price_asc" | "price_desc">("");
-  const [onlyOffers, setOnlyOffers] = useState(false);
+  const [onlyOffers, setOnlyOffers] = useState(urlOffers);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [catOpen, setCatOpen] = useState(true);
   const [brandOpen, setBrandOpen] = useState(true);
@@ -126,9 +128,12 @@ export default function ProductsPage() {
 
   useEffect(() => {
     setSearch(urlSearch);
+    setCategories(urlCategory ? [urlCategory] : []);
+    setOnlyOffers(urlOffers);
     setPage(1);
     setAllProducts([]);
-  }, [urlSearch]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [urlSearch, urlCategory, searchParams.get("offers")]);
 
   const isPriceFiltered = priceMin > 0 || priceMax < PRICE_MAX;
   const hasFilter = !!(search || categories.length || selectedBrands.length || isPriceFiltered || sortOrder || onlyOffers);
