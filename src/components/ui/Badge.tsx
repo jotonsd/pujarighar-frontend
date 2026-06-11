@@ -1,6 +1,6 @@
 import { clsx } from 'clsx'
 
-type Variant = 'green' | 'red' | 'yellow' | 'blue' | 'gray' | 'orange'
+type Variant = 'green' | 'red' | 'yellow' | 'blue' | 'gray' | 'orange' | 'purple'
 
 const variants: Record<Variant, string> = {
   green:  'bg-green-100 text-green-700',
@@ -9,6 +9,7 @@ const variants: Record<Variant, string> = {
   blue:   'bg-blue-100 text-blue-700',
   gray:   'bg-gray-100 text-gray-600',
   orange: 'bg-orange-100 text-orange-700',
+  purple: 'bg-purple-100 text-purple-700',
 }
 
 export default function Badge({

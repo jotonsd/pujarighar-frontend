@@ -291,7 +291,7 @@ function ManualEntryModal({
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
-type BadgeVariant = "green" | "red" | "yellow" | "blue" | "gray" | "orange";
+type BadgeVariant = "green" | "red" | "yellow" | "blue" | "gray" | "orange" | "purple";
 const REF_BADGE: Record<
   string,
   { variant: BadgeVariant; label_bn: string; label_en: string }
@@ -327,6 +327,11 @@ const REF_BADGE: Record<
     variant: "yellow",
     label_bn: "ঋণ পরিশোধ",
     label_en: "Principal Repayment",
+  },
+  CASHBACK: {
+    variant: "purple",
+    label_bn: "ক্যাশব্যাক",
+    label_en: "Cashback",
   },
 };
 

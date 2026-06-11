@@ -92,7 +92,8 @@ export default function OrderList() {
         } />
 
       {showFilters && (
-        <div className="mb-5 p-4 bg-white rounded-2xl grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+        <form onSubmit={e => { e.preventDefault(); handleSubmit() }}
+          className="mb-5 p-4 bg-white rounded-2xl grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
           <FloatingInput label={locale === 'bn' ? 'অর্ডার নম্বর' : 'Order Number'} value={draft.order_number} onChange={e => set('order_number')(e.target.value)} />
           <FloatingInput label={locale === 'bn' ? 'ফোন নম্বর' : 'Phone Number'} value={draft.phone} onChange={e => set('phone')(e.target.value)} />
           <FloatingInput label={locale === 'bn' ? 'নাম' : 'Name'} value={draft.name} onChange={e => set('name')(e.target.value)} />
@@ -107,8 +108,8 @@ export default function OrderList() {
           </FloatingSelect>
           <FloatingDatePicker label={locale === 'bn' ? 'শুরু তারিখ' : 'From Date'} value={draft.from} onChange={set('from')} clearable />
           <FloatingDatePicker label={locale === 'bn' ? 'শেষ তারিখ' : 'To Date'} value={draft.to} onChange={set('to')} clearable />
-          <div className="flex items-center"><button onClick={handleSubmit} className="btn-primary w-full">{locale === 'bn' ? 'খুঁজুন' : 'Apply'}</button></div>
-        </div>
+          <div className="flex items-center"><button type="submit" className="btn-primary w-full">{locale === 'bn' ? 'খুঁজুন' : 'Apply'}</button></div>
+        </form>
       )}
 
       <ReusableTable data={data?.data ?? []} columns={columns} keyExtractor={o => o.id}

@@ -11,6 +11,7 @@ import {
   useUpdatePartnerMutation,
   useUpdatePartnerPaymentMutation,
 } from "@/api/partners/partnersApi";
+import ConfirmModal from "@/components/ui/ConfirmModal";
 import {
   FloatingDatePicker,
   FloatingInput,
@@ -99,6 +100,9 @@ function PaymentHistoryModal({
   const [showForm, setShowForm] = useState(false);
   const [editingPayment, setEditingPayment] =
     useState<PartnerProfitPayment | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<PartnerProfitPayment | null>(
+    null,
+  );
   const [form, setForm] = useState({
     year: CUR_YEAR,
     month: CUR_MONTH,
@@ -210,10 +214,17 @@ function PaymentHistoryModal({
     }
   };
 
-  const handleDelete = async (p: PartnerProfitPayment) => {
+  const handleDelete = (p: PartnerProfitPayment) => setDeleteTarget(p);
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      await deletePayment({ partnerId: partner.id, id: p.id }).unwrap();
+      await deletePayment({
+        partnerId: partner.id,
+        id: deleteTarget.id,
+      }).unwrap();
       toast.success(isBn ? "মুছে ফেলা হয়েছে" : "Deleted");
+      setDeleteTarget(null);
     } catch {
       toast.error(isBn ? "ব্যর্থ" : "Failed");
     }
@@ -314,7 +325,8 @@ function PaymentHistoryModal({
             <h2 className="font-bold text-gray-800">{partner.name_bn}</h2>
             <p className="text-xs text-gray-400">
               {partner.name_en && `${partner.name_en} · `}
-              {formatNumber(partner.equity_percentage, locale)}% {isBn ? "ইক্যুইটি" : "equity"}
+              {formatNumber(partner.equity_percentage, locale)}%{" "}
+              {isBn ? "ইক্যুইটি" : "equity"}
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -555,6 +567,22 @@ function PaymentHistoryModal({
           />
         </div>
       </div>
+
+      {deleteTarget && (
+        <ConfirmModal
+          icon="🗑️"
+          title={isBn ? "রেকর্ড মুছবেন?" : "Delete this record?"}
+          description={
+            isBn
+              ? `${isBn ? MONTH_NAMES_BN[deleteTarget.month] : MONTH_NAMES_EN[deleteTarget.month]} ${deleteTarget.year} — সংশ্লিষ্ট জার্নাল এন্ট্রিও মুছে যাবে।`
+              : `${MONTH_NAMES_EN[deleteTarget.month]} ${deleteTarget.year} — related journal entries will also be deleted.`
+          }
+          confirmLabel={isBn ? "হ্যাঁ, মুছুন" : "Yes, Delete"}
+          confirmClassName="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-2.5 rounded-xl transition-colors text-sm"
+          onConfirm={confirmDelete}
+          onCancel={() => setDeleteTarget(null)}
+        />
+      )}
     </div>
   );
 }
@@ -746,8 +774,12 @@ export default function PartnersPage() {
     <div className="max-w-7xl">
       <PageHeader
         title={isBn ? "অংশীদার / মূলধন" : "Partners / Equity"}
-        description={isBn ? "ইক্যুইটি অংশীদার ব্যবস্থাপনা ও লাভ বণ্টনের রেকর্ড" : "Manage equity partners and record profit distributions"}
-        addLabel={isBn ? "+ যোগ করুন" : "+ Add Partner"}
+        description={
+          isBn
+            ? "ইক্যুইটি অংশীদার ব্যবস্থাপনা ও লাভ বণ্টনের রেকর্ড"
+            : "Manage equity partners and record profit distributions"
+        }
+        addLabel={isBn ? "যোগ করুন" : "Add Partner"}
         onAdd={openCreate}
       />
 
