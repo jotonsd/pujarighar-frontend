@@ -75,6 +75,7 @@ export const baseApi = createApi({
     'Partners',
     'Loans',
     'Cashback',
+    'SiteSettings',
   ],
   endpoints: () => ({}),
 })

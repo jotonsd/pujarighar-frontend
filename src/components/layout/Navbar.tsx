@@ -1,12 +1,14 @@
 "use client";
 
 import { useGetMeQuery, useLogoutMutation } from "@/api/auth/authApi";
+import { useGetSiteSettingsQuery } from "@/api/settings/settingsApi";
 import NotificationBell from "@/components/ui/NotificationBell";
 import { NavGroupItem, NavItem, User } from "@/lib/types";
 import { useAuthStore } from "@/store/authStore";
 import { useCartStore } from "@/store/cartStore";
 import { useGuestCartStore } from "@/store/guestCartStore";
 import { formatAmount } from "@/utils/format";
+import { Settings } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
@@ -250,6 +252,11 @@ function MobileMenu({
   onSearch: (q: string) => void;
 }) {
   const [q, setQ] = useState("");
+  const { data: siteSettings } = useGetSiteSettingsQuery();
+  const logoSrc = siteSettings?.logo || "/assets/logo/pujarighar.png";
+  const companyName = locale === "bn"
+    ? (siteSettings?.company_name_bn || "পূজারিঘর")
+    : (siteSettings?.company_name_en || "PujariGhar");
 
   const navLink = (href: string, icon: string, lbl: string) => {
     const full = `/${locale}${href}`;
@@ -285,14 +292,8 @@ function MobileMenu({
       <div className="fixed top-0 left-0 h-full w-72 max-w-[85vw] bg-white z-50 shadow-xl flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100">
-          <Image
-            src="/assets/logo/pujarighar.png"
-            alt="PujariGhar"
-            width={0}
-            height={0}
-            sizes="100vw"
-            className="h-8 w-auto object-contain"
-          />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={logoSrc} alt={companyName} className="h-8 w-auto object-contain" />
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 p-1">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -425,6 +426,12 @@ export default function Navbar() {
   const currentUser = isAuthenticated ? (me ?? null) : null;
   const role = currentUser?.role ?? null;
 
+  const { data: siteSettings } = useGetSiteSettingsQuery();
+  const logoSrc = siteSettings?.logo || "/assets/logo/pujarighar.png";
+  const companyName = locale === "bn"
+    ? (siteSettings?.company_name_bn || "পূজারিঘর")
+    : (siteSettings?.company_name_en || "PujariGhar");
+
   // Active menu: backend-driven for authenticated users, guest fallback otherwise
   const menu: NavItem[] = currentUser?.nav_menu ?? GUEST_MENU;
 
@@ -500,15 +507,8 @@ export default function Navbar() {
             }
             className="flex-1 md:flex-none shrink-0"
           >
-            <Image
-              src="/assets/logo/pujarighar.png"
-              alt="PujariGhar"
-              width={0}
-              height={0}
-              sizes="100vw"
-              className="h-10 w-auto object-contain"
-              priority
-            />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={logoSrc} alt={companyName} className="h-10 w-auto object-contain" />
           </Link>
 
           {/* Desktop: all menu items in order — links and group dropdowns together */}
@@ -569,6 +569,15 @@ export default function Navbar() {
 
           {/* Right actions */}
           <div className="flex items-center gap-3 shrink-0">
+            {(role === "ADMIN" || role === "WAREHOUSE") && (
+              <Link
+                href={`/${locale}/admin/settings`}
+                className="text-gray-500 hover:text-amber-600 transition-colors"
+                title={locale === "bn" ? "সেটিং" : "Settings"}
+              >
+                <Settings className="w-5 h-5" />
+              </Link>
+            )}
             <LanguageSwitcher />
             {currentUser && <NotificationBell />}
 

@@ -2,10 +2,33 @@ import { getLocale } from "next-intl/server";
 import Image from "next/image";
 import Link from "next/link";
 
+async function fetchSettings() {
+  try {
+    const base = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+    const res = await fetch(`${base}/api/settings/`, { next: { revalidate: 60 } });
+    if (!res.ok) return null;
+    const json = await res.json();
+    return json.data ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export default async function Footer() {
   const locale = await getLocale();
   const bn = locale === "bn";
   const year = new Date().getFullYear();
+  const settings = await fetchSettings();
+
+  const companyName = bn
+    ? (settings?.company_name_bn || "পূজারিঘর")
+    : (settings?.company_name_en || "PujariGhar");
+  const phone   = settings?.contact_phone || "+880 1700-000000";
+  const email   = settings?.contact_email || "info@pujarighar.com";
+  const address = bn
+    ? (settings?.address_bn || "ঢাকা, বাংলাদেশ")
+    : (settings?.address_en || "Dhaka, Bangladesh");
+  const logoSrc = settings?.logo || "/assets/logo/pujarighar.png";
 
   return (
     <footer className="bg-gray-900 text-gray-300 mt-0">
@@ -15,7 +38,8 @@ export default async function Footer() {
           {/* Brand */}
           <div className="lg:col-span-1">
             <div className="mb-4">
-              <Image src="/assets/logo/pujarighar.png" alt="PujariGhar" width={0} height={0} sizes="100vw" className="h-12 w-auto brightness-0 invert" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={logoSrc} alt={companyName} className="h-12 w-auto object-contain brightness-0 invert" />
             </div>
             <p className="text-sm text-gray-400 leading-relaxed mb-5">
               {bn
@@ -48,38 +72,15 @@ export default async function Footer() {
             </h3>
             <ul className="space-y-2.5">
               {[
-                { href: `/${locale}`, label_bn: "হোম", label_en: "Home" },
-                {
-                  href: `/${locale}/products`,
-                  label_bn: "পণ্য",
-                  label_en: "Products",
-                },
-                {
-                  href: `/${locale}/packages`,
-                  label_bn: "প্যাকেজ",
-                  label_en: "Packages",
-                },
-                {
-                  href: `/${locale}/cart`,
-                  label_bn: "কার্ট",
-                  label_en: "Cart",
-                },
-                {
-                  href: `/${locale}/track`,
-                  label_bn: "অর্ডার ট্র্যাক",
-                  label_en: "Track Order",
-                },
-                {
-                  href: `/${locale}/orders`,
-                  label_bn: "আমার অর্ডার",
-                  label_en: "My Orders",
-                },
+                { href: `/${locale}`,          label_bn: "হোম",          label_en: "Home" },
+                { href: `/${locale}/products`, label_bn: "পণ্য",          label_en: "Products" },
+                { href: `/${locale}/packages`, label_bn: "প্যাকেজ",       label_en: "Packages" },
+                { href: `/${locale}/cart`,     label_bn: "কার্ট",          label_en: "Cart" },
+                { href: `/${locale}/track`,    label_bn: "অর্ডার ট্র্যাক", label_en: "Track Order" },
+                { href: `/${locale}/orders`,   label_bn: "আমার অর্ডার",   label_en: "My Orders" },
               ].map(l => (
                 <li key={l.href}>
-                  <Link
-                    href={l.href}
-                    className="text-sm text-gray-400 hover:text-amber-400 transition-colors"
-                  >
+                  <Link href={l.href} className="text-sm text-gray-400 hover:text-amber-400 transition-colors">
                     {bn ? l.label_bn : l.label_en}
                   </Link>
                 </li>
@@ -95,16 +96,13 @@ export default async function Footer() {
             <ul className="space-y-2.5">
               {[
                 { label_bn: "প্রতিমা ও মূর্তি", label_en: "Idols & Statues" },
-                { label_bn: "ধূপ ও প্রদীপ", label_en: "Incense & Lamps" },
-                { label_bn: "ফুল ও মালা", label_en: "Flowers & Garlands" },
-                { label_bn: "পূজার পাত্র", label_en: "Puja Utensils" },
-                { label_bn: "প্রসাদ সামগ্রী", label_en: "Prasad Items" },
+                { label_bn: "ধূপ ও প্রদীপ",     label_en: "Incense & Lamps" },
+                { label_bn: "ফুল ও মালা",         label_en: "Flowers & Garlands" },
+                { label_bn: "পূজার পাত্র",        label_en: "Puja Utensils" },
+                { label_bn: "প্রসাদ সামগ্রী",     label_en: "Prasad Items" },
               ].map((item, i) => (
                 <li key={i}>
-                  <Link
-                    href={`/${locale}/products`}
-                    className="text-sm text-gray-400 hover:text-amber-400 transition-colors"
-                  >
+                  <Link href={`/${locale}/products`} className="text-sm text-gray-400 hover:text-amber-400 transition-colors">
                     {bn ? item.label_bn : item.label_en}
                   </Link>
                 </li>
@@ -118,28 +116,24 @@ export default async function Footer() {
               {bn ? "যোগাযোগ" : "Contact Us"}
             </h3>
             <ul className="space-y-3">
-              <li className="flex items-start gap-2.5 text-sm text-gray-400">
-                <span className="mt-0.5 shrink-0">📍</span>
-                <span>{bn ? "ঢাকা, বাংলাদেশ" : "Dhaka, Bangladesh"}</span>
-              </li>
-              <li className="flex items-center gap-2.5 text-sm text-gray-400">
-                <span className="shrink-0">📞</span>
-                <a
-                  href="tel:+8801700000000"
-                  className="hover:text-amber-400 transition-colors"
-                >
-                  +880 1700-000000
-                </a>
-              </li>
-              <li className="flex items-center gap-2.5 text-sm text-gray-400">
-                <span className="shrink-0">✉️</span>
-                <a
-                  href="mailto:info@pujarighar.com"
-                  className="hover:text-amber-400 transition-colors"
-                >
-                  info@pujarighar.com
-                </a>
-              </li>
+              {address && (
+                <li className="flex items-start gap-2.5 text-sm text-gray-400">
+                  <span className="mt-0.5 shrink-0">📍</span>
+                  <span>{address}</span>
+                </li>
+              )}
+              {phone && (
+                <li className="flex items-center gap-2.5 text-sm text-gray-400">
+                  <span className="shrink-0">📞</span>
+                  <a href={`tel:${phone}`} className="hover:text-amber-400 transition-colors">{phone}</a>
+                </li>
+              )}
+              {email && (
+                <li className="flex items-center gap-2.5 text-sm text-gray-400">
+                  <span className="shrink-0">✉️</span>
+                  <a href={`mailto:${email}`} className="hover:text-amber-400 transition-colors">{email}</a>
+                </li>
+              )}
             </ul>
 
             {/* Newsletter */}
@@ -166,26 +160,17 @@ export default async function Footer() {
       <div className="border-t border-gray-800">
         <div className="max-w-7xl mx-auto px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-gray-500">
-            © {year} PujariGhar.{" "}
+            © {year} {companyName}.{" "}
             {bn ? "সর্বস্বত্ব সংরক্ষিত।" : "All rights reserved."}
           </p>
           <div className="flex items-center gap-3 text-xs text-gray-500">
-            <Link
-              href={`/${locale}`}
-              className="hover:text-amber-400 transition-colors"
-            >
+            <Link href={`/${locale}`} className="hover:text-amber-400 transition-colors">
               {bn ? "গোপনীয়তা নীতি" : "Privacy Policy"}
             </Link>
-            <Link
-              href={`/${locale}`}
-              className="hover:text-amber-400 transition-colors"
-            >
+            <Link href={`/${locale}`} className="hover:text-amber-400 transition-colors">
               {bn ? "শর্তাবলী" : "Terms of Service"}
             </Link>
-            <Link
-              href={`/${locale}`}
-              className="hover:text-amber-400 transition-colors"
-            >
+            <Link href={`/${locale}`} className="hover:text-amber-400 transition-colors">
               {bn ? "রিটার্ন নীতি" : "Return Policy"}
             </Link>
           </div>
