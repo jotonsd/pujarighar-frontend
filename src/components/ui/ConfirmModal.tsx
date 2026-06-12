@@ -1,5 +1,7 @@
 'use client'
 
+import { ReactNode } from 'react'
+
 export default function ConfirmModal({
   icon = '⚠️',
   title,
@@ -11,7 +13,7 @@ export default function ConfirmModal({
   onConfirm,
   onCancel,
 }: {
-  icon?: string
+  icon?: ReactNode
   title: string
   description?: string
   confirmLabel: string

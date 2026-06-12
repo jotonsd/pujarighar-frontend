@@ -570,7 +570,7 @@ function PaymentHistoryModal({
 
       {deleteTarget && (
         <ConfirmModal
-          icon="🗑️"
+          icon={<Trash2 className="w-6 h-6 text-red-500" />}
           title={isBn ? "রেকর্ড মুছবেন?" : "Delete this record?"}
           description={
             isBn

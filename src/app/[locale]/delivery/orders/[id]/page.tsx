@@ -14,6 +14,7 @@ import PageHeader from "@/components/ui/PageHeader";
 import ConfirmModal from "@/components/ui/ConfirmModal";
 import { DeliveryOrderDetailSkeleton } from "@/components/ui/skeletons";
 import { toast } from "@/store/toastStore";
+import { CheckCircle2, Undo2 } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -110,7 +111,7 @@ const [showDeliverModal, setShowDeliverModal] = useState(false);
 
       {showDeliverModal && (
         <ConfirmModal
-          icon="✅"
+          icon={<CheckCircle2 className="w-6 h-6 text-green-500" />}
           title={locale === "bn" ? "ডেলিভারি নিশ্চিত করুন?" : "Confirm delivery?"}
           description={locale === "bn" ? "পণ্যটি সফলভাবে গ্রাহকের কাছে পৌঁছে দিয়েছেন?" : "Have you successfully delivered the order to the customer?"}
           confirmLabel={locale === "bn" ? "হ্যাঁ, ডেলিভারি হয়েছে" : "Yes, Delivered"}
@@ -130,7 +131,7 @@ const [showDeliverModal, setShowDeliverModal] = useState(false);
 
       {showReturnModal && (
         <ConfirmModal
-          icon="↩"
+          icon={<Undo2 className="w-6 h-6 text-amber-500" />}
           title={locale === "bn" ? "ফেরত নিশ্চিত করুন?" : "Confirm return?"}
           description={locale === "bn" ? "এই অর্ডারটি ফেরত হিসেবে চিহ্নিত হবে।" : "This order will be marked as returned."}
           confirmLabel={locale === "bn" ? "হ্যাঁ, ফেরত দিন" : "Yes, Return"}

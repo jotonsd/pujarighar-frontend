@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useLocale } from 'next-intl'
 import { Pencil, Trash2 } from 'lucide-react'
 import PageHeader from '@/components/ui/PageHeader'
+import ConfirmModal from '@/components/ui/ConfirmModal'
 import ToggleSwitch from '@/components/ui/forms/ToggleSwitch'
 import { toast } from '@/store/toastStore'
 import { ReusableTable, Column, QuickAction } from '@/components/ui/ReusableTable'
@@ -12,8 +13,11 @@ import SlideForm from '@/components/admin/slides/SlideForm'
 
 export default function HeroSlidesAdminPage() {
   const locale = useLocale()
+  const isBn = locale === 'bn'
   const [showForm, setShowForm] = useState(false)
   const [editItem, setEditItem] = useState<HeroSlide | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null)
+  const [deleting, setDeleting] = useState(false)
 
   const { data: slides = [], isLoading } = useGetAllHeroSlidesQuery()
   const [updateSlide] = useUpdateHeroSlideMutation()
@@ -30,10 +34,12 @@ export default function HeroSlidesAdminPage() {
     catch { toast.error('Failed') }
   }
 
-  const handleDelete = async (id: string) => {
-    if (!confirm(locale === 'bn' ? 'মুছে ফেলবেন?' : 'Delete this slide?')) return
-    try { await deleteSlide(id).unwrap(); toast.success('Deleted') }
-    catch { toast.error('Failed') }
+  const handleDelete = async () => {
+    if (!deleteTarget) return
+    setDeleting(true)
+    try { await deleteSlide(deleteTarget).unwrap(); toast.success(isBn ? 'মুছে ফেলা হয়েছে' : 'Deleted') }
+    catch { toast.error(isBn ? 'মুছতে ব্যর্থ হয়েছে' : 'Failed to delete') }
+    finally { setDeleting(false); setDeleteTarget(null) }
   }
 
   const columns: Column<HeroSlide>[] = [
@@ -75,7 +81,7 @@ export default function HeroSlidesAdminPage() {
 
   const quickActions: QuickAction<HeroSlide>[] = [
     { label: 'Edit', icon: <Pencil className="w-3.5 h-3.5" />, onClick: openEdit, className: 'inline-flex items-center justify-center w-8 h-8 rounded-lg border border-amber-200 bg-amber-50 text-amber-600 hover:bg-amber-100 transition-colors' },
-    { label: 'Delete', icon: <Trash2 className="w-3.5 h-3.5" />, onClick: s => handleDelete(s.id), className: 'inline-flex items-center justify-center w-8 h-8 rounded-lg border border-red-200 bg-red-50 text-red-500 hover:bg-red-100 transition-colors' },
+    { label: 'Delete', icon: <Trash2 className="w-3.5 h-3.5" />, onClick: s => setDeleteTarget(s.id), className: 'inline-flex items-center justify-center w-8 h-8 rounded-lg border border-red-200 bg-red-50 text-red-500 hover:bg-red-100 transition-colors' },
   ]
 
   return (
@@ -86,6 +92,19 @@ export default function HeroSlidesAdminPage() {
         onAdd={openCreate} addLabel={locale === 'bn' ? 'নতুন স্লাইড' : 'New Slide'} />
 
       {showForm && <SlideForm editItem={editItem} onClose={closeForm} />}
+
+      {deleteTarget && (
+        <ConfirmModal
+          icon={<Trash2 className="w-6 h-6 text-red-500" />}
+          title={isBn ? 'স্লাইড মুছবেন?' : 'Delete slide?'}
+          description={isBn ? 'এই স্লাইডটি স্থায়ীভাবে মুছে যাবে।' : 'This slide will be permanently deleted.'}
+          confirmLabel={isBn ? 'হ্যাঁ, মুছুন' : 'Yes, Delete'}
+          confirmClassName="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-2.5 rounded-xl transition-colors text-sm"
+          loading={deleting}
+          onConfirm={handleDelete}
+          onCancel={() => setDeleteTarget(null)}
+        />
+      )}
 
       <ReusableTable data={slides} columns={columns} keyExtractor={s => s.id}
         isLoading={isLoading} quickActions={quickActions}

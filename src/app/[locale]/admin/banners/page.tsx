@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useLocale } from 'next-intl'
 import { Pencil, Trash2 } from 'lucide-react'
 import PageHeader from '@/components/ui/PageHeader'
+import ConfirmModal from '@/components/ui/ConfirmModal'
 import ToggleSwitch from '@/components/ui/forms/ToggleSwitch'
 import { toast } from '@/store/toastStore'
 import { ReusableTable, Column, QuickAction } from '@/components/ui/ReusableTable'
@@ -12,8 +13,11 @@ import BannerForm from '@/components/admin/banners/BannerForm'
 
 export default function BannersAdminPage() {
   const locale = useLocale()
+  const isBn = locale === 'bn'
   const [showForm, setShowForm] = useState(false)
   const [editItem, setEditItem] = useState<Banner | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null)
+  const [deleting, setDeleting] = useState(false)
 
   const { data: banners = [], isLoading } = useGetAllBannersQuery()
   const [updateBanner] = useUpdateBannerMutation()
@@ -30,10 +34,12 @@ export default function BannersAdminPage() {
     catch { toast.error('Failed') }
   }
 
-  const handleDelete = async (id: string) => {
-    if (!confirm(locale === 'bn' ? 'মুছে ফেলবেন?' : 'Delete this banner?')) return
-    try { await deleteBanner(id).unwrap(); toast.success('Deleted') }
-    catch { toast.error('Failed') }
+  const handleDelete = async () => {
+    if (!deleteTarget) return
+    setDeleting(true)
+    try { await deleteBanner(deleteTarget).unwrap(); toast.success(isBn ? 'মুছে ফেলা হয়েছে' : 'Deleted') }
+    catch { toast.error(isBn ? 'মুছতে ব্যর্থ হয়েছে' : 'Failed to delete') }
+    finally { setDeleting(false); setDeleteTarget(null) }
   }
 
   const columns: Column<Banner>[] = [
@@ -80,7 +86,7 @@ export default function BannersAdminPage() {
 
   const quickActions: QuickAction<Banner>[] = [
     { label: 'Edit', icon: <Pencil className="w-3.5 h-3.5" />, onClick: openEdit, className: 'inline-flex items-center justify-center w-8 h-8 rounded-lg border border-amber-200 bg-amber-50 text-amber-600 hover:bg-amber-100 transition-colors' },
-    { label: 'Delete', icon: <Trash2 className="w-3.5 h-3.5" />, onClick: b => handleDelete(b.id), className: 'inline-flex items-center justify-center w-8 h-8 rounded-lg border border-red-200 bg-red-50 text-red-500 hover:bg-red-100 transition-colors' },
+    { label: 'Delete', icon: <Trash2 className="w-3.5 h-3.5" />, onClick: b => setDeleteTarget(b.id), className: 'inline-flex items-center justify-center w-8 h-8 rounded-lg border border-red-200 bg-red-50 text-red-500 hover:bg-red-100 transition-colors' },
   ]
 
   return (
@@ -91,6 +97,19 @@ export default function BannersAdminPage() {
         onAdd={openCreate} addLabel={locale === 'bn' ? 'নতুন ব্যানার' : 'New Banner'} />
 
       {showForm && <BannerForm editItem={editItem} onClose={closeForm} />}
+
+      {deleteTarget && (
+        <ConfirmModal
+          icon={<Trash2 className="w-6 h-6 text-red-500" />}
+          title={isBn ? 'ব্যানার মুছবেন?' : 'Delete banner?'}
+          description={isBn ? 'এই ব্যানারটি স্থায়ীভাবে মুছে যাবে।' : 'This banner will be permanently deleted.'}
+          confirmLabel={isBn ? 'হ্যাঁ, মুছুন' : 'Yes, Delete'}
+          confirmClassName="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-2.5 rounded-xl transition-colors text-sm"
+          loading={deleting}
+          onConfirm={handleDelete}
+          onCancel={() => setDeleteTarget(null)}
+        />
+      )}
 
       <ReusableTable data={banners} columns={columns} keyExtractor={b => b.id}
         isLoading={isLoading} quickActions={quickActions}
