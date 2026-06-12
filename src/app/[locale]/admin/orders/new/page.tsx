@@ -6,6 +6,7 @@ import { useGetCategoriesQuery } from "@/api/categories/categoriesApi";
 import { useGetDeliveryChargesQuery } from "@/api/deliveryCharges/deliveryChargesApi";
 import { usePosCreateOrderMutation } from "@/api/orders/ordersApi";
 import { useGetProductsQuery } from "@/api/products/productsApi";
+import { useAdminGetUserAddressesQuery, useAdminCreateUserAddressMutation, useAdminUpdateUserAddressMutation } from "@/api/users/usersApi";
 import {
   Checkbox,
   FloatingInput,
@@ -13,10 +14,10 @@ import {
   FloatingTextarea,
 } from "@/components/ui/forms";
 import { POSProductSkeleton } from "@/components/ui/skeletons";
-import { Product } from "@/lib/types";
+import { Product, ShippingAddress } from "@/lib/types";
 import { toast } from "@/store/toastStore";
 import { formatAmount, formatNumber } from "@/utils/format";
-import { Trash2 } from "lucide-react";
+import { CheckCircle2, MapPin, Pencil, Plus, Trash2, X } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -206,6 +207,47 @@ export default function POSPage() {
     notes_bn: "",
   });
 
+  const [phoneQuery, setPhoneQuery]           = useState("");
+  const [selectedUserId, setSelectedUserId]   = useState<string | null>(null);
+  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
+  const [showNewAddrForm, setShowNewAddrForm] = useState(false);
+  const [newAddr, setNewAddr] = useState({ label: "", address_bn: "", district: "", thana: "", post_code: "" });
+  const [savingAddr, setSavingAddr]           = useState(false);
+
+  const { data: foundUser } = useLookupUserByPhoneQuery(phoneQuery, { skip: phoneQuery.length < 11 });
+  const { data: userAddresses = [] } = useAdminGetUserAddressesQuery(selectedUserId ?? "", { skip: !selectedUserId });
+  const [createUserAddress] = useAdminCreateUserAddressMutation();
+  const [updateUserAddress] = useAdminUpdateUserAddressMutation();
+
+  const [editingAddressId, setEditingAddressId] = useState<string | null>(null);
+  const [editAddr, setEditAddr] = useState({ label: "", address_bn: "", district: "", thana: "", post_code: "" });
+  const [savingEdit, setSavingEdit] = useState(false);
+
+  const startEdit = (addr: ShippingAddress) => {
+    setEditingAddressId(addr.id);
+    setEditAddr({ label: addr.label || "", address_bn: addr.address_bn || addr.address_en || "", district: addr.district || "", thana: addr.thana || "", post_code: addr.post_code || "" });
+    setShowNewAddrForm(false);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!selectedUserId || !editingAddressId) return;
+    setSavingEdit(true);
+    try {
+      const updated = await updateUserAddress({
+        userId: selectedUserId,
+        addressId: editingAddressId,
+        data: { label: editAddr.label, address_bn: editAddr.address_bn, district: editAddr.district, thana: editAddr.thana, post_code: editAddr.post_code },
+      }).unwrap();
+      if (selectedAddressId === editingAddressId) applyAddress(updated);
+      setEditingAddressId(null);
+      toast.success(locale === "bn" ? "ঠিকানা আপডেট হয়েছে" : "Address updated");
+    } catch {
+      toast.error(locale === "bn" ? "আপডেট ব্যর্থ হয়েছে" : "Failed to update");
+    } finally {
+      setSavingEdit(false);
+    }
+  };
+
   const deliveryCharge = (() => {
     if (!applyDelivery || !deliveryRates) return 0;
     return parseFloat(
@@ -216,10 +258,45 @@ export default function POSPage() {
   })();
 
   const grandTotal = subtotal + deliveryCharge;
-  const [phoneQuery, setPhoneQuery] = useState("");
-  const { data: foundUser } = useLookupUserByPhoneQuery(phoneQuery, {
-    skip: phoneQuery.length < 11,
-  });
+
+  const applyAddress = (addr: ShippingAddress) => {
+    setCustomer(c => ({
+      ...c,
+      name_bn:    addr.full_name_bn || addr.full_name_en || c.name_bn,
+      address_bn: addr.address_bn   || addr.address_en  || "",
+      district:   addr.district     || "",
+      thana:      addr.thana        || "",
+      post_code:  addr.post_code    || "",
+    }));
+    setSelectedAddressId(addr.id);
+    setShowNewAddrForm(false);
+  };
+
+  const handleSaveNewAddress = async () => {
+    if (!selectedUserId || !newAddr.address_bn) return;
+    setSavingAddr(true);
+    try {
+      const saved = await createUserAddress({
+        userId: selectedUserId,
+        data: {
+          label:      newAddr.label || (locale === "bn" ? "নতুন ঠিকানা" : "New Address"),
+          full_name_bn: customer.name_bn,
+          phone:      customer.phone,
+          address_bn: newAddr.address_bn,
+          district:   newAddr.district,
+          thana:      newAddr.thana,
+          post_code:  newAddr.post_code,
+        },
+      }).unwrap();
+      applyAddress(saved);
+      setNewAddr({ label: "", address_bn: "", district: "", thana: "", post_code: "" });
+      toast.success(locale === "bn" ? "ঠিকানা সংরক্ষিত হয়েছে" : "Address saved");
+    } catch {
+      toast.error(locale === "bn" ? "ব্যর্থ হয়েছে" : "Failed to save address");
+    } finally {
+      setSavingAddr(false);
+    }
+  };
 
   // ── Submit ────────────────────────────────────────────────────────────────
   const [posCreate, { isLoading: submitting }] = usePosCreateOrderMutation();
@@ -242,6 +319,7 @@ export default function POSPage() {
           quantity: l.quantity.toFixed(3),
         })),
         ...customer,
+        ...(selectedUserId ? { customer_id: selectedUserId } : {}),
         apply_delivery: applyDelivery,
         delivery_zone: applyDelivery ? deliveryZone : undefined,
       }).unwrap();
@@ -511,6 +589,8 @@ export default function POSPage() {
           <h2 className="font-semibold text-gray-800 text-sm">
             {locale === "bn" ? "গ্রাহকের তথ্য" : "Customer Details"}
           </h2>
+
+          {/* Phone lookup */}
           <div>
             <FloatingInput
               label={locale === "bn" ? "ফোন *" : "Phone *"}
@@ -519,81 +599,221 @@ export default function POSPage() {
                 const v = e.target.value;
                 setCustomer(c => ({ ...c, phone: v }));
                 setPhoneQuery(v.length >= 11 ? v : "");
+                if (v.length < 11) { setSelectedUserId(null); setSelectedAddressId(null); }
               }}
               placeholder="01XXXXXXXXX"
             />
             {foundUser && customer.phone.length >= 11 && (
               <div className="mt-1.5 flex items-center justify-between bg-green-50 border border-green-200 rounded-xl px-3 py-2">
                 <div className="min-w-0">
-                  <p className="text-xs font-semibold text-green-800 truncate">
-                    ✓{" "}
-                    {foundUser.profile?.full_name_bn ||
-                      foundUser.profile?.full_name_en ||
-                      foundUser.email}
+                  <p className="text-xs font-semibold text-green-800 truncate flex items-center gap-1">
+                    <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                    {foundUser.profile?.full_name_bn || foundUser.profile?.full_name_en || foundUser.email}
                   </p>
-                  <p className="text-[10px] text-green-600">
-                    {foundUser.email}
-                  </p>
+                  <p className="text-[10px] text-green-600">{foundUser.email}</p>
                 </div>
-                <button
-                  type="button"
-                  onClick={() =>
-                    setCustomer(c => ({
-                      ...c,
-                      name_bn:
-                        foundUser.profile?.full_name_bn ||
-                        foundUser.profile?.full_name_en ||
-                        "",
-                      address_bn: foundUser.profile?.address_bn || "",
-                      district: foundUser.profile?.district || "",
-                      thana: foundUser.profile?.thana || "",
-                      post_code: foundUser.profile?.post_code || "",
-                    }))
-                  }
-                  className="text-[10px] bg-green-600 text-white px-2 py-1 rounded-lg ml-2 shrink-0 hover:bg-green-700"
-                >
-                  {locale === "bn" ? "অটোফিল" : "Autofill"}
-                </button>
+                {selectedUserId !== foundUser.id && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedUserId(foundUser.id);
+                      setCustomer(c => ({
+                        ...c,
+                        name_bn: foundUser.profile?.full_name_bn || foundUser.profile?.full_name_en || "",
+                      }));
+                      setSelectedAddressId(null);
+                      setShowNewAddrForm(false);
+                    }}
+                    className="text-[10px] bg-green-600 text-white px-2 py-1 rounded-lg ml-2 shrink-0 hover:bg-green-700"
+                  >
+                    {locale === "bn" ? "নির্বাচন করুন" : "Select"}
+                  </button>
+                )}
+                {selectedUserId === foundUser.id && (
+                  <span className="text-[10px] text-green-700 ml-2 shrink-0 font-semibold">
+                    {locale === "bn" ? "✓ নির্বাচিত" : "✓ Selected"}
+                  </span>
+                )}
               </div>
             )}
           </div>
-          <FloatingInput
-            label={locale === "bn" ? "নাম (বাংলা) *" : "Name *"}
-            value={customer.name_bn}
-            onChange={e =>
-              setCustomer(c => ({ ...c, name_bn: e.target.value }))
-            }
-          />
-          <FloatingTextarea
-            label={locale === "bn" ? "ঠিকানা" : "Address"}
-            value={customer.address_bn}
-            onChange={e =>
-              setCustomer(c => ({ ...c, address_bn: e.target.value }))
-            }
-            rows={2}
-          />
-          <div className="grid grid-cols-2 gap-2">
+
+          {/* Name — only for guest orders */}
+          {!selectedUserId && (
             <FloatingInput
-              label={locale === "bn" ? "জেলা" : "District"}
-              value={customer.district}
-              onChange={e =>
-                setCustomer(c => ({ ...c, district: e.target.value }))
-              }
+              label={locale === "bn" ? "নাম (বাংলা) *" : "Name *"}
+              value={customer.name_bn}
+              onChange={e => setCustomer(c => ({ ...c, name_bn: e.target.value }))}
             />
-            <FloatingInput
-              label={locale === "bn" ? "থানা" : "Thana"}
-              value={customer.thana}
-              onChange={e =>
-                setCustomer(c => ({ ...c, thana: e.target.value }))
-              }
-            />
-          </div>
+          )}
+
+          {/* Address section */}
+          {selectedUserId ? (
+            <div className="space-y-2">
+              <p className="text-xs font-semibold text-gray-600 flex items-center gap-1">
+                <MapPin className="w-3.5 h-3.5" />
+                {locale === "bn" ? "ডেলিভারি ঠিকানা" : "Delivery Address"}
+              </p>
+
+              {/* Saved addresses */}
+              {userAddresses.length > 0 && (
+                <div className="space-y-1.5">
+                  {userAddresses.map(addr => (
+                    <div key={addr.id}>
+                      {editingAddressId === addr.id ? (
+                        /* ── Inline edit form ── */
+                        <div className="border border-amber-300 rounded-lg p-3 space-y-2 bg-amber-50">
+                          <div className="flex items-center justify-between">
+                            <p className="text-xs font-semibold text-amber-700">{locale === "bn" ? "ঠিকানা সম্পাদনা" : "Edit Address"}</p>
+                            <button type="button" onClick={() => setEditingAddressId(null)} className="text-gray-400 hover:text-gray-600">
+                              <X className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                          <FloatingInput
+                            label={locale === "bn" ? "লেবেল" : "Label"}
+                            value={editAddr.label}
+                            onChange={e => setEditAddr(a => ({ ...a, label: e.target.value }))}
+                          />
+                          <FloatingTextarea
+                            label={locale === "bn" ? "ঠিকানা *" : "Address *"}
+                            value={editAddr.address_bn}
+                            onChange={e => setEditAddr(a => ({ ...a, address_bn: e.target.value }))}
+                            rows={2}
+                          />
+                          <div className="grid grid-cols-2 gap-2">
+                            <FloatingInput label={locale === "bn" ? "জেলা" : "District"} value={editAddr.district} onChange={e => setEditAddr(a => ({ ...a, district: e.target.value }))} />
+                            <FloatingInput label={locale === "bn" ? "থানা" : "Thana"} value={editAddr.thana} onChange={e => setEditAddr(a => ({ ...a, thana: e.target.value }))} />
+                          </div>
+                          <FloatingInput label={locale === "bn" ? "পোস্ট কোড" : "Post Code"} value={editAddr.post_code} onChange={e => setEditAddr(a => ({ ...a, post_code: e.target.value }))} />
+                          <div className="flex gap-2">
+                            <button
+                              type="button"
+                              onClick={handleSaveEdit}
+                              disabled={savingEdit || !editAddr.address_bn}
+                              className="flex-1 bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-white text-xs font-semibold py-2 rounded-lg transition-colors"
+                            >
+                              {savingEdit ? (locale === "bn" ? "সংরক্ষণ..." : "Saving...") : (locale === "bn" ? "আপডেট করুন" : "Update")}
+                            </button>
+                            <button type="button" onClick={() => setEditingAddressId(null)} className="px-3 py-2 rounded-lg border border-gray-200 text-xs text-gray-500 hover:bg-gray-50">
+                              {locale === "bn" ? "বাতিল" : "Cancel"}
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        /* ── Address card ── */
+                        <div
+                          className={`rounded-lg border px-3 py-2 transition-colors text-xs ${
+                            selectedAddressId === addr.id ? "border-amber-400 bg-amber-50" : "border-gray-200 bg-white"
+                          }`}
+                        >
+                          <div className="flex items-start justify-between gap-1">
+                            <button type="button" onClick={() => applyAddress(addr)} className="flex-1 text-left min-w-0">
+                              {addr.label && <p className="font-semibold text-gray-700 truncate">{addr.label}</p>}
+                              <p className="text-gray-600 truncate">{addr.address_bn || addr.address_en}</p>
+                              {addr.district && <p className="text-gray-400">{addr.district}{addr.thana ? `, ${addr.thana}` : ""}</p>}
+                            </button>
+                            <div className="flex items-center gap-1.5 shrink-0 mt-0.5">
+                              {addr.is_default && selectedAddressId !== addr.id && (
+                                <span className="text-[9px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">{locale === "bn" ? "ডিফল্ট" : "Default"}</span>
+                              )}
+                              {selectedAddressId === addr.id && <CheckCircle2 className="w-4 h-4 text-amber-500" />}
+                              <button
+                                type="button"
+                                onClick={() => startEdit(addr)}
+                                className="text-gray-400 hover:text-amber-600 transition-colors p-0.5"
+                                title={locale === "bn" ? "সম্পাদনা" : "Edit"}
+                              >
+                                <Pencil className="w-3 h-3" />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Add new address toggle */}
+              {!showNewAddrForm ? (
+                <button
+                  type="button"
+                  onClick={() => { setShowNewAddrForm(true); setSelectedAddressId(null); }}
+                  className="w-full flex items-center justify-center gap-1.5 border border-dashed border-gray-300 rounded-lg py-2 text-xs text-gray-500 hover:border-amber-400 hover:text-amber-600 transition-colors"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  {locale === "bn" ? "নতুন ঠিকানা যোগ করুন" : "Add new address"}
+                </button>
+              ) : (
+                <div className="border border-amber-200 rounded-lg p-3 space-y-2 bg-amber-50">
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs font-semibold text-amber-700">{locale === "bn" ? "নতুন ঠিকানা" : "New Address"}</p>
+                    <button type="button" onClick={() => setShowNewAddrForm(false)} className="text-gray-400 hover:text-gray-600">
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                  <FloatingInput
+                    label={locale === "bn" ? "লেবেল (যেমন: বাড়ি, অফিস)" : "Label (e.g. Home, Office)"}
+                    value={newAddr.label}
+                    onChange={e => setNewAddr(a => ({ ...a, label: e.target.value }))}
+                  />
+                  <FloatingTextarea
+                    label={locale === "bn" ? "ঠিকানা *" : "Address *"}
+                    value={newAddr.address_bn}
+                    onChange={e => setNewAddr(a => ({ ...a, address_bn: e.target.value }))}
+                    rows={2}
+                  />
+                  <div className="grid grid-cols-2 gap-2">
+                    <FloatingInput
+                      label={locale === "bn" ? "জেলা" : "District"}
+                      value={newAddr.district}
+                      onChange={e => setNewAddr(a => ({ ...a, district: e.target.value }))}
+                    />
+                    <FloatingInput
+                      label={locale === "bn" ? "থানা" : "Thana"}
+                      value={newAddr.thana}
+                      onChange={e => setNewAddr(a => ({ ...a, thana: e.target.value }))}
+                    />
+                  </div>
+                  <FloatingInput
+                    label={locale === "bn" ? "পোস্ট কোড" : "Post Code"}
+                    value={newAddr.post_code}
+                    onChange={e => setNewAddr(a => ({ ...a, post_code: e.target.value }))}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleSaveNewAddress}
+                    disabled={savingAddr || !newAddr.address_bn}
+                    className="w-full bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-white text-xs font-semibold py-2 rounded-lg transition-colors"
+                  >
+                    {savingAddr
+                      ? (locale === "bn" ? "সংরক্ষণ..." : "Saving...")
+                      : (locale === "bn" ? "সংরক্ষণ করুন ও নির্বাচন করুন" : "Save & Select")}
+                  </button>
+                </div>
+              )}
+
+            </div>
+          ) : (
+            /* Guest / no user selected — manual address entry */
+            <>
+              <FloatingTextarea
+                label={locale === "bn" ? "ঠিকানা" : "Address"}
+                value={customer.address_bn}
+                onChange={e => setCustomer(c => ({ ...c, address_bn: e.target.value }))}
+                rows={2}
+              />
+              <div className="grid grid-cols-2 gap-2">
+                <FloatingInput label={locale === "bn" ? "জেলা" : "District"} value={customer.district} onChange={e => setCustomer(c => ({ ...c, district: e.target.value }))} />
+                <FloatingInput label={locale === "bn" ? "থানা" : "Thana"} value={customer.thana} onChange={e => setCustomer(c => ({ ...c, thana: e.target.value }))} />
+              </div>
+            </>
+          )}
+
           <FloatingInput
             label={locale === "bn" ? "মন্তব্য" : "Notes"}
             value={customer.notes_bn}
-            onChange={e =>
-              setCustomer(c => ({ ...c, notes_bn: e.target.value }))
-            }
+            onChange={e => setCustomer(c => ({ ...c, notes_bn: e.target.value }))}
           />
           <Checkbox
             checked={applyDelivery}

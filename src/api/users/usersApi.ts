@@ -1,5 +1,5 @@
 import { baseApi } from '@/api/baseApi'
-import { User, Role, ApiMeta } from '@/lib/types'
+import { User, Role, ApiMeta, ShippingAddress } from '@/lib/types'
 
 interface UserListResponse { data: User[]; pagination: ApiMeta }
 
@@ -64,6 +64,24 @@ export const usersApi = baseApi.injectEndpoints({
       invalidatesTags: (_r, _e, { id }) => ['Users', { type: 'User', id }],
     }),
 
+    adminGetUserAddresses: build.query<ShippingAddress[], string>({
+      query: (userId) => `/api/users/${userId}/shipping-addresses/`,
+      transformResponse: (res: { data: ShippingAddress[] }) => res.data,
+      providesTags: (_r, _e, userId) => [{ type: 'UserAddresses' as const, id: userId }],
+    }),
+
+    adminCreateUserAddress: build.mutation<ShippingAddress, { userId: string; data: Partial<ShippingAddress> }>({
+      query: ({ userId, data }) => ({ url: `/api/users/${userId}/shipping-addresses/create/`, method: 'POST', body: data }),
+      transformResponse: (res: { data: ShippingAddress }) => res.data,
+      invalidatesTags: (_r, _e, { userId }) => [{ type: 'UserAddresses' as const, id: userId }],
+    }),
+
+    adminUpdateUserAddress: build.mutation<ShippingAddress, { userId: string; addressId: string; data: Partial<ShippingAddress> }>({
+      query: ({ userId, addressId, data }) => ({ url: `/api/users/${userId}/shipping-addresses/${addressId}/update/`, method: 'PATCH', body: data }),
+      transformResponse: (res: { data: ShippingAddress }) => res.data,
+      invalidatesTags: (_r, _e, { userId }) => [{ type: 'UserAddresses' as const, id: userId }],
+    }),
+
   }),
   overrideExisting: false,
 })
@@ -72,6 +90,9 @@ export const {
   useGetUsersQuery,
   useGetUserQuery,
   useGetDeliveryPersonsQuery,
+  useAdminGetUserAddressesQuery,
+  useAdminCreateUserAddressMutation,
+  useAdminUpdateUserAddressMutation,
   useCreateUserMutation,
   useUpdateUserMutation,
   useDeleteUserMutation,
