@@ -332,7 +332,9 @@ function ConfirmModal({
           {discount > 0 && (
             <div className="flex items-center justify-between text-sm text-green-600">
               <span>{locale === "bn" ? "ছাড়" : "Discount"}</span>
-              <span className="font-bold">− {formatAmount(discount, locale)}</span>
+              <span className="font-bold">
+                − {formatAmount(discount, locale)}
+              </span>
             </div>
           )}
           {deliveryAmount > 0 && (
@@ -345,8 +347,12 @@ function ConfirmModal({
           )}
           {cashbackUsed > 0 && (
             <div className="flex items-center justify-between text-sm text-purple-600">
-              <span>{locale === "bn" ? "ক্যাশব্যাক ব্যবহার" : "Cashback Used"}</span>
-              <span className="font-bold">− {formatAmount(cashbackUsed, locale)}</span>
+              <span>
+                {locale === "bn" ? "ক্যাশব্যাক ব্যবহার" : "Cashback Used"}
+              </span>
+              <span className="font-bold">
+                − {formatAmount(cashbackUsed, locale)}
+              </span>
             </div>
           )}
           <div className="flex items-center justify-between font-bold text-base border-t border-gray-100 pt-1.5">
@@ -594,8 +600,10 @@ export default function CartPage() {
       label: locale === "bn" ? i.product_name_bn : i.product_name_en,
       qty: Math.round(Number(i.quantity)),
       price: formatAmount(
-        parseFloat(i.original_unit_price || i.unit_price) * parseFloat(i.quantity),
-        locale, 0,
+        parseFloat(i.original_unit_price || i.unit_price) *
+          parseFloat(i.quantity),
+        locale,
+        0,
       ),
     }));
 
@@ -657,7 +665,7 @@ export default function CartPage() {
                                 item.original_unit_price &&
                                 parseFloat(item.original_unit_price) >
                                   parseFloat(item.unit_price)
-                                  ? "text-green-600 font-medium"
+                                  ? "text-green-600 font-bold"
                                   : ""
                               }
                             >
@@ -910,11 +918,17 @@ export default function CartPage() {
                           : deliveryRates.outside_dhaka,
                       )
                     : 0;
-                  const cashbackBalance = parseFloat(me?.profile.cashback_balance || "0");
+                  const cashbackBalance = parseFloat(
+                    me?.profile.cashback_balance || "0",
+                  );
                   const cashbackToUse = Math.min(cashbackBalance, sub + dc);
                   return cashbackToUse > 0 ? (
                     <div className="flex justify-between text-sm text-purple-600 font-bold">
-                      <span>{locale === "bn" ? "ক্যাশব্যাক প্রযোজ্য" : "Cashback Applied"}</span>
+                      <span>
+                        {locale === "bn"
+                          ? "ক্যাশব্যাক প্রযোজ্য"
+                          : "Cashback Applied"}
+                      </span>
                       <span>− {formatAmount(cashbackToUse, locale)}</span>
                     </div>
                   ) : null;
@@ -931,7 +945,9 @@ export default function CartPage() {
                               : deliveryRates.outside_dhaka,
                           )
                         : 0;
-                      const cashbackBalance = parseFloat(me?.profile.cashback_balance || "0");
+                      const cashbackBalance = parseFloat(
+                        me?.profile.cashback_balance || "0",
+                      );
                       const cashbackToUse = Math.min(cashbackBalance, sub + dc);
                       return formatAmount(sub + dc - cashbackToUse, locale);
                     })()}
@@ -995,7 +1011,9 @@ export default function CartPage() {
                 )
               : 0;
             const discountAmt = parseFloat(cart?.discount_amount || "0");
-            const cashbackBalance = parseFloat(me?.profile.cashback_balance || "0");
+            const cashbackBalance = parseFloat(
+              me?.profile.cashback_balance || "0",
+            );
             const cashbackToUse = Math.min(cashbackBalance, sub + dc);
             return (
               <ConfirmModal
@@ -1022,7 +1040,11 @@ export default function CartPage() {
   const guestConfirmLines = guestItems.map(i => ({
     label: locale === "bn" ? i.name_bn : i.name_en,
     qty: i.quantity,
-    price: formatAmount(parseFloat(i.original_unit_price || i.unit_price) * i.quantity, locale, 0),
+    price: formatAmount(
+      parseFloat(i.original_unit_price || i.unit_price) * i.quantity,
+      locale,
+      0,
+    ),
   }));
 
   return (
@@ -1078,7 +1100,7 @@ export default function CartPage() {
                             className={
                               parseFloat(item.original_unit_price) >
                               parseFloat(item.unit_price)
-                                ? "text-green-600 font-medium"
+                                ? "text-green-600 font-bold"
                                 : ""
                             }
                           >
@@ -1275,7 +1297,13 @@ export default function CartPage() {
                 <div className="mt-2 space-y-1.5">
                   <div className="flex justify-between font-bold text-sm text-gray-600">
                     <span>{locale === "bn" ? "সাবটোটাল" : "Subtotal"}</span>
-                    <span>{formatAmount(guestSubtotal() + guestDiscountAmount(), locale, 0)}</span>
+                    <span>
+                      {formatAmount(
+                        guestSubtotal() + guestDiscountAmount(),
+                        locale,
+                        0,
+                      )}
+                    </span>
                   </div>
                   {guestDiscountAmount() > 0 && (
                     <div className="flex justify-between text-sm text-green-600 font-bold">
