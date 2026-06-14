@@ -126,6 +126,7 @@ function ProfileDropdown({
   t: ReturnType<typeof useTranslations>;
 }) {
   const [open, setOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
   const initials = (user.profile?.full_name_en || user.email || "?")
     .charAt(0)
     .toUpperCase();
@@ -190,12 +191,21 @@ function ProfileDropdown({
                         {isBn ? "রেফারেল কোড" : "Referral Code"}
                       </p>
                       <button
-                        onClick={() => { navigator.clipboard.writeText(user.referral_code); }}
+                        onClick={() => {
+                          navigator.clipboard.writeText(user.referral_code);
+                          setCopied(true);
+                          setTimeout(() => setCopied(false), 2000);
+                        }}
                         className="flex items-center gap-1.5 w-full"
                         title={isBn ? "কপি করুন" : "Copy"}
                       >
                         <span className="text-xs font-mono font-bold text-gray-700 tracking-widest">{user.referral_code}</span>
-                        <span className="text-[10px] text-gray-400 ml-auto">📋</span>
+                        <span className="text-[10px] ml-auto">
+                          {copied
+                            ? <span className="text-green-500 font-medium">{isBn ? "কপি হয়েছে!" : "Copied!"}</span>
+                            : <span className="text-gray-400">📋</span>
+                          }
+                        </span>
                       </button>
                     </div>
                   )}
