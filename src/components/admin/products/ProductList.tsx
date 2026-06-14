@@ -16,11 +16,13 @@ import { formatNumber } from '@/utils/format'
 import { useGetBrandsQuery } from '@/api/brands/brandsApi'
 import { useGetCategoriesQuery } from '@/api/categories/categoriesApi'
 import { useGetProductsQuery, useUpdateProductMutation } from '@/api/products/productsApi'
+import { useAuthStore } from '@/store/authStore'
 
 export default function ProductList() {
   const t      = useTranslations()
   const locale = useLocale()
   const router = useRouter()
+  const isAdmin = useAuthStore(s => s.user?.role === 'ADMIN')
   const [page, setPage]           = useState(1)
   const [search, setSearch]       = useState('')
   const [category, setCategory]   = useState('')
@@ -68,10 +70,10 @@ export default function ProductList() {
     },
     {
       header: locale === 'bn' ? 'স্ট্যাটাস' : 'Status',
-      accessor: p => (
-        <ToggleSwitch checked={p.is_active} onChange={() => handleToggleActive(p)}
-          activeLabel={locale === 'bn' ? 'সক্রিয়' : 'Active'} inactiveLabel={locale === 'bn' ? 'নিষ্ক্রিয়' : 'Inactive'} />
-      ),
+      accessor: p => isAdmin
+        ? <ToggleSwitch checked={p.is_active} onChange={() => handleToggleActive(p)}
+            activeLabel={locale === 'bn' ? 'সক্রিয়' : 'Active'} inactiveLabel={locale === 'bn' ? 'নিষ্ক্রিয়' : 'Inactive'} />
+        : <Badge variant={p.is_active ? 'green' : 'red'}>{p.is_active ? (locale === 'bn' ? 'সক্রিয়' : 'Active') : (locale === 'bn' ? 'নিষ্ক্রিয়' : 'Inactive')}</Badge>,
       className: 'px-4 py-3 w-36',
     },
   ]
@@ -81,8 +83,7 @@ export default function ProductList() {
       <PageHeader
         title={t('admin.products')}
         description={locale === 'bn' ? 'সকল পণ্য দেখুন, সম্পাদনা করুন ও নতুন পণ্য যোগ করুন' : 'Browse, edit and add products to your catalog'}
-        addLabel={t('common.create')}
-        onAdd={() => router.push(`/${locale}/admin/products/new`)}
+        {...(isAdmin && { addLabel: t('common.create'), onAdd: () => router.push(`/${locale}/admin/products/new`) })}
       />
 
       <div className="mb-4 grid grid-cols-5 gap-3">
@@ -113,7 +114,7 @@ export default function ProductList() {
         totalRecords={data?.pagination?.total} currentPage={page} onPageChange={p => setPage(p)}
         limit={limit} onLimitChange={l => { setLimit(l); setPage(1) }}
         exportFilename="products" emptyMessage={locale === 'bn' ? 'কোনো পণ্য নেই' : 'No products found'}
-        quickActions={[{
+        quickActions={isAdmin ? [{
           label: t('common.edit'),
           render: p => (
             <Link href={`/${locale}/admin/products/${p.id}/edit`}
@@ -122,7 +123,7 @@ export default function ProductList() {
               <Pencil className="w-3.5 h-3.5" />
             </Link>
           ),
-        }]} />
+        }] : []} />
     </div>
   )
 }

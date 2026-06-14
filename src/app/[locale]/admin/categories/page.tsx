@@ -4,6 +4,7 @@ import {
   useGetCategoriesQuery,
   useUpdateCategoryMutation,
 } from "@/api/categories/categoriesApi";
+import Badge from "@/components/ui/Badge";
 import { FloatingInput } from "@/components/ui/forms";
 import ToggleSwitch from "@/components/ui/forms/ToggleSwitch";
 import PageHeader from "@/components/ui/PageHeader";
@@ -11,6 +12,7 @@ import TableSkeleton from "@/components/ui/skeletons";
 import CategoryCreateForm from "@/components/admin/categories/CategoryCreateForm";
 import { Category } from "@/lib/types";
 import { toast } from "@/store/toastStore";
+import { useAuthStore } from "@/store/authStore";
 import { Pencil, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
@@ -18,8 +20,9 @@ import { useState } from "react";
 type EditForm = { name_bn: string; name_en: string };
 
 export default function CategoriesPage() {
-  const t      = useTranslations();
-  const locale = useLocale();
+  const t       = useTranslations();
+  const locale  = useLocale();
+  const isAdmin = useAuthStore(s => s.user?.role === 'ADMIN');
 
   const { data: categories = [], isLoading } = useGetCategoriesQuery({ includeInactive: true });
   const [updateCategory] = useUpdateCategoryMutation();
@@ -53,8 +56,7 @@ export default function CategoriesPage() {
       <PageHeader
         title={locale === "bn" ? "কেটাগরি" : "Categories"}
         description={locale === "bn" ? "পণ্যের কেটাগরি তৈরি ও পরিচালনা করুন" : "Create and manage product categories"}
-        addLabel={showCreate ? t("common.cancel") : t("common.create")}
-        onAdd={() => setShowCreate(s => !s)} />
+        {...(isAdmin && { addLabel: showCreate ? t("common.cancel") : t("common.create"), onAdd: () => setShowCreate(s => !s) })} />
 
       {showCreate && (
         <CategoryCreateForm onClose={() => setShowCreate(false)} />
@@ -72,7 +74,7 @@ export default function CategoriesPage() {
                   <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">{locale === "bn" ? "নাম (ইংরেজি)" : "Name (EN)"}</th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">Slug</th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">Status</th>
-                  <th className="px-4 py-3 text-right text-xs font-semibold text-amber-600 uppercase tracking-wider">Actions</th>
+                  {isAdmin && <th className="px-4 py-3 text-right text-xs font-semibold text-amber-600 uppercase tracking-wider">Actions</th>}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -83,17 +85,21 @@ export default function CategoriesPage() {
                       <td className="px-4 py-3 text-sm text-gray-600">{cat.name_en}</td>
                       <td className="px-4 py-3 font-mono text-xs text-gray-400">{cat.slug}</td>
                       <td className="px-4 py-3">
-                        <ToggleSwitch checked={cat.is_active} onChange={() => toggleActive(cat.id, cat.is_active)}
-                          activeLabel={t("common.active")} inactiveLabel={t("common.inactive")} />
+                        {isAdmin
+                          ? <ToggleSwitch checked={cat.is_active} onChange={() => toggleActive(cat.id, cat.is_active)}
+                              activeLabel={t("common.active")} inactiveLabel={t("common.inactive")} />
+                          : <Badge variant={cat.is_active ? "green" : "red"}>{cat.is_active ? t("common.active") : t("common.inactive")}</Badge>}
                       </td>
-                      <td className="px-4 py-3 text-right">
-                        <button
-                          onClick={() => editingId === cat.id ? setEditingId(null) : startEdit(cat)}
-                          title={editingId === cat.id ? t("common.cancel") : t("common.edit")}
-                          className={`inline-flex items-center justify-center w-8 h-8 rounded-lg border transition-colors ${editingId === cat.id ? "border-gray-200 bg-gray-100 text-gray-500 hover:bg-gray-200" : "border-amber-200 bg-amber-50 text-amber-600 hover:bg-amber-100"}`}>
-                          {editingId === cat.id ? <X className="w-3.5 h-3.5" /> : <Pencil className="w-3.5 h-3.5" />}
-                        </button>
-                      </td>
+                      {isAdmin && (
+                        <td className="px-4 py-3 text-right">
+                          <button
+                            onClick={() => editingId === cat.id ? setEditingId(null) : startEdit(cat)}
+                            title={editingId === cat.id ? t("common.cancel") : t("common.edit")}
+                            className={`inline-flex items-center justify-center w-8 h-8 rounded-lg border transition-colors ${editingId === cat.id ? "border-gray-200 bg-gray-100 text-gray-500 hover:bg-gray-200" : "border-amber-200 bg-amber-50 text-amber-600 hover:bg-amber-100"}`}>
+                            {editingId === cat.id ? <X className="w-3.5 h-3.5" /> : <Pencil className="w-3.5 h-3.5" />}
+                          </button>
+                        </td>
+                      )}
                     </tr>
                     {editingId === cat.id && (
                       <tr key={`edit-${cat.id}`} className="bg-amber-50">

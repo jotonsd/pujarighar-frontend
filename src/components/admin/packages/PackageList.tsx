@@ -16,11 +16,13 @@ import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useAuthStore } from "@/store/authStore";
 
 export default function PackageList() {
   const t = useTranslations();
   const locale = useLocale();
   const router = useRouter();
+  const isAdmin = useAuthStore(s => s.user?.role === 'ADMIN');
   const [page, setPage] = useState(1);
 
   const { data, isLoading } = useGetProductsQuery({
@@ -101,14 +103,10 @@ export default function PackageList() {
     },
     {
       header: locale === "bn" ? "স্ট্যাটাস" : "Status",
-      accessor: p => (
-        <ToggleSwitch
-          checked={p.is_active}
-          onChange={() => handleToggleActive(p)}
-          activeLabel={locale === "bn" ? "সক্রিয়" : "Active"}
-          inactiveLabel={locale === "bn" ? "নিষ্ক্রিয়" : "Inactive"}
-        />
-      ),
+      accessor: p => isAdmin
+        ? <ToggleSwitch checked={p.is_active} onChange={() => handleToggleActive(p)}
+            activeLabel={locale === "bn" ? "সক্রিয়" : "Active"} inactiveLabel={locale === "bn" ? "নিষ্ক্রিয়" : "Inactive"} />
+        : <Badge variant={p.is_active ? "green" : "red"}>{p.is_active ? (locale === "bn" ? "সক্রিয়" : "Active") : (locale === "bn" ? "নিষ্ক্রিয়" : "Inactive")}</Badge>,
       className: "px-4 py-3 w-36",
     },
   ];
@@ -122,8 +120,7 @@ export default function PackageList() {
             ? "একাধিক পণ্য নিয়ে তৈরি প্যাকেজ পরিচালনা করুন"
             : "Manage bundles of multiple products"
         }
-        addLabel={locale === "bn" ? "নতুন প্যাকেজ" : "New Package"}
-        onAdd={() => router.push(`/${locale}/admin/packages/new`)}
+        {...(isAdmin && { addLabel: locale === "bn" ? "নতুন প্যাকেজ" : "New Package", onAdd: () => router.push(`/${locale}/admin/packages/new`) })}
       />
 
       <ReusableTable
@@ -137,7 +134,7 @@ export default function PackageList() {
         onPageChange={setPage}
         exportFilename="packages"
         emptyMessage={locale === "bn" ? "কোনো প্যাকেজ নেই" : "No packages yet"}
-        quickActions={[
+        quickActions={isAdmin ? [
           {
             label: t("common.edit"),
             render: p => (
@@ -150,7 +147,7 @@ export default function PackageList() {
               </Link>
             ),
           },
-        ]}
+        ] : []}
       />
     </div>
   );

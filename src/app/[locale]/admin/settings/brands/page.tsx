@@ -6,12 +6,14 @@ import {
   useUpdateBrandMutation,
   useDeleteBrandMutation,
 } from "@/api/brands/brandsApi";
+import Badge from "@/components/ui/Badge";
 import { FloatingInput } from "@/components/ui/forms";
 import ToggleSwitch from "@/components/ui/forms/ToggleSwitch";
 import PageHeader from "@/components/ui/PageHeader";
 import TableSkeleton from "@/components/ui/skeletons";
 import { Brand } from "@/lib/types";
 import { toast } from "@/store/toastStore";
+import { useAuthStore } from "@/store/authStore";
 import { Pencil, Trash2, X } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useState } from "react";
@@ -24,8 +26,9 @@ function slugify(text: string) {
 }
 
 export default function BrandsPage() {
-  const locale = useLocale();
-  const isBn   = locale === "bn";
+  const locale  = useLocale();
+  const isBn    = locale === "bn";
+  const isAdmin = useAuthStore(s => s.user?.role === 'ADMIN');
 
   const { data: brands = [], isLoading } = useGetBrandsQuery({ includeInactive: true });
   const [createBrand, { isLoading: creating }] = useCreateBrandMutation();
@@ -92,8 +95,7 @@ export default function BrandsPage() {
       <PageHeader
         title={isBn ? "ব্র্যান্ড" : "Brands"}
         description={isBn ? "পণ্যের ব্র্যান্ড তৈরি ও পরিচালনা করুন" : "Create and manage product brands"}
-        addLabel={showCreate ? (isBn ? "বাতিল" : "Cancel") : (isBn ? "নতুন ব্র্যান্ড" : "New Brand")}
-        onAdd={() => setShowCreate(s => !s)}
+        {...(isAdmin && { addLabel: showCreate ? (isBn ? "বাতিল" : "Cancel") : (isBn ? "নতুন ব্র্যান্ড" : "New Brand"), onAdd: () => setShowCreate(s => !s) })}
       />
 
       {showCreate && (
@@ -147,7 +149,7 @@ export default function BrandsPage() {
                   <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">{isBn ? "নাম (ইংরেজি)" : "Name (EN)"}</th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">Slug</th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">{isBn ? "স্ট্যাটাস" : "Status"}</th>
-                  <th className="px-4 py-3 text-right text-xs font-semibold text-amber-600 uppercase tracking-wider">{isBn ? "অ্যাকশন" : "Actions"}</th>
+                  {isAdmin && <th className="px-4 py-3 text-right text-xs font-semibold text-amber-600 uppercase tracking-wider">{isBn ? "অ্যাকশন" : "Actions"}</th>}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -158,29 +160,29 @@ export default function BrandsPage() {
                       <td className="px-4 py-3 text-sm text-gray-600">{brand.name_en}</td>
                       <td className="px-4 py-3 font-mono text-xs text-gray-400">{brand.slug}</td>
                       <td className="px-4 py-3">
-                        <ToggleSwitch
-                          checked={brand.is_active}
-                          onChange={() => toggleActive(brand.id, brand.is_active)}
-                          activeLabel={isBn ? "সক্রিয়" : "Active"}
-                          inactiveLabel={isBn ? "নিষ্ক্রিয়" : "Inactive"}
-                        />
+                        {isAdmin
+                          ? <ToggleSwitch checked={brand.is_active} onChange={() => toggleActive(brand.id, brand.is_active)}
+                              activeLabel={isBn ? "সক্রিয়" : "Active"} inactiveLabel={isBn ? "নিষ্ক্রিয়" : "Inactive"} />
+                          : <Badge variant={brand.is_active ? "green" : "red"}>{brand.is_active ? (isBn ? "সক্রিয়" : "Active") : (isBn ? "নিষ্ক্রিয়" : "Inactive")}</Badge>}
                       </td>
-                      <td className="px-4 py-3 text-right flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => editingId === brand.id ? setEditingId(null) : startEdit(brand)}
-                          title={editingId === brand.id ? (isBn ? "বাতিল" : "Cancel") : (isBn ? "সম্পাদনা" : "Edit")}
-                          className={`inline-flex items-center justify-center w-8 h-8 rounded-lg border transition-colors ${editingId === brand.id ? "border-gray-200 bg-gray-100 text-gray-500 hover:bg-gray-200" : "border-amber-200 bg-amber-50 text-amber-600 hover:bg-amber-100"}`}
-                        >
-                          {editingId === brand.id ? <X className="w-3.5 h-3.5" /> : <Pencil className="w-3.5 h-3.5" />}
-                        </button>
-                        <button
-                          onClick={() => handleDelete(brand.id)}
-                          title={isBn ? "মুছুন" : "Delete"}
-                          className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-red-200 bg-red-50 text-red-500 hover:bg-red-100 transition-colors"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </td>
+                      {isAdmin && (
+                        <td className="px-4 py-3 text-right flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => editingId === brand.id ? setEditingId(null) : startEdit(brand)}
+                            title={editingId === brand.id ? (isBn ? "বাতিল" : "Cancel") : (isBn ? "সম্পাদনা" : "Edit")}
+                            className={`inline-flex items-center justify-center w-8 h-8 rounded-lg border transition-colors ${editingId === brand.id ? "border-gray-200 bg-gray-100 text-gray-500 hover:bg-gray-200" : "border-amber-200 bg-amber-50 text-amber-600 hover:bg-amber-100"}`}
+                          >
+                            {editingId === brand.id ? <X className="w-3.5 h-3.5" /> : <Pencil className="w-3.5 h-3.5" />}
+                          </button>
+                          <button
+                            onClick={() => handleDelete(brand.id)}
+                            title={isBn ? "মুছুন" : "Delete"}
+                            className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-red-200 bg-red-50 text-red-500 hover:bg-red-100 transition-colors"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </td>
+                      )}
                     </tr>
                     {editingId === brand.id && (
                       <tr key={`edit-${brand.id}`} className="bg-amber-50">
