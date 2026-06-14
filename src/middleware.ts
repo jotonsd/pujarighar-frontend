@@ -45,7 +45,7 @@ export function middleware(request: NextRequest) {
     if (!accessToken) {
       return NextResponse.redirect(new URL(`/${locale}/auth/login`, request.url))
     }
-    if (role !== 'ADMIN') {
+    if (role !== 'ADMIN' && role !== 'WAREHOUSE') {
       return NextResponse.redirect(new URL(`/${locale}`, request.url))
     }
   }
