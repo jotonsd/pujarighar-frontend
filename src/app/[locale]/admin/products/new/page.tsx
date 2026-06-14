@@ -3,7 +3,7 @@
 import { useGetBrandsQuery } from "@/api/brands/brandsApi";
 import { useGetCategoriesQuery } from "@/api/categories/categoriesApi";
 import {
-    useAddProductImageMutation,
+    useAddProductImagesMutation,
     useCreateProductMutation,
 } from "@/api/products/productsApi";
 import {
@@ -11,6 +11,7 @@ import {
     FloatingSelect,
     FloatingTextarea,
 } from "@/components/ui/forms";
+import ImageUpload from "@/components/ui/ImageUpload";
 import PageHeader from "@/components/ui/PageHeader";
 import { toast } from "@/store/toastStore";
 import { RefreshCw } from "lucide-react";
@@ -45,36 +46,18 @@ export default function NewProductPage() {
     unit_en: "piece",
   });
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
-  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
-  const fileRef = useRef<HTMLInputElement>(null);
   const skuManualRef = useRef(false);
 
   const { data: categories = [] } = useGetCategoriesQuery();
   const { data: brands = [] } = useGetBrandsQuery();
   const [createProduct, { isLoading }] = useCreateProductMutation();
-  const [addImage] = useAddProductImageMutation();
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || pendingFiles.length >= 3) return;
-    setPendingFiles(p => [...p, file]);
-    setPreviewUrls(p => [...p, URL.createObjectURL(file)]);
-    e.target.value = "";
-  };
-
-  const removePending = (index: number) => {
-    URL.revokeObjectURL(previewUrls[index]);
-    setPendingFiles(p => p.filter((_, i) => i !== index));
-    setPreviewUrls(p => p.filter((_, i) => i !== index));
-  };
+  const [addImages] = useAddProductImagesMutation();
 
   const handleCreate = async () => {
     try {
       const product = await createProduct(form).unwrap();
-      for (const file of pendingFiles) {
-        const fd = new FormData();
-        fd.append("image", file);
-        await addImage({ productId: product.id, formData: fd }).unwrap();
+      if (pendingFiles.length > 0) {
+        await addImages({ productId: product.id, files: pendingFiles }).unwrap();
       }
       toast.success(locale === "bn" ? "পণ্য তৈরি হয়েছে" : "Product created");
       router.push(`/${locale}/admin/products`);
@@ -213,68 +196,10 @@ export default function NewProductPage() {
           rows={3}
         />
 
-        {/* Image preview */}
-        <div>
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-700">
-              {t("product.images")}{" "}
-              <span className="text-xs text-gray-400">
-                {pendingFiles.length}/3
-              </span>
-            </span>
-            {pendingFiles.length < 3 && (
-              <>
-                <button
-                  type="button"
-                  onClick={() => fileRef.current?.click()}
-                  className="btn-secondary text-xs px-3 py-1"
-                >
-                  {locale === "bn" ? "+ ছবি যোগ করুন" : "+ Add Image"}
-                </button>
-                <input
-                  ref={fileRef}
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleFileChange}
-                />
-              </>
-            )}
-          </div>
-          {pendingFiles.length === 0 ? (
-            <p className="text-sm text-gray-400 py-4 text-center border border-dashed border-gray-200 rounded-lg">
-              {locale === "bn"
-                ? "ছবি যোগ করুন (ঐচ্ছিক)"
-                : "Add images (optional)"}
-            </p>
-          ) : (
-            <div className="flex gap-3 flex-wrap">
-              {previewUrls.map((url, i) => (
-                <div
-                  key={i}
-                  className="relative group w-28 h-28 rounded-lg overflow-hidden border border-amber-200"
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={url}
-                    alt={`Preview ${i + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => removePending(i)}
-                    className="absolute top-1 right-1 w-5 h-5 bg-amber-500 text-white rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    ×
-                  </button>
-                  <span className="absolute bottom-1 left-1 bg-black/40 text-white text-[10px] px-1 rounded">
-                    {locale === "bn" ? "প্রিভিউ" : "Preview"}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        <ImageUpload
+          onFilesChange={setPendingFiles}
+          maxImages={5}
+        />
 
         <div className="flex gap-3">
           <button

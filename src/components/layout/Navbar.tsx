@@ -586,7 +586,7 @@ export default function Navbar() {
 
           {/* Right actions */}
           <div className="flex items-center gap-3 shrink-0">
-            {(role === "ADMIN" || role === "WAREHOUSE") && (
+            {role === "ADMIN" && (
               <Link
                 href={`/${locale}/admin/settings`}
                 className="text-gray-500 hover:text-amber-600 transition-colors"

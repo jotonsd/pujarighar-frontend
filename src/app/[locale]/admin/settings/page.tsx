@@ -6,12 +6,13 @@ import {
   useGetSiteSettingsQuery,
   useUpdateSiteSettingsMutation,
 } from "@/api/settings/settingsApi";
+import ImageUpload from "@/components/ui/ImageUpload";
 import PageHeader from "@/components/ui/PageHeader";
 import { FloatingInput, FloatingTextarea } from "@/components/ui/forms";
 import { toast } from "@/store/toastStore";
-import { Building2, Camera, FileText } from "lucide-react";
+import { Building2, FileText } from "lucide-react";
 import { useLocale } from "next-intl";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 // ── Menu config ────────────────────────────────────────────────────────────────
 type SectionId = "general" | "invoice";
@@ -29,34 +30,6 @@ const PAGE_SIZES: { value: InvoicePageSize; label: string; desc_bn: string; desc
   { value: "THERMAL", label: "POS Thermal",desc_bn: "৮০মিমি রোল — থার্মাল প্রিন্টার রসিদ",            desc_en: "80mm roll — Thermal printer receipt" },
 ];
 
-// ── Image upload box ───────────────────────────────────────────────────────────
-function ImageUploadBox({
-  label, preview, onFile, isBn,
-}: { label: string; preview: string | null; onFile: (f: File) => void; isBn: boolean }) {
-  const ref = useRef<HTMLInputElement>(null);
-  return (
-    <div className="flex flex-col items-center gap-2">
-      <p className="text-xs font-semibold text-gray-500 self-start">{label}</p>
-      <div
-        onClick={() => ref.current?.click()}
-        className="w-full h-24 rounded-xl border-2 border-dashed border-gray-200 hover:border-amber-400 bg-gray-50 flex items-center justify-center cursor-pointer relative overflow-hidden transition-colors"
-      >
-        {preview ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={preview} alt="" className="max-h-20 max-w-full object-contain" />
-        ) : (
-          <div className="flex flex-col items-center gap-1 text-gray-400">
-            <Camera className="w-5 h-5" />
-            <span className="text-xs">{isBn ? "ছবি আপলোড করুন" : "Upload image"}</span>
-          </div>
-        )}
-      </div>
-      <input ref={ref} type="file" accept="image/*" className="hidden"
-        onChange={e => { const f = e.target.files?.[0]; if (f) onFile(f); }} />
-    </div>
-  );
-}
-
 // ── General panel ──────────────────────────────────────────────────────────────
 function GeneralPanel({ settings, isBn }: { settings: SiteSettings; isBn: boolean }) {
   const [form, setForm] = useState({
@@ -67,10 +40,10 @@ function GeneralPanel({ settings, isBn }: { settings: SiteSettings; isBn: boolea
     address_bn:      settings.address_bn,
     address_en:      settings.address_en,
   });
-  const [logoFile,    setLogoFile]    = useState<File | null>(null);
-  const [faviconFile, setFaviconFile] = useState<File | null>(null);
-  const [logoPrev,    setLogoPrev]    = useState<string | null>(settings.logo);
-  const [faviconPrev, setFaviconPrev] = useState<string | null>(settings.favicon);
+  const [logoFiles,    setLogoFiles]    = useState<File[]>([]);
+  const [faviconFiles, setFaviconFiles] = useState<File[]>([]);
+  const [logoPrev,     setLogoPrev]     = useState<string | null>(settings.logo);
+  const [faviconPrev,  setFaviconPrev]  = useState<string | null>(settings.favicon);
 
   useEffect(() => {
     setForm({
@@ -95,11 +68,11 @@ function GeneralPanel({ settings, isBn }: { settings: SiteSettings; isBn: boolea
     try {
       const fd = new FormData();
       Object.entries(form).forEach(([k, v]) => fd.append(k, v));
-      if (logoFile)    fd.append("logo",    logoFile);
-      if (faviconFile) fd.append("favicon", faviconFile);
+      if (logoFiles[0])    fd.append("logo",    logoFiles[0]);
+      if (faviconFiles[0]) fd.append("favicon", faviconFiles[0]);
       await update(fd).unwrap();
-      setLogoFile(null);
-      setFaviconFile(null);
+      setLogoFiles([]);
+      setFaviconFiles([]);
       toast.success(isBn ? "সংরক্ষিত হয়েছে" : "Saved");
     } catch {
       toast.error(isBn ? "ব্যর্থ হয়েছে" : "Failed to save");
@@ -110,18 +83,24 @@ function GeneralPanel({ settings, isBn }: { settings: SiteSettings; isBn: boolea
     <div className="space-y-4">
       {/* Logo & Favicon */}
       <div className="grid grid-cols-2 gap-4">
-        <ImageUploadBox
-          label={isBn ? "লোগো" : "Logo"}
-          preview={logoFile ? URL.createObjectURL(logoFile) : logoPrev}
-          onFile={f => { setLogoFile(f); setLogoPrev(URL.createObjectURL(f)); }}
-          isBn={isBn}
-        />
-        <ImageUploadBox
-          label={isBn ? "ফেভিকন" : "Favicon"}
-          preview={faviconFile ? URL.createObjectURL(faviconFile) : faviconPrev}
-          onFile={f => { setFaviconFile(f); setFaviconPrev(URL.createObjectURL(f)); }}
-          isBn={isBn}
-        />
+        <div>
+          <p className="text-xs font-semibold text-gray-500 mb-2">{isBn ? "লোগো" : "Logo"}</p>
+          <ImageUpload
+            existingImages={logoPrev ? [{ id: 'logo', image: logoPrev }] : []}
+            onDeleteExisting={() => setLogoPrev(null)}
+            onFilesChange={setLogoFiles}
+            maxImages={1}
+          />
+        </div>
+        <div>
+          <p className="text-xs font-semibold text-gray-500 mb-2">{isBn ? "ফেভিকন" : "Favicon"}</p>
+          <ImageUpload
+            existingImages={faviconPrev ? [{ id: 'favicon', image: faviconPrev }] : []}
+            onDeleteExisting={() => setFaviconPrev(null)}
+            onFilesChange={setFaviconFiles}
+            maxImages={1}
+          />
+        </div>
       </div>
       <div className="grid grid-cols-2 gap-3">
         <FloatingInput label={isBn ? "কোম্পানির নাম (বাংলা)" : "Company Name (Bangla)"} value={form.company_name_bn} onChange={f("company_name_bn")} />

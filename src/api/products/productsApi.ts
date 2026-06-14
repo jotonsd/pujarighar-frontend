@@ -52,14 +52,13 @@ export const productsApi = baseApi.injectEndpoints({
       invalidatesTags: ['Products'],
     }),
 
-    addProductImage: build.mutation<ProductImage, { productId: string; formData: FormData }>({
-      query: ({ productId, formData }) => ({
-        url: `/api/products/${productId}/images/`,
-        method: 'POST',
-        body: formData,
-        formData: true,
-      }),
-      transformResponse: (res: { data: ProductImage }) => res.data,
+    addProductImages: build.mutation<ProductImage[], { productId: string; files: File[] }>({
+      query: ({ productId, files }) => {
+        const fd = new FormData()
+        files.forEach(f => fd.append('images', f))
+        return { url: `/api/products/${productId}/images/`, method: 'POST', body: fd, formData: true }
+      },
+      transformResponse: (res: { data: ProductImage[] }) => res.data,
       invalidatesTags: (_r, _e, { productId }) => [{ type: 'Product', id: productId }],
     }),
 
@@ -126,7 +125,7 @@ export const {
   useCreateProductMutation,
   useUpdateProductMutation,
   useDeleteProductMutation,
-  useAddProductImageMutation,
+  useAddProductImagesMutation,
   useDeleteProductImageMutation,
   useGetPackageItemsQuery,
   useAddPackageItemMutation,
