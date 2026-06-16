@@ -1,5 +1,6 @@
 "use client";
 
+import { useGetCategoriesQuery } from "@/api/categories/categoriesApi";
 import { useGetProductsQuery } from "@/api/products/productsApi";
 import OfferBanners from "@/components/products/OfferBanners";
 import PackageCard from "@/components/products/PackageCard";
@@ -10,16 +11,27 @@ import { useEffect, useRef, useState } from "react";
 
 export default function PackagesPage() {
   const locale = useLocale();
+  const isBn = locale === "bn";
 
   const [page, setPage] = useState(1);
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [allPackages, setAllPackages] = useState<Product[]>([]);
 
   const isFetchingRef = useRef(false);
   const hasMoreRef = useRef(false);
 
+  const { data: allCategories = [] } = useGetCategoriesQuery();
+
+  // Fetch all packages (unfiltered) once to derive which categories have packages
+  const { data: allPackagesData } = useGetProductsQuery({ is_package: "true", page: 1, page_size: 100 });
+  const availableCategories = allCategories.filter(cat =>
+    (allPackagesData?.data ?? []).some((pkg: Product) => pkg.category === cat.id)
+  );
+
   const { data, isLoading, isFetching } = useGetProductsQuery({
     page,
     is_package: "true",
+    category: selectedCategory || undefined,
   });
 
   const totalPages = data?.pagination?.total_pages ?? 1;
@@ -47,6 +59,12 @@ export default function PackagesPage() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  const selectCategory = (id: string) => {
+    setSelectedCategory(id);
+    setPage(1);
+    setAllPackages([]);
+  };
+
   const CardSkeleton = () => (
     <div className="card p-0 overflow-hidden flex flex-col">
       <Skeleton className="h-56 w-full rounded-none" />
@@ -64,6 +82,35 @@ export default function PackagesPage() {
         <OfferBanners />
       </div>
 
+      {/* Category tabs */}
+      {availableCategories.length > 0 && (
+        <div className="flex gap-2 overflow-x-auto pb-3 mb-4 scrollbar-none">
+          <button
+            onClick={() => selectCategory("")}
+            className={`shrink-0 px-4 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+              selectedCategory === ""
+                ? "bg-amber-500 text-white border-amber-500"
+                : "bg-white text-gray-600 border-gray-200 hover:border-amber-400 hover:text-amber-600"
+            }`}
+          >
+            {isBn ? "সব" : "All"}
+          </button>
+          {availableCategories.map(cat => (
+            <button
+              key={cat.id}
+              onClick={() => selectCategory(cat.id)}
+              className={`shrink-0 px-4 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+                selectedCategory === cat.id
+                  ? "bg-amber-500 text-white border-amber-500"
+                  : "bg-white text-gray-600 border-gray-200 hover:border-amber-400 hover:text-amber-600"
+              }`}
+            >
+              {isBn ? cat.name_bn : cat.name_en}
+            </button>
+          ))}
+        </div>
+      )}
+
       {isLoading && allPackages.length === 0 ? (
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           {Array.from({ length: 6 }).map((_, i) => (
@@ -72,30 +119,27 @@ export default function PackagesPage() {
         </div>
       ) : (
         <>
-          {allPackages.length === 0 ? (
+          {allPackages.length === 0 && !isFetching ? (
             <div className="text-center py-20 text-gray-400">
               <p className="text-4xl mb-3">🎁</p>
-              <p>
-                {locale === "bn" ? "কোনো প্যাকেজ নেই" : "No packages available"}
-              </p>
+              <p>{isBn ? "কোনো প্যাকেজ নেই" : "No packages available"}</p>
+              {selectedCategory && (
+                <button
+                  onClick={() => selectCategory("")}
+                  className="mt-3 text-amber-600 hover:underline text-sm"
+                >
+                  {isBn ? "সব দেখুন" : "View all"}
+                </button>
+              )}
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               {allPackages.map(pkg => (
                 <PackageCard key={pkg.id} pkg={pkg} locale={locale} />
               ))}
-            </div>
-          )}
-
-          {isFetching && allPackages.length > 0 && (
-            <div className="py-6 flex justify-center gap-1.5">
-              {[0, 1, 2].map(i => (
-                <span
-                  key={i}
-                  className="w-2 h-2 rounded-full bg-amber-400 animate-bounce"
-                  style={{ animationDelay: `${i * 0.15}s` }}
-                />
-              ))}
+              {isFetching && allPackages.length > 0 &&
+                Array.from({ length: 3 }).map((_, i) => <CardSkeleton key={`sk-${i}`} />)
+              }
             </div>
           )}
         </>

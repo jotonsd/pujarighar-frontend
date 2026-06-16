@@ -1,6 +1,7 @@
 import { getLocale } from "next-intl/server";
 import Image from "next/image";
 import Link from "next/link";
+import FooterOrderLink from "./FooterOrderLink";
 
 async function fetchSettings() {
   try {
@@ -77,7 +78,6 @@ export default async function Footer() {
                 { href: `/${locale}/packages`, label_bn: "প্যাকেজ",       label_en: "Packages" },
                 { href: `/${locale}/cart`,     label_bn: "কার্ট",          label_en: "Cart" },
                 { href: `/${locale}/track`,    label_bn: "অর্ডার ট্র্যাক", label_en: "Track Order" },
-                { href: `/${locale}/orders`,   label_bn: "আমার অর্ডার",   label_en: "My Orders" },
               ].map(l => (
                 <li key={l.href}>
                   <Link href={l.href} className="text-sm text-gray-400 hover:text-amber-400 transition-colors">
@@ -85,6 +85,7 @@ export default async function Footer() {
                   </Link>
                 </li>
               ))}
+              <FooterOrderLink />
             </ul>
           </div>
 

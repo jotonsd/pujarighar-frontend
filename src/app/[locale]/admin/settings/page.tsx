@@ -10,16 +10,17 @@ import ImageUpload from "@/components/ui/ImageUpload";
 import PageHeader from "@/components/ui/PageHeader";
 import { FloatingInput, FloatingTextarea } from "@/components/ui/forms";
 import { toast } from "@/store/toastStore";
-import { Building2, FileText } from "lucide-react";
+import { Building2, FileText, Mail } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useEffect, useState } from "react";
 
 // ── Menu config ────────────────────────────────────────────────────────────────
-type SectionId = "general" | "invoice";
+type SectionId = "general" | "invoice" | "mail";
 
 const MENU: { id: SectionId; icon: React.ReactNode; label_bn: string; label_en: string }[] = [
-  { id: "general", icon: <Building2 className="w-4 h-4" />, label_bn: "সাধারণ তথ্য", label_en: "General Info" },
+  { id: "general", icon: <Building2 className="w-4 h-4" />, label_bn: "সাধারণ তথ্য",  label_en: "General Info" },
   { id: "invoice", icon: <FileText  className="w-4 h-4" />, label_bn: "চালান প্রিন্ট", label_en: "Invoice Print" },
+  { id: "mail",    icon: <Mail      className="w-4 h-4" />, label_bn: "মেইল কনফিগ",    label_en: "Mail Config" },
 ];
 
 // ── Page-size options ──────────────────────────────────────────────────────────
@@ -172,6 +173,77 @@ function InvoicePanel({ settings, isBn }: { settings: SiteSettings; isBn: boolea
   );
 }
 
+// ── Mail panel ─────────────────────────────────────────────────────────────────
+function MailPanel({ settings, isBn }: { settings: SiteSettings; isBn: boolean }) {
+  const [form, setForm] = useState({
+    email_host:          settings.email_host,
+    email_port:          String(settings.email_port ?? 587),
+    email_host_user:     settings.email_host_user,
+    email_host_password: settings.email_host_password,
+    email_use_tls:       settings.email_use_tls,
+    email_default_from:  settings.email_default_from,
+  });
+
+  useEffect(() => {
+    setForm({
+      email_host:          settings.email_host,
+      email_port:          String(settings.email_port ?? 587),
+      email_host_user:     settings.email_host_user,
+      email_host_password: settings.email_host_password,
+      email_use_tls:       settings.email_use_tls,
+      email_default_from:  settings.email_default_from,
+    });
+  }, [settings]);
+
+  const [update, { isLoading }] = useUpdateSiteSettingsMutation();
+
+  const f = (key: keyof typeof form) =>
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      setForm(p => ({ ...p, [key]: e.target.value }));
+
+  const handleSave = async () => {
+    try {
+      await update({
+        email_host:          form.email_host,
+        email_port:          Number(form.email_port) || 587,
+        email_host_user:     form.email_host_user,
+        email_host_password: form.email_host_password,
+        email_use_tls:       form.email_use_tls,
+        email_default_from:  form.email_default_from,
+      } as Partial<SiteSettings>).unwrap();
+      toast.success(isBn ? "সংরক্ষিত হয়েছে" : "Saved");
+    } catch {
+      toast.error(isBn ? "ব্যর্থ হয়েছে" : "Failed to save");
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-3">
+        <FloatingInput label={isBn ? "SMTP হোস্ট" : "SMTP Host"} value={form.email_host} onChange={f("email_host")} placeholder="smtp.gmail.com" />
+        <FloatingInput label={isBn ? "পোর্ট" : "Port"} type="number" value={form.email_port} onChange={f("email_port")} placeholder="587" />
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <FloatingInput label={isBn ? "ইউজারনেম / ইমেইল" : "Username / Email"} value={form.email_host_user} onChange={f("email_host_user")} />
+        <FloatingInput label={isBn ? "পাসওয়ার্ড / অ্যাপ কী" : "Password / App Key"} type="password" value={form.email_host_password} onChange={f("email_host_password")} />
+      </div>
+      <FloatingInput label={isBn ? "ডিফল্ট প্রেরক ইমেইল" : "Default From Email"} value={form.email_default_from} onChange={f("email_default_from")} placeholder="noreply@pujarighar.com" />
+      <label className="flex items-center gap-3 cursor-pointer select-none">
+        <div
+          onClick={() => setForm(p => ({ ...p, email_use_tls: !p.email_use_tls }))}
+          className={`w-10 h-5 rounded-full transition-colors relative ${form.email_use_tls ? "bg-amber-500" : "bg-gray-200"}`}
+        >
+          <span className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${form.email_use_tls ? "translate-x-5" : ""}`} />
+        </div>
+        <span className="text-sm text-gray-700">{isBn ? "TLS সক্রিয় (সুপারিশকৃত)" : "Use TLS (recommended)"}</span>
+      </label>
+      <button onClick={handleSave} disabled={isLoading} className="btn-primary">
+        {isLoading ? (isBn ? "সংরক্ষণ হচ্ছে..." : "Saving...") : (isBn ? "সংরক্ষণ করুন" : "Save Changes")}
+      </button>
+    </div>
+  );
+}
+
 // ── Main page ──────────────────────────────────────────────────────────────────
 export default function SettingsPage() {
   const locale = useLocale();
@@ -224,6 +296,7 @@ export default function SettingsPage() {
             <>
               {active === "general" && <GeneralPanel settings={settings} isBn={isBn} />}
               {active === "invoice" && <InvoicePanel settings={settings} isBn={isBn} />}
+              {active === "mail"    && <MailPanel    settings={settings} isBn={isBn} />}
             </>
           ) : null}
         </div>

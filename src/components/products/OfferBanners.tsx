@@ -2,6 +2,7 @@
 
 import { useGetBannersQuery } from "@/api/banners/bannersApi";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { formatNumber } from "@/utils/format";
 import { useLocale } from "next-intl";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -68,7 +69,7 @@ export default function OfferBanners() {
         <div className="flex-1 min-w-0 z-10">
           {banner.badge_text && (
             <span className="inline-block text-[11px] font-bold bg-amber-500 text-white px-2.5 py-0.5 rounded-full mb-1.5 tracking-wide uppercase">
-              {banner.badge_text}
+              {banner.badge_text.replace(/\d+/g, n => formatNumber(n, locale))}
             </span>
           )}
           <p className="font-bold text-gray-800 text-base leading-tight truncate">

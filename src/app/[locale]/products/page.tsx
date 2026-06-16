@@ -5,10 +5,9 @@ import { useGetCategoriesQuery } from "@/api/categories/categoriesApi";
 import { useGetProductsQuery } from "@/api/products/productsApi";
 import OfferBanners from "@/components/products/OfferBanners";
 import ProductCard from "@/components/products/ProductCard";
-import { Checkbox, FloatingInput, FloatingSelect } from "@/components/ui/forms";
+import { Checkbox, FloatingInput } from "@/components/ui/forms";
 import { FilterPanelSkeleton, ProductCardSkeleton } from "@/components/ui/skeletons";
 import { Product } from "@/lib/types";
-import { formatAmount } from "@/utils/format";
 import { ChevronDown, SlidersHorizontal, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
@@ -45,6 +44,65 @@ function CollapsibleSection({
   );
 }
 
+function PriceRangeInputs({
+  min,
+  max,
+  onApply,
+  locale,
+}: {
+  min: number;
+  max: number;
+  onApply: (min: number, max: number) => void;
+  locale: string;
+}) {
+  const [localMin, setLocalMin] = useState(min || "");
+  const [localMax, setLocalMax] = useState(max >= PRICE_MAX ? "" : max);
+
+  // Sync when slider changes externally
+  useEffect(() => { setLocalMin(min || ""); }, [min]);
+  useEffect(() => { setLocalMax(max >= PRICE_MAX ? "" : max); }, [max]);
+
+  const isBn = locale === "bn";
+
+  const apply = () => {
+    const mn = localMin === "" ? 0 : Number(localMin);
+    const mx = localMax === "" ? PRICE_MAX : Number(localMax);
+    if (mn < mx) onApply(mn, mx);
+  };
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center gap-2">
+        <input
+          type="number"
+          min={0}
+          value={localMin}
+          placeholder={isBn ? "সর্বনিম্ন" : "Min"}
+          onChange={e => setLocalMin(e.target.value === "" ? "" : Number(e.target.value))}
+          onKeyDown={e => e.key === "Enter" && apply()}
+          className="w-full border border-gray-200 rounded-lg px-2.5 py-2 text-sm text-gray-700 focus:outline-none focus:ring-1 focus:ring-amber-400"
+        />
+        <span className="text-gray-400 shrink-0">—</span>
+        <input
+          type="number"
+          min={0}
+          value={localMax}
+          placeholder={isBn ? "সর্বোচ্চ" : "Max"}
+          onChange={e => setLocalMax(e.target.value === "" ? "" : Number(e.target.value))}
+          onKeyDown={e => e.key === "Enter" && apply()}
+          className="w-full border border-gray-200 rounded-lg px-2.5 py-2 text-sm text-gray-700 focus:outline-none focus:ring-1 focus:ring-amber-400"
+        />
+      </div>
+      <button
+        onClick={apply}
+        className="w-full py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold transition-colors"
+      >
+        {isBn ? "ফিল্টার করুন" : "Filter"}
+      </button>
+    </div>
+  );
+}
+
 function PriceRangeSlider({
   min,
   max,
@@ -77,7 +135,6 @@ function PriceRangeSlider({
             if (v < max) onMinChange(v);
           }}
           className="absolute w-full h-1.5 appearance-none bg-transparent cursor-pointer range-thumb"
-          style={{ zIndex: min > PRICE_MAX - 200 ? 5 : 3 }}
         />
         <input
           type="range"
@@ -90,12 +147,12 @@ function PriceRangeSlider({
             if (v > min) onMaxChange(v);
           }}
           className="absolute w-full h-1.5 appearance-none bg-transparent cursor-pointer range-thumb"
-          style={{ zIndex: 4 }}
         />
       </div>
       <style>{`
-        .range-thumb::-webkit-slider-thumb { -webkit-appearance:none; width:18px; height:18px; border-radius:50%; background:#fff; border:2px solid #f59e0b; box-shadow:0 1px 4px rgba(0,0,0,.15); cursor:pointer; }
-        .range-thumb::-moz-range-thumb    { width:18px; height:18px; border-radius:50%; background:#fff; border:2px solid #f59e0b; box-shadow:0 1px 4px rgba(0,0,0,.15); cursor:pointer; }
+        .range-thumb { pointer-events: none; }
+        .range-thumb::-webkit-slider-thumb { -webkit-appearance:none; pointer-events: all; width:16px; height:16px; border-radius:50%; background:#fff; border:2px solid #f59e0b; box-shadow:0 1px 4px rgba(0,0,0,.15); cursor:pointer; }
+        .range-thumb::-moz-range-thumb    { pointer-events: all; width:16px; height:16px; border-radius:50%; background:#fff; border:2px solid #f59e0b; box-shadow:0 1px 4px rgba(0,0,0,.15); cursor:pointer; }
       `}</style>
     </div>
   );
@@ -115,7 +172,7 @@ export default function ProductsPage() {
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [priceMin, setPriceMin] = useState(0);
   const [priceMax, setPriceMax] = useState(PRICE_MAX);
-  const [sortOrder, setSortOrder] = useState<"" | "price_asc" | "price_desc">("");
+  const [sortOrder, setSortOrder] = useState<"" | "newest" | "price_asc" | "price_desc" | "discount_asc" | "discount_desc">("");
   const [onlyOffers, setOnlyOffers] = useState(urlOffers);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [catOpen, setCatOpen] = useState(true);
@@ -227,60 +284,58 @@ export default function ProductsPage() {
         />
       </div>
       <div>
-        <FloatingSelect
-          label={locale === "bn" ? "সাজানো" : "Sort By"}
-          value={sortOrder}
-          onChange={v => {
-            setSortOrder(v as "" | "price_asc" | "price_desc");
-            setPage(1);
-            setAllProducts([]);
-          }}
-          onClear={() => {
-            setSortOrder("");
-            setPage(1);
-            setAllProducts([]);
-          }}
-          showClearButton={!!sortOrder}
-          searchable={false}
-          options={[
-            {
-              value: "price_asc",
-              label: locale === "bn" ? "মূল্য: কম থেকে বেশি" : "Price: Low to High",
-            },
-            {
-              value: "price_desc",
-              label: locale === "bn" ? "মূল্য: বেশি থেকে কম" : "Price: High to Low",
-            },
-          ]}
-        />
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+          {locale === "bn" ? "সাজানো" : "Sort"}
+        </p>
+        <div className="space-y-2">
+          {([
+            { value: "newest",       en: "New Released",         bn: "নতুন পণ্য" },
+            { value: "price_asc",    en: "Price - Low to High",  bn: "মূল্য: কম → বেশি" },
+            { value: "price_desc",   en: "Price - High to Low",  bn: "মূল্য: বেশি → কম" },
+            { value: "discount_asc", en: "Discount - Low to High", bn: "ডিসকাউন্ট: কম → বেশি" },
+            { value: "discount_desc",en: "Discount - High to Low",  bn: "ডিসকাউন্ট: বেশি → কম" },
+          ] as const).map(opt => (
+            <label key={opt.value} className="flex items-center gap-2.5 cursor-pointer group">
+              <input
+                type="radio"
+                name="sort"
+                value={opt.value}
+                checked={sortOrder === opt.value}
+                onChange={() => { setSortOrder(opt.value); setPage(1); setAllProducts([]); }}
+                className="w-4 h-4 accent-amber-500 cursor-pointer"
+              />
+              <span className="text-sm text-gray-700 group-hover:text-gray-900">
+                {locale === "bn" ? opt.bn : opt.en}
+              </span>
+            </label>
+          ))}
+          {sortOrder && (
+            <button
+              onClick={() => { setSortOrder(""); setPage(1); setAllProducts([]); }}
+              className="text-xs text-amber-600 hover:underline mt-1"
+            >
+              {locale === "bn" ? "বাতিল করুন" : "Clear"}
+            </button>
+          )}
+        </div>
       </div>
       <div>
         <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
           {locale === "bn" ? "মূল্য পরিসর" : "Price Range"}
         </p>
-        <PriceRangeSlider
+        <PriceRangeInputs
           min={priceMin}
           max={priceMax}
-          onMinChange={v => {
-            setPriceMin(v);
-            setPage(1);
-            setAllProducts([]);
-          }}
-          onMaxChange={v => {
-            setPriceMax(v);
-            setPage(1);
-            setAllProducts([]);
-          }}
+          locale={locale}
+          onApply={(mn, mx) => { setPriceMin(mn); setPriceMax(mx); setPage(1); setAllProducts([]); }}
         />
-        <div className="flex justify-between mt-2 text-xs font-bold text-amber-700 overflow-visible">
-          <span className="pl-0.5">{formatAmount(priceMin, locale, 0)}</span>
-          <span>
-            {priceMax >= PRICE_MAX
-              ? locale === "bn"
-                ? "সর্বোচ্চ"
-                : "Max"
-              : formatAmount(priceMax, locale, 0)}
-          </span>
+        <div className="mt-3">
+          <PriceRangeSlider
+            min={priceMin}
+            max={priceMax}
+            onMinChange={v => { setPriceMin(v); setPage(1); setAllProducts([]); }}
+            onMaxChange={v => { setPriceMax(v); setPage(1); setAllProducts([]); }}
+          />
         </div>
       </div>
       <CollapsibleSection
@@ -420,9 +475,14 @@ export default function ProductsPage() {
                     locale={locale}
                   />
                 ))}
+                {isFetching && allProducts.length > 0 &&
+                  Array.from({ length: 5 }).map((_, i) => (
+                    <ProductCardSkeleton key={`sk-${i}`} />
+                  ))
+                }
               </div>
 
-              {!allProducts.length && (
+              {!allProducts.length && !isFetching && (
                 <div className="text-center py-16 text-gray-400">
                   <p className="text-4xl mb-4">🔍</p>
                   <p>{t("common.noData")}</p>
@@ -434,19 +494,6 @@ export default function ProductsPage() {
                       {locale === "bn" ? "ফিল্টার মুছুন" : "Clear filters"}
                     </button>
                   )}
-                </div>
-              )}
-
-              {/* Loading indicator for next page */}
-              {isFetching && allProducts.length > 0 && (
-                <div className="py-6 flex justify-center gap-1.5">
-                  {[0, 1, 2].map(i => (
-                    <span
-                      key={i}
-                      className="w-2 h-2 rounded-full bg-amber-400 animate-bounce"
-                      style={{ animationDelay: `${i * 0.15}s` }}
-                    />
-                  ))}
                 </div>
               )}
 
