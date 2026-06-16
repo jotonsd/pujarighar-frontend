@@ -46,7 +46,7 @@ export function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL(`/${locale}/auth/login`, request.url))
     }
     if (role !== 'ADMIN' && role !== 'WAREHOUSE') {
-      return NextResponse.redirect(new URL(`/${locale}`, request.url))
+      return NextResponse.redirect(new URL(`/${locale}/403`, request.url))
     }
   }
 
@@ -56,7 +56,7 @@ export function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL(`/${locale}/auth/login`, request.url))
     }
     if (role !== 'DELIVERY') {
-      return NextResponse.redirect(new URL(`/${locale}`, request.url))
+      return NextResponse.redirect(new URL(`/${locale}/403`, request.url))
     }
   }
 
