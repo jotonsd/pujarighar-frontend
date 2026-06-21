@@ -23,6 +23,14 @@ export const authApi = baseApi.injectEndpoints({
       query: (body) => ({ url: '/api/auth/logout/', method: 'POST', body }),
     }),
 
+    forgotPassword: build.mutation<{ message: string }, { email: string; locale: string }>({
+      query: (body) => ({ url: '/api/auth/forgot-password/', method: 'POST', body }),
+    }),
+
+    resetPassword: build.mutation<{ message: string }, { uid: string; token: string; new_password: string }>({
+      query: (body) => ({ url: '/api/auth/reset-password/', method: 'POST', body }),
+    }),
+
     getMe: build.query<User, void>({
       query: () => '/api/users/me/',
       transformResponse: (res: { data: User }) => res.data,
@@ -53,6 +61,8 @@ export const {
   useGoogleLoginMutation,
   useRegisterMutation,
   useLogoutMutation,
+  useForgotPasswordMutation,
+  useResetPasswordMutation,
   useGetMeQuery,
   useUpdateMeMutation,
   useChangePasswordMutation,
