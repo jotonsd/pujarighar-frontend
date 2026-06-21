@@ -458,8 +458,8 @@ export default function ProductsPage() {
         )}
 
         <div className="flex-1 min-w-0">
-          {/* Initial load skeleton */}
-          {isLoading && allProducts.length === 0 ? (
+          {/* Initial load / filter-change skeleton */}
+          {(isLoading || isFetching) && allProducts.length === 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
               {Array.from({ length: 10 }).map((_, i) => (
                 <ProductCardSkeleton key={i} />
