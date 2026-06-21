@@ -3,7 +3,7 @@
 import { useGetCategoriesQuery } from "@/api/categories/categoriesApi";
 import {
     useAddPackageItemMutation,
-    useAddProductImageMutation,
+    useAddProductImagesMutation,
     useCreateProductMutation,
     useDeletePackageItemMutation,
     useDeleteProductImageMutation,
@@ -102,7 +102,7 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
   const [updateProduct, { isLoading: updating }] = useUpdateProductMutation();
   const [addPackageItem] = useAddPackageItemMutation();
   const [deletePackageItem] = useDeletePackageItemMutation();
-  const [addProductImage] = useAddProductImageMutation();
+  const [addProductImages] = useAddProductImagesMutation();
   const [deleteProductImage] = useDeleteProductImageMutation();
 
   const originalTotal = items.reduce(
@@ -205,11 +205,9 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
         }
 
         if (imageFile) {
-          const fd = new FormData();
-          fd.append("image", imageFile);
-          await addProductImage({
+          await addProductImages({
             productId: packageId,
-            formData: fd,
+            files: [imageFile],
           }).unwrap();
         }
 
@@ -246,11 +244,9 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
           }
         }
         if (imageFile) {
-          const fd = new FormData();
-          fd.append("image", imageFile);
-          await addProductImage({
+          await addProductImages({
             productId: packageId,
-            formData: fd,
+            files: [imageFile],
           }).unwrap();
         }
 
