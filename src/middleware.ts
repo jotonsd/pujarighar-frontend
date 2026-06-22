@@ -9,17 +9,41 @@ const intlMiddleware = createMiddleware({
   localeDetection: false,
 })
 
-const ADMIN_PATHS     = ['/admin']
-const DELIVERY_PATHS  = ['/delivery']
-const AUTH_PATHS      = ['/auth/login', '/auth/register']
-const PROTECTED_PATHS = ['/profile', '/orders']
+const ADMIN_PATHS       = ['/admin']
+const DELIVERY_PATHS    = ['/delivery']
+const AUTH_PATHS        = ['/auth/login', '/auth/register']
+const PROTECTED_PATHS   = ['/profile', '/orders']
+const MAINTENANCE_PATHS = ['/maintenance', '/auth/login']
+
+// Cached in-process (single Node server) so we don't hit the backend on every request.
+const MAINTENANCE_CACHE_TTL_MS = 10_000
+let maintenanceCache = { value: false, expiresAt: 0 }
+
+async function isMaintenanceMode(): Promise<boolean> {
+  const now = Date.now()
+  if (now < maintenanceCache.expiresAt) return maintenanceCache.value
+
+  let value = false
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/site-settings/`, {
+      cache: 'no-store',
+      signal: AbortSignal.timeout(3000),
+    })
+    value = res.status === 503
+  } catch {
+    // Backend unreachable — fail open so a network blip doesn't take down the whole site
+    value = false
+  }
+  maintenanceCache = { value, expiresAt: now + MAINTENANCE_CACHE_TTL_MS }
+  return value
+}
 
 function extractLocale(pathname: string): string {
   const segment = pathname.split('/')[1]
   return locales.includes(segment as 'bn' | 'en') ? segment : defaultLocale
 }
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   const locale = extractLocale(pathname)
 
@@ -29,6 +53,15 @@ export function middleware(request: NextRequest) {
   const accessToken = request.cookies.get('access_token')?.value
   const userRaw     = request.cookies.get('user')?.value
   const role        = userRaw ? JSON.parse(userRaw).role : null
+
+  // Show maintenance page to everyone except admins (mirrors backend bypass) and login/maintenance routes
+  if (
+    role !== 'ADMIN' &&
+    !MAINTENANCE_PATHS.some((p) => pathWithoutLocale.startsWith(p)) &&
+    (await isMaintenanceMode())
+  ) {
+    return NextResponse.redirect(new URL(`/${locale}/maintenance`, request.url))
+  }
 
   // Redirect authenticated users away from auth pages
   if (AUTH_PATHS.some((p) => pathWithoutLocale.startsWith(p)) && accessToken) {
