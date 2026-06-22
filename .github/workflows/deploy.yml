@@ -18,8 +18,10 @@ jobs:
         run: |
           if [ "${{ github.ref_name }}" == "production" ]; then
             echo "DEPLOY_PATH=~/pujarighar.com" >> $GITHUB_ENV
+            echo "NEXT_PUBLIC_API_URL=${{ secrets.PROD_API_URL }}" >> $GITHUB_ENV
           else
             echo "DEPLOY_PATH=~/dev.pujarighar.com" >> $GITHUB_ENV
+            echo "NEXT_PUBLIC_API_URL=${{ secrets.DEV_API_URL }}" >> $GITHUB_ENV
           fi
 
       - name: Setup Node.js
@@ -34,7 +36,7 @@ jobs:
       - name: Build Next.js (standalone)
         run: npm run build
         env:
-          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+          NEXT_PUBLIC_API_URL: ${{ env.NEXT_PUBLIC_API_URL }}
           NEXT_PUBLIC_DEFAULT_LOCALE: ${{ secrets.NEXT_PUBLIC_DEFAULT_LOCALE }}
           NEXT_PUBLIC_GOOGLE_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_GOOGLE_CLIENT_ID }}
 
