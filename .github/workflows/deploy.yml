@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - production
 
 jobs:
   build-and-deploy:
@@ -12,6 +13,14 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Set environment variables
+        run: |
+          if [ "${{ github.ref_name }}" == "production" ]; then
+            echo "DEPLOY_PATH=~/pujarighar.com" >> $GITHUB_ENV
+          else
+            echo "DEPLOY_PATH=~/dev.pujarighar.com" >> $GITHUB_ENV
+          fi
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -50,13 +59,13 @@ jobs:
             --exclude='.htaccess' \
             -e "ssh -p ${{ secrets.SSH_PORT }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" \
             ./deploy/ \
-            ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:~/dev.pujarighar.com/
+            ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ env.DEPLOY_PATH }}/
 
       - name: Restart Node app via cPanel
         run: |
           ssh -p ${{ secrets.SSH_PORT }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
             ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} \
-            "mkdir -p ~/dev.pujarighar.com/tmp && touch ~/dev.pujarighar.com/tmp/restart.txt"
+            "mkdir -p ${{ env.DEPLOY_PATH }}/tmp && touch ${{ env.DEPLOY_PATH }}/tmp/restart.txt"
 
       - name: Cleanup
         if: always()
