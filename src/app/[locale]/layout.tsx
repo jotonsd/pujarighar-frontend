@@ -1,7 +1,7 @@
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
 import Providers from "@/components/layout/Providers";
-import Toaster from "@/components/ui/Toaster";
+import SiteChrome from "@/components/layout/SiteChrome";
 import { locales } from "@/lib/i18n";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
@@ -39,12 +39,9 @@ export default async function LocaleLayout({
       <body suppressHydrationWarning>
         <NextIntlClientProvider messages={messages}>
           <Providers>
-            <div className="min-h-screen flex flex-col">
-              <Navbar />
-              <main className="flex-1">{children}</main>
-              <Footer />
-              <Toaster />
-            </div>
+            <SiteChrome navbar={<Navbar />} footer={<Footer />}>
+              {children}
+            </SiteChrome>
           </Providers>
         </NextIntlClientProvider>
       </body>
