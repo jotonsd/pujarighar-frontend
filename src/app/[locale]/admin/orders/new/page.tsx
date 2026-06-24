@@ -344,9 +344,9 @@ export default function POSPage() {
   };
 
   return (
-    <div className="h-[calc(100vh-8rem)] flex gap-3 overflow-hidden">
+    <div className="flex flex-col lg:h-[calc(100vh-8rem)] lg:flex-row gap-3 lg:overflow-hidden">
       {/* ── Left: Product browser ── */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 lg:overflow-hidden">
         {/* Tab + Search */}
         <div className="shrink-0 pt-2 space-y-2">
           {/* Tabs */}
@@ -378,7 +378,7 @@ export default function POSPage() {
           </div>
 
           {/* Search + Category */}
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <div className="flex-1">
               <FloatingInput
                 label={locale === "bn" ? "খুঁজুন" : "Search"}
@@ -387,8 +387,8 @@ export default function POSPage() {
               />
             </div>
             {tab === "products" && (
-              <>
-                <div className="w-40">
+              <div className="flex gap-2">
+                <div className="flex-1 sm:w-40">
                   <FloatingSelect
                     label={locale === "bn" ? "কেটাগরি" : "Category"}
                     value={catFilter}
@@ -404,7 +404,7 @@ export default function POSPage() {
                     ))}
                   </FloatingSelect>
                 </div>
-                <div className="w-36">
+                <div className="flex-1 sm:w-36">
                   <FloatingSelect
                     label={locale === "bn" ? "ব্র্যান্ড" : "Brand"}
                     value={brandFilter}
@@ -420,7 +420,7 @@ export default function POSPage() {
                     ))}
                   </FloatingSelect>
                 </div>
-              </>
+              </div>
             )}
           </div>
         </div>
@@ -428,7 +428,7 @@ export default function POSPage() {
         {isLoading ? (
           <POSProductSkeleton count={25} />
         ) : (
-          <div className="overflow-y-auto flex-1 grid grid-cols-5 gap-3 content-start mt-3">
+          <div className="lg:overflow-y-auto lg:flex-1 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 content-start mt-3">
             {products.map(product => (
               <POSProductCard
                 key={product.id}
@@ -453,8 +453,8 @@ export default function POSPage() {
       </div>
 
       {/* ── Right: Order panel ── */}
-      <div className="w-80 shrink-0 flex flex-col gap-3 overflow-y-auto">
-        <div className="card flex-1 min-h-0 flex flex-col">
+      <div className="w-full lg:w-80 shrink-0 flex flex-col gap-3 lg:overflow-y-auto">
+        <div className="card lg:flex-1 lg:min-h-0 flex flex-col">
           <h2 className="font-semibold text-gray-800 mb-3 shrink-0">
             {locale === "bn" ? "অর্ডার আইটেম" : "Order Items"}
             {cart.length > 0 && (
@@ -471,7 +471,7 @@ export default function POSPage() {
                 : "Click a product to add"}
             </p>
           ) : (
-            <div className="space-y-3 overflow-y-auto flex-1">
+            <div className="space-y-3 overflow-y-auto max-h-80 lg:max-h-none lg:flex-1">
               {cart.map(line => (
                 <div
                   key={line.product.id}
@@ -863,7 +863,7 @@ export default function POSPage() {
         <button
           onClick={handleSubmit}
           disabled={submitting || cart.length === 0}
-          className="btn-primary w-full py-3 text-base font-bold"
+          className="btn-primary w-full py-3 text-base font-bold sticky bottom-2 lg:static shadow-lg lg:shadow-none z-10"
         >
           {submitting
             ? locale === "bn"

@@ -246,23 +246,6 @@ function PaymentMethodModal({
         </button>
 
         <button
-          onClick={() => onSelect("ONLINE")}
-          className="w-full flex items-center gap-3 p-4 rounded-xl border-2 border-gray-200 hover:border-amber-400 hover:bg-amber-50 transition-colors text-left"
-        >
-          <span className="text-3xl">💳</span>
-          <div>
-            <p className="font-semibold text-gray-800">
-              {locale === "bn" ? "অনলাইন পেমেন্ট" : "Online Payment"}
-            </p>
-            <p className="text-xs text-gray-500">
-              {locale === "bn"
-                ? "এখনই পেমেন্ট করুন — অর্ডার স্বয়ংক্রিয়ভাবে নিশ্চিত হবে"
-                : "Pay now — order is auto-confirmed instantly"}
-            </p>
-          </div>
-        </button>
-
-        <button
           onClick={onCancel}
           className="w-full text-sm text-gray-400 hover:text-gray-600 pt-1"
         >
