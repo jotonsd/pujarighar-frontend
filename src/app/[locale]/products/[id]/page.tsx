@@ -114,7 +114,7 @@ export default function ProductDetailPage({
       <div className="mb-4">
         <OfferBanners />
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <div className="space-y-3">
           {/* Main image */}
           <div className="aspect-square bg-gray-100 rounded-xl overflow-hidden relative group">
