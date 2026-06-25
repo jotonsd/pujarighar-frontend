@@ -50,7 +50,7 @@ export default function HomePackages() {
 
     const interval = setInterval(() => {
       scroll("right");
-    }, 3000); // 3000ms = 3 seconds
+    }, 5000); // 5000ms = 5 seconds
 
     return () => clearInterval(interval);
   }, [isLoading, packages.length, isHovered]);
