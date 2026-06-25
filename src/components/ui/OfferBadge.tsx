@@ -19,7 +19,7 @@ export default function OfferBadge({
 }: Props) {
   return (
     <div
-      className={`w-11 h-11 bg-amber-500 text-white flex flex-col items-center justify-center pointer-events-none leading-none ${className}`}
+      className={`w-11 h-11 bg-green-600 text-white flex flex-col items-center justify-center pointer-events-none leading-none ${className}`}
       style={{
         clipPath: `polygon(
           50% 2%, 59% 7%, 68% 6%, 75% 13%,
