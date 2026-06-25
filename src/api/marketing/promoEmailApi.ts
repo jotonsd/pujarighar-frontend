@@ -55,6 +55,12 @@ export const promoEmailApi = baseApi.injectEndpoints({
       invalidatesTags: ['PromoEmails'],
     }),
 
+    resendPromoEmail: build.mutation<PromoEmail, string>({
+      query: (id) => ({ url: `/api/promo-emails/${id}/resend/`, method: 'POST' }),
+      transformResponse: (res: { data: PromoEmail }) => res.data,
+      invalidatesTags: ['PromoEmails'],
+    }),
+
   }),
   overrideExisting: false,
 })
@@ -63,4 +69,5 @@ export const {
   useGetPromoEmailsQuery,
   useGetPromoEmailAudienceQuery,
   useCreatePromoEmailMutation,
+  useResendPromoEmailMutation,
 } = promoEmailApi
