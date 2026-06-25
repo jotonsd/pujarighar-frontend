@@ -227,53 +227,49 @@ export default function ProductDetailPage({
               <Badge variant="red">{t("product.outOfStock")}</Badge>
             )}
           </div>
-          {desc && <p className="text-gray-600 mb-6 leading-relaxed">{desc}</p>}
           {inStock && (
-            <div className="space-y-3 mb-6">
-              <div className="flex items-center gap-3">
-                <div className="flex items-center border rounded-lg overflow-hidden shrink-0">
-                  <button
-                    onClick={() => setQty(Math.max(1, qty - 1))}
-                    className="px-3 py-2 hover:bg-gray-50"
-                  >
-                    −
-                  </button>
-                  <span className="px-4 py-2 border-x font-bold">
-                    {formatNumber(qty, locale)}
-                  </span>
-                  <button
-                    onClick={() => setQty(qty + 1)}
-                    className="px-3 py-2 hover:bg-gray-50"
-                  >
-                    +
-                  </button>
-                </div>
+            <div className="flex flex-wrap md:flex-nowrap items-stretch gap-3 mb-6">
+              <div className="flex items-center border rounded-lg overflow-hidden shrink-0">
                 <button
-                  onClick={handleAddToCart}
-                  disabled={adding}
-                  className="btn-secondary flex-1 font-bold"
+                  onClick={() => setQty(Math.max(1, qty - 1))}
+                  className="px-3 py-2 hover:bg-gray-50"
                 >
-                  {adding ? t("common.loading") : t("product.addToCart")}
+                  −
+                </button>
+                <span className="px-4 py-2 border-x font-bold">
+                  {formatNumber(qty, locale)}
+                </span>
+                <button
+                  onClick={() => setQty(qty + 1)}
+                  className="px-3 py-2 hover:bg-gray-50"
+                >
+                  +
                 </button>
               </div>
-              <div className="flex gap-3">
-                <button
-                  onClick={handleBuyNow}
-                  disabled={adding}
-                  className="btn-primary flex-1 font-bold"
-                >
-                  {locale === "bn" ? "এখনই কিনুন" : "Buy Now"}
-                </button>
-                <button
-                  onClick={() => router.back()}
-                  className="flex-1 font-bold inline-flex items-center justify-center gap-1.5 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                  {locale === "bn" ? "আরো কিনুন" : "Shop More"}
-                </button>
-              </div>
+              <button
+                onClick={handleAddToCart}
+                disabled={adding}
+                className="btn-secondary flex-1 min-w-[45%] md:min-w-0 font-bold"
+              >
+                {adding ? t("common.loading") : t("product.addToCart")}
+              </button>
+              <button
+                onClick={handleBuyNow}
+                disabled={adding}
+                className="btn-primary flex-1 min-w-[45%] md:min-w-0 font-bold"
+              >
+                {locale === "bn" ? "এখনই কিনুন" : "Buy Now"}
+              </button>
+              <button
+                onClick={() => router.back()}
+                className="flex-1 min-w-[45%] md:min-w-0 font-bold inline-flex items-center justify-center gap-1.5 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                {locale === "bn" ? "আরো কিনুন" : "Shop More"}
+              </button>
             </div>
           )}
+          {desc && <p className="text-gray-600 mb-6 leading-relaxed">{desc}</p>}
         </div>
       </div>
       <ProductReviews productId={params.id} locale={locale} />
