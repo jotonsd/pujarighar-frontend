@@ -29,6 +29,7 @@ export default function ProfilePage() {
   const [form, setForm] = useState({
     full_name_bn: "",
     full_name_en: "",
+    phone: "",
     address_bn: "",
     address_en: "",
     district: "",
@@ -38,6 +39,7 @@ export default function ProfilePage() {
 
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const [pwForm, setPwForm] = useState({
     old_password: "",
@@ -51,6 +53,7 @@ export default function ProfilePage() {
       setForm({
         full_name_bn: me.profile.full_name_bn ?? "",
         full_name_en: me.profile.full_name_en ?? "",
+        phone: me.phone ?? "",
         address_bn: me.profile.address_bn ?? "",
         address_en: me.profile.address_en ?? "",
         district: me.profile.district ?? "",
@@ -67,11 +70,32 @@ export default function ProfilePage() {
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setFieldErrors(prev => { const n = { ...prev }; delete n.avatar; return n; });
+
+    const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      setFieldErrors(prev => ({
+        ...prev,
+        avatar: isBn ? "শুধুমাত্র JPG, PNG, WEBP বা GIF ছবি আপলোড করা যাবে" : "Only JPG, PNG, WEBP, or GIF images are allowed",
+      }));
+      e.target.value = "";
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setFieldErrors(prev => ({
+        ...prev,
+        avatar: isBn ? "ছবির আকার ৫ এমবি-এর বেশি হতে পারবে না" : "Image size must not exceed 5MB",
+      }));
+      e.target.value = "";
+      return;
+    }
+
     setAvatarFile(file);
     setAvatarPreview(URL.createObjectURL(file));
   };
 
   const handleUpdate = async () => {
+    setFieldErrors({});
     try {
       const fd = new FormData();
       Object.entries(form).forEach(([k, v]) => fd.append(k, v));
@@ -82,8 +106,22 @@ export default function ProfilePage() {
       toast.success(
         locale === "bn" ? "প্রোফাইল আপডেট হয়েছে" : "Profile updated",
       );
-    } catch {
-      toast.error(locale === "bn" ? "আপডেট ব্যর্থ হয়েছে" : "Update failed");
+    } catch (err: unknown) {
+      type FieldError = string | string[] | { message_bn?: string; message_en?: string };
+      const errors = (err as { data?: { errors?: Record<string, FieldError> } }).data?.errors;
+      const parsed: Record<string, string> = {};
+      if (errors && typeof errors === "object") {
+        for (const [key, val] of Object.entries(errors)) {
+          if (Array.isArray(val)) parsed[key] = String(val[0]);
+          else if (typeof val === "string") parsed[key] = val;
+          else if (val && typeof val === "object") {
+            parsed[key] = (locale === "bn" ? val.message_bn : val.message_en) ?? "";
+          }
+        }
+      }
+      setFieldErrors(parsed);
+      const firstMsg = Object.values(parsed)[0];
+      toast.error(firstMsg || (locale === "bn" ? "আপডেট ব্যর্থ হয়েছে" : "Update failed"));
     }
   };
 
@@ -115,8 +153,10 @@ export default function ProfilePage() {
 
   const f =
     (key: string) =>
-    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       setForm({ ...form, [key]: e.target.value });
+      if (fieldErrors[key]) setFieldErrors(prev => { const n = { ...prev }; delete n[key]; return n; });
+    };
 
   const pf = (key: keyof typeof pwForm) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setPwForm(p => ({ ...p, [key]: e.target.value }));
@@ -241,6 +281,9 @@ export default function ProfilePage() {
                   {avatarFile && (
                     <p className="text-xs text-amber-600 mt-0.5">{avatarFile.name}</p>
                   )}
+                  {fieldErrors.avatar && (
+                    <p className="text-xs text-red-500 mt-0.5">{fieldErrors.avatar}</p>
+                  )}
                 </div>
               </div>
 
@@ -249,11 +292,29 @@ export default function ProfilePage() {
                   label={t("profile.fullNameBn")}
                   value={form.full_name_bn}
                   onChange={f("full_name_bn")}
+                  error={fieldErrors.full_name_bn}
                 />
                 <FloatingInput
                   label={t("profile.fullNameEn")}
                   value={form.full_name_en}
                   onChange={f("full_name_en")}
+                  error={fieldErrors.full_name_en}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <FloatingInput
+                  label={isBn ? "ফোন নম্বর" : "Phone Number"}
+                  type="tel"
+                  placeholder="01XXXXXXXXX"
+                  value={form.phone}
+                  onChange={f("phone")}
+                  error={fieldErrors.phone}
+                />
+                <FloatingInput
+                  label={isBn ? "ইমেইল" : "Email"}
+                  value={me?.email ?? ""}
+                  disabled
+                  className="bg-gray-50 text-gray-400 cursor-not-allowed"
                 />
               </div>
               <div className="grid grid-cols-2 gap-3">
@@ -262,12 +323,14 @@ export default function ProfilePage() {
                   value={form.address_bn}
                   onChange={f("address_bn")}
                   rows={2}
+                  error={fieldErrors.address_bn}
                 />
                 <FloatingTextarea
                   label={`${t("profile.address")} (English)`}
                   value={form.address_en}
                   onChange={f("address_en")}
                   rows={2}
+                  error={fieldErrors.address_en}
                 />
               </div>
               <div className="grid grid-cols-3 gap-3">
@@ -275,16 +338,19 @@ export default function ProfilePage() {
                   label={t("profile.district")}
                   value={form.district}
                   onChange={f("district")}
+                  error={fieldErrors.district}
                 />
                 <FloatingInput
                   label={t("profile.thana")}
                   value={form.thana}
                   onChange={f("thana")}
+                  error={fieldErrors.thana}
                 />
                 <FloatingInput
                   label={t("profile.postCode")}
                   value={form.post_code}
                   onChange={f("post_code")}
+                  error={fieldErrors.post_code}
                 />
               </div>
               <button
