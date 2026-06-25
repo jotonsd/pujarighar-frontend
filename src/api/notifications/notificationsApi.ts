@@ -1,4 +1,5 @@
 import { baseApi } from '@/api/baseApi'
+import { ApiMeta } from '@/lib/types'
 
 export interface AppNotification {
   id: string
@@ -17,12 +18,28 @@ interface NotificationListResponse {
   unread_count: number
 }
 
+interface AllNotificationsResponse {
+  data: AppNotification[]
+  pagination: ApiMeta
+}
+
 export const notificationsApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
 
     getNotifications: build.query<NotificationListResponse, void>({
       query: () => '/api/notifications/',
       transformResponse: (res: { data: NotificationListResponse }) => res.data,
+      providesTags: ['Notifications'],
+    }),
+
+    getAllNotifications: build.query<AllNotificationsResponse, { page?: number; page_size?: number; is_read?: boolean } | void>({
+      query: (params) => {
+        const p = new URLSearchParams()
+        if (params?.page)      p.set('page', String(params.page))
+        if (params?.page_size) p.set('page_size', String(params.page_size))
+        if (params?.is_read !== undefined) p.set('is_read', String(params.is_read))
+        return `/api/notifications/all/?${p.toString()}`
+      },
       providesTags: ['Notifications'],
     }),
 
@@ -42,6 +59,7 @@ export const notificationsApi = baseApi.injectEndpoints({
 
 export const {
   useGetNotificationsQuery,
+  useGetAllNotificationsQuery,
   useMarkAllReadMutation,
   useMarkOneReadMutation,
 } = notificationsApi

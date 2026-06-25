@@ -6,6 +6,7 @@ import {
   useMarkOneReadMutation,
 } from "@/api/notifications/notificationsApi";
 import { useLocale } from "next-intl";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Bell } from "lucide-react";
 
@@ -123,6 +124,15 @@ export default function NotificationBell() {
                 ))
               )}
             </div>
+
+            {/* Footer */}
+            <Link
+              href={`/${locale}/notifications`}
+              onClick={() => setOpen(false)}
+              className="block text-center text-sm font-medium text-amber-600 hover:bg-amber-50 py-2.5 border-t border-gray-100 transition-colors"
+            >
+              {isBn ? "সব দেখুন" : "View all"}
+            </Link>
           </div>
         </>
       )}
