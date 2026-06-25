@@ -44,11 +44,11 @@ export default function HeroSlider() {
                 {/* Overlay for text */}
                 {(slide.title_bn || slide.title_en) && (
                   <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent flex flex-col justify-end md:justify-center px-5 md:px-10 pb-8 md:pb-0">
-                    <h1 className="text-xl md:text-4xl font-bold text-white mb-1 md:mb-2 drop-shadow leading-tight">
+                    <h1 className="text-sm md:text-4xl font-bold text-white mb-1 md:mb-2 drop-shadow leading-snug line-clamp-2">
                       {locale === "bn" ? slide.title_bn : slide.title_en}
                     </h1>
                     {(slide.subtitle_bn || slide.subtitle_en) && (
-                      <p className="text-white/80 text-xs md:text-base mb-3 md:mb-5 max-w-md drop-shadow line-clamp-2 md:line-clamp-none">
+                      <p className="text-white/80 text-[10px] md:text-base mb-3 md:mb-5 max-w-md drop-shadow line-clamp-1 md:line-clamp-none">
                         {locale === "bn"
                           ? slide.subtitle_bn
                           : slide.subtitle_en}
@@ -74,11 +74,11 @@ export default function HeroSlider() {
                 className="w-full h-48 md:h-96 flex flex-col items-center justify-center text-center px-5 md:px-6"
                 style={{ backgroundColor: slide.bg_color || "#FFF7ED" }}
               >
-                <h1 className="text-2xl md:text-4xl font-bold text-amber-800 mb-2 md:mb-3 leading-tight">
+                <h1 className="text-base md:text-4xl font-bold text-amber-800 mb-2 md:mb-3 leading-snug line-clamp-2">
                   {locale === "bn" ? slide.title_bn : slide.title_en}
                 </h1>
                 {(slide.subtitle_bn || slide.subtitle_en) && (
-                  <p className="text-gray-600 text-sm md:text-lg mb-5 md:mb-7 max-w-lg">
+                  <p className="text-gray-600 text-[11px] md:text-lg mb-5 md:mb-7 max-w-lg">
                     {locale === "bn" ? slide.subtitle_bn : slide.subtitle_en}
                   </p>
                 )}
