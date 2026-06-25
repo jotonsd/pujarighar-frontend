@@ -79,7 +79,7 @@ function DeliveryPersonDropdown({
 function Avatar({ src, name }: { src: string | null; name: string }) {
   return src ? (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={src} alt={name} className="w-5 h-5 rounded-full object-cover shrink-0" />
+    <img src={src} alt={name} referrerPolicy="no-referrer" className="w-5 h-5 rounded-full object-cover shrink-0" />
   ) : (
     <div className="w-5 h-5 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-xs font-bold shrink-0">
       {name[0]?.toUpperCase()}

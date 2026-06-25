@@ -149,7 +149,7 @@ function ProfileDropdown({
         <span className="w-8 h-8 rounded-full bg-amber-100 text-amber-700 font-bold flex items-center justify-center text-sm overflow-hidden shrink-0">
           {user.profile?.avatar ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={user.profile.avatar} alt={initials} className="w-full h-full object-cover" />
+            <img src={user.profile.avatar} alt={initials} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
           ) : initials}
         </span>
         <svg
@@ -218,7 +218,7 @@ function ProfileDropdown({
               onClick={() => setOpen(false)}
               className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-amber-50 hover:text-amber-700 transition-colors"
             >
-              <Cog className="w-4 h-4" /> {user.role === "CUSTOMER" ? (isBn ? "সেটিং" : "Settings") : t("nav.profile")}
+              <Cog className="w-4 h-4" /> {isBn ? "সেটিং" : "Settings"}
             </Link>
 
             {user.role === "CUSTOMER" && (
@@ -366,7 +366,7 @@ function MobileMenu({
                 <span className="w-9 h-9 rounded-full bg-amber-100 text-amber-700 font-bold flex items-center justify-center text-sm overflow-hidden shrink-0">
                   {currentUser.profile?.avatar ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={currentUser.profile.avatar} alt="" className="w-full h-full object-cover" />
+                    <img src={currentUser.profile.avatar} alt="" referrerPolicy="no-referrer" className="w-full h-full object-cover" />
                   ) : (
                     (currentUser.profile?.full_name_bn || currentUser.email || "U")[0].toUpperCase()
                   )}
@@ -389,7 +389,7 @@ function MobileMenu({
                   onClick={onClose}
                   className="flex-1 btn-secondary text-xs text-center py-1.5"
                 >
-                  {currentUser?.role === "CUSTOMER" ? (locale === "bn" ? "সেটিং" : "Settings") : t("nav.profile")}
+                  {locale === "bn" ? "সেটিং" : "Settings"}
                 </Link>
                 <button
                   onClick={() => { onClose(); onLogout(); }}
@@ -479,7 +479,7 @@ export default function Navbar() {
       await logoutMutation({ refresh: Cookies.get("refresh_token") ?? "" }).unwrap();
     } catch {}
     logout();
-    router.push(`/${locale}/auth/login`);
+    router.push(`/${locale}`);
   };
 
   const handleMobileSearch = (q: string) => {

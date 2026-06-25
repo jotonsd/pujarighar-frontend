@@ -32,12 +32,13 @@ export default function LoginPage() {
         setAuth(data.user, data.access, data.refresh, rememberMe);
         toast.success(isBn ? "সফলভাবে লগইন হয়েছে" : "Logged in successfully");
         const role = data.user?.role;
+        const dest = data.user?.preferred_language || "bn";
         if (role === "ADMIN" || role === "WAREHOUSE") {
-          router.push(`/${locale}/admin/orders/new`);
+          router.push(`/${dest}/admin/orders/new`);
         } else if (role === "DELIVERY") {
-          router.push(`/${locale}/delivery/orders`);
+          router.push(`/${dest}/delivery/orders`);
         } else {
-          router.push(`/${locale}`);
+          router.push(`/${dest}`);
         }
       } catch {
         toast.error(isBn ? "Google লগইন ব্যর্থ হয়েছে" : "Google login failed");
@@ -54,12 +55,13 @@ export default function LoginPage() {
       setAuth(data.user, data.access, data.refresh, rememberMe);
       toast.success(isBn ? "সফলভাবে লগইন হয়েছে" : "Logged in successfully");
       const role = data.user?.role;
+      const dest = data.user?.preferred_language || "bn";
       if (role === "ADMIN" || role === "WAREHOUSE") {
-        router.push(`/${locale}/admin/orders/new`);
+        router.push(`/${dest}/admin/orders/new`);
       } else if (role === "DELIVERY") {
-        router.push(`/${locale}/delivery/orders`);
+        router.push(`/${dest}/delivery/orders`);
       } else {
-        router.push(`/${locale}`);
+        router.push(`/${dest}`);
       }
     } catch (err: unknown) {
       const e = err as {
