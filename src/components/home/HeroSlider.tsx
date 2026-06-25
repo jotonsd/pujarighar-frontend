@@ -48,7 +48,7 @@ export default function HeroSlider() {
                       {locale === "bn" ? slide.title_bn : slide.title_en}
                     </h1>
                     {(slide.subtitle_bn || slide.subtitle_en) && (
-                      <p className="text-white/80 text-[10px] md:text-base mb-3 md:mb-5 max-w-md drop-shadow line-clamp-1 md:line-clamp-none">
+                      <p className="text-white/80 text-[10px] md:text-base mb-3 md:mb-5 max-w-md drop-shadow line-clamp-2 md:line-clamp-none">
                         {locale === "bn"
                           ? slide.subtitle_bn
                           : slide.subtitle_en}
