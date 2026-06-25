@@ -136,23 +136,6 @@ export default async function Footer() {
                 </li>
               )}
             </ul>
-
-            {/* Newsletter */}
-            <div className="mt-5">
-              <p className="text-xs text-gray-500 mb-2">
-                {bn ? "নিউজলেটার সাবস্ক্রাইব করুন" : "Subscribe to newsletter"}
-              </p>
-              <div className="flex gap-2">
-                <input
-                  type="email"
-                  placeholder={bn ? "ইমেইল লিখুন" : "Your email"}
-                  className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-xs text-gray-300 placeholder-gray-600 focus:outline-none focus:border-amber-500"
-                />
-                <button className="bg-amber-500 hover:bg-amber-600 text-white text-xs px-3 py-2 rounded-lg transition-colors shrink-0">
-                  {bn ? "যোগ দিন" : "Join"}
-                </button>
-              </div>
-            </div>
           </div>
         </div>
       </div>
