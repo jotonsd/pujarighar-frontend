@@ -8,7 +8,7 @@ import { useAuthStore } from "@/store/authStore";
 import { useCartStore } from "@/store/cartStore";
 import { useGuestCartStore } from "@/store/guestCartStore";
 import { formatAmount } from "@/utils/format";
-import { Settings } from "lucide-react";
+import { Settings, Cog, Package, LogOut, Copy, Check } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
@@ -200,10 +200,10 @@ function ProfileDropdown({
                         title={isBn ? "কপি করুন" : "Copy"}
                       >
                         <span className="text-xs font-mono font-bold text-gray-700 tracking-widest">{user.referral_code}</span>
-                        <span className="text-[10px] ml-auto">
+                        <span className="text-[10px] ml-auto flex items-center gap-1">
                           {copied
-                            ? <span className="text-green-500 font-medium">{isBn ? "কপি হয়েছে!" : "Copied!"}</span>
-                            : <span className="text-gray-400">📋</span>
+                            ? <span className="text-green-500 font-medium flex items-center gap-1"><Check className="w-3 h-3" /> {isBn ? "কপি হয়েছে!" : "Copied!"}</span>
+                            : <Copy className="w-3 h-3 text-gray-400" />
                           }
                         </span>
                       </button>
@@ -218,7 +218,7 @@ function ProfileDropdown({
               onClick={() => setOpen(false)}
               className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-amber-50 hover:text-amber-700 transition-colors"
             >
-              <span>👤</span> {t("nav.profile")}
+              <Cog className="w-4 h-4" /> {user.role === "CUSTOMER" ? (isBn ? "সেটিং" : "Settings") : t("nav.profile")}
             </Link>
 
             {user.role === "CUSTOMER" && (
@@ -227,17 +227,9 @@ function ProfileDropdown({
                 onClick={() => setOpen(false)}
                 className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-amber-50 hover:text-amber-700 transition-colors"
               >
-                <span>📦</span> {t("nav.orders")}
+                <Package className="w-4 h-4" /> {t("nav.orders")}
               </Link>
             )}
-
-            <Link
-              href={`/${locale}/profile/change-password`}
-              onClick={() => setOpen(false)}
-              className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-amber-50 hover:text-amber-700 transition-colors"
-            >
-              <span>🔒</span> {t("auth.changePassword")}
-            </Link>
 
             <hr className="my-1 border-gray-100" />
 
@@ -248,7 +240,7 @@ function ProfileDropdown({
               }}
               className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-500 hover:bg-red-50 transition-colors"
             >
-              <span>↩</span> {t("nav.logout")}
+              <LogOut className="w-4 h-4" /> {t("nav.logout")}
             </button>
           </div>
         </>
@@ -397,7 +389,7 @@ function MobileMenu({
                   onClick={onClose}
                   className="flex-1 btn-secondary text-xs text-center py-1.5"
                 >
-                  {t("nav.profile")}
+                  {currentUser?.role === "CUSTOMER" ? (locale === "bn" ? "সেটিং" : "Settings") : t("nav.profile")}
                 </Link>
                 <button
                   onClick={() => { onClose(); onLogout(); }}
