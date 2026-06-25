@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { useLocale } from "next-intl";
-import { Mail, Send } from "lucide-react";
+import { Eye, Mail, Send, RefreshCw } from "lucide-react";
 import PageHeader from "@/components/ui/PageHeader";
 import ConfirmModal from "@/components/ui/ConfirmModal";
 import Badge from "@/components/ui/Badge";
-import { ReusableTable, Column } from "@/components/ui/ReusableTable";
+import { ReusableTable, Column, QuickAction } from "@/components/ui/ReusableTable";
 import { toast } from "@/store/toastStore";
 import {
   PromoEmail,
@@ -14,6 +14,7 @@ import {
   useGetPromoEmailsQuery,
   useGetPromoEmailAudienceQuery,
   useCreatePromoEmailMutation,
+  useResendPromoEmailMutation,
 } from "@/api/marketing/promoEmailApi";
 
 const TYPE_LABELS: Record<PromoEmailType, { bn: string; en: string }> = {
@@ -43,10 +44,13 @@ export default function PromoEmailsAdminPage() {
   const [form, setForm] = useState(EMPTY_FORM);
   const [page, setPage] = useState(1);
   const [confirming, setConfirming] = useState(false);
+  const [viewItem, setViewItem] = useState<PromoEmail | null>(null);
+  const [resendTarget, setResendTarget] = useState<PromoEmail | null>(null);
 
   const { data, isLoading } = useGetPromoEmailsQuery({ page, page_size: 10 });
   const { data: audience } = useGetPromoEmailAudienceQuery(form.email_type);
   const [createPromoEmail, { isLoading: sending }] = useCreatePromoEmailMutation();
+  const [resendPromoEmail, { isLoading: resending }] = useResendPromoEmailMutation();
 
   const set = (k: keyof typeof form, v: string) => setForm(f => ({ ...f, [k]: v }));
 
@@ -65,6 +69,33 @@ export default function PromoEmailsAdminPage() {
       setConfirming(false);
     }
   };
+
+  const handleResend = async () => {
+    if (!resendTarget) return;
+    try {
+      await resendPromoEmail(resendTarget.id).unwrap();
+      toast.success(isBn ? "ইমেইল পুনরায় পাঠানোর জন্য সারিবদ্ধ হয়েছে" : "Email queued for resending");
+    } catch {
+      toast.error(isBn ? "পুনরায় পাঠাতে ব্যর্থ হয়েছে" : "Failed to resend");
+    } finally {
+      setResendTarget(null);
+    }
+  };
+
+  const quickActions: QuickAction<PromoEmail>[] = [
+    {
+      label: "View",
+      icon: <Eye className="w-3.5 h-3.5" />,
+      onClick: setViewItem,
+      className: "inline-flex items-center justify-center w-8 h-8 rounded-lg border border-gray-200 bg-gray-50 text-gray-600 hover:bg-gray-100 transition-colors",
+    },
+    {
+      label: "Resend",
+      icon: <RefreshCw className="w-3.5 h-3.5" />,
+      onClick: setResendTarget,
+      className: "inline-flex items-center justify-center w-8 h-8 rounded-lg border border-amber-200 bg-amber-50 text-amber-600 hover:bg-amber-100 transition-colors",
+    },
+  ];
 
   const columns: Column<PromoEmail>[] = [
     {
@@ -203,11 +234,85 @@ export default function PromoEmailsAdminPage() {
         columns={columns}
         keyExtractor={e => e.id}
         isLoading={isLoading}
+        quickActions={quickActions}
         totalPages={data?.pagination?.total_pages ?? 1}
         currentPage={page}
         onPageChange={setPage}
         emptyMessage={isBn ? "এখনো কোনো প্রোমো ইমেইল পাঠানো হয়নি।" : "No promo emails sent yet."}
       />
+
+      {viewItem && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4" onClick={() => setViewItem(null)}>
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 space-y-4" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+                <Mail className="w-5 h-5 text-amber-500" />
+                {isBn ? "ইমেইল বিস্তারিত" : "Email Details"}
+              </h2>
+              <Badge variant={STATUS_VARIANT[viewItem.status]}>{viewItem.status}</Badge>
+            </div>
+
+            <div className="text-xs text-gray-400 flex items-center gap-3">
+              <span>{isBn ? TYPE_LABELS[viewItem.email_type].bn : TYPE_LABELS[viewItem.email_type].en}</span>
+              <span>·</span>
+              <span>{isBn ? "প্রাপক" : "Recipients"}: {viewItem.recipient_count}</span>
+              <span>·</span>
+              <span>{new Date(viewItem.created_at).toLocaleString(locale)}</span>
+            </div>
+
+            <div className="space-y-3 max-h-[50vh] overflow-y-auto">
+              <div>
+                <p className="text-xs font-semibold text-gray-500 mb-1">{isBn ? "বিষয় (বাংলা)" : "Subject (Bengali)"}</p>
+                <p className="text-sm text-gray-800 bg-gray-50 rounded-lg px-3 py-2">{viewItem.subject_bn}</p>
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-gray-500 mb-1">{isBn ? "বিষয় (ইংরেজি)" : "Subject (English)"}</p>
+                <p className="text-sm text-gray-800 bg-gray-50 rounded-lg px-3 py-2">{viewItem.subject_en}</p>
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-gray-500 mb-1">{isBn ? "বার্তা (বাংলা)" : "Message (Bengali)"}</p>
+                <p className="text-sm text-gray-700 bg-gray-50 rounded-lg px-3 py-2 whitespace-pre-wrap">{viewItem.message_bn}</p>
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-gray-500 mb-1">{isBn ? "বার্তা (ইংরেজি)" : "Message (English)"}</p>
+                <p className="text-sm text-gray-700 bg-gray-50 rounded-lg px-3 py-2 whitespace-pre-wrap">{viewItem.message_en}</p>
+              </div>
+            </div>
+
+            <div className="flex gap-3 pt-1">
+              <button
+                onClick={() => { setResendTarget(viewItem); setViewItem(null); }}
+                className="flex-1 inline-flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2.5 rounded-xl transition-colors text-sm"
+              >
+                <RefreshCw className="w-4 h-4" />
+                {isBn ? "পুনরায় পাঠান" : "Resend"}
+              </button>
+              <button
+                onClick={() => setViewItem(null)}
+                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2.5 rounded-xl transition-colors text-sm"
+              >
+                {isBn ? "বন্ধ করুন" : "Close"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {resendTarget && (
+        <ConfirmModal
+          icon={<RefreshCw className="w-6 h-6 text-amber-500" />}
+          title={isBn ? "ইমেইল পুনরায় পাঠাবেন?" : "Resend this email?"}
+          description={
+            isBn
+              ? `"${resendTarget.subject_bn}" শিরোনামের ইমেইলটি একই বিষয়বস্তু সহ আবার পাঠানো হবে।`
+              : `"${resendTarget.subject_en}" will be sent again with the same content to its audience.`
+          }
+          confirmLabel={isBn ? "হ্যাঁ, পুনরায় পাঠান" : "Yes, Resend"}
+          loading={resending}
+          onConfirm={handleResend}
+          onCancel={() => setResendTarget(null)}
+        />
+      )}
     </div>
   );
 }

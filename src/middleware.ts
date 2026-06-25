@@ -12,7 +12,7 @@ const intlMiddleware = createMiddleware({
 const ADMIN_PATHS       = ['/admin']
 const DELIVERY_PATHS    = ['/delivery']
 const AUTH_PATHS        = ['/auth/login', '/auth/register']
-const PROTECTED_PATHS   = ['/profile', '/orders']
+const PROTECTED_PATHS   = ['/profile', '/orders', '/notifications']
 const MAINTENANCE_PATHS = ['/maintenance', '/auth/login']
 
 // Cached in-process (single Node server) so we don't hit the backend on every request.
