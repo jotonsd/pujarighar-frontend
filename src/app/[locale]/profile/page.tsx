@@ -6,20 +6,25 @@ import ToggleSwitch from "@/components/ui/forms/ToggleSwitch";
 import PageHeader from "@/components/ui/PageHeader";
 import { toast } from "@/store/toastStore";
 import Cookies from "js-cookie";
-import { Bell, Camera, Lock, User as UserIcon } from "lucide-react";
+import { Bell, Camera, Globe, Lock, User as UserIcon } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
-type Tab = "profile" | "notifications" | "password";
+type Tab = "profile" | "password" | "language" | "notifications";
 
 export default function ProfilePage() {
   const t = useTranslations();
   const locale = useLocale();
   const isBn = locale === "bn";
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   const { data: me } = useGetMeQuery();
   const isCustomer = me?.role === "CUSTOMER";
-  const [tab, setTab] = useState<Tab>("profile");
+  const tabParam = searchParams.get("tab") as Tab | null;
+  const [tab, setTab] = useState<Tab>(tabParam ?? "profile");
 
   const [form, setForm] = useState({
     full_name_bn: "",
@@ -82,6 +87,20 @@ export default function ProfilePage() {
     }
   };
 
+  const handleLanguageChange = async (lang: "bn" | "en") => {
+    try {
+      const updated = await updateMe({ preferred_language: lang }).unwrap();
+      Cookies.set("user", JSON.stringify(updated), { expires: 7 });
+      toast.success(lang === "bn" ? "ভাষা পরিবর্তন হয়েছে" : "Language updated");
+      if (lang !== locale) {
+        const newPath = pathname.replace(`/${locale}`, `/${lang}`);
+        router.push(`${newPath}?tab=language`);
+      }
+    } catch {
+      toast.error(locale === "bn" ? "আপডেট ব্যর্থ হয়েছে" : "Update failed");
+    }
+  };
+
   const handleNotifyToggle = async (
     key: "notify_marketing" | "notify_new_product" | "notify_new_package" | "notify_offers",
     value: boolean,
@@ -132,6 +151,7 @@ export default function ProfilePage() {
   const TABS: { key: Tab; icon: React.ReactNode; bn: string; en: string }[] = [
     { key: "profile", icon: <UserIcon className="w-4 h-4" />, bn: "প্রোফাইল", en: "Profile" },
     { key: "password", icon: <Lock className="w-4 h-4" />, bn: "পাসওয়ার্ড পরিবর্তন", en: "Change Password" },
+    { key: "language", icon: <Globe className="w-4 h-4" />, bn: "ভাষা পছন্দ", en: "Preferred Language" },
     ...(isCustomer
       ? [{ key: "notifications" as Tab, icon: <Bell className="w-4 h-4" />, bn: "নোটিফিকেশন সেটিং", en: "Notification Settings" }]
       : []),
@@ -140,7 +160,7 @@ export default function ProfilePage() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-3">
       <PageHeader
-        title={isCustomer ? (isBn ? "সেটিং" : "Settings") : t("profile.title")}
+        title={isBn ? "সেটিং" : "Settings"}
         description={
           locale === "bn"
             ? "আপনার অ্যাকাউন্ট ও পছন্দসমূহ পরিচালনা করুন"
@@ -180,11 +200,12 @@ export default function ProfilePage() {
                     className="w-20 h-20 rounded-full bg-amber-100 border-2 border-amber-200 overflow-hidden flex items-center justify-center cursor-pointer"
                     onClick={() => fileInputRef.current?.click()}
                   >
-                    {avatarPreview ? (
+                    {(avatarPreview || me?.profile?.avatar) ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
-                        src={avatarPreview}
+                        src={avatarPreview || me?.profile?.avatar || ""}
                         alt="avatar"
+                        referrerPolicy="no-referrer"
                         className="w-full h-full object-cover"
                       />
                     ) : (
@@ -310,6 +331,38 @@ export default function ProfilePage() {
                     : (locale === "bn" ? "পাসওয়ার্ড পরিবর্তন করুন" : "Change Password")}
                 </button>
               </form>
+            </div>
+          )}
+
+          {tab === "language" && (
+            <div className="card max-w-md space-y-4">
+              <h2 className="font-semibold text-gray-700 flex items-center gap-2">
+                <Globe className="w-4 h-4" />
+                {isBn ? "ভাষা পছন্দ" : "Preferred Language"}
+              </h2>
+              <p className="text-xs text-gray-400">
+                {isBn
+                  ? "এই ভাষায় আপনি ইমেইল ও নোটিফিকেশন পাবেন"
+                  : "You'll receive emails and notifications in this language"}
+              </p>
+              <div className="flex gap-2">
+                {[
+                  { code: "bn" as const, label: "বাংলা" },
+                  { code: "en" as const, label: "English" },
+                ].map((opt) => (
+                  <button
+                    key={opt.code}
+                    onClick={() => handleLanguageChange(opt.code)}
+                    className={`flex-1 py-2.5 rounded-lg text-sm font-medium border transition-colors ${
+                      (me?.preferred_language ?? "bn") === opt.code
+                        ? "bg-amber-500 text-white border-amber-500"
+                        : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
 
