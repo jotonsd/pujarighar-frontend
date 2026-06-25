@@ -63,6 +63,11 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL(`/${locale}/maintenance`, request.url))
   }
 
+  // Send admins straight to the POS page from the homepage
+  if (pathWithoutLocale === '/' && role === 'ADMIN') {
+    return NextResponse.redirect(new URL(`/${locale}/admin/orders/new`, request.url))
+  }
+
   // Redirect authenticated users away from auth pages
   if (AUTH_PATHS.some((p) => pathWithoutLocale.startsWith(p)) && accessToken) {
     return NextResponse.redirect(new URL(`/${locale}`, request.url))
