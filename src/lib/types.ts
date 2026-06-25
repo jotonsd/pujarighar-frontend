@@ -43,6 +43,10 @@ export interface Profile {
   thana: string
   post_code: string
   cashback_balance: string
+  notify_marketing: boolean
+  notify_new_product: boolean
+  notify_new_package: boolean
+  notify_offers: boolean
   created_at: string
   updated_at: string
 }
