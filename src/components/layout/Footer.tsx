@@ -165,13 +165,13 @@ export default async function Footer() {
             {bn ? "সর্বস্বত্ব সংরক্ষিত।" : "All rights reserved."}
           </p>
           <div className="flex items-center gap-3 text-xs text-gray-500">
-            <Link href={`/${locale}`} className="hover:text-amber-400 transition-colors">
+            <Link href={`/${locale}/privacy-policy`} className="hover:text-amber-400 transition-colors">
               {bn ? "গোপনীয়তা নীতি" : "Privacy Policy"}
             </Link>
-            <Link href={`/${locale}`} className="hover:text-amber-400 transition-colors">
+            <Link href={`/${locale}/terms-of-service`} className="hover:text-amber-400 transition-colors">
               {bn ? "শর্তাবলী" : "Terms of Service"}
             </Link>
-            <Link href={`/${locale}`} className="hover:text-amber-400 transition-colors">
+            <Link href={`/${locale}/return-policy`} className="hover:text-amber-400 transition-colors">
               {bn ? "রিটার্ন নীতি" : "Return Policy"}
             </Link>
           </div>
