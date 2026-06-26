@@ -41,6 +41,18 @@ export default function ProductList() {
   }
 
   const columns: Column<Product>[] = [
+    {
+      header: locale === 'bn' ? 'ছবি' : 'Image',
+      accessor: p => p.images?.[0]?.image ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={p.images[0].image} alt="" className="w-12 h-12 object-cover rounded-lg border border-gray-100" />
+      ) : (
+        <div className="w-12 h-12 rounded-lg border border-gray-100 bg-gray-50 flex items-center justify-center text-gray-300 text-xs">
+          —
+        </div>
+      ),
+      className: 'px-4 py-2 w-20',
+    },
     { header: 'SKU', accessor: 'sku', className: 'px-4 py-3 text-sm text-gray-500 font-mono' },
     {
       header: t('product.name'),

@@ -246,11 +246,12 @@ export default function LoginPage() {
               </svg>
               <span className="truncate">
                 {isGoogleLoading
-                  ? (isBn ? "..." : "Connecting...")
-                  : "Google"}
+                  ? (isBn ? "সংযুক্ত হচ্ছে..." : "Connecting...")
+                  : (isBn ? "Google দিয়ে লগইন করুন" : "Sign in with Google")}
               </span>
             </button>
 
+            {/* Facebook login temporarily disabled until app verification is complete
             <button
               type="button"
               onClick={startFacebookLogin}
@@ -269,6 +270,7 @@ export default function LoginPage() {
                   : "Facebook"}
               </span>
             </button>
+            */}
           </div>
 
           <div className="mt-5 text-center text-sm">
