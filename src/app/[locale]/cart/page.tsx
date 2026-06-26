@@ -16,7 +16,7 @@ import {
 } from "@/api/shipping/shippingApi";
 import OfferBanners from "@/components/products/OfferBanners";
 import { FloatingInput, FloatingTextarea } from "@/components/ui/forms";
-import Spinner from "@/components/ui/Spinner";
+import { CartSkeleton } from "@/components/ui/skeletons";
 import { useAuthStore } from "@/store/authStore";
 import { useCartStore } from "@/store/cartStore";
 import { useGuestCartStore } from "@/store/guestCartStore";
@@ -577,7 +577,13 @@ export default function CartPage() {
   }
 
   if (isAuthenticated) {
-    if (isLoading) return <Spinner />;
+    if (isLoading) {
+      return (
+        <div className="max-w-7xl mx-auto px-4 py-3">
+          <CartSkeleton />
+        </div>
+      );
+    }
     const items = cart?.items ?? [];
     const confirmLines = items.map(i => ({
       label: locale === "bn" ? i.product_name_bn : i.product_name_en,

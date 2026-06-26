@@ -50,9 +50,12 @@ export async function middleware(request: NextRequest) {
   // Strip locale prefix to get the route
   const pathWithoutLocale = pathname.replace(`/${locale}`, '') || '/'
 
-  const accessToken = request.cookies.get('access_token')?.value
-  const userRaw     = request.cookies.get('user')?.value
-  const role        = userRaw ? JSON.parse(userRaw).role : null
+  // `access_token` is short-lived (1hr) and silently refreshed client-side via
+  // `refresh_token` on 401 — so it's not a reliable "is logged in" signal here.
+  // `refresh_token` (and `user`) live for the full session (3-30 days), so use that.
+  const isLoggedIn = !!request.cookies.get('refresh_token')?.value
+  const userRaw    = request.cookies.get('user')?.value
+  const role       = userRaw ? JSON.parse(userRaw).role : null
 
   // Show maintenance page to everyone except admins (mirrors backend bypass) and login/maintenance routes
   if (
@@ -69,18 +72,18 @@ export async function middleware(request: NextRequest) {
   }
 
   // Redirect authenticated users away from auth pages
-  if (AUTH_PATHS.some((p) => pathWithoutLocale.startsWith(p)) && accessToken) {
+  if (AUTH_PATHS.some((p) => pathWithoutLocale.startsWith(p)) && isLoggedIn) {
     return NextResponse.redirect(new URL(`/${locale}`, request.url))
   }
 
   // Protect customer routes
-  if (PROTECTED_PATHS.some((p) => pathWithoutLocale.startsWith(p)) && !accessToken) {
+  if (PROTECTED_PATHS.some((p) => pathWithoutLocale.startsWith(p)) && !isLoggedIn) {
     return NextResponse.redirect(new URL(`/${locale}/auth/login`, request.url))
   }
 
   // Protect admin routes
   if (ADMIN_PATHS.some((p) => pathWithoutLocale.startsWith(p))) {
-    if (!accessToken) {
+    if (!isLoggedIn) {
       return NextResponse.redirect(new URL(`/${locale}/auth/login`, request.url))
     }
     if (role !== 'ADMIN' && role !== 'WAREHOUSE') {
@@ -90,7 +93,7 @@ export async function middleware(request: NextRequest) {
 
   // Protect delivery routes
   if (DELIVERY_PATHS.some((p) => pathWithoutLocale.startsWith(p))) {
-    if (!accessToken) {
+    if (!isLoggedIn) {
       return NextResponse.redirect(new URL(`/${locale}/auth/login`, request.url))
     }
     if (role !== 'DELIVERY') {
