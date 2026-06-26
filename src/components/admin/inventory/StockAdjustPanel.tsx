@@ -164,6 +164,7 @@ export default function StockAdjustPanel({ product }: Props) {
                     {formatAmount(
                       (parseFloat(adjForm.unit_cost) * parseFloat(adjForm.quantity)).toString(),
                       locale,
+                      2,
                     )}
                     <span className="ml-1 text-xs font-normal text-gray-400">
                       {adjForm.payment_method === "CREDIT"
@@ -222,9 +223,9 @@ export default function StockAdjustPanel({ product }: Props) {
               </div>
               {m.unit_cost && Number(m.unit_cost) > 0 && m.movement_type === "PURCHASE" && (
                 <div className="flex justify-between text-xs text-gray-400 mt-0.5">
-                  <span>{isBn ? "ক্রয় মূল্য" : "Cost"}: {formatAmount(m.unit_cost, locale)}</span>
+                  <span>{isBn ? "ক্রয় মূল্য" : "Cost"}: {formatAmount(m.unit_cost, locale, 2)}</span>
                   <span>{isBn ? "মোট" : "Total"}: {formatAmount(
-                    (parseFloat(m.unit_cost) * parseFloat(m.quantity)).toString(), locale,
+                    (parseFloat(m.unit_cost) * parseFloat(m.quantity)).toString(), locale, 2,
                   )}</span>
                 </div>
               )}
