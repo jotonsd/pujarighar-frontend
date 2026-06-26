@@ -237,7 +237,7 @@ function ManualEntryModal({
                 {isBn ? "মোট ডেবিট" : "Total Debit"}
               </p>
               <p className="text-gray-800">
-                {formatAmount(String(totalDebit.toFixed(2)), "en")}
+                {formatAmount(String(totalDebit.toFixed(2)), "en", 2)}
               </p>
             </div>
             <div className="text-center">
@@ -245,7 +245,7 @@ function ManualEntryModal({
                 {isBn ? "মোট ক্রেডিট" : "Total Credit"}
               </p>
               <p className="text-gray-800">
-                {formatAmount(String(totalCredit.toFixed(2)), "en")}
+                {formatAmount(String(totalCredit.toFixed(2)), "en", 2)}
               </p>
             </div>
             <div className="text-center">
@@ -260,6 +260,7 @@ function ManualEntryModal({
                   : formatAmount(
                       String(Math.abs(totalDebit - totalCredit).toFixed(2)),
                       "en",
+                      2,
                     )}
               </p>
             </div>
@@ -453,7 +454,7 @@ export default function JournalPage() {
 
                       <td className="px-4 py-2 text-right font-bold text-gray-800">
                         {Number(line.debit) ? (
-                          formatAmount(line.debit, locale, 0)
+                          formatAmount(line.debit, locale, 2)
                         ) : (
                           <span className="text-gray-300">—</span>
                         )}
@@ -461,7 +462,7 @@ export default function JournalPage() {
 
                       <td className="px-4 py-2 text-right font-bold text-gray-800">
                         {Number(line.credit) ? (
-                          formatAmount(line.credit, locale, 0)
+                          formatAmount(line.credit, locale, 2)
                         ) : (
                           <span className="text-gray-300">—</span>
                         )}

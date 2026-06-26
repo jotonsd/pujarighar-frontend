@@ -105,7 +105,7 @@ export default function ReportsPage() {
                 ].map(({ label, value, color }) => (
                   <div key={label} className="flex justify-between py-3 border-b last:border-0">
                     <span className="text-gray-700">{label}</span>
-                    <span className={`font-bold ${color}`}>{formatAmount(value, locale)}</span>
+                    <span className={`font-bold ${color}`}>{formatAmount(value, locale, 2)}</span>
                   </div>
                 ))}
               </div>
@@ -122,7 +122,7 @@ export default function ReportsPage() {
                         <p className="text-xs text-amber-500">{s.percentage}%</p>
                       </div>
                       <span className={`font-bold text-sm ${Number(s.share_amount) >= 0 ? "text-green-700" : "text-amber-700"}`}>
-                        {formatAmount(s.share_amount, locale)}
+                        {formatAmount(s.share_amount, locale, 2)}
                       </span>
                     </div>
                   ))}
@@ -198,12 +198,12 @@ export default function ReportsPage() {
                           </td>
                           <td className="px-4 py-3 text-right text-sm">
                             {Number(r.debit)
-                              ? formatAmount(r.debit, locale, 0)
+                              ? formatAmount(r.debit, locale, 2)
                               : "—"}
                           </td>
                           <td className="px-4 py-3 text-right text-sm">
                             {Number(r.credit)
-                              ? formatAmount(r.credit, locale, 0)
+                              ? formatAmount(r.credit, locale, 2)
                               : "—"}
                           </td>
                         </tr>
@@ -218,10 +218,10 @@ export default function ReportsPage() {
                           {locale === "bn" ? "মোট" : "Total"}
                         </td>
                         <td className="px-4 py-3 text-right text-sm font-bold text-gray-800">
-                          {formatAmount(totalDebit, locale, 0)}
+                          {formatAmount(totalDebit, locale, 2)}
                         </td>
                         <td className="px-4 py-3 text-right text-sm font-bold text-gray-800">
-                          {formatAmount(totalCredit, locale, 0)}
+                          {formatAmount(totalCredit, locale, 2)}
                         </td>
                       </tr>
                     </tfoot>

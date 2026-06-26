@@ -246,7 +246,7 @@ function PaymentHistoryModal({
       header: isBn ? "নিট লাভ" : "Net Profit",
       accessor: p => (
         <span className="text-gray-600">
-          {formatAmount(p.total_profit, locale)}
+          {formatAmount(p.total_profit, locale, 2)}
         </span>
       ),
       headerClassName:
@@ -257,7 +257,7 @@ function PaymentHistoryModal({
       header: isBn ? "প্রাপ্য" : "Share",
       accessor: p => (
         <span className="font-semibold text-green-600">
-          {formatAmount(p.share_amount, locale)}
+          {formatAmount(p.share_amount, locale, 2)}
         </span>
       ),
       headerClassName:
@@ -268,7 +268,7 @@ function PaymentHistoryModal({
       header: isBn ? "পরিশোধ" : "Paid",
       accessor: p => (
         <span className="text-blue-600">
-          {formatAmount(p.paid_amount, locale)}
+          {formatAmount(p.paid_amount, locale, 2)}
         </span>
       ),
       headerClassName:
@@ -281,7 +281,7 @@ function PaymentHistoryModal({
         <span
           className={`font-semibold ${parseFloat(p.balance) > 0 ? "text-amber-600" : "text-gray-400"}`}
         >
-          {formatAmount(p.balance, locale)}
+          {formatAmount(p.balance, locale, 2)}
         </span>
       ),
       headerClassName:
@@ -355,7 +355,7 @@ function PaymentHistoryModal({
                 {isBn ? "মোট প্রাপ্য (সর্বকাল)" : "Total Share (all time)"}
               </p>
               <p className="font-bold text-green-600">
-                {formatAmount(data.total_share, locale)}
+                {formatAmount(data.total_share, locale, 2)}
               </p>
             </div>
             <div className="text-center border-x">
@@ -363,7 +363,7 @@ function PaymentHistoryModal({
                 {isBn ? "মোট পরিশোধ" : "Total Paid"}
               </p>
               <p className="font-bold text-blue-600">
-                {formatAmount(data.total_paid, locale)}
+                {formatAmount(data.total_paid, locale, 2)}
               </p>
             </div>
             <div className="text-center">
@@ -373,7 +373,7 @@ function PaymentHistoryModal({
               <p
                 className={`font-bold ${parseFloat(totalBalance) > 0 ? "text-amber-600" : "text-gray-400"}`}
               >
-                {formatAmount(totalBalance, locale)}
+                {formatAmount(totalBalance, locale, 2)}
               </p>
             </div>
           </div>
@@ -434,7 +434,7 @@ function PaymentHistoryModal({
                         <p
                           className={`text-xl font-bold ${netProfit >= 0 ? "text-green-600" : "text-red-600"}`}
                         >
-                          {formatAmount(plData.net_profit, locale)}
+                          {formatAmount(plData.net_profit, locale, 2)}
                         </p>
                         {netProfit < 0 && (
                           <p className="text-xs text-red-500 mt-0.5">
@@ -452,7 +452,7 @@ function PaymentHistoryModal({
                         </p>
                         <p className="text-xl font-bold text-amber-600">
                           {autoShare
-                            ? formatAmount(autoShare, locale)
+                            ? formatAmount(autoShare, locale, 2)
                             : "৳ 0.00"}
                         </p>
                       </div>
@@ -472,7 +472,7 @@ function PaymentHistoryModal({
                     {isBn ? "নিট লাভ" : "Net Profit"}
                   </p>
                   <p className="text-xl font-bold text-green-600">
-                    {formatAmount(editingPayment.total_profit, locale)}
+                    {formatAmount(editingPayment.total_profit, locale, 2)}
                   </p>
                 </div>
                 <div className="text-right">
@@ -480,7 +480,7 @@ function PaymentHistoryModal({
                     {isBn ? "প্রাপ্য অংশ" : "Share Amount"}
                   </p>
                   <p className="text-xl font-bold text-amber-600">
-                    {formatAmount(editingPayment.share_amount, locale)}
+                    {formatAmount(editingPayment.share_amount, locale, 2)}
                   </p>
                 </div>
               </div>
@@ -682,7 +682,7 @@ export default function PartnersPage() {
       header: isBn ? "বিনিয়োগ" : "Invested",
       accessor: p => (
         <span className="font-bold text-gray-700">
-          {formatAmount(p.invested_amount || "0", locale)}
+          {formatAmount(p.invested_amount || "0", locale, 2)}
         </span>
       ),
       headerClassName:
@@ -704,7 +704,7 @@ export default function PartnersPage() {
       header: isBn ? "মোট প্রাপ্য" : "Total Share",
       accessor: p => (
         <span className="font-bold text-green-600">
-          {formatAmount(p.total_share || "0", locale)}
+          {formatAmount(p.total_share || "0", locale, 2)}
         </span>
       ),
       headerClassName:
@@ -715,7 +715,7 @@ export default function PartnersPage() {
       header: isBn ? "পরিশোধ" : "Paid",
       accessor: p => (
         <span className="font-bold text-blue-600">
-          {formatAmount(p.total_paid || "0", locale)}
+          {formatAmount(p.total_paid || "0", locale, 2)}
         </span>
       ),
       headerClassName:
@@ -728,7 +728,7 @@ export default function PartnersPage() {
         <span
           className={`font-bold ${parseFloat(p.total_balance || "0") > 0 ? "text-amber-600" : "text-gray-400"}`}
         >
-          {formatAmount(p.total_balance || "0", locale)}
+          {formatAmount(p.total_balance || "0", locale, 2)}
         </span>
       ),
       headerClassName:
@@ -791,7 +791,7 @@ export default function PartnersPage() {
               {isBn ? "মোট বিনিয়োগ" : "Total Invested"}
             </p>
             <p className="text-2xl font-bold text-amber-600">
-              {formatAmount(String(totalInvested), locale)}
+              {formatAmount(String(totalInvested), locale, 2)}
             </p>
           </div>
           <div className="card text-center py-4">
@@ -831,7 +831,7 @@ export default function PartnersPage() {
             <p
               className={`text-2xl font-bold ${totalOutstanding > 0 ? "text-red-600" : "text-gray-400"}`}
             >
-              {formatAmount(String(totalOutstanding.toFixed(2)), locale)}
+              {formatAmount(String(totalOutstanding.toFixed(2)), locale, 2)}
             </p>
           </div>
         </div>
