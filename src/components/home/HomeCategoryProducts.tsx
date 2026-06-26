@@ -40,7 +40,7 @@ export default function HomeCategoryProducts() {
         <section key={category.id}>
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-2">
-              {category.icon && <span className="text-2xl">{category.icon}</span>}
+              <span className="text-2xl">🪔</span>
               <h2 className="text-xl font-bold text-gray-800">
                 {isBn ? category.name_bn : category.name_en}
               </h2>
