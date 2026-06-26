@@ -1,6 +1,7 @@
 import { getLocale } from "next-intl/server";
 import Image from "next/image";
 import Link from "next/link";
+import { Mail, MapPin, Phone } from "lucide-react";
 import FooterOrderLink from "./FooterOrderLink";
 
 async function fetchSettings() {
@@ -50,15 +51,41 @@ export default async function Footer() {
             {/* Social links */}
             <div className="flex gap-3">
               {[
-                { label: "Facebook", icon: "f", href: "#" },
-                { label: "Instagram", icon: "in", href: "#" },
-                { label: "YouTube", icon: "▶", href: "#" },
+                {
+                  label: "Facebook",
+                  href: "https://www.facebook.com/pujarighar/",
+                  icon: (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M22 12.06C22 6.51 17.52 2 12 2S2 6.51 2 12.06c0 5 3.66 9.15 8.44 9.94v-7.03H7.9v-2.91h2.54V9.84c0-2.5 1.49-3.89 3.78-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.87h2.78l-.45 2.91h-2.33V22c4.78-.79 8.44-4.94 8.44-9.94z" />
+                    </svg>
+                  ),
+                },
+                {
+                  label: "Instagram",
+                  href: "#",
+                  icon: (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2c2.72 0 3.06.01 4.12.06 1.07.05 1.79.22 2.43.46.66.25 1.21.6 1.76 1.15.5.49.86 1.01 1.15 1.76.24.64.41 1.36.46 2.43.05 1.06.06 1.4.06 4.12s-.01 3.06-.06 4.12c-.05 1.07-.22 1.79-.46 2.43-.25.66-.6 1.21-1.15 1.76-.49.5-1.01.86-1.76 1.15-.64.24-1.36.41-2.43.46-1.06.05-1.4.06-4.12.06s-3.06-.01-4.12-.06c-1.07-.05-1.79-.22-2.43-.46-.66-.25-1.21-.6-1.76-1.15-.5-.49-.86-1.01-1.15-1.76-.24-.64-.41-1.36-.46-2.43C2.01 15.06 2 14.72 2 12s.01-3.06.06-4.12c.05-1.07.22-1.79.46-2.43.25-.66.6-1.21 1.15-1.76.49-.5 1.01-.86 1.76-1.15.64-.24 1.36-.41 2.43-.46C8.94 2.01 9.28 2 12 2zm0 5a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 8.2a3.2 3.2 0 1 1 0-6.4 3.2 3.2 0 0 1 0 6.4zm5.4-9a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4z" />
+                    </svg>
+                  ),
+                },
+                {
+                  label: "YouTube",
+                  href: "#",
+                  icon: (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M21.8 8.001s-.2-1.4-.8-2c-.77-.8-1.63-.8-2.03-.86C16.1 5 12 5 12 5h-.01s-4.1 0-6.97.15c-.4.05-1.26.06-2.03.86-.6.6-.8 2-.8 2S2 9.6 2 11.2v1.6c0 1.6.2 3.2.2 3.2s.2 1.4.8 2c.77.8 1.78.78 2.23.86C6.9 19 12 19 12 19s4.1 0 6.97-.15c.4-.06 1.26-.06 2.03-.86.6-.6.8-2 .8-2s.2-1.6.2-3.2v-1.6c0-1.6-.2-3.2-.2-3.2zM9.96 14.5v-5l5.4 2.5-5.4 2.5z" />
+                    </svg>
+                  ),
+                },
               ].map(s => (
                 <a
                   key={s.label}
                   href={s.href}
+                  target={s.href !== "#" ? "_blank" : undefined}
+                  rel={s.href !== "#" ? "noopener noreferrer" : undefined}
                   aria-label={s.label}
-                  className="w-9 h-9 rounded-full bg-gray-800 hover:bg-amber-600 flex items-center justify-center text-xs font-bold text-gray-300 hover:text-white transition-colors"
+                  className="w-9 h-9 rounded-full bg-gray-800 hover:bg-amber-600 flex items-center justify-center text-gray-300 hover:text-white transition-colors"
                 >
                   {s.icon}
                 </a>
@@ -119,19 +146,19 @@ export default async function Footer() {
             <ul className="space-y-3">
               {address && (
                 <li className="flex items-start gap-2.5 text-sm text-gray-400">
-                  <span className="mt-0.5 shrink-0">📍</span>
+                  <MapPin className="w-4 h-4 mt-0.5 shrink-0" />
                   <span>{address}</span>
                 </li>
               )}
               {phone && (
                 <li className="flex items-center gap-2.5 text-sm text-gray-400">
-                  <span className="shrink-0">📞</span>
+                  <Phone className="w-4 h-4 shrink-0" />
                   <a href={`tel:${phone}`} className="hover:text-amber-400 transition-colors">{phone}</a>
                 </li>
               )}
               {email && (
                 <li className="flex items-center gap-2.5 text-sm text-gray-400">
-                  <span className="shrink-0">✉️</span>
+                  <Mail className="w-4 h-4 shrink-0" />
                   <a href={`mailto:${email}`} className="hover:text-amber-400 transition-colors">{email}</a>
                 </li>
               )}
