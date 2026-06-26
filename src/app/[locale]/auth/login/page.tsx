@@ -1,15 +1,16 @@
 "use client";
 
-import { useGoogleLoginMutation, useLoginMutation } from "@/api/auth/authApi";
+import { useFacebookLoginMutation, useGoogleLoginMutation, useLoginMutation } from "@/api/auth/authApi";
 import { Checkbox, FloatingInput } from "@/components/ui/forms";
 import { useAuthStore } from "@/store/authStore";
 import { toast } from "@/store/toastStore";
+import { facebookLogin, loadFacebookSdk } from "@/lib/facebookSdk";
 import { useGoogleLogin } from "@react-oauth/google";
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function LoginPage() {
   const t = useTranslations();
@@ -23,6 +24,42 @@ export default function LoginPage() {
   const [login, { isLoading }] = useLoginMutation();
   const [googleLoginMutation, { isLoading: isGoogleLoading }] =
     useGoogleLoginMutation();
+  const [facebookLoginMutation, { isLoading: isFacebookLoading }] =
+    useFacebookLoginMutation();
+
+  useEffect(() => {
+    const appId = process.env.NEXT_PUBLIC_FACEBOOK_APP_ID;
+    if (appId) loadFacebookSdk(appId);
+  }, []);
+
+  const handleAuthSuccess = (data: { user: { role: string; preferred_language?: string } }) => {
+    toast.success(isBn ? "সফলভাবে লগইন হয়েছে" : "Logged in successfully");
+    const role = data.user?.role;
+    const dest = data.user?.preferred_language || "bn";
+    if (role === "ADMIN" || role === "WAREHOUSE") {
+      router.push(`/${dest}/admin/orders/new`);
+    } else if (role === "DELIVERY") {
+      router.push(`/${dest}/delivery/orders`);
+    } else {
+      router.push(`/${dest}`);
+    }
+  };
+
+  const startFacebookLogin = async () => {
+    try {
+      const accessToken = await facebookLogin();
+      const data = await facebookLoginMutation({ access_token: accessToken }).unwrap();
+      setAuth(data.user, data.access, data.refresh, rememberMe);
+      handleAuthSuccess(data);
+    } catch (err: unknown) {
+      const e = err as { data?: { errors?: { message_bn?: string; message_en?: string } } };
+      toast.error(
+        isBn
+          ? (e.data?.errors?.message_bn ?? "Facebook লগইন ব্যর্থ হয়েছে")
+          : (e.data?.errors?.message_en ?? "Facebook login failed"),
+      );
+    }
+  };
 
   const startGoogleLogin = useGoogleLogin({
     flow: "implicit",
@@ -30,16 +67,7 @@ export default function LoginPage() {
       try {
         const data = await googleLoginMutation({ access_token }).unwrap();
         setAuth(data.user, data.access, data.refresh, rememberMe);
-        toast.success(isBn ? "সফলভাবে লগইন হয়েছে" : "Logged in successfully");
-        const role = data.user?.role;
-        const dest = data.user?.preferred_language || "bn";
-        if (role === "ADMIN" || role === "WAREHOUSE") {
-          router.push(`/${dest}/admin/orders/new`);
-        } else if (role === "DELIVERY") {
-          router.push(`/${dest}/delivery/orders`);
-        } else {
-          router.push(`/${dest}`);
-        }
+        handleAuthSuccess(data);
       } catch {
         toast.error(isBn ? "Google লগইন ব্যর্থ হয়েছে" : "Google login failed");
       }
@@ -53,16 +81,7 @@ export default function LoginPage() {
     try {
       const data = await login(form).unwrap();
       setAuth(data.user, data.access, data.refresh, rememberMe);
-      toast.success(isBn ? "সফলভাবে লগইন হয়েছে" : "Logged in successfully");
-      const role = data.user?.role;
-      const dest = data.user?.preferred_language || "bn";
-      if (role === "ADMIN" || role === "WAREHOUSE") {
-        router.push(`/${dest}/admin/orders/new`);
-      } else if (role === "DELIVERY") {
-        router.push(`/${dest}/delivery/orders`);
-      } else {
-        router.push(`/${dest}`);
-      }
+      handleAuthSuccess(data);
     } catch (err: unknown) {
       const e = err as {
         data?: {
@@ -193,44 +212,64 @@ export default function LoginPage() {
             <div className="flex-1 h-px bg-gray-200" />
           </div>
 
-          {/* Google Sign-In */}
-          <button
-            type="button"
-            onClick={() => startGoogleLogin()}
-            disabled={isGoogleLoading}
-            className="mt-4 w-full flex items-center justify-center gap-3 py-3 px-4 border border-gray-300 rounded-xl bg-white hover:bg-gray-50 text-sm font-medium text-gray-700 transition-colors disabled:opacity-60 disabled:pointer-events-none"
-          >
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 18 18"
-              xmlns="http://www.w3.org/2000/svg"
+          {/* Social Sign-In */}
+          <div className="mt-4 flex gap-3">
+            <button
+              type="button"
+              onClick={() => startGoogleLogin()}
+              disabled={isGoogleLoading}
+              className="flex-1 flex items-center justify-center gap-2 py-3 px-4 border border-gray-300 rounded-xl bg-white hover:bg-gray-50 text-sm font-medium text-gray-700 transition-colors disabled:opacity-60 disabled:pointer-events-none"
             >
-              <path
-                d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"
-                fill="#4285F4"
-              />
-              <path
-                d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"
-                fill="#34A853"
-              />
-              <path
-                d="M3.964 10.706A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.706V4.962H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.038l3.007-2.332z"
-                fill="#FBBC05"
-              />
-              <path
-                d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.962L3.964 6.294C4.672 4.167 6.656 3.58 9 3.58z"
-                fill="#EA4335"
-              />
-            </svg>
-            {isGoogleLoading
-              ? isBn
-                ? "সংযুক্ত হচ্ছে..."
-                : "Connecting..."
-              : isBn
-                ? "Google দিয়ে লগইন করুন"
-                : "Sign in with Google"}
-          </button>
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 18 18"
+                xmlns="http://www.w3.org/2000/svg"
+                className="shrink-0"
+              >
+                <path
+                  d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"
+                  fill="#4285F4"
+                />
+                <path
+                  d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"
+                  fill="#34A853"
+                />
+                <path
+                  d="M3.964 10.706A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.706V4.962H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.038l3.007-2.332z"
+                  fill="#FBBC05"
+                />
+                <path
+                  d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.962L3.964 6.294C4.672 4.167 6.656 3.58 9 3.58z"
+                  fill="#EA4335"
+                />
+              </svg>
+              <span className="truncate">
+                {isGoogleLoading
+                  ? (isBn ? "..." : "Connecting...")
+                  : "Google"}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={startFacebookLogin}
+              disabled={isFacebookLoading}
+              className="flex-1 flex items-center justify-center gap-2 py-3 px-4 border border-gray-300 rounded-xl bg-white hover:bg-gray-50 text-sm font-medium text-gray-700 transition-colors disabled:opacity-60 disabled:pointer-events-none"
+            >
+              <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
+                <path
+                  d="M18 9c0-4.97-4.03-9-9-9S0 4.03 0 9c0 4.49 3.29 8.21 7.59 8.89v-6.3H5.31V9h2.28V6.95c0-2.26 1.34-3.5 3.4-3.5.96 0 1.97.17 1.97.17v2.18h-1.11c-1.09 0-1.43.68-1.43 1.38V9h2.45l-.39 2.59h-2.06v6.3C14.71 17.21 18 13.49 18 9z"
+                  fill="#1877F2"
+                />
+              </svg>
+              <span className="truncate">
+                {isFacebookLoading
+                  ? (isBn ? "..." : "Connecting...")
+                  : "Facebook"}
+              </span>
+            </button>
+          </div>
 
           <div className="mt-5 text-center text-sm">
             <span className="text-gray-500">

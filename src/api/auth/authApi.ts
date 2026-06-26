@@ -14,6 +14,11 @@ export const authApi = baseApi.injectEndpoints({
       transformResponse: (res: { data: AuthResponse }) => res.data,
     }),
 
+    facebookLogin: build.mutation<AuthResponse, { access_token: string }>({
+      query: (body) => ({ url: '/api/auth/facebook/', method: 'POST', body }),
+      transformResponse: (res: { data: AuthResponse }) => res.data,
+    }),
+
     register: build.mutation<AuthResponse, { email: string; phone: string; password: string; full_name_bn: string; full_name_en?: string; referral_code?: string }>({
       query: (body) => ({ url: '/api/auth/register/', method: 'POST', body }),
       transformResponse: (res: { data: AuthResponse }) => res.data,
@@ -59,6 +64,7 @@ export const authApi = baseApi.injectEndpoints({
 export const {
   useLoginMutation,
   useGoogleLoginMutation,
+  useFacebookLoginMutation,
   useRegisterMutation,
   useLogoutMutation,
   useForgotPasswordMutation,
