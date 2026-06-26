@@ -62,7 +62,7 @@ export default function LedgerPage() {
       accessor: l => (
         <span className="text-right block font-bold text-gray-800">
           {Number(l.debit) ? (
-            formatAmount(l.debit, locale, 0)
+            formatAmount(l.debit, locale, 2)
           ) : (
             <span className="text-gray-300 font-normal">—</span>
           )}
@@ -77,7 +77,7 @@ export default function LedgerPage() {
       accessor: l => (
         <span className="text-right block font-bold text-gray-800">
           {Number(l.credit) ? (
-            formatAmount(l.credit, locale, 0)
+            formatAmount(l.credit, locale, 2)
           ) : (
             <span className="text-gray-300 font-normal">—</span>
           )}
@@ -91,7 +91,7 @@ export default function LedgerPage() {
       header: t("balance"),
       accessor: l => (
         <span className="text-right block font-bold text-amber-600">
-          {formatAmount(l.balance, locale, 0)}
+          {formatAmount(l.balance, locale, 2)}
         </span>
       ),
       headerClassName:
@@ -147,12 +147,12 @@ export default function LedgerPage() {
         <div className="flex justify-between  font-bold text-sm text-gray-600 mb-3 px-1">
           <span>
             {locale === "bn" ? "প্রারম্ভিক ব্যালেন্স" : "Opening Balance"}:{" "}
-            <strong>{formatAmount(ledger.opening_balance, locale)}</strong>
+            <strong>{formatAmount(ledger.opening_balance, locale, 2)}</strong>
           </span>
           <span>
             {locale === "bn" ? "সমাপ্তি ব্যালেন্স" : "Closing Balance"}:{" "}
             <strong className="text-amber-600">
-              {formatAmount(ledger.closing_balance, locale)}
+              {formatAmount(ledger.closing_balance, locale, 2)}
             </strong>
           </span>
         </div>

@@ -63,8 +63,8 @@ export default function TrialBalancePage() {
                 <tr key={i} className="hover:bg-gray-50 transition-colors">
                   <td className="px-4 py-3 font-mono text-xs text-gray-500">{r.account.code}</td>
                   <td className="px-4 py-3 text-sm text-gray-700">{locale === "bn" ? r.account.name_bn : r.account.name_en}</td>
-                  <td className="px-4 py-3 text-right text-sm">{Number(r.debit)  ? formatAmount(r.debit,  locale, 0) : "—"}</td>
-                  <td className="px-4 py-3 text-right text-sm">{Number(r.credit) ? formatAmount(r.credit, locale, 0) : "—"}</td>
+                  <td className="px-4 py-3 text-right text-sm">{Number(r.debit)  ? formatAmount(r.debit,  locale, 2) : "—"}</td>
+                  <td className="px-4 py-3 text-right text-sm">{Number(r.credit) ? formatAmount(r.credit, locale, 2) : "—"}</td>
                 </tr>
               ))}
             </tbody>
@@ -73,8 +73,8 @@ export default function TrialBalancePage() {
                 <td colSpan={2} className="px-4 py-3 text-xs font-bold text-gray-700 uppercase">
                   {locale === "bn" ? "মোট" : "Total"}
                 </td>
-                <td className="px-4 py-3 text-right text-sm font-bold text-gray-800">{formatAmount(totalDebit,  locale, 0)}</td>
-                <td className="px-4 py-3 text-right text-sm font-bold text-gray-800">{formatAmount(totalCredit, locale, 0)}</td>
+                <td className="px-4 py-3 text-right text-sm font-bold text-gray-800">{formatAmount(totalDebit,  locale, 2)}</td>
+                <td className="px-4 py-3 text-right text-sm font-bold text-gray-800">{formatAmount(totalCredit, locale, 2)}</td>
               </tr>
             </tfoot>
           </table>

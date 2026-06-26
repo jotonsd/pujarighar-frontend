@@ -47,7 +47,7 @@ export default function ProfitLossPage() {
             ].map(({ label, value, color }) => (
               <div key={label} className="flex justify-between py-3 border-b last:border-0">
                 <span className="text-gray-700">{label}</span>
-                <span className={`font-bold ${color}`}>{formatAmount(value, locale)}</span>
+                <span className={`font-bold ${color}`}>{formatAmount(value, locale, 2)}</span>
               </div>
             ))}
           </div>
@@ -64,7 +64,7 @@ export default function ProfitLossPage() {
                     <p className="text-xs text-amber-500">{formatNumber(s.percentage, locale)}%</p>
                   </div>
                   <span className={`font-bold text-sm ${Number(s.share_amount) >= 0 ? "text-green-700" : "text-red-600"}`}>
-                    {formatAmount(s.share_amount, locale)}
+                    {formatAmount(s.share_amount, locale, 2)}
                   </span>
                 </div>
               ))}

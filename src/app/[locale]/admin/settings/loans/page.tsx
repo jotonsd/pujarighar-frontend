@@ -133,7 +133,7 @@ function LoanPaymentsModal({
       header: isBn ? "পরিমাণ" : "Amount",
       accessor: p => (
         <span className="font-semibold text-gray-800">
-          {formatAmount(p.amount, locale)}
+          {formatAmount(p.amount, locale, 2)}
         </span>
       ),
       headerClassName:
@@ -177,7 +177,7 @@ function LoanPaymentsModal({
             <p className="text-xs text-gray-400">
               {loan.name_en && `${loan.name_en} · `}
               {isBn ? "মূল ঋণ" : "Principal"}:{" "}
-              {formatAmount(loan.principal, locale)} @{" "}
+              {formatAmount(loan.principal, locale, 2)} @{" "}
               {formatNumber(loan.interest_rate, locale)}%{" "}
               {isBn ? "সুদ" : "interest"}
             </p>
@@ -208,7 +208,7 @@ function LoanPaymentsModal({
                 {isBn ? "মোট সুদ পরিশোধ" : "Interest Paid"}
               </p>
               <p className="font-bold text-orange-600">
-                {formatAmount(data.total_interest, locale)}
+                {formatAmount(data.total_interest, locale, 2)}
               </p>
             </div>
             <div className="text-center border-x">
@@ -216,7 +216,7 @@ function LoanPaymentsModal({
                 {isBn ? "আসল পরিশোধ" : "Principal Paid"}
               </p>
               <p className="font-bold text-blue-600">
-                {formatAmount(data.total_principal, locale)}
+                {formatAmount(data.total_principal, locale, 2)}
               </p>
             </div>
             <div className="text-center">
@@ -226,7 +226,7 @@ function LoanPaymentsModal({
               <p
                 className={`font-bold ${remaining > 0 ? "text-red-600" : "text-green-600"}`}
               >
-                {formatAmount(String(remaining.toFixed(2)), locale)}
+                {formatAmount(String(remaining.toFixed(2)), locale, 2)}
               </p>
             </div>
           </div>
@@ -461,7 +461,7 @@ export default function LoansPage() {
       header: isBn ? "মূল ঋণ" : "Principal",
       accessor: l => (
         <span className="font-semibold text-gray-700">
-          {formatAmount(l.principal, locale)}
+          {formatAmount(l.principal, locale, 2)}
         </span>
       ),
       headerClassName:
@@ -483,7 +483,7 @@ export default function LoansPage() {
       header: isBn ? "সুদ পরিশোধ" : "Interest Paid",
       accessor: l => (
         <span className="text-orange-600">
-          {formatAmount(l.total_interest_paid || "0", locale)}
+          {formatAmount(l.total_interest_paid || "0", locale, 2)}
         </span>
       ),
       headerClassName:
@@ -496,7 +496,7 @@ export default function LoansPage() {
         <span
           className={`font-bold ${parseFloat(l.remaining_principal || "0") > 0 ? "text-red-500" : "text-green-600"}`}
         >
-          {formatAmount(l.remaining_principal || "0", locale)}
+          {formatAmount(l.remaining_principal || "0", locale, 2)}
         </span>
       ),
       headerClassName:
@@ -578,7 +578,7 @@ export default function LoansPage() {
               {isBn ? "মোট ঋণ" : "Total Borrowed"}
             </p>
             <p className="text-2xl font-bold text-blue-600">
-              {formatAmount(String(totalPrincipal.toFixed(2)), locale)}
+              {formatAmount(String(totalPrincipal.toFixed(2)), locale, 2)}
             </p>
           </div>
           <div className="card text-center py-4">
@@ -586,7 +586,7 @@ export default function LoansPage() {
               {isBn ? "মোট সুদ পরিশোধ" : "Total Interest Paid"}
             </p>
             <p className="text-2xl font-bold text-orange-500">
-              {formatAmount(String(totalInterest.toFixed(2)), locale)}
+              {formatAmount(String(totalInterest.toFixed(2)), locale, 2)}
             </p>
           </div>
           <div
@@ -598,7 +598,7 @@ export default function LoansPage() {
             <p
               className={`text-2xl font-bold ${totalRemaining > 0 ? "text-red-600" : "text-green-600"}`}
             >
-              {formatAmount(String(totalRemaining.toFixed(2)), locale)}
+              {formatAmount(String(totalRemaining.toFixed(2)), locale, 2)}
             </p>
           </div>
         </div>

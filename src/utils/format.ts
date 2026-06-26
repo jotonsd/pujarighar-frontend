@@ -2,11 +2,17 @@
  * Format a number as currency.
  * In Bangla locale: uses bn-BD which natively produces Bangla numerals & separators (e.g. ৳১,২৩৪)
  * In English locale: standard en-US format (e.g. ৳1,234)
+ *
+ * Defaults to whole-taka display, rounded UP (ceiling) — customer-facing amounts
+ * (cart, checkout, invoices, orders) should never show paisa fractions. Pass
+ * `decimals=2` explicitly for accounting contexts (ledger, journal, trial balance,
+ * profit & loss) where exact figures must be preserved so debits/credits balance.
  */
-export function formatAmount(amount: number | string, locale: string, decimals = 2): string {
+export function formatAmount(amount: number | string, locale: string, decimals = 0): string {
   const num = typeof amount === 'string' ? parseFloat(amount) : amount
   if (isNaN(num)) return '৳0'
-  const formatted = num.toLocaleString(locale === 'bn' ? 'bn-BD' : 'en-US', {
+  const displayNum = decimals === 0 ? Math.ceil(num) : num
+  const formatted = displayNum.toLocaleString(locale === 'bn' ? 'bn-BD' : 'en-US', {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
   })
