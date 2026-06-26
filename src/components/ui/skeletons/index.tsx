@@ -107,6 +107,40 @@ export function ProductDetailSkeleton() {
   );
 }
 
+// ─── Cart ──────────────────────────────────────────────────────────────────────
+
+export function CartSkeleton() {
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="lg:col-span-2">
+        <div className="card divide-y divide-gray-100 p-0 overflow-hidden">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="px-4 py-3 flex items-center gap-3">
+              <Skeleton className="w-11 h-11 rounded-lg shrink-0" />
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-3.5 w-2/3" />
+                <Skeleton className="h-3 w-1/4" />
+              </div>
+              <Skeleton className="h-6 w-20 rounded shrink-0" />
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="card space-y-3">
+        <Skeleton className="h-4 w-1/3" />
+        <Skeleton className="h-16 w-full rounded-lg" />
+        <Skeleton className="h-16 w-full rounded-lg" />
+        <div className="border-t border-gray-100 pt-3 space-y-2">
+          <Skeleton className="h-3.5 w-full" />
+          <Skeleton className="h-3.5 w-full" />
+          <Skeleton className="h-4 w-2/3" />
+        </div>
+        <Skeleton className="h-10 w-full rounded-lg" />
+      </div>
+    </div>
+  );
+}
+
 // ─── Admin Order Detail ───────────────────────────────────────────────────────
 
 export function OrderDetailSkeleton() {
