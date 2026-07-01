@@ -44,9 +44,9 @@ export default function HomePackages() {
     }
   };
 
-  // Autoplay Effect: Slides every 3 seconds if not hovered and items > 3
+  // Autoplay Effect: Slides every 5 seconds if not hovered and items > 2
   useEffect(() => {
-    if (isLoading || packages.length <= 3 || isHovered) return;
+    if (isLoading || packages.length <= 2 || isHovered) return;
 
     const interval = setInterval(() => {
       scroll("right");
@@ -79,7 +79,7 @@ export default function HomePackages() {
           </Link>
 
           {/* Manual Control Slide Buttons */}
-          {!isLoading && packages.length > 3 && (
+          {!isLoading && packages.length > 2 && (
             <div className="hidden md:flex items-center gap-1.5">
               <button
                 onClick={() => scroll("left")}
@@ -117,7 +117,7 @@ export default function HomePackages() {
             </div>
           ))}
         </div>
-      ) : packages.length > 3 ? (
+      ) : packages.length > 2 ? (
         /* Slider Layout with Hover state listeners */
         <div
           className="relative w-full"
@@ -141,7 +141,7 @@ export default function HomePackages() {
           </div>
         </div>
       ) : (
-        /* Fallback Static Grid Layout (When items count is 3 or less) */
+        /* Fallback Static Grid Layout (When items count is 2 or less) */
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           {packages.map(pkg => (
             <PackageCard key={pkg.id} pkg={pkg} locale={locale} />
