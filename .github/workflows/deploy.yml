@@ -1,4 +1,4 @@
-name: Deploy Frontend to cPanel (pujarighar)
+name: Deploy Pujarighar Frontend to VPS
 
 on:
   push:
@@ -14,21 +14,25 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set environment variables
-        run: |
-          if [ "${{ github.ref_name }}" == "production" ]; then
-            echo "DEPLOY_PATH=~/pujarighar.com" >> $GITHUB_ENV
-            echo "NEXT_PUBLIC_API_URL=${{ secrets.PROD_API_URL }}" >> $GITHUB_ENV
-          else
-            echo "DEPLOY_PATH=~/dev.pujarighar.com" >> $GITHUB_ENV
-            echo "NEXT_PUBLIC_API_URL=${{ secrets.DEV_API_URL }}" >> $GITHUB_ENV
-          fi
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: "npm"
+
+      - name: Set environment variables
+        run: |
+          if [ "${{ github.ref_name }}" == "production" ]; then
+            echo "DEPLOY_PATH=/var/www/pujarighar.com" >> $GITHUB_ENV
+            echo "PM2_NAME=pujarighar" >> $GITHUB_ENV
+            echo "PM2_PORT=3003" >> $GITHUB_ENV
+            echo "API_URL=${{ secrets.PROD_API_URL }}" >> $GITHUB_ENV
+          else
+            echo "DEPLOY_PATH=/var/www/dev.pujarighar.com" >> $GITHUB_ENV
+            echo "PM2_NAME=dev-pujarighar" >> $GITHUB_ENV
+            echo "PM2_PORT=3004" >> $GITHUB_ENV
+            echo "API_URL=${{ secrets.DEV_API_URL }}" >> $GITHUB_ENV
+          fi
 
       - name: Install dependencies
         run: npm ci
@@ -36,17 +40,18 @@ jobs:
       - name: Build Next.js (standalone)
         run: npm run build
         env:
-          NEXT_PUBLIC_API_URL: ${{ env.NEXT_PUBLIC_API_URL }}
+          NEXT_PUBLIC_API_URL: ${{ env.API_URL }}
           NEXT_PUBLIC_DEFAULT_LOCALE: ${{ secrets.NEXT_PUBLIC_DEFAULT_LOCALE }}
           NEXT_PUBLIC_GOOGLE_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_GOOGLE_CLIENT_ID }}
 
       - name: Assemble standalone deploy package
         run: |
           mkdir -p deploy
-          cp -r .next/standalone/* deploy/
-          cp -r .next/standalone/.next deploy/.next
+          cp -r .next/standalone/. deploy/
           cp -r .next/static deploy/.next/static
           if [ -d public ]; then cp -r public deploy/public; fi
+          echo "----- deploy/.next contents -----"
+          ls -la deploy/.next/
 
       - name: Setup SSH
         run: |
@@ -58,16 +63,18 @@ jobs:
       - name: Deploy via rsync
         run: |
           rsync -avz --delete \
-            --exclude='.htaccess' \
             -e "ssh -p ${{ secrets.SSH_PORT }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" \
             ./deploy/ \
             ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ env.DEPLOY_PATH }}/
 
-      - name: Restart Node app via cPanel
+      - name: Restart app via PM2
         run: |
           ssh -p ${{ secrets.SSH_PORT }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
             ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} \
-            "mkdir -p ${{ env.DEPLOY_PATH }}/tmp && touch ${{ env.DEPLOY_PATH }}/tmp/restart.txt"
+            "pm2 restart ${{ env.PM2_NAME }} || PORT=${{ env.PM2_PORT }} pm2 start ${{ env.DEPLOY_PATH }}/server.js --name ${{ env.PM2_NAME }}"
+          ssh -p ${{ secrets.SSH_PORT }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
+            ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} \
+            "pm2 save"
 
       - name: Cleanup
         if: always()
