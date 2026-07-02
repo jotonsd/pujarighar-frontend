@@ -16,7 +16,7 @@ export const categoriesApi = baseApi.injectEndpoints({
     }),
 
     createCategory: build.mutation<Category, Partial<Category>>({
-      query: (body) => ({ url: '/api/categories/', method: 'POST', body }),
+      query: (body) => ({ url: '/api/categories/create/', method: 'POST', body }),
       transformResponse: (res: { data: Category }) => res.data,
       invalidatesTags: ['Categories'],
     }),
