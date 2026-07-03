@@ -8,7 +8,7 @@ import { useAuthStore } from "@/store/authStore";
 import { useCartStore } from "@/store/cartStore";
 import { useGuestCartStore } from "@/store/guestCartStore";
 import { formatAmount } from "@/utils/format";
-import { Settings, Cog, Package, LogOut, Copy, Check } from "lucide-react";
+import { Settings, Cog, Package, LogOut, Copy, Check, ScrollText } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
@@ -220,6 +220,16 @@ function ProfileDropdown({
             >
               <Cog className="w-4 h-4" /> {isBn ? "সেটিং" : "Settings"}
             </Link>
+
+            {user.role === "ADMIN" && (
+              <Link
+                href={`/${locale}/admin/logs`}
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-amber-50 hover:text-amber-700 transition-colors"
+              >
+                <ScrollText className="w-4 h-4" /> {isBn ? "লগ ভিউয়ার" : "Log Viewer"}
+              </Link>
+            )}
 
             {user.role === "CUSTOMER" && (
               <Link
