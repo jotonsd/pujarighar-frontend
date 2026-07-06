@@ -6,7 +6,7 @@ import { useLogTailSocket } from "@/api/logs/useLogTailSocket";
 import PageHeader from "@/components/ui/PageHeader";
 import { RefreshCw, Search } from "lucide-react";
 import { useLocale } from "next-intl";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 function formatSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
@@ -85,6 +85,28 @@ export default function LogViewerPage() {
       return next;
     });
   };
+
+  // Auto-scroll to the bottom as new lines arrive, but don't fight the user
+  // if they've scrolled up to read older lines.
+  const preRef = useRef<HTMLPreElement>(null);
+  const stickToBottomRef = useRef(true);
+
+  const handleScroll = () => {
+    const el = preRef.current;
+    if (!el) return;
+    stickToBottomRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < 40;
+  };
+
+  useEffect(() => {
+    stickToBottomRef.current = true;
+  }, [selected]);
+
+  useEffect(() => {
+    const el = preRef.current;
+    if (el && stickToBottomRef.current) {
+      el.scrollTop = el.scrollHeight;
+    }
+  }, [visibleLines]);
 
   return (
     <div>
@@ -189,7 +211,11 @@ export default function LogViewerPage() {
             )}
           </div>
 
-          <pre className="flex-1 min-h-0 bg-gray-900 text-gray-200 rounded-lg p-3 text-[11px] leading-relaxed overflow-y-auto whitespace-pre-wrap break-all font-mono">
+          <pre
+            ref={preRef}
+            onScroll={handleScroll}
+            className="flex-1 min-h-0 bg-gray-900 text-gray-200 rounded-lg p-3 text-[11px] leading-relaxed overflow-y-auto whitespace-pre-wrap break-all font-mono"
+          >
             {!selected
               ? (isBn ? "একটি ফাইল নির্বাচন করুন" : "Select a file")
               : visibleLines.length

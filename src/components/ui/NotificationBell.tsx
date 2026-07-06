@@ -5,20 +5,20 @@ import {
   useMarkAllReadMutation,
   useMarkOneReadMutation,
 } from "@/api/notifications/notificationsApi";
+import { useNotificationSocket } from "@/api/notifications/useNotificationSocket";
 import { useLocale } from "next-intl";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Bell } from "lucide-react";
 
-export default function NotificationBell() {
+export default function NotificationBell({ isAdmin }: { isAdmin: boolean }) {
   const locale = useLocale();
   const isBn = locale === "bn";
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  const { data, refetch } = useGetNotificationsQuery(undefined, {
-    pollingInterval: 30_000,
-  });
+  const { data, refetch } = useGetNotificationsQuery();
+  useNotificationSocket(true, isAdmin);
 
   const [markAll] = useMarkAllReadMutation();
   const [markOne] = useMarkOneReadMutation();

@@ -608,7 +608,7 @@ export default function Navbar() {
               </Link>
             )}
             <LanguageSwitcher />
-            {currentUser && <NotificationBell />}
+            {currentUser && <NotificationBell isAdmin={role === "ADMIN"} />}
 
             {showCart && (
               <Link href={`/${locale}/cart`} className="relative text-gray-600 hover:text-amber-600">

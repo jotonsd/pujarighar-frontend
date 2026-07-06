@@ -269,7 +269,7 @@ export default function ProductDetailPage({
               </button>
             </div>
           )}
-          {desc && <p className="text-gray-600 mb-6 leading-relaxed">{desc}</p>}
+          {desc && <p className="text-gray-600 mb-6 leading-relaxed whitespace-pre-line">{desc}</p>}
         </div>
       </div>
       <ProductReviews productId={params.id} locale={locale} />
