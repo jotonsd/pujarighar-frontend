@@ -29,7 +29,7 @@ const FloatingTextarea = forwardRef<HTMLTextAreaElement, FloatingTextareaProps>(
           <textarea
             ref={ref}
             rows={rows}
-            className={`block pb-2 pt-3 w-full text-sm text-gray-900 bg-transparent rounded-lg border border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-amber-600 peer resize-none ${
+            className={`block pb-2 pt-3 w-full text-sm text-gray-900 bg-transparent rounded-lg border border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-amber-600 peer resize-y ${
               error ? 'border-amber-500 focus:border-amber-500' : ''
             } ${icon ? 'pl-10' : 'pl-2.5'} ${rightElement ? 'pr-10' : 'pr-2.5'} ${className}`}
             placeholder=" "
