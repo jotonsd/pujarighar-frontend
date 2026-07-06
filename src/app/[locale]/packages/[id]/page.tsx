@@ -164,7 +164,7 @@ export default function PackageDetailPage({
 
           {/* Description */}
           {desc && (
-            <p className="text-gray-600 text-sm leading-relaxed">{desc}</p>
+            <p className="text-gray-600 text-sm leading-relaxed whitespace-pre-line">{desc}</p>
           )}
 
           {/* Add to cart */}
