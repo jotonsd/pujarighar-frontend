@@ -1,7 +1,7 @@
 "use client";
 
 import { useGetSuppliersQuery } from "@/api/suppliers/suppliersApi";
-import { FloatingInput } from "@/components/ui/forms";
+import { FloatingSelect } from "@/components/ui/forms";
 import PageHeader from "@/components/ui/PageHeader";
 import TableSkeleton from "@/components/ui/skeletons";
 import { formatAmount } from "@/utils/format";
@@ -12,16 +12,13 @@ export default function SupplierOutstandingReportPage() {
   const locale = useLocale();
   const isBn = locale === "bn";
 
-  const [search, setSearch] = useState("");
+  const [supplierId, setSupplierId] = useState("");
   const [onlyOutstanding, setOnlyOutstanding] = useState(false);
 
   const { data: suppliers = [], isLoading } = useGetSuppliersQuery();
 
   const rows = suppliers
-    .filter(s => {
-      const q = search.toLowerCase();
-      return !q || s.name_bn.toLowerCase().includes(q) || s.name_en.toLowerCase().includes(q);
-    })
+    .filter(s => !supplierId || s.id === supplierId)
     .filter(s => !onlyOutstanding || parseFloat(s.total_balance || "0") > 0)
     .sort((a, b) => parseFloat(b.total_balance || "0") - parseFloat(a.total_balance || "0"));
 
@@ -38,10 +35,13 @@ export default function SupplierOutstandingReportPage() {
 
       {/* Filters */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
-        <FloatingInput
-          label={isBn ? "সরবরাহকারী খুঁজুন" : "Search supplier"}
-          value={search}
-          onChange={e => setSearch(e.target.value)}
+        <FloatingSelect
+          label={isBn ? "সরবরাহকারী" : "Supplier"}
+          value={supplierId}
+          onChange={setSupplierId}
+          showClearButton={!!supplierId}
+          onClear={() => setSupplierId("")}
+          options={suppliers.map(s => ({ value: s.id, label: isBn ? s.name_bn || s.name_en : s.name_en || s.name_bn }))}
         />
         <label className="flex items-center gap-2 text-sm text-gray-600 px-1">
           <input
