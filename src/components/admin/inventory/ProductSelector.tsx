@@ -47,7 +47,17 @@ export default function ProductSelector({ selected, onSelect }: Props) {
               }).map(p => (
                 <tr key={p.id} onClick={() => onSelect(p)}
                   className={`cursor-pointer transition-colors ${selected?.id === p.id ? 'bg-amber-50' : 'hover:bg-gray-50'}`}>
-                  <td className="px-4 py-3 text-sm text-gray-800">{locale === 'bn' ? p.name_bn : p.name_en}</td>
+                  <td className="px-4 py-3 text-sm text-gray-800">
+                    <div className="flex items-center gap-2.5">
+                      {p.images?.[0]?.image ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={p.images[0].image} alt="" className="w-9 h-9 object-cover rounded-md border border-gray-100 shrink-0" />
+                      ) : (
+                        <div className="w-9 h-9 rounded-md border border-gray-100 bg-gray-50 flex items-center justify-center text-gray-300 text-xs shrink-0">—</div>
+                      )}
+                      <span>{locale === 'bn' ? p.name_bn : p.name_en}</span>
+                    </div>
+                  </td>
                   <td className="px-4 py-3 text-xs text-gray-400 font-mono">{p.sku}</td>
                   <td className="px-4 py-3">
                     <Badge className="font-bold" variant={Number(p.stock_on_hand) > 0 ? 'green' : 'red'}>
