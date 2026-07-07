@@ -69,7 +69,7 @@ export default function MovementReportView({ titleBn, titleEn, descriptionBn, de
           onChange={setProductId}
           showClearButton={!!productId}
           onClear={() => setProductId("")}
-          options={products.map(p => ({ value: p.id, label: isBn ? p.name_bn : p.name_en }))}
+          options={products.map(p => ({ value: p.id, label: isBn ? p.name_bn : p.name_en, image: p.images?.[0]?.image ?? null }))}
         />
         <div className="grid grid-cols-2 gap-3">
           <FloatingDatePicker label={isBn ? "শুরু তারিখ" : "From"} value={from} onChange={setFrom} clearable />
@@ -99,8 +99,18 @@ export default function MovementReportView({ titleBn, titleEn, descriptionBn, de
                 <tr key={r.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-4 py-3 text-xs text-gray-500 whitespace-nowrap">{formatDate(r.date)}</td>
                   <td className="px-4 py-3 text-gray-800">
-                    <div>{isBn ? r.product_name_bn : r.product_name_en}</div>
-                    <div className="text-[10px] text-gray-400 font-mono">{r.sku}</div>
+                    <div className="flex items-center gap-2.5">
+                      {r.product_image ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={r.product_image} alt="" className="w-9 h-9 object-cover rounded-md border border-gray-100 shrink-0" />
+                      ) : (
+                        <div className="w-9 h-9 rounded-md border border-gray-100 bg-gray-50 flex items-center justify-center text-gray-300 text-xs shrink-0">—</div>
+                      )}
+                      <div>
+                        <div>{isBn ? r.product_name_bn : r.product_name_en}</div>
+                        <div className="text-[10px] text-gray-400 font-mono">{r.sku}</div>
+                      </div>
+                    </div>
                   </td>
                   <td className="px-4 py-3 text-xs text-gray-600">
                     {r.supplier_name || "—"}
