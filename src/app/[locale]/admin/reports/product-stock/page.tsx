@@ -55,7 +55,7 @@ export default function ProductStockReportPage() {
           onChange={setProductId}
           showClearButton={!!productId}
           onClear={() => setProductId("")}
-          options={allProducts.map(p => ({ value: p.id, label: isBn ? p.name_bn : p.name_en }))}
+          options={allProducts.map(p => ({ value: p.id, label: isBn ? p.name_bn : p.name_en, image: p.images?.[0]?.image ?? null }))}
         />
         <label className="flex items-center gap-2 text-sm text-gray-600 px-1">
           <input
