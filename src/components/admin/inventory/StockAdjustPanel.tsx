@@ -36,6 +36,8 @@ export default function StockAdjustPanel({ product }: Props) {
 
   const isBn = locale === "bn";
   const isPurchase = adjForm.movement_type === "PURCHASE";
+  const isSupplierReturn = adjForm.movement_type === "SUPPLIER_RETURN";
+  const needsCostAndSupplier = isPurchase || isSupplierReturn;
 
   const handleAdjust = async () => {
     if (!adjForm.quantity) return;
@@ -44,9 +46,9 @@ export default function StockAdjustPanel({ product }: Props) {
         productId: product.id,
         movement_type: adjForm.movement_type,
         quantity: Number(adjForm.quantity),
-        ...(isPurchase && {
+        ...(needsCostAndSupplier && {
           unit_cost: Number(adjForm.unit_cost),
-          ...(adjForm.unit_price && { unit_price: Number(adjForm.unit_price) }),
+          ...(isPurchase && adjForm.unit_price && { unit_price: Number(adjForm.unit_price) }),
           payment_method: adjForm.payment_method,
           ...(adjForm.supplier_id
             ? { supplier_id: adjForm.supplier_id }
@@ -97,10 +99,15 @@ export default function StockAdjustPanel({ product }: Props) {
           <FloatingSelect
             label={isBn ? "ধরন" : "Type"}
             value={adjForm.movement_type}
-            onChange={val => setAdjForm(p => ({ ...p, movement_type: val }))}
+            onChange={val => setAdjForm(p => ({
+              ...p,
+              movement_type: val,
+              unit_cost: val === "SUPPLIER_RETURN" && !p.unit_cost ? product.cost_price : p.unit_cost,
+            }))}
           >
             <option value="PURCHASE">ক্রয় / Purchase</option>
             <option value="ADJUSTMENT">সমন্বয় / Adjustment</option>
+            <option value="SUPPLIER_RETURN">সরবরাহকারীকে ফেরত / Return to Supplier</option>
           </FloatingSelect>
           <FloatingInput
             label={translations("product.quantity")}
@@ -109,24 +116,30 @@ export default function StockAdjustPanel({ product }: Props) {
             onChange={e => setAdjForm(p => ({ ...p, quantity: e.target.value }))}
           />
 
-          {isPurchase && (
+          {needsCostAndSupplier && (
             <>
               <FloatingInput
-                label={isBn ? "ক্রয় মূল্য (প্রতি একক) *" : "Buying Price (per unit) *"}
+                label={
+                  isPurchase
+                    ? (isBn ? "ক্রয় মূল্য (প্রতি একক) *" : "Buying Price (per unit) *")
+                    : (isBn ? "ফেরতের মূল্য (প্রতি একক) *" : "Return Value (per unit) *")
+                }
                 type="number"
                 min="0"
                 step="0.01"
                 value={adjForm.unit_cost}
                 onChange={e => setAdjForm(p => ({ ...p, unit_cost: e.target.value }))}
               />
-              <FloatingInput
-                label={isBn ? "বিক্রয় মূল্য (ঐচ্ছিক)" : "Selling Price (optional)"}
-                type="number"
-                min="0"
-                step="0.01"
-                value={adjForm.unit_price}
-                onChange={e => setAdjForm(p => ({ ...p, unit_price: e.target.value }))}
-              />
+              {isPurchase && (
+                <FloatingInput
+                  label={isBn ? "বিক্রয় মূল্য (ঐচ্ছিক)" : "Selling Price (optional)"}
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={adjForm.unit_price}
+                  onChange={e => setAdjForm(p => ({ ...p, unit_price: e.target.value }))}
+                />
+              )}
 
               {/* Payment method */}
               <FloatingSelect
@@ -134,8 +147,12 @@ export default function StockAdjustPanel({ product }: Props) {
                 value={adjForm.payment_method}
                 onChange={val => setAdjForm(p => ({ ...p, payment_method: val as "CASH" | "CREDIT" }))}
               >
-                <option value="CASH">{isBn ? "নগদ" : "Cash"}</option>
-                <option value="CREDIT">{isBn ? "বাকিতে (দেনা)" : "Credit (Payable)"}</option>
+                <option value="CASH">{isBn ? "নগদ" : isSupplierReturn ? "Cash Refund" : "Cash"}</option>
+                <option value="CREDIT">
+                  {isBn
+                    ? isSupplierReturn ? "বাকি থেকে বাদ" : "বাকিতে (দেনা)"
+                    : isSupplierReturn ? "Deducted from Payable" : "Credit (Payable)"}
+                </option>
               </FloatingSelect>
 
               {/* Supplier — pick from list or type freeform */}
@@ -167,7 +184,11 @@ export default function StockAdjustPanel({ product }: Props) {
               {/* Cost summary */}
               {adjForm.unit_cost && adjForm.quantity && (
                 <div className="col-span-2 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2 text-sm flex justify-between">
-                  <span className="text-gray-600">{isBn ? "মোট ক্রয় মূল্য" : "Total Purchase Cost"}</span>
+                  <span className="text-gray-600">
+                    {isPurchase
+                      ? (isBn ? "মোট ক্রয় মূল্য" : "Total Purchase Cost")
+                      : (isBn ? "মোট ফেরতের মূল্য" : "Total Return Value")}
+                  </span>
                   <span className="font-bold text-amber-700">
                     {formatAmount(
                       (parseFloat(adjForm.unit_cost) * parseFloat(adjForm.quantity)).toString(),
@@ -196,7 +217,7 @@ export default function StockAdjustPanel({ product }: Props) {
 
         <button
           onClick={handleAdjust}
-          disabled={!adjForm.quantity || (isPurchase && !adjForm.unit_cost) || adjusting}
+          disabled={!adjForm.quantity || (needsCostAndSupplier && !adjForm.unit_cost) || adjusting}
           className="btn-primary w-full"
         >
           {adjusting
@@ -215,12 +236,12 @@ export default function StockAdjustPanel({ product }: Props) {
               <div className="flex justify-between">
                 <span className="text-gray-600">
                   {isBn
-                    ? ({ PURCHASE: "ক্রয়", SALE: "বিক্রয়", RETURN: "ফেরত", ADJUSTMENT: "সমন্বয়" } as Record<string, string>)[m.movement_type] ?? m.movement_type
-                    : m.movement_type}
+                    ? ({ PURCHASE: "ক্রয়", SALE: "বিক্রয়", RETURN: "ফেরত", ADJUSTMENT: "সমন্বয়", SUPPLIER_RETURN: "সরবরাহকারীকে ফেরত" } as Record<string, string>)[m.movement_type] ?? m.movement_type
+                    : ({ SUPPLIER_RETURN: "Return to Supplier" } as Record<string, string>)[m.movement_type] ?? m.movement_type}
                   {m.supplier_display && (
                     <span className="ml-1 text-xs text-amber-600">— {m.supplier_display}</span>
                   )}
-                  {m.payment_method === "CREDIT" && m.movement_type === "PURCHASE" && (
+                  {m.payment_method === "CREDIT" && (m.movement_type === "PURCHASE" || m.movement_type === "SUPPLIER_RETURN") && (
                     <span className="ml-1 text-xs text-blue-500">{isBn ? "(বাকি)" : "(credit)"}</span>
                   )}
                 </span>
@@ -229,11 +250,11 @@ export default function StockAdjustPanel({ product }: Props) {
                   {formatNumber(m.quantity, locale)}
                 </span>
               </div>
-              {m.unit_cost && Number(m.unit_cost) > 0 && m.movement_type === "PURCHASE" && (
+              {m.unit_cost && Number(m.unit_cost) > 0 && (m.movement_type === "PURCHASE" || m.movement_type === "SUPPLIER_RETURN") && (
                 <div className="flex justify-between text-xs text-gray-400 mt-0.5">
                   <span>{isBn ? "ক্রয় মূল্য" : "Cost"}: {formatAmount(m.unit_cost, locale, 2)}</span>
                   <span>{isBn ? "মোট" : "Total"}: {formatAmount(
-                    (parseFloat(m.unit_cost) * parseFloat(m.quantity)).toString(), locale, 2,
+                    (parseFloat(m.unit_cost) * Math.abs(parseFloat(m.quantity))).toString(), locale, 2,
                   )}</span>
                 </div>
               )}
