@@ -268,7 +268,7 @@ export interface LoanPaymentsData {
 export interface StockMovement {
   id: string
   product: string
-  movement_type: 'PURCHASE' | 'SALE' | 'RETURN' | 'ADJUSTMENT'
+  movement_type: 'PURCHASE' | 'SALE' | 'RETURN' | 'ADJUSTMENT' | 'SUPPLIER_RETURN'
   quantity: string
   unit_cost: string
   supplier: string | null
