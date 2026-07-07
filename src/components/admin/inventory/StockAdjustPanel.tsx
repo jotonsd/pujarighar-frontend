@@ -66,9 +66,17 @@ export default function StockAdjustPanel({ product }: Props) {
   return (
     <div className="space-y-4">
       <div className="card flex items-center justify-between">
-        <h2 className="font-semibold text-gray-700 text-2xl">
-          {isBn ? product.name_bn : product.name_en}
-        </h2>
+        <div className="flex items-center gap-3">
+          {product.images?.[0]?.image ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={product.images[0].image} alt="" className="w-14 h-14 object-cover rounded-lg border border-gray-100 shrink-0" />
+          ) : (
+            <div className="w-14 h-14 rounded-lg border border-gray-100 bg-gray-50 flex items-center justify-center text-gray-300 text-xs shrink-0">—</div>
+          )}
+          <h2 className="font-semibold text-gray-700 text-2xl">
+            {isBn ? product.name_bn : product.name_en}
+          </h2>
+        </div>
         <div className="text-right shrink-0">
           <p className="text-3xl font-bold text-amber-600">
             {stockData?.stock_on_hand
