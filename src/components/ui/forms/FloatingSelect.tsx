@@ -7,6 +7,7 @@ import { createPortal } from 'react-dom'
 interface SelectOption {
   value: string
   label: string
+  image?: string | null
 }
 
 interface FloatingSelectProps {
@@ -233,7 +234,11 @@ const FloatingSelect = forwardRef<HTMLDivElement, FloatingSelectProps>(
                 />
               </div>
             ) : (
-              <span className={`truncate ${displayValue ? 'text-gray-900' : 'text-transparent'}`}>
+              <span className={`flex items-center gap-2 truncate ${displayValue ? 'text-gray-900' : 'text-transparent'}`}>
+                {selectedOption?.image && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={selectedOption.image} alt="" className="w-5 h-5 object-cover rounded shrink-0" />
+                )}
                 {displayValue || placeholder || ' '}
               </span>
             )}
@@ -294,13 +299,21 @@ const FloatingSelect = forwardRef<HTMLDivElement, FloatingSelectProps>(
                     key={option.value}
                     onMouseDown={e => e.preventDefault()}
                     onClick={() => handleSelect(option.value)}
-                    className={`px-3 py-2 text-sm cursor-pointer ${
+                    className={`flex items-center gap-2 px-3 py-2 text-sm cursor-pointer ${
                       value === option.value
                         ? 'bg-amber-50 text-amber-700 font-medium'
                         : 'text-gray-700 hover:bg-gray-50'
                     }`}
                   >
-                    {option.label}
+                    {option.image !== undefined && (
+                      option.image ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={option.image} alt="" className="w-6 h-6 object-cover rounded shrink-0" />
+                      ) : (
+                        <div className="w-6 h-6 rounded bg-gray-100 shrink-0" />
+                      )
+                    )}
+                    <span className="truncate">{option.label}</span>
                   </div>
                 ))
               )}

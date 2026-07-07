@@ -1,17 +1,18 @@
 "use client";
 
 import { useChangePasswordMutation, useGetMeQuery, useUpdateMeMutation } from "@/api/auth/authApi";
+import ShippingAddressesTab from "@/components/profile/ShippingAddressesTab";
 import { FloatingInput, FloatingTextarea } from "@/components/ui/forms";
 import ToggleSwitch from "@/components/ui/forms/ToggleSwitch";
 import PageHeader from "@/components/ui/PageHeader";
 import { toast } from "@/store/toastStore";
 import Cookies from "js-cookie";
-import { Bell, Camera, Globe, Lock, User as UserIcon } from "lucide-react";
+import { Bell, Camera, Globe, Lock, MapPin, User as UserIcon } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
-type Tab = "profile" | "password" | "language" | "notifications";
+type Tab = "profile" | "password" | "language" | "notifications" | "addresses";
 
 export default function ProfilePage() {
   const t = useTranslations();
@@ -193,7 +194,10 @@ export default function ProfilePage() {
     { key: "password", icon: <Lock className="w-4 h-4" />, bn: "পাসওয়ার্ড পরিবর্তন", en: "Change Password" },
     { key: "language", icon: <Globe className="w-4 h-4" />, bn: "ভাষা পছন্দ", en: "Preferred Language" },
     ...(isCustomer
-      ? [{ key: "notifications" as Tab, icon: <Bell className="w-4 h-4" />, bn: "নোটিফিকেশন সেটিং", en: "Notification Settings" }]
+      ? [
+          { key: "addresses" as Tab, icon: <MapPin className="w-4 h-4" />, bn: "শিপিং ঠিকানা", en: "Shipping Addresses" },
+          { key: "notifications" as Tab, icon: <Bell className="w-4 h-4" />, bn: "নোটিফিকেশন সেটিং", en: "Notification Settings" },
+        ]
       : []),
   ];
 
@@ -430,6 +434,10 @@ export default function ProfilePage() {
                 ))}
               </div>
             </div>
+          )}
+
+          {tab === "addresses" && isCustomer && (
+            <ShippingAddressesTab locale={locale} />
           )}
 
           {tab === "notifications" && isCustomer && (
