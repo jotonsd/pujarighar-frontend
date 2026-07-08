@@ -6,6 +6,10 @@ import { AppNotification } from "./notificationsApi";
 
 type WsMessage = { type: "notification"; notification: AppNotification };
 
+// Survives remounts within the same page session so we only ever need to
+// unlock audio once, not on every NotificationBell mount.
+let audioUnlocked = false;
+
 export function useNotificationSocket(enabled: boolean, playSound: boolean) {
   const dispatch = useDispatch();
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -19,17 +23,24 @@ export function useNotificationSocket(enabled: boolean, playSound: boolean) {
   // Browsers block audio autoplay until the page has had a real user gesture.
   // An admin dashboard left open without a click would otherwise never get
   // sound and fail silently — so "unlock" playback on the first click/keypress.
+  // Muted so the unlock itself is never audible (an unmuted play+pause can
+  // still emit a brief blip depending on decode timing).
   useEffect(() => {
-    if (!playSound) return;
+    if (!playSound || audioUnlocked) return;
 
     const unlock = () => {
       const audio = audioRef.current;
       if (audio) {
+        audio.muted = true;
         audio.play().then(() => {
           audio.pause();
           audio.currentTime = 0;
-        }).catch(() => {});
+          audio.muted = false;
+        }).catch(() => {
+          audio.muted = false;
+        });
       }
+      audioUnlocked = true;
     };
 
     document.addEventListener("pointerdown", unlock, { once: true });

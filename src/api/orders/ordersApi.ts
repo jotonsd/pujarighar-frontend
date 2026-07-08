@@ -110,6 +110,9 @@ export const ordersApi = baseApi.injectEndpoints({
       notes_bn?: string; email?: string
       apply_delivery?: boolean
       delivery_zone?: 'inside' | 'outside'
+      customer_id?: string
+      discount_type?: 'NONE' | 'PERCENTAGE' | 'FLAT'
+      discount_value?: number
     }>({
       query: (body) => ({ url: '/api/orders/pos-create/', method: 'POST', body }),
       transformResponse: (res: { data: SalesOrder }) => res.data,
