@@ -28,11 +28,12 @@ export default function ProductList() {
   const [category, setCategory]   = useState('')
   const [brand, setBrand]         = useState('')
   const [isPackage, setIsPackage] = useState('')
+  const [status, setStatus]       = useState('')
   const [limit, setLimit]         = useState(10)
 
   const { data: categories = [] } = useGetCategoriesQuery()
   const { data: brands = [] }     = useGetBrandsQuery()
-  const { data, isLoading } = useGetProductsQuery({ page, search, category, brand, is_package: isPackage, page_size: limit, include_inactive: true })
+  const { data, isLoading } = useGetProductsQuery({ page, search, category, brand, is_package: isPackage, is_active: status, page_size: limit, include_inactive: true })
   const [updateProduct] = useUpdateProductMutation()
 
   const handleToggleActive = async (p: Product) => {
@@ -98,7 +99,7 @@ export default function ProductList() {
         {...(isAdmin && { addLabel: t('common.create'), onAdd: () => router.push(`/${locale}/admin/products/new`) })}
       />
 
-      <div className="mb-4 grid grid-cols-5 gap-3">
+      <div className="mb-4 grid grid-cols-2 md:grid-cols-6 gap-3">
         <div className="col-span-2">
           <FloatingInput label={t('common.search')} value={search}
             onChange={e => { setSearch(e.target.value); setPage(1) }} />
@@ -118,6 +119,12 @@ export default function ProductList() {
           <option value="">{locale === 'bn' ? 'সব ধরন' : 'All Types'}</option>
           <option value="false">{locale === 'bn' ? 'পণ্য' : 'Product'}</option>
           <option value="true">{locale === 'bn' ? 'প্যাকেজ' : 'Package'}</option>
+        </FloatingSelect>
+        <FloatingSelect label={locale === 'bn' ? 'স্ট্যাটাস' : 'Status'} value={status}
+          onChange={val => { setStatus(val); setPage(1) }}>
+          <option value="">{locale === 'bn' ? 'সব স্ট্যাটাস' : 'All Status'}</option>
+          <option value="true">{locale === 'bn' ? 'সক্রিয়' : 'Active'}</option>
+          <option value="false">{locale === 'bn' ? 'নিষ্ক্রিয়' : 'Inactive'}</option>
         </FloatingSelect>
       </div>
 
