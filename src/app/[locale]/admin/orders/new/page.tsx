@@ -190,6 +190,16 @@ export default function POSPage() {
     0,
   );
 
+  const [discountType, setDiscountType] = useState<"PERCENTAGE" | "FLAT">("FLAT");
+  const [discountValue, setDiscountValue] = useState("0");
+  const discountAmount = (() => {
+    const val = parseFloat(discountValue);
+    if (!val || val <= 0) return 0;
+    const raw = discountType === "PERCENTAGE" ? (subtotal * val) / 100 : val;
+    return Math.min(Math.max(raw, 0), subtotal);
+  })();
+  const netSubtotal = subtotal - discountAmount;
+
   const [applyDelivery, setApplyDelivery] = useState(true);
   const [deliveryZone, setDeliveryZone] = useState<"inside" | "outside">(
     "inside",
@@ -257,7 +267,7 @@ export default function POSPage() {
     );
   })();
 
-  const grandTotal = subtotal + deliveryCharge;
+  const grandTotal = netSubtotal + deliveryCharge;
 
   const applyAddress = (addr: ShippingAddress) => {
     setCustomer(c => ({
@@ -322,6 +332,8 @@ export default function POSPage() {
         ...(selectedUserId ? { customer_id: selectedUserId } : {}),
         apply_delivery: applyDelivery,
         delivery_zone: applyDelivery ? deliveryZone : undefined,
+        discount_type: discountType,
+        discount_value: parseFloat(discountValue) || 0,
       }).unwrap();
       toast.success(
         locale === "bn"
@@ -569,6 +581,48 @@ export default function POSPage() {
                 <span>{locale === "bn" ? "সাবটোটাল" : "Subtotal"}</span>
                 <span>{formatAmount(subtotal, locale, 0)}</span>
               </div>
+
+              {/* Discount */}
+              <div className="flex items-center gap-1.5 py-0.5">
+                <span className="text-xs text-gray-500 shrink-0">{locale === "bn" ? "ছাড়:" : "Discount:"}</span>
+                <div className="flex gap-0.5 bg-gray-100 rounded-md p-0.5 shrink-0">
+                  {([
+                    { key: "PERCENTAGE", label: "%" },
+                    { key: "FLAT", label: "৳" },
+                  ] as const).map(opt => (
+                    <button
+                      key={opt.key}
+                      type="button"
+                      onClick={() => setDiscountType(opt.key)}
+                      className={`px-2 py-1 rounded text-[10px] font-semibold transition-colors ${
+                        discountType === opt.key ? "bg-white shadow text-amber-700" : "text-gray-500"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="relative flex-1 min-w-0">
+                  <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-gray-400 pointer-events-none">
+                    {discountType === "PERCENTAGE" ? "%" : "৳"}
+                  </span>
+                  <input
+                    type="number"
+                    min="0"
+                    max={discountType === "PERCENTAGE" ? 100 : undefined}
+                    value={discountValue}
+                    onChange={e => setDiscountValue(e.target.value)}
+                    className="w-full pl-5 pr-2 py-1 text-xs border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-amber-300"
+                  />
+                </div>
+              </div>
+              {discountAmount > 0 && (
+                <div className="flex justify-between text-xs text-red-500">
+                  <span>{locale === "bn" ? "ছাড়" : "Discount"}</span>
+                  <span>−{formatAmount(discountAmount, locale, 0)}</span>
+                </div>
+              )}
+
               {applyDelivery && deliveryCharge > 0 && (
                 <div className="flex justify-between text-xs text-gray-500">
                   <span>{locale === "bn" ? "ডেলিভারি" : "Delivery"}</span>
