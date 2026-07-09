@@ -30,6 +30,12 @@ export const productsApi = baseApi.injectEndpoints({
       providesTags: ['Products'],
     }),
 
+    getRecommendedProducts: build.query<Product[], { limit?: number } | void>({
+      query: ({ limit = 12 } = {}) => `/api/products/recommended/?limit=${limit}`,
+      transformResponse: (res: { data: Product[] }) => res.data,
+      providesTags: ['Products'],
+    }),
+
     getProduct: build.query<Product, string>({
       query: (id) => `/api/products/${id}/`,
       transformResponse: (res: { data: Product }) => res.data,
@@ -132,4 +138,5 @@ export const {
   useAddPackageItemMutation,
   useDeletePackageItemMutation,
   useGetPopularByCategoryQuery,
+  useGetRecommendedProductsQuery,
 } = productsApi

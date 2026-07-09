@@ -10,7 +10,13 @@ export default function HomeCategoryProducts() {
   const locale = useLocale();
   const isBn = locale === "bn";
   const { data, isLoading } = useGetPopularByCategoryQuery();
-  const categories = data?.data ?? [];
+  // Only show a category row in full sets of 6 — fewer than 6 isn't worth a row.
+  const categories = (data?.data ?? [])
+    .map(({ category, products }) => ({
+      category,
+      products: products.slice(0, Math.floor(products.length / 6) * 6),
+    }))
+    .filter(({ products }) => products.length > 0);
 
   if (isLoading) {
     return (

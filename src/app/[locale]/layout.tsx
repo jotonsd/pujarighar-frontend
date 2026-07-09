@@ -6,13 +6,13 @@ import { locales } from "@/lib/i18n";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
-import { Inter } from "next/font/google";
+import { Roboto_Condensed } from "next/font/google";
 import { notFound } from "next/navigation";
 
-// Configure Inter for premium e-commerce readability
-const inter = Inter({
+// English UI font
+const robotoCondensed = Roboto_Condensed({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"], // Added '600' (semi-bold) as it is widely used for product pricing and card titles
+  weight: ["300", "400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -35,7 +35,7 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} className={locale === "en" ? inter.className : ""}>
+    <html lang={locale} className={locale === "en" ? robotoCondensed.className : ""}>
       <body suppressHydrationWarning>
         <NextIntlClientProvider messages={messages}>
           <Providers>

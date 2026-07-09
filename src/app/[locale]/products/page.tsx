@@ -3,6 +3,7 @@
 import { useGetBrandsQuery } from "@/api/brands/brandsApi";
 import { useGetCategoriesQuery } from "@/api/categories/categoriesApi";
 import { useGetProductsQuery } from "@/api/products/productsApi";
+import RecommendedForYou from "@/components/home/RecommendedForYou";
 import OfferBanners from "@/components/products/OfferBanners";
 import ProductCard from "@/components/products/ProductCard";
 import { Checkbox, FloatingInput } from "@/components/ui/forms";
@@ -424,6 +425,8 @@ export default function ProductsPage() {
       </div>
 
       <OfferBanners />
+
+      {!hasFilter && <RecommendedForYou />}
 
       <div className="flex gap-3">
         <aside className="hidden lg:block w-56 shrink-0">
