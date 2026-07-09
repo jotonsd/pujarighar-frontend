@@ -57,7 +57,7 @@ export default function CartPreview({ locale }: { locale: string }) {
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
     >
-      <Link href={`/${locale}/cart`} className="relative text-gray-600 hover:text-amber-600 block">
+      <Link href={`/${locale}/cart`} onClick={() => setOpen(false)} className="relative text-gray-600 hover:text-amber-600 block">
         🛒
         {count > 0 && (
           <span className="absolute -top-2 -right-2 bg-amber-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
@@ -67,7 +67,7 @@ export default function CartPreview({ locale }: { locale: string }) {
       </Link>
 
       {open && (
-        <div className="fixed inset-x-4 top-16 sm:absolute sm:inset-x-auto sm:top-full sm:right-0 sm:left-auto sm:mt-2 w-auto sm:w-80 max-w-full bg-white rounded-2xl shadow-xl border border-gray-100 z-50 overflow-hidden">
+        <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-80 max-w-[calc(100vw-1.5rem)] bg-white rounded-2xl shadow-xl border border-gray-100 z-50 overflow-hidden">
           <div className="px-4 py-3 border-b border-gray-100">
             <h3 className="text-sm font-bold text-gray-800 flex items-center gap-1.5">
               <ShoppingCart className="w-4 h-4" />
@@ -115,6 +115,7 @@ export default function CartPreview({ locale }: { locale: string }) {
                 </div>
                 <Link
                   href={`/${locale}/cart`}
+                  onClick={() => setOpen(false)}
                   className="block w-full text-center btn-primary py-2 text-sm"
                 >
                   {isBn ? "চেকআউট করুন" : "Checkout"}
