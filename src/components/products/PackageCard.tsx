@@ -28,7 +28,7 @@ export default function PackageCard({ pkg, locale }: Props) {
   const pct  = originalPrice > 0 ? Math.round((originalPrice - finalPrice) / originalPrice * 100) : 0
 
   return (
-    <Link href={`/${locale}/packages/${pkg.id}`} className="group block relative">
+    <Link href={`/${locale}/packages/${pkg.id}`} className="group block relative h-full">
       {hasDiscount && diff > 0 && (
         <OfferBadge
           discountType={pkg.discount_type}
@@ -38,7 +38,7 @@ export default function PackageCard({ pkg, locale }: Props) {
           className="absolute top-1 right-1 z-10"
         />
       )}
-      <div className="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-100 hover:shadow-md transition-shadow flex flex-col">
+      <div className="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-100 hover:shadow-md transition-shadow flex flex-col h-full">
         {/* Image */}
         <div className="h-36 md:h-56 bg-amber-50 relative overflow-hidden">
           {pkg.images?.[0] ? (
