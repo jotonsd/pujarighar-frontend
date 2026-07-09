@@ -2,8 +2,7 @@
 
 import { useGetBrandsQuery } from "@/api/brands/brandsApi";
 import { useGetCategoriesQuery } from "@/api/categories/categoriesApi";
-import { useGetProductsQuery } from "@/api/products/productsApi";
-import RecommendedForYou from "@/components/home/RecommendedForYou";
+import { useGetProductsQuery, useGetRecommendedProductsQuery } from "@/api/products/productsApi";
 import OfferBanners from "@/components/products/OfferBanners";
 import ProductCard from "@/components/products/ProductCard";
 import { Checkbox, FloatingInput } from "@/components/ui/forms";
@@ -231,6 +230,11 @@ export default function ProductsPage() {
   const { data: allCategories = [] } = useGetCategoriesQuery();
   const { data: allBrands = [] } = useGetBrandsQuery();
 
+  // Personalized picks, quietly folded into the front of the very first page
+  // of results (unfiltered browsing only) — not shown as a separate section.
+  const { data: recommendedRaw } = useGetRecommendedProductsQuery({ limit: 12 }, { skip: hasFilter });
+  const recommendedCount = Math.floor((recommendedRaw?.length ?? 0) / 6) * 6;
+
   const totalPages = data?.pagination?.total_pages ?? 1;
   const hasMore = page < totalPages;
 
@@ -238,12 +242,24 @@ export default function ProductsPage() {
   isFetchingRef.current = isFetching;
   hasMoreRef.current = hasMore;
 
-  // Accumulate products — reset on page 1, append on subsequent pages
+  // Accumulate products — reset on page 1, append on subsequent pages.
+  // On the first unfiltered page, recommended picks are merged in at the
+  // front (deduped against the regular listing) instead of their own section.
   useEffect(() => {
     if (!data?.data) return;
-    setAllProducts(prev => (page === 1 ? data.data : [...prev, ...data.data]));
+    if (page !== 1) {
+      setAllProducts(prev => [...prev, ...data.data]);
+      return;
+    }
+    if (!hasFilter && recommendedCount > 0) {
+      const recommended = recommendedRaw!.slice(0, recommendedCount);
+      const recIds = new Set(recommended.map(p => p.id));
+      setAllProducts([...recommended, ...data.data.filter(p => !recIds.has(p.id))]);
+    } else {
+      setAllProducts(data.data);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
+  }, [data, recommendedCount]);
 
   // Window scroll — registered once, never fires on mount
   useEffect(() => {
@@ -425,8 +441,6 @@ export default function ProductsPage() {
       </div>
 
       <OfferBanners />
-
-      {!hasFilter && <RecommendedForYou />}
 
       <div className="flex gap-3">
         <aside className="hidden lg:block w-56 shrink-0">
