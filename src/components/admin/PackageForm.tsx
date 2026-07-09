@@ -361,18 +361,15 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
                   value={selectedProductId}
                   onChange={val => setSelectedProductId(val)}
                   searchable
-                >
-                  <option value="">
-                    {locale === "bn" ? "পণ্য বেছে নিন" : "Choose product"}
-                  </option>
-                  {allProducts
+                  placeholder={locale === "bn" ? "পণ্য বেছে নিন" : "Choose product"}
+                  options={allProducts
                     .filter(p => !items.find(i => i.component_id === p.id))
-                    .map(p => (
-                      <option key={p.id} value={p.id}>
-                        {`${locale === "bn" ? p.name_bn : p.name_en} - ${formatAmount(p.unit_price, locale, 0)}`}
-                      </option>
-                    ))}
-                </FloatingSelect>
+                    .map(p => ({
+                      value: p.id,
+                      label: `${locale === "bn" ? p.name_bn : p.name_en} - ${formatAmount(p.unit_price, locale, 0)}`,
+                      image: p.images?.[0]?.image ?? null,
+                    }))}
+                />
               </div>
               <div className="w-24">
                 <FloatingInput
