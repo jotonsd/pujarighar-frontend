@@ -6,6 +6,7 @@ import {
   FetchBaseQueryError,
 } from '@reduxjs/toolkit/query/react'
 import Cookies from 'js-cookie'
+import { getGuestId } from '@/lib/guestId'
 
 const rawBaseQuery = fetchBaseQuery({
   baseUrl: process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000',
@@ -13,6 +14,7 @@ const rawBaseQuery = fetchBaseQuery({
     const token  = Cookies.get('access_token')
     const locale = Cookies.get('locale') ?? 'bn'
     if (token) headers.set('Authorization', `Bearer ${token}`)
+    else headers.set('X-Guest-Id', getGuestId())
     headers.set('Accept-Language', locale)
     return headers
   },
