@@ -6,6 +6,7 @@ export interface Discount {
   product_name_bn: string
   product_name_en: string
   product_sku: string
+  product_image: string | null
   discount_type: 'PERCENTAGE' | 'FLAT'
   discount_value: string
   note: string

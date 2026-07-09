@@ -6,6 +6,7 @@ import { FloatingInput, FloatingSelect, FloatingDatePicker } from '@/components/
 import { toast } from '@/store/toastStore'
 import { useCreateDiscountMutation } from '@/api/discounts/discountsApi'
 import { useGetProductsQuery } from '@/api/products/productsApi'
+import { formatAmount } from '@/utils/format'
 
 const EMPTY = {
   product: '',
@@ -45,6 +46,7 @@ export default function DiscountForm() {
   }
 
   const productOptions = products?.data ?? []
+  const selectedProduct = productOptions.find(p => p.id === form.product)
   const startDateObj = form.start_date ? new Date(form.start_date) : undefined
 
   return (
@@ -62,6 +64,19 @@ export default function DiscountForm() {
             image: p.images?.[0]?.image ?? null,
           }))}
         />
+
+        {selectedProduct && (
+          <div className="flex items-center gap-4 px-3 py-2 bg-gray-50 rounded-lg text-xs">
+            <div>
+              <p className="text-gray-400">{isBn ? 'ক্রয় মূল্য' : 'Purchase Price'}</p>
+              <p className="font-semibold text-gray-700">{formatAmount(selectedProduct.cost_price, locale, 2)}</p>
+            </div>
+            <div>
+              <p className="text-gray-400">{isBn ? 'বিক্রয় মূল্য' : 'Selling Price'}</p>
+              <p className="font-semibold text-gray-700">{formatAmount(selectedProduct.unit_price, locale, 2)}</p>
+            </div>
+          </div>
+        )}
 
         <FloatingSelect
           label={isBn ? 'ছাড়ের ধরন' : 'Discount Type'}
