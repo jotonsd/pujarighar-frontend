@@ -116,7 +116,7 @@ export default function ProductCard({ product, locale }: Props) {
   };
 
   return (
-    <div className="relative">
+    <div className="relative h-full">
       {offerDiff > 0 && (
         <OfferBadge
           discountType={product.active_discount_type ?? ''}
@@ -126,7 +126,7 @@ export default function ProductCard({ product, locale }: Props) {
           className="absolute top-1 right-1 z-10"
         />
       )}
-    <div className="card hover:shadow-md transition-shadow group flex flex-col p-0 overflow-hidden">
+    <div className="card hover:shadow-md transition-shadow group flex flex-col p-0 overflow-hidden h-full">
       <Link
         href={`/${locale}/products/${product.id}`}
         className="block p-4 flex-1"

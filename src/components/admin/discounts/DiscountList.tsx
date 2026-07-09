@@ -87,10 +87,18 @@ function EditModal({
 
         {/* Body */}
         <div className="p-6 space-y-4">
-          <div className="px-3 py-2 bg-gray-50 rounded-lg text-xs text-gray-500">
-            {isBn ? "পণ্য: " : "Product: "}
-            <span className="font-semibold text-gray-700">
-              {isBn ? discount.product_name_bn : discount.product_name_en}
+          <div className="flex items-center gap-2.5 px-3 py-2 bg-gray-50 rounded-lg text-xs text-gray-500">
+            {discount.product_image ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={discount.product_image} alt="" className="w-8 h-8 object-cover rounded-md border border-gray-200 shrink-0" />
+            ) : (
+              <div className="w-8 h-8 rounded-md border border-gray-200 bg-white flex items-center justify-center text-gray-300 text-xs shrink-0">—</div>
+            )}
+            <span>
+              {isBn ? "পণ্য: " : "Product: "}
+              <span className="font-semibold text-gray-700">
+                {isBn ? discount.product_name_bn : discount.product_name_en}
+              </span>
             </span>
           </div>
 
@@ -184,11 +192,19 @@ export default function DiscountList() {
     {
       header: isBn ? "পণ্য" : "Product",
       accessor: d => (
-        <div>
-          <p className="font-medium text-gray-800">
-            {isBn ? d.product_name_bn : d.product_name_en}
-          </p>
-          <p className="text-xs text-gray-400 font-mono">{d.product_sku}</p>
+        <div className="flex items-center gap-2.5">
+          {d.product_image ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={d.product_image} alt="" className="w-9 h-9 object-cover rounded-md border border-gray-100 shrink-0" />
+          ) : (
+            <div className="w-9 h-9 rounded-md border border-gray-100 bg-gray-50 flex items-center justify-center text-gray-300 text-xs shrink-0">—</div>
+          )}
+          <div>
+            <p className="font-medium text-gray-800">
+              {isBn ? d.product_name_bn : d.product_name_en}
+            </p>
+            <p className="text-xs text-gray-400 font-mono">{d.product_sku}</p>
+          </div>
         </div>
       ),
       exportValue: d => (isBn ? d.product_name_bn : d.product_name_en),
