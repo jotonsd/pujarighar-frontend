@@ -232,8 +232,8 @@ export default function ProductsPage() {
 
   // Personalized picks, quietly folded into the front of the very first page
   // of results (unfiltered browsing only) — not shown as a separate section.
-  const { data: recommendedRaw } = useGetRecommendedProductsQuery({ limit: 12 }, { skip: hasFilter });
-  const recommendedCount = Math.floor((recommendedRaw?.length ?? 0) / 6) * 6;
+  const { data: recommendedRaw } = useGetRecommendedProductsQuery({ limit: 15 }, { skip: hasFilter });
+  const recommendedCount = Math.floor((recommendedRaw?.length ?? 0) / 5) * 5;
 
   const totalPages = data?.pagination?.total_pages ?? 1;
   const hasMore = page < totalPages;

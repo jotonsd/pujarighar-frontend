@@ -20,7 +20,7 @@ export default function CategoryCreateForm({ onClose }: Props) {
   const locale = useLocale()
   const slugManualRef = useRef(false)
 
-  const [form, setForm] = useState({ name_bn: '', name_en: '', slug: '' })
+  const [form, setForm] = useState({ name_bn: '', name_en: '', slug: '', order: '0' })
   const [createCategory, { isLoading: creating }] = useCreateCategoryMutation()
 
   const handleCreate = async () => {
@@ -29,9 +29,9 @@ export default function CategoryCreateForm({ onClose }: Props) {
       return
     }
     try {
-      await createCategory(form).unwrap()
+      await createCategory({ ...form, order: Number(form.order) || 0 }).unwrap()
       toast.success(locale === 'bn' ? 'কেটাগরি তৈরি হয়েছে' : 'Category created')
-      setForm({ name_bn: '', name_en: '', slug: '' })
+      setForm({ name_bn: '', name_en: '', slug: '', order: '0' })
       slugManualRef.current = false
       onClose()
     } catch (err: unknown) {
@@ -43,7 +43,7 @@ export default function CategoryCreateForm({ onClose }: Props) {
   return (
     <div className="card mb-4 space-y-3">
       <h2 className="font-medium text-gray-700">{locale === 'bn' ? 'নতুন কেটাগরি' : 'New Category'}</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
         <FloatingInput label="নাম (বাংলা) *" value={form.name_bn}
           onChange={e => setForm(f => ({ ...f, name_bn: e.target.value }))} />
         <FloatingInput label="Name (English) *" value={form.name_en}
@@ -51,6 +51,8 @@ export default function CategoryCreateForm({ onClose }: Props) {
             const val = e.target.value
             setForm(f => ({ ...f, name_en: val, ...(!slugManualRef.current && { slug: slugify(val) }) }))
           }} />
+        <FloatingInput label={locale === 'bn' ? 'ক্রম' : 'Order'} type="number" value={form.order}
+          onChange={e => setForm(f => ({ ...f, order: e.target.value }))} />
         <div className="flex gap-2 items-start">
           <FloatingInput label="Slug *" value={form.slug}
             onChange={e => { slugManualRef.current = true; setForm(f => ({ ...f, slug: e.target.value })) }}
