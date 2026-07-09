@@ -19,7 +19,7 @@ export default function RecommendedForYou() {
       <div className="flex items-center gap-2 mb-5">
         <span className="text-2xl">✨</span>
         <h2 className="text-xl font-bold text-gray-800">
-          {locale === "bn" ? "আপনার জন্য নির্বাচিত" : "Recommended for You"}
+          {locale === "bn" ? "শুধু আপনার জন্য" : "Recommended for You"}
         </h2>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
