@@ -55,12 +55,13 @@ export default function DiscountForm() {
           label={isBn ? 'পণ্য' : 'Product'}
           value={form.product}
           onChange={val => set('product', val)}
-        >
-          <option value="">{isBn ? 'পণ্য বেছে নিন' : 'Select product'}</option>
-          {productOptions.map(p => (
-            <option key={p.id} value={p.id}>{isBn ? p.name_bn : p.name_en}</option>
-          ))}
-        </FloatingSelect>
+          placeholder={isBn ? 'পণ্য বেছে নিন' : 'Select product'}
+          options={productOptions.map(p => ({
+            value: p.id,
+            label: isBn ? p.name_bn : p.name_en,
+            image: p.images?.[0]?.image ?? null,
+          }))}
+        />
 
         <FloatingSelect
           label={isBn ? 'ছাড়ের ধরন' : 'Discount Type'}
