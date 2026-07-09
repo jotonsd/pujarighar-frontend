@@ -2,11 +2,10 @@
 
 import { useGetMeQuery, useLogoutMutation } from "@/api/auth/authApi";
 import { useGetSiteSettingsQuery } from "@/api/settings/settingsApi";
+import CartPreview from "@/components/layout/CartPreview";
 import NotificationBell from "@/components/ui/NotificationBell";
 import { NavGroupItem, NavItem, User } from "@/lib/types";
 import { useAuthStore } from "@/store/authStore";
-import { useCartStore } from "@/store/cartStore";
-import { useGuestCartStore } from "@/store/guestCartStore";
 import { formatAmount } from "@/utils/format";
 import { Settings, Cog, Package, LogOut, Copy, Check, ScrollText } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
@@ -464,13 +463,6 @@ export default function Navbar() {
   // Active menu: backend-driven for authenticated users, guest fallback otherwise
   const menu: NavItem[] = currentUser?.nav_menu ?? GUEST_MENU;
 
-  // Cart
-  const authItemCount = useCartStore(s => s.itemCount);
-  const guestItems = useGuestCartStore(s => s.items);
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-  const guestCount = mounted ? guestItems.reduce((s, i) => s + i.quantity, 0) : 0;
-  const cartCount = isAuthenticated ? authItemCount : guestCount;
   const showCart = !isAuthenticated || role === "CUSTOMER";
 
   // Search
@@ -610,16 +602,7 @@ export default function Navbar() {
             <LanguageSwitcher />
             {currentUser && <NotificationBell isAdmin={role === "ADMIN"} />}
 
-            {showCart && (
-              <Link href={`/${locale}/cart`} className="relative text-gray-600 hover:text-amber-600">
-                🛒
-                {cartCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-amber-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                    {cartCount}
-                  </span>
-                )}
-              </Link>
-            )}
+            {showCart && <CartPreview locale={locale} />}
 
             {currentUser ? (
               <ProfileDropdown locale={locale} user={currentUser} onLogout={handleLogout} t={t} />

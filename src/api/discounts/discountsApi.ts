@@ -1,4 +1,5 @@
 import { baseApi } from '@/api/baseApi'
+import { ApiMeta } from '@/lib/types'
 
 export interface Discount {
   id: string
@@ -19,13 +20,14 @@ export interface Discount {
 export const discountsApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
 
-    getDiscounts: build.query<Discount[], { product?: string }>({
-      query: ({ product } = {}) => {
-        const p = new URLSearchParams()
-        if (product) p.set('product', product)
+    getDiscounts: build.query<{ data: Discount[]; pagination: ApiMeta }, { product?: string; page?: number; page_size?: number }>({
+      query: ({ product, page = 1, page_size } = {}) => {
+        const p = new URLSearchParams({ page: String(page) })
+        if (product)   p.set('product', product)
+        if (page_size) p.set('page_size', String(page_size))
         return `/api/discounts/?${p}`
       },
-      transformResponse: (res: { data: Discount[] }) => res.data,
+      transformResponse: (res: { data: Discount[]; pagination: ApiMeta }) => ({ data: res.data, pagination: res.pagination }),
       providesTags: ['Discounts'],
     }),
 
