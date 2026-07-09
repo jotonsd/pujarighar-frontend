@@ -165,7 +165,10 @@ export default function DiscountList() {
   const locale = useLocale();
   const isBn = locale === "bn";
 
-  const { data: discounts = [], isLoading } = useGetDiscountsQuery({});
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const { data, isLoading } = useGetDiscountsQuery({ page, page_size: limit });
+  const discounts = data?.data ?? [];
   const [toggle] = useToggleDiscountMutation();
   const [remove] = useDeleteDiscountMutation();
 
@@ -313,6 +316,12 @@ export default function DiscountList() {
         quickActions={quickActions}
         emptyMessage={isBn ? "কোনো ডিসকাউন্ট নেই" : "No discounts yet"}
         exportFilename="discounts"
+        totalPages={data?.pagination?.total_pages ?? 1}
+        totalRecords={data?.pagination?.total}
+        currentPage={page}
+        onPageChange={p => setPage(p)}
+        limit={limit}
+        onLimitChange={l => { setLimit(l); setPage(1); }}
       />
 
       {editTarget && (
