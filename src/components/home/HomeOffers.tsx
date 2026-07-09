@@ -11,6 +11,7 @@ export default function HomeOffers() {
   const { data, isLoading } = useGetProductsQuery({
     is_package: "false",
     has_discount: true,
+    ordering: "discount_desc",
     page_size: 12,
   });
   const products = data?.data ?? [];
