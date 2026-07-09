@@ -17,7 +17,7 @@ import { Pencil, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 
-type EditForm = { name_bn: string; name_en: string };
+type EditForm = { name_bn: string; name_en: string; order: string };
 
 export default function CategoriesPage() {
   const t       = useTranslations();
@@ -29,16 +29,16 @@ export default function CategoriesPage() {
 
   const [showCreate, setShowCreate] = useState(false);
   const [editingId, setEditingId]   = useState<string | null>(null);
-  const [editForm, setEditForm]     = useState<EditForm>({ name_bn: "", name_en: "" });
+  const [editForm, setEditForm]     = useState<EditForm>({ name_bn: "", name_en: "", order: "0" });
 
   const startEdit = (cat: Category) => {
     setEditingId(cat.id);
-    setEditForm({ name_bn: cat.name_bn, name_en: cat.name_en });
+    setEditForm({ name_bn: cat.name_bn, name_en: cat.name_en, order: String(cat.order) });
   };
 
   const handleUpdate = async (id: string) => {
     try {
-      await updateCategory({ id, ...editForm }).unwrap();
+      await updateCategory({ id, ...editForm, order: Number(editForm.order) || 0 }).unwrap();
       toast.success(locale === "bn" ? "আপডেট হয়েছে" : "Updated");
       setEditingId(null);
     } catch {
@@ -63,13 +63,14 @@ export default function CategoriesPage() {
       )}
 
       {isLoading ? (
-        <TableSkeleton columns={5} rows={6} />
+        <TableSkeleton columns={6} rows={6} />
       ) : (
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-amber-50 border-b border-amber-200">
                 <tr>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">{locale === "bn" ? "ক্রম" : "Order"}</th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">{locale === "bn" ? "নাম (বাংলা)" : "Name (BN)"}</th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">{locale === "bn" ? "নাম (ইংরেজি)" : "Name (EN)"}</th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">Slug</th>
@@ -81,6 +82,7 @@ export default function CategoriesPage() {
                 {categories.map(cat => (
                   <>
                     <tr key={cat.id} className="hover:bg-gray-50 transition-colors">
+                      <td className="px-4 py-3 text-sm text-gray-500 font-mono">{cat.order}</td>
                       <td className="px-4 py-3 text-sm text-gray-800 font-medium">{cat.name_bn}</td>
                       <td className="px-4 py-3 text-sm text-gray-600">{cat.name_en}</td>
                       <td className="px-4 py-3 font-mono text-xs text-gray-400">{cat.slug}</td>
@@ -103,8 +105,12 @@ export default function CategoriesPage() {
                     </tr>
                     {editingId === cat.id && (
                       <tr key={`edit-${cat.id}`} className="bg-amber-50">
-                        <td colSpan={5} className="px-4 py-3">
+                        <td colSpan={6} className="px-4 py-3">
                           <div className="flex items-end gap-3 flex-wrap">
+                            <div className="w-24">
+                              <FloatingInput label={locale === "bn" ? "ক্রম" : "Order"} type="number" value={editForm.order}
+                                onChange={e => setEditForm(f => ({ ...f, order: e.target.value }))} />
+                            </div>
                             <div className="w-48">
                               <FloatingInput label="নাম (বাংলা)" value={editForm.name_bn}
                                 onChange={e => setEditForm(f => ({ ...f, name_bn: e.target.value }))} />

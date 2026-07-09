@@ -92,6 +92,7 @@ export interface Category {
   slug: string
   parent: string | null
   icon: string
+  order: number
   is_active: boolean
   created_at: string
 }
