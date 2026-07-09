@@ -6,13 +6,13 @@ import { locales } from "@/lib/i18n";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
-import { Roboto_Condensed } from "next/font/google";
+import { Arimo } from "next/font/google";
 import { notFound } from "next/navigation";
 
 // English UI font
-const robotoCondensed = Roboto_Condensed({
+const arimo = Arimo({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -35,7 +35,7 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} className={locale === "en" ? robotoCondensed.className : ""}>
+    <html lang={locale} className={locale === "en" ? arimo.className : ""}>
       <body suppressHydrationWarning>
         <NextIntlClientProvider messages={messages}>
           <Providers>
