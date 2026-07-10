@@ -4,7 +4,39 @@ import HomeOffers from "@/components/home/HomeOffers";
 import HomePackages from "@/components/home/HomePackages";
 import RecommendedForYou from "@/components/home/RecommendedForYou";
 import OfferBanners from "@/components/products/OfferBanners";
+import type { Metadata } from "next";
 import { getLocale } from "next-intl/server";
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pujarighar.com";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  const isBn = locale === "bn";
+  const title = isBn
+    ? "পূজারিঘর | অনলাইনে পূজার সামগ্রী কিনুন"
+    : "PujariGhar | Buy Puja Items Online in Bangladesh";
+  const description = isBn
+    ? "পূজারিঘর থেকে প্রামাণিক পূজার সামগ্রী, প্যাকেজ ও সামগ্রী অনলাইনে অর্ডার করুন। দ্রুত ডেলিভারি ও বিশ্বস্ত সেবা।"
+    : "Order authentic puja items, packages, and accessories online from PujariGhar. Fast delivery and trusted service across Bangladesh.";
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: `${SITE_URL}/${locale}`,
+      languages: {
+        bn: `${SITE_URL}/bn`,
+        en: `${SITE_URL}/en`,
+      },
+    },
+    openGraph: {
+      title,
+      description,
+      url: `${SITE_URL}/${locale}`,
+      type: "website",
+    },
+  };
+}
 
 export default async function HomePage() {
   const locale = await getLocale();

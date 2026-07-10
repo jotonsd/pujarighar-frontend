@@ -1,4 +1,22 @@
+import type { Metadata } from "next";
 import { getLocale } from "next-intl/server";
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pujarighar.com";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  const isBn = locale === "bn";
+  return {
+    title: isBn ? "রিটার্ন নীতি | PujariGhar" : "Return Policy | PujariGhar",
+    alternates: {
+      canonical: `${SITE_URL}/${locale}/return-policy`,
+      languages: {
+        bn: `${SITE_URL}/bn/return-policy`,
+        en: `${SITE_URL}/en/return-policy`,
+      },
+    },
+  };
+}
 
 export default async function ReturnPolicyPage() {
   const locale = await getLocale();

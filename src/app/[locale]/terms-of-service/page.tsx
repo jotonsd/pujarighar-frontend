@@ -1,4 +1,22 @@
+import type { Metadata } from "next";
 import { getLocale } from "next-intl/server";
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pujarighar.com";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  const isBn = locale === "bn";
+  return {
+    title: isBn ? "শর্তাবলী | PujariGhar" : "Terms of Service | PujariGhar",
+    alternates: {
+      canonical: `${SITE_URL}/${locale}/terms-of-service`,
+      languages: {
+        bn: `${SITE_URL}/bn/terms-of-service`,
+        en: `${SITE_URL}/en/terms-of-service`,
+      },
+    },
+  };
+}
 
 export default async function TermsOfServicePage() {
   const locale = await getLocale();
