@@ -3,6 +3,7 @@
 import { useGetHeroSlidesQuery } from "@/api/heroSlides/heroSlidesApi";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useLocale } from "next-intl";
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -31,15 +32,17 @@ export default function HeroSlider() {
         className="flex transition-transform duration-500 ease-in-out"
         style={{ transform: `translateX(-${current * 100}%)` }}
       >
-        {slides.map(slide => (
-          <div key={slide.id} className="w-full shrink-0 relative">
+        {slides.map((slide, i) => (
+          <div key={slide.id} className="w-full h-48 md:h-96 shrink-0 relative">
             {slide.image ? (
               <>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src={slide.image}
                   alt={locale === "bn" ? slide.title_bn : slide.title_en}
-                  className="w-full h-48 md:h-96 object-cover"
+                  fill
+                  priority={i === 0}
+                  sizes="100vw"
+                  className="object-cover"
                 />
                 {/* Overlay for text */}
                 {(slide.title_bn || slide.title_en) && (

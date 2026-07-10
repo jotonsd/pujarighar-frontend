@@ -3,6 +3,7 @@
 import OfferBadge from "@/components/ui/OfferBadge";
 import { Product } from "@/lib/types";
 import { formatAmount, formatNumber, localName } from "@/utils/format";
+import Image from "next/image";
 import Link from "next/link";
 
 interface Props {
@@ -28,7 +29,7 @@ export default function PackageCard({ pkg, locale }: Props) {
   const pct  = originalPrice > 0 ? Math.round((originalPrice - finalPrice) / originalPrice * 100) : 0
 
   return (
-    <Link href={`/${locale}/packages/${pkg.id}`} className="group block relative h-full">
+    <Link href={`/${locale}/packages/${pkg.slug}`} className="group block relative h-full">
       {hasDiscount && diff > 0 && (
         <OfferBadge
           discountType={pkg.discount_type}
@@ -42,11 +43,12 @@ export default function PackageCard({ pkg, locale }: Props) {
         {/* Image */}
         <div className="h-36 md:h-56 bg-amber-50 relative overflow-hidden">
           {pkg.images?.[0] ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <Image
               src={pkg.images[0].image}
               alt={name}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              fill
+              sizes="(max-width: 768px) 50vw, 33vw"
+              className="object-cover group-hover:scale-105 transition-transform duration-300"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-4xl">

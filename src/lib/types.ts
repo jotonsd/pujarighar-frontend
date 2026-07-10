@@ -127,6 +127,7 @@ export interface PackageItem {
 
 export interface Product {
   id: string
+  slug: string
   name_bn: string
   name_en: string
   name: string

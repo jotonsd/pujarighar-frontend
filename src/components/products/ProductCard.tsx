@@ -10,6 +10,7 @@ import { toast } from "@/store/toastStore";
 import OfferBadge from "@/components/ui/OfferBadge";
 import { formatAmount, formatNumber, localName } from "@/utils/format";
 import { useTranslations } from "next-intl";
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
@@ -128,22 +129,23 @@ export default function ProductCard({ product, locale }: Props) {
       )}
     <div className="card hover:shadow-md transition-shadow group flex flex-col p-0 overflow-hidden h-full">
       <Link
-        href={`/${locale}/products/${product.id}`}
+        href={`/${locale}/products/${product.slug}`}
         className="block p-4 flex-1"
       >
         <div className="relative mb-4">
-          <div className="aspect-square bg-amber-50 rounded-lg overflow-hidden">
+          <div className="aspect-square bg-amber-50 rounded-lg overflow-hidden relative">
           {images.length > 0 ? (
             <>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <Image
                 src={images[imgIdx].image}
                 alt={
                   locale === "bn"
                     ? images[imgIdx].alt_bn
                     : images[imgIdx].alt_en
                 }
-                className="w-full h-full object-cover transition-opacity duration-300"
+                fill
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+                className="object-cover transition-opacity duration-300"
               />
               {/* Prev / Next arrows */}
               {hasMany && (
