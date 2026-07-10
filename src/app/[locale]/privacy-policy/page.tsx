@@ -1,4 +1,22 @@
+import type { Metadata } from "next";
 import { getLocale } from "next-intl/server";
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pujarighar.com";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  const isBn = locale === "bn";
+  return {
+    title: isBn ? "গোপনীয়তা নীতি | PujariGhar" : "Privacy Policy | PujariGhar",
+    alternates: {
+      canonical: `${SITE_URL}/${locale}/privacy-policy`,
+      languages: {
+        bn: `${SITE_URL}/bn/privacy-policy`,
+        en: `${SITE_URL}/en/privacy-policy`,
+      },
+    },
+  };
+}
 
 export default async function PrivacyPolicyPage() {
   const locale = await getLocale();
