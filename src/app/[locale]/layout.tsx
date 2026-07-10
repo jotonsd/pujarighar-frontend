@@ -3,12 +3,15 @@ import Navbar from "@/components/layout/Navbar";
 import Providers from "@/components/layout/Providers";
 import SiteChrome from "@/components/layout/SiteChrome";
 import { locales } from "@/lib/i18n";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { Arimo } from "next/font/google";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 
 // English UI font
 const arimo = Arimo({
@@ -49,6 +52,7 @@ export default async function LocaleLayout({
             </SiteChrome>
           </Providers>
         </NextIntlClientProvider>
+        {GA_ID && <GoogleAnalytics gaId={GA_ID} />}
       </body>
     </html>
   );
