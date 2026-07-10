@@ -8,6 +8,7 @@ const STATIC_PATHS = ["", "/products", "/packages", "/track", "/privacy-policy",
 
 interface SitemapProduct {
   id: string;
+  slug: string;
   is_package: boolean;
   updated_at: string;
 }
@@ -58,7 +59,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   for (const p of products) {
     for (const locale of locales) {
       entries.push({
-        url: `${SITE_URL}/${locale}/products/${p.id}`,
+        url: `${SITE_URL}/${locale}/products/${p.slug}`,
         lastModified: p.updated_at,
         changeFrequency: "weekly",
         priority: 0.8,
@@ -69,7 +70,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   for (const p of packages) {
     for (const locale of locales) {
       entries.push({
-        url: `${SITE_URL}/${locale}/packages/${p.id}`,
+        url: `${SITE_URL}/${locale}/packages/${p.slug}`,
         lastModified: p.updated_at,
         changeFrequency: "weekly",
         priority: 0.7,

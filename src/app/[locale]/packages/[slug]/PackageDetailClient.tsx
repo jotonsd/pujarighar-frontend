@@ -13,6 +13,7 @@ import { toast } from "@/store/toastStore";
 import { formatAmount, formatNumber, localName } from "@/utils/format";
 import { ArrowLeft } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -104,12 +105,16 @@ export default function PackageDetailClient({ id }: { id: string }) {
         {/* Left — image */}
         <div>
           {pkg.images.length > 0 ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={pkg.images[0].image}
-              alt={name}
-              className="w-full h-80 object-cover rounded-xl border border-gray-100"
-            />
+            <div className="relative w-full h-80 rounded-xl overflow-hidden border border-gray-100">
+              <Image
+                src={pkg.images[0].image}
+                alt={name}
+                fill
+                priority
+                sizes="(max-width: 768px) 100vw, 50vw"
+                className="object-cover"
+              />
+            </div>
           ) : (
             <div className="w-full h-80 bg-amber-50 rounded-xl flex items-center justify-center text-7xl">
               🎁

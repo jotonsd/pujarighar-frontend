@@ -42,6 +42,12 @@ export const productsApi = baseApi.injectEndpoints({
       providesTags: (_r, _e, id) => [{ type: 'Product', id }],
     }),
 
+    getProductBySlug: build.query<Product, string>({
+      query: (slug) => `/api/products/slug/${slug}/`,
+      transformResponse: (res: { data: Product }) => res.data,
+      providesTags: (_r, _e, slug) => [{ type: 'Product', id: slug }],
+    }),
+
     createProduct: build.mutation<Product, Partial<Product>>({
       query: (body) => ({ url: '/api/products/create/', method: 'POST', body }),
       transformResponse: (res: { data: Product }) => res.data,
@@ -129,6 +135,7 @@ interface PackageItem {
 export const {
   useGetProductsQuery,
   useGetProductQuery,
+  useGetProductBySlugQuery,
   useCreateProductMutation,
   useUpdateProductMutation,
   useDeleteProductMutation,

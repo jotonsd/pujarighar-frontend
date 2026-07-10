@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
-import { getLocale } from "next-intl/server";
 import PackagesPageClient from "./PackagesPageClient";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pujarighar.com";
 
-export async function generateMetadata(): Promise<Metadata> {
-  const locale = await getLocale();
+interface Props {
+  params: { locale: string };
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const locale = params.locale;
   const isBn = locale === "bn";
   return {
     title: isBn ? "পূজার প্যাকেজ | PujariGhar" : "Puja Packages | PujariGhar",

@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
+import { notFound, redirect } from "next/navigation";
 import PackageDetailClient from "./PackageDetailClient";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pujarighar.com";
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8020";
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 interface ProductImage {
   image: string;
@@ -10,6 +13,7 @@ interface ProductImage {
 
 interface PackageDetail {
   id: string;
+  slug: string;
   name_bn: string;
   name_en: string;
   description_bn: string | null;
@@ -23,12 +27,15 @@ interface PackageDetail {
 }
 
 interface Props {
-  params: { locale: string; id: string };
+  params: { locale: string; slug: string };
 }
 
-async function getPackage(id: string): Promise<PackageDetail | null> {
+async function getPackage(slugOrId: string): Promise<PackageDetail | null> {
   try {
-    const res = await fetch(`${API_URL}/api/products/${id}/`, {
+    const path = UUID_RE.test(slugOrId)
+      ? `/api/products/${slugOrId}/`
+      : `/api/products/slug/${slugOrId}/`;
+    const res = await fetch(`${API_URL}${path}`, {
       next: { revalidate: 300 },
     });
     if (!res.ok) return null;
@@ -40,9 +47,8 @@ async function getPackage(id: string): Promise<PackageDetail | null> {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const pkg = await getPackage(params.id);
+  const pkg = await getPackage(params.slug);
   const isBn = params.locale === "bn";
-  const url = `${SITE_URL}/${params.locale}/packages/${params.id}`;
 
   if (!pkg) {
     return {
@@ -50,6 +56,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
+  const url = `${SITE_URL}/${params.locale}/packages/${pkg.slug}`;
   const name = isBn ? pkg.name_bn : pkg.name_en;
   const rawDesc = (isBn ? pkg.description_bn : pkg.description_en) || "";
   const description = (rawDesc || (isBn ? `${name} — পূজারিঘর থেকে অর্ডার করুন` : `Buy ${name} package online from PujariGhar`)).slice(0, 160);
@@ -61,8 +68,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     alternates: {
       canonical: url,
       languages: {
-        bn: `${SITE_URL}/bn/packages/${params.id}`,
-        en: `${SITE_URL}/en/packages/${params.id}`,
+        bn: `${SITE_URL}/bn/packages/${pkg.slug}`,
+        en: `${SITE_URL}/en/packages/${pkg.slug}`,
       },
     },
     openGraph: {
@@ -82,44 +89,47 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function PackageDetailPage({ params }: Props) {
-  const pkg = await getPackage(params.id);
+  const pkg = await getPackage(params.slug);
 
-  const jsonLd = pkg
-    ? {
-        "@context": "https://schema.org",
-        "@type": "Product",
-        name: params.locale === "bn" ? pkg.name_bn : pkg.name_en,
-        image: pkg.images?.map(img => img.image) ?? [],
-        description: ((params.locale === "bn" ? pkg.description_bn : pkg.description_en) || "").slice(0, 500),
-        sku: pkg.sku,
-        offers: {
-          "@type": "Offer",
-          url: `${SITE_URL}/${params.locale}/packages/${params.id}`,
-          priceCurrency: "BDT",
-          price: pkg.unit_price,
-          availability: Number(pkg.stock_on_hand) > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
-        },
-        ...(pkg.average_rating && pkg.review_count > 0
-          ? {
-              aggregateRating: {
-                "@type": "AggregateRating",
-                ratingValue: pkg.average_rating,
-                reviewCount: pkg.review_count,
-              },
-            }
-          : {}),
-      }
-    : null;
+  if (!pkg) notFound();
+
+  // Old UUID-based links (already indexed by Google) redirect to the canonical slug URL.
+  if (UUID_RE.test(params.slug)) {
+    redirect(`/${params.locale}/packages/${pkg.slug}`);
+  }
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: params.locale === "bn" ? pkg.name_bn : pkg.name_en,
+    image: pkg.images?.map(img => img.image) ?? [],
+    description: ((params.locale === "bn" ? pkg.description_bn : pkg.description_en) || "").slice(0, 500),
+    sku: pkg.sku,
+    offers: {
+      "@type": "Offer",
+      url: `${SITE_URL}/${params.locale}/packages/${pkg.slug}`,
+      priceCurrency: "BDT",
+      price: pkg.unit_price,
+      availability: Number(pkg.stock_on_hand) > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+    },
+    ...(pkg.average_rating && pkg.review_count > 0
+      ? {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: pkg.average_rating,
+            reviewCount: pkg.review_count,
+          },
+        }
+      : {}),
+  };
 
   return (
     <>
-      {jsonLd && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-      )}
-      <PackageDetailClient id={params.id} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <PackageDetailClient id={pkg.id} />
     </>
   );
 }
