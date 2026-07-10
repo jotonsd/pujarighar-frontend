@@ -4,6 +4,7 @@ import { useGetBannersQuery } from "@/api/banners/bannersApi";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { formatNumber } from "@/utils/format";
 import { useLocale } from "next-intl";
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -29,12 +30,13 @@ export default function OfferBanners() {
 
     if (banner.image) {
       return (
-        <div className="w-full h-28 rounded-2xl overflow-hidden shadow-sm">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+        <div className="w-full h-28 rounded-2xl overflow-hidden shadow-sm relative">
+          <Image
             src={banner.image}
             alt={title}
-            className="w-full h-full object-cover"
+            fill
+            sizes="100vw"
+            className="object-cover"
           />
         </div>
       );

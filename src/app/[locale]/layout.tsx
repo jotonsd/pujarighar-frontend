@@ -5,9 +5,10 @@ import SiteChrome from "@/components/layout/SiteChrome";
 import { locales } from "@/lib/i18n";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
-import { getMessages } from "next-intl/server";
+import { getMessages, setRequestLocale } from "next-intl/server";
 import { Arimo } from "next/font/google";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
 // English UI font
 const arimo = Arimo({
@@ -16,12 +17,14 @@ const arimo = Arimo({
   display: "swap",
 });
 
-export const dynamic = "force-dynamic";
-
 export const metadata: Metadata = {
   title: "পূজারিঘর | PujariGhar",
   icons: { icon: "/assets/logo/favicon.png" },
 };
+
+export function generateStaticParams() {
+  return locales.map(locale => ({ locale }));
+}
 
 export default async function LocaleLayout({
   children,
@@ -32,6 +35,8 @@ export default async function LocaleLayout({
 }) {
   if (!locales.includes(locale as "bn" | "en")) notFound();
 
+  setRequestLocale(locale);
+
   const messages = await getMessages();
 
   return (
@@ -39,7 +44,7 @@ export default async function LocaleLayout({
       <body suppressHydrationWarning>
         <NextIntlClientProvider messages={messages}>
           <Providers>
-            <SiteChrome navbar={<Navbar />} footer={<Footer />}>
+            <SiteChrome navbar={<Suspense><Navbar /></Suspense>} footer={<Footer />}>
               {children}
             </SiteChrome>
           </Providers>

@@ -5,12 +5,16 @@ import HomePackages from "@/components/home/HomePackages";
 import RecommendedForYou from "@/components/home/RecommendedForYou";
 import OfferBanners from "@/components/products/OfferBanners";
 import type { Metadata } from "next";
-import { getLocale } from "next-intl/server";
+import { setRequestLocale } from "next-intl/server";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pujarighar.com";
 
-export async function generateMetadata(): Promise<Metadata> {
-  const locale = await getLocale();
+interface Props {
+  params: { locale: string };
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const locale = params.locale;
   const isBn = locale === "bn";
   const title = isBn
     ? "পূজারিঘর | অনলাইনে পূজার সামগ্রী কিনুন"
@@ -38,8 +42,9 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function HomePage() {
-  const locale = await getLocale();
+export default async function HomePage({ params }: Props) {
+  const locale = params.locale;
+  setRequestLocale(locale);
 
   const features = [
     {

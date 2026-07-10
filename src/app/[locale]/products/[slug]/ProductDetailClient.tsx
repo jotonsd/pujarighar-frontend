@@ -13,6 +13,7 @@ import { useCartStore } from "@/store/cartStore";
 import { useGuestCartStore } from "@/store/guestCartStore";
 import { toast } from "@/store/toastStore";
 import { useLocale, useTranslations } from "next-intl";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
@@ -116,15 +117,17 @@ export default function ProductDetailClient({ id }: { id: string }) {
           <div className="aspect-square bg-gray-100 rounded-xl overflow-hidden relative group">
             {images.length > 0 ? (
               <>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src={images[imgIdx].image}
                   alt={
                     locale === "bn"
                       ? images[imgIdx].alt_bn
                       : images[imgIdx].alt_en
                   }
-                  className="w-full h-full object-cover transition-opacity duration-300"
+                  fill
+                  priority
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className="object-cover transition-opacity duration-300"
                 />
                 {hasMany && (
                   <>
@@ -168,17 +171,18 @@ export default function ProductDetailClient({ id }: { id: string }) {
                 <button
                   key={img.id}
                   onClick={() => goTo(i)}
-                  className={`w-16 h-16 rounded-lg overflow-hidden border-2 transition-colors shrink-0 ${
+                  className={`relative w-16 h-16 rounded-lg overflow-hidden border-2 transition-colors shrink-0 ${
                     i === imgIdx
                       ? "border-amber-500"
                       : "border-gray-200 hover:border-amber-300"
                   }`}
                 >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                  <Image
                     src={img.image}
                     alt=""
-                    className="w-full h-full object-cover"
+                    fill
+                    sizes="64px"
+                    className="object-cover"
                   />
                 </button>
               ))}
