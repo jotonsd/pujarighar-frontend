@@ -27,11 +27,13 @@ jobs:
             echo "PM2_NAME=pujarighar" >> $GITHUB_ENV
             echo "PM2_PORT=3003" >> $GITHUB_ENV
             echo "API_URL=${{ secrets.PROD_API_URL }}" >> $GITHUB_ENV
+            echo "SITE_URL=https://pujarighar.com" >> $GITHUB_ENV
           else
             echo "DEPLOY_PATH=/var/www/dev.pujarighar.com" >> $GITHUB_ENV
             echo "PM2_NAME=dev-pujarighar" >> $GITHUB_ENV
             echo "PM2_PORT=3004" >> $GITHUB_ENV
             echo "API_URL=${{ secrets.DEV_API_URL }}" >> $GITHUB_ENV
+            echo "SITE_URL=https://dev.pujarighar.com" >> $GITHUB_ENV
           fi
 
       - name: Install dependencies
@@ -41,6 +43,7 @@ jobs:
         run: npm run build
         env:
           NEXT_PUBLIC_API_URL: ${{ env.API_URL }}
+          NEXT_PUBLIC_SITE_URL: ${{ env.SITE_URL }}
           NEXT_PUBLIC_DEFAULT_LOCALE: ${{ secrets.NEXT_PUBLIC_DEFAULT_LOCALE }}
           NEXT_PUBLIC_GOOGLE_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_GOOGLE_CLIENT_ID }}
 
