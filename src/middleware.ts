@@ -45,6 +45,17 @@ function extractLocale(pathname: string): string {
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
+
+  // Canonicalize www -> non-www (avoids duplicate-content / CORS mismatches across hostnames).
+  // Read the raw Host header, not request.nextUrl.hostname — the latter doesn't reliably
+  // reflect the incoming Host header behind a proxy.
+  const hostHeader = request.headers.get('host') ?? ''
+  if (hostHeader.startsWith('www.')) {
+    const url = request.nextUrl.clone()
+    url.hostname = hostHeader.replace(/^www\./, '').split(':')[0]
+    return NextResponse.redirect(url, 308)
+  }
+
   const locale = extractLocale(pathname)
 
   // Strip locale prefix to get the route
