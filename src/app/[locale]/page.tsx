@@ -18,10 +18,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const isBn = locale === "bn";
   const title = isBn
     ? "পূজারিঘর | অনলাইনে পূজার সামগ্রী কিনুন"
-    : "PujariGhar | Buy Puja Items Online in Bangladesh";
+    : "PujariGhar | Buy Puja (Pooja) Items Online in Bangladesh";
   const description = isBn
     ? "পূজারিঘর থেকে প্রামাণিক পূজার সামগ্রী, প্যাকেজ ও সামগ্রী অনলাইনে অর্ডার করুন। দ্রুত ডেলিভারি ও বিশ্বস্ত সেবা।"
-    : "Order authentic puja items, packages, and accessories online from PujariGhar. Fast delivery and trusted service across Bangladesh.";
+    : "Order authentic puja (pooja) items, packages, and accessories online from PujariGhar — your trusted pooja ghar for Bangladesh. Fast delivery and trusted service nationwide.";
 
   return {
     title,
