@@ -53,6 +53,9 @@ export async function middleware(request: NextRequest) {
   if (hostHeader.startsWith('www.')) {
     const url = request.nextUrl.clone()
     url.hostname = hostHeader.replace(/^www\./, '').split(':')[0]
+    // Behind the reverse proxy, request.nextUrl carries the internal PM2 port (e.g. :3003) —
+    // clearing it prevents redirecting the browser to an unreachable internal port.
+    url.port = ''
     return NextResponse.redirect(url, 308)
   }
 
