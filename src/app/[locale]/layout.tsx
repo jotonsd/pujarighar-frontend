@@ -12,6 +12,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
+const API_ORIGIN = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8020";
 
 // English UI font
 const arimo = Arimo({
@@ -52,6 +53,10 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale} className={locale === "en" ? arimo.className : hindSiliguri.className}>
+      <head>
+        <link rel="preconnect" href={API_ORIGIN} />
+        <link rel="dns-prefetch" href={API_ORIGIN} />
+      </head>
       <body suppressHydrationWarning>
         <NextIntlClientProvider messages={messages}>
           <Providers>
