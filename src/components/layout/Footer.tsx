@@ -26,7 +26,7 @@ export default async function Footer() {
     ? (settings?.company_name_bn || "পূজারিঘর")
     : (settings?.company_name_en || "PujariGhar");
   const phone   = settings?.contact_phone || "+880 1700-000000";
-  const email   = settings?.contact_email || "info@pujarighar.com";
+  const email   = settings?.contact_email || "pujarigharbd@gmail.com";
   const address = bn
     ? (settings?.address_bn || "ঢাকা, বাংলাদেশ")
     : (settings?.address_en || "Dhaka, Bangladesh");
@@ -41,7 +41,7 @@ export default async function Footer() {
           <div className="lg:col-span-1">
             <div className="mb-4">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={logoSrc} alt={companyName} className="h-12 w-auto object-contain brightness-0 invert" />
+              <Image src={logoSrc} alt={companyName} width={113} height={48} className="h-12 w-auto object-contain brightness-0 invert" />
             </div>
             <p className="text-sm text-gray-400 leading-relaxed mb-5">
               {bn

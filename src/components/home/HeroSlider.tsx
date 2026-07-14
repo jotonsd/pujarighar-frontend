@@ -104,17 +104,23 @@ export default function HeroSlider() {
 
       {/* Dot indicators */}
       {slides.length > 1 && (
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex">
           {slides.map((_, i) => (
             <button
               key={i}
               onClick={() => setCurrent(i)}
-              className={`rounded-full transition-all duration-300 ${
-                i === current
-                  ? "w-5 h-1.5 bg-amber-500"
-                  : "w-1.5 h-1.5 bg-white/60"
-              }`}
-            />
+              aria-label={locale === "bn" ? `স্লাইড ${i + 1}-এ যান` : `Go to slide ${i + 1}`}
+              aria-current={i === current}
+              className="p-2.5 flex items-center justify-center"
+            >
+              <span
+                className={`block rounded-full transition-all duration-300 ${
+                  i === current
+                    ? "w-5 h-1.5 bg-amber-500"
+                    : "w-1.5 h-1.5 bg-white/60"
+                }`}
+              />
+            </button>
           ))}
         </div>
       )}

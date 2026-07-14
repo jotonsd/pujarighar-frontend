@@ -154,12 +154,14 @@ export default function ProductCard({ product, locale }: Props) {
                     onClick={e =>
                       goTo(e, (imgIdx - 1 + images.length) % images.length)
                     }
+                    aria-label={locale === "bn" ? "আগের ছবি" : "Previous image"}
                     className="absolute left-1 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-black/30 text-white flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
                   >
                     ‹
                   </button>
                   <button
                     onClick={e => goTo(e, (imgIdx + 1) % images.length)}
+                    aria-label={locale === "bn" ? "পরের ছবি" : "Next image"}
                     className="absolute right-1 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-black/30 text-white flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
                   >
                     ›
@@ -170,6 +172,8 @@ export default function ProductCard({ product, locale }: Props) {
                       <button
                         key={i}
                         onClick={e => goTo(e, i)}
+                        aria-label={locale === "bn" ? `ছবি ${i + 1} দেখুন` : `View image ${i + 1}`}
+                        aria-current={i === imgIdx}
                         className={`w-1.5 h-1.5 rounded-full transition-colors ${i === imgIdx ? "bg-white" : "bg-white/40"}`}
                       />
                     ))}
@@ -197,7 +201,7 @@ export default function ProductCard({ product, locale }: Props) {
             <span className="text-xs text-gray-400">({product.review_count.toLocaleString(locale === 'bn' ? 'bn-BD' : 'en-US')})</span>
           </div>
         )} */}
-        <p className="text-xs text-gray-400 mb-2">SKU: {product.sku}</p>
+        <p className="text-xs text-gray-500 mb-2">SKU: {product.sku}</p>
         <div className="flex items-center justify-between">
           <div>
             {product.active_discount_type && parseFloat(String(product.effective_price)) < parseFloat(String(product.unit_price)) ? (
@@ -205,7 +209,7 @@ export default function ProductCard({ product, locale }: Props) {
                 <span className="text-amber-600 font-bold">
                   {formatAmount(product.effective_price, locale, 0)}
                 </span>
-                <span className="text-xs text-gray-400 line-through ml-1.5">
+                <span className="text-xs text-gray-500 line-through ml-1.5">
                   {formatAmount(product.unit_price, locale, 0)}
                 </span>
               </>

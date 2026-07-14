@@ -64,7 +64,7 @@ export default function PackageCard({ pkg, locale }: Props) {
           </p>
 
           {pkg.package_items?.length > 0 && (
-            <p className="text-xs text-gray-400 mb-2">
+            <p className="text-xs text-gray-500 mb-2">
               {formatNumber(pkg.package_items.length, locale)}{" "}
               {locale === "bn" ? "টি পণ্য" : "items"}
             </p>
@@ -77,7 +77,7 @@ export default function PackageCard({ pkg, locale }: Props) {
                 {formatAmount(finalPrice, locale, 0)}
               </span>
               {hasDiscount && (
-                <span className="text-xs text-gray-400 line-through">
+                <span className="text-xs text-gray-500 line-through">
                   {formatAmount(originalPrice, locale, 0)}
                 </span>
               )}
