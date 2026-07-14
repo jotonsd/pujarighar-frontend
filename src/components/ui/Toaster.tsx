@@ -23,13 +23,13 @@ export default function Toaster() {
   if (!toasts.length) return null
 
   return (
-    <div className="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full">
+    <div className="fixed top-5 right-5 z-50 flex flex-col-reverse gap-2 max-w-sm w-full">
       {toasts.map((toast) => (
         <div
           key={toast.id}
           className={clsx(
             'flex items-start gap-3 px-4 py-3 rounded-lg shadow-lg',
-            'animate-in slide-in-from-bottom-2 duration-200',
+            'animate-in slide-in-from-top-2 duration-200',
             styles[toast.type],
           )}
         >
