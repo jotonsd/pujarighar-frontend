@@ -26,7 +26,7 @@ export default async function Footer() {
     ? (settings?.company_name_bn || "পূজারিঘর")
     : (settings?.company_name_en || "PujariGhar");
   const phone   = settings?.contact_phone || "+880 1700-000000";
-  const email   = settings?.contact_email || "info@pujarighar.com";
+  const email   = settings?.contact_email || "pujarigharbd@gmail.com";
   const address = bn
     ? (settings?.address_bn || "ঢাকা, বাংলাদেশ")
     : (settings?.address_en || "Dhaka, Bangladesh");
@@ -41,7 +41,7 @@ export default async function Footer() {
           <div className="lg:col-span-1">
             <div className="mb-4">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={logoSrc} alt={companyName} className="h-12 w-auto object-contain brightness-0 invert" />
+              <Image src={logoSrc} alt={companyName} width={113} height={48} className="h-12 w-auto object-contain brightness-0 invert" />
             </div>
             <p className="text-sm text-gray-400 leading-relaxed mb-5">
               {bn
@@ -170,11 +170,11 @@ export default async function Footer() {
       {/* Divider */}
       <div className="border-t border-gray-800">
         <div className="max-w-7xl mx-auto px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-gray-400">
             © {year} {companyName}.{" "}
             {bn ? "সর্বস্বত্ব সংরক্ষিত।" : "All rights reserved."}
           </p>
-          <div className="flex items-center gap-3 text-xs text-gray-500">
+          <div className="flex items-center gap-3 text-xs text-gray-400">
             <Link href={`/${locale}/privacy-policy`} className="hover:text-amber-400 transition-colors">
               {bn ? "গোপনীয়তা নীতি" : "Privacy Policy"}
             </Link>
@@ -186,16 +186,16 @@ export default async function Footer() {
             </Link>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-xs text-gray-600">{bn ? "পেমেন্ট:" : "Payment:"}</span>
+            <span className="text-xs text-gray-400">{bn ? "পেমেন্ট:" : "Payment:"}</span>
             {[
-              { src: "/assets/payments/bkash.png",     alt: "bKash"      },
-              { src: "/assets/payments/nagad.webp",     alt: "Nagad"      },
-              { src: "/assets/payments/visa.png",       alt: "Visa"       },
-              { src: "/assets/payments/mastercard.png", alt: "Mastercard" },
-              { src: "/assets/payments/amex.webp",      alt: "Amex"       },
+              { src: "/assets/payments/bkash.png",     alt: "bKash",      width: 20 },
+              { src: "/assets/payments/nagad.webp",     alt: "Nagad",      width: 20 },
+              { src: "/assets/payments/visa.png",       alt: "Visa",       width: 36 },
+              { src: "/assets/payments/mastercard.png", alt: "Mastercard", width: 33 },
+              { src: "/assets/payments/amex.webp",      alt: "Amex",       width: 32 },
             ].map(pm => (
               <div key={pm.alt} className="flex items-center justify-center">
-                <Image src={pm.src} alt={pm.alt} width={0} height={0} sizes="100vw" className="h-5 w-auto object-contain" />
+                <Image src={pm.src} alt={pm.alt} width={pm.width} height={20} className="h-5 w-auto object-contain" />
               </div>
             ))}
           </div>

@@ -320,8 +320,7 @@ function MobileMenu({
       <div className="fixed top-0 left-0 h-full w-72 max-w-[85vw] bg-white z-50 shadow-xl flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={logoSrc} alt={companyName} className="h-8 w-auto object-contain" />
+          <Image src={logoSrc} alt={companyName} width={75} height={32} className="h-8 w-auto object-contain" />
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 p-1">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -528,8 +527,7 @@ export default function Navbar() {
             }
             className="flex-1 md:flex-none shrink-0"
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={logoSrc} alt={companyName} className="h-10 w-auto object-contain" />
+            <Image src={logoSrc} alt={companyName} width={94} height={40} priority className="h-10 w-auto object-contain" />
           </Link>
 
           {/* Desktop: all menu items in order — links and group dropdowns together */}

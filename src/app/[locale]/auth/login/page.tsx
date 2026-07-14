@@ -5,14 +5,24 @@ import { Checkbox, FloatingInput } from "@/components/ui/forms";
 import { useAuthStore } from "@/store/authStore";
 import { toast } from "@/store/toastStore";
 import { facebookLogin, loadFacebookSdk } from "@/lib/facebookSdk";
-import { useGoogleLogin } from "@react-oauth/google";
+import { GoogleOAuthProvider, useGoogleLogin } from "@react-oauth/google";
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+// Loaded only here (not app-wide) so the Google Identity Services SDK
+// doesn't ship on every page — only where a Google sign-in button exists.
 export default function LoginPage() {
+  return (
+    <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? ""}>
+      <LoginForm />
+    </GoogleOAuthProvider>
+  );
+}
+
+function LoginForm() {
   const t = useTranslations();
   const locale = useLocale();
   const router = useRouter();
