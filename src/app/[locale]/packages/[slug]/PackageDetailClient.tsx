@@ -139,7 +139,7 @@ export default function PackageDetailClient({ id }: { id: string }) {
               {formatAmount(finalPrice, locale, 0)}
             </span>
             {hasDiscount && (
-              <span className="text-base text-gray-400 line-through mb-0.5">
+              <span className="text-base text-gray-500 line-through mb-0.5">
                 {formatAmount(originalTotal, locale, 0)}
               </span>
             )}
@@ -219,7 +219,7 @@ export default function PackageDetailClient({ id }: { id: string }) {
         <div className="mt-10">
           <h2 className="text-lg font-bold text-gray-800 mb-4">
             {locale === "bn" ? "প্যাকেজে যা আছে" : "What's in this package"}
-            <span className="ml-2 text-sm font-normal text-gray-400">
+            <span className="ml-2 text-sm font-normal text-gray-500">
               ({pkg.package_items.length}{" "}
               {locale === "bn" ? "টি পণ্য" : "items"})
             </span>
@@ -240,7 +240,7 @@ export default function PackageDetailClient({ id }: { id: string }) {
                       ? item.component_name_bn
                       : item.component_name_en}
                   </p>
-                  <p className="text-xs text-gray-400 font-mono">
+                  <p className="text-xs text-gray-500 font-mono">
                     {item.component_sku}
                   </p>
                 </div>

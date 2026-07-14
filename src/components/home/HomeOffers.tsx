@@ -32,6 +32,7 @@ export default function HomeOffers() {
         </div>
         <Link
           href={`/${locale}/products?offers=true`}
+          aria-label={locale === "bn" ? "সব অফার দেখুন" : "View all offers"}
           className="text-sm text-amber-600 hover:underline font-medium"
         >
           {locale === "bn" ? "সব দেখুন →" : "View all →"}

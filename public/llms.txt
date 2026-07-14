@@ -1,0 +1,21 @@
+# PujariGhar
+
+> PujariGhar (পূজারিঘর) is an online store based in Bangladesh selling authentic puja (pooja) items — deities/idols, sacred ingredients, puja packages, and religious accessories — with nationwide delivery.
+
+PujariGhar sells religious and puja goods for Hindu worship, delivered across Bangladesh. The site is bilingual (Bengali and English) and available at both `/bn/` and `/en/` locale prefixes.
+
+## Key pages
+
+- [Home](https://pujarighar.com/en): overview of featured products, packages, and offers
+- [All products](https://pujarighar.com/en/products): full catalog with filtering by category, brand, and price
+- [Puja packages](https://pujarighar.com/en/packages): bundled sets of puja essentials
+- [Track order](https://pujarighar.com/en/track): order status lookup by order number and phone
+- [Return policy](https://pujarighar.com/en/return-policy)
+- [Terms of service](https://pujarighar.com/en/terms-of-service)
+- [Privacy policy](https://pujarighar.com/en/privacy-policy)
+
+## Notes for AI agents and crawlers
+
+- Product and package detail pages are at `/en/products/{slug}` and `/en/packages/{slug}` (and the `/bn/` equivalents), each with structured data (schema.org Product) describing price, availability, shipping, and return policy.
+- A machine-readable sitemap is available at [/sitemap.xml](https://pujarighar.com/sitemap.xml).
+- Prices are in BDT (Bangladeshi Taka). Delivery is nationwide within Bangladesh only.

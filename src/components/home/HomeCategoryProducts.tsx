@@ -53,6 +53,11 @@ export default function HomeCategoryProducts() {
             </div>
             <Link
               href={`/${locale}/products?category=${category.id}`}
+              aria-label={
+                isBn
+                  ? `${category.name_bn} - সব দেখুন`
+                  : `View all ${category.name_en}`
+              }
               className="text-sm text-amber-600 hover:underline font-medium shrink-0"
             >
               {isBn ? "সব দেখুন →" : "View all →"}

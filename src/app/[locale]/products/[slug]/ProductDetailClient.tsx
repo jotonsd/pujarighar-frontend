@@ -135,12 +135,14 @@ export default function ProductDetailClient({ id }: { id: string }) {
                       onClick={() =>
                         goTo((imgIdx - 1 + images.length) % images.length)
                       }
+                      aria-label={locale === "bn" ? "আগের ছবি" : "Previous image"}
                       className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/30 hover:bg-black/50 text-white text-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                     >
                       ‹
                     </button>
                     <button
                       onClick={() => goTo((imgIdx + 1) % images.length)}
+                      aria-label={locale === "bn" ? "পরের ছবি" : "Next image"}
                       className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/30 hover:bg-black/50 text-white text-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                     >
                       ›
@@ -150,6 +152,8 @@ export default function ProductDetailClient({ id }: { id: string }) {
                         <button
                           key={i}
                           onClick={() => goTo(i)}
+                          aria-label={locale === "bn" ? `ছবি ${i + 1} দেখুন` : `View image ${i + 1}`}
+                          aria-current={i === imgIdx}
                           className={`w-2 h-2 rounded-full transition-colors ${i === imgIdx ? "bg-white" : "bg-white/40"}`}
                         />
                       ))}
@@ -171,6 +175,8 @@ export default function ProductDetailClient({ id }: { id: string }) {
                 <button
                   key={img.id}
                   onClick={() => goTo(i)}
+                  aria-label={locale === "bn" ? `ছবি ${i + 1} দেখুন` : `View image ${i + 1}`}
+                  aria-current={i === imgIdx}
                   className={`relative w-16 h-16 rounded-lg overflow-hidden border-2 transition-colors shrink-0 ${
                     i === imgIdx
                       ? "border-amber-500"
@@ -197,7 +203,7 @@ export default function ProductDetailClient({ id }: { id: string }) {
                 {localName(product.brand_name_bn ?? '', product.brand_name_en ?? '', locale === 'bn')}
               </span>
             )}
-            <p className="text-gray-400 text-sm">SKU: {product.sku}</p>
+            <p className="text-gray-500 text-sm">SKU: {product.sku}</p>
           </div>
           <div className="flex items-center gap-2 flex-wrap mb-4">
             <span className="text-3xl font-bold text-amber-600">
@@ -211,7 +217,7 @@ export default function ProductDetailClient({ id }: { id: string }) {
             </span>
             {product.active_discount_type && (
               <>
-                <span className="text-sm text-gray-400 line-through">
+                <span className="text-sm text-gray-500 line-through">
                   {formatAmount(product.unit_price, locale, 0)}
                 </span>
                 <span className="text-xs font-bold bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full">
