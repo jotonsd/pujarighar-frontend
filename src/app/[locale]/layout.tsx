@@ -7,7 +7,7 @@ import { GoogleAnalytics } from "@next/third-parties/google";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
-import { Arimo } from "next/font/google";
+import { Arimo, Hind_Siliguri } from "next/font/google";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
@@ -17,6 +17,14 @@ const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 const arimo = Arimo({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
+
+// Bengali UI font — self-hosted via next/font instead of a render-blocking
+// @import, so it no longer sits in the critical request chain.
+const hindSiliguri = Hind_Siliguri({
+  subsets: ["bengali", "latin"],
+  weight: ["300", "400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -43,7 +51,7 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} className={locale === "en" ? arimo.className : ""}>
+    <html lang={locale} className={locale === "en" ? arimo.className : hindSiliguri.className}>
       <body suppressHydrationWarning>
         <NextIntlClientProvider messages={messages}>
           <Providers>
