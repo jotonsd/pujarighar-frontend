@@ -1,154 +1,23 @@
-"use client";
+import { Product } from "@/lib/types";
+import HomePackagesClient from "./HomePackagesClient";
 
-import { useGetProductsQuery } from "@/api/products/productsApi";
-import PackageCard from "@/components/products/PackageCard";
-import { Skeleton } from "@/components/ui/Skeleton";
-import { useLocale } from "next-intl";
-import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8020";
 
-export default function HomePackages() {
-  const locale = useLocale();
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [isHovered, setIsHovered] = useState(false);
+async function getPackages(): Promise<Product[]> {
+  try {
+    const res = await fetch(
+      `${API_URL}/api/products/?is_package=true&page_size=6`,
+      { next: { revalidate: 300 } },
+    );
+    if (!res.ok) return [];
+    const json = await res.json();
+    return json.data ?? [];
+  } catch {
+    return [];
+  }
+}
 
-  // Fetch up to 6 items to slide through
-  const { data, isLoading } = useGetProductsQuery({
-    is_package: "true",
-    page_size: 6,
-  });
-  const packages = data?.data ?? [];
-
-  // Manual & Autoplay Scroll Logic (moves item-by-item)
-  const scroll = (direction: "left" | "right") => {
-    if (scrollRef.current) {
-      const { scrollLeft, clientWidth, scrollWidth } = scrollRef.current;
-      // Calculate width of exactly one single item depending on viewport size
-      const itemWidth =
-        window.innerWidth >= 768 ? clientWidth / 3 : clientWidth / 2;
-
-      let scrollTo =
-        direction === "left" ? scrollLeft - itemWidth : scrollLeft + itemWidth;
-
-      // Infinite loop logic: Loop back to start if reaching the end, or jump to end if going back from start
-      if (
-        direction === "right" &&
-        scrollLeft + clientWidth >= scrollWidth - 10
-      ) {
-        scrollTo = 0;
-      } else if (direction === "left" && scrollLeft <= 10) {
-        scrollTo = scrollWidth - clientWidth;
-      }
-
-      scrollRef.current.scrollTo({ left: scrollTo, behavior: "smooth" });
-    }
-  };
-
-  // Autoplay Effect: Slides every 5 seconds if not hovered and items > 2
-  useEffect(() => {
-    if (isLoading || packages.length <= 2 || isHovered) return;
-
-    const interval = setInterval(() => {
-      scroll("right");
-    }, 5000); // 5000ms = 5 seconds
-
-    return () => clearInterval(interval);
-  }, [isLoading, packages.length, isHovered]);
-
-  // Hide the entire section if loading is complete and no packages exist
-  if (!isLoading && !packages.length) return null;
-
-  return (
-    <section className="mb-8 w-full px-4 md:px-0">
-      {/* Header Section */}
-      <div className="flex items-center justify-between mb-5">
-        <div className="flex items-center gap-2">
-          <span className="text-2xl">🎁</span>
-          <h2 className="text-xl font-bold text-gray-800">
-            {locale === "bn" ? "পূজার প্যাকেজ" : "Puja Packages"}
-          </h2>
-        </div>
-
-        <div className="flex items-center gap-4">
-          {/* View All Link */}
-          <Link
-            href={`/${locale}/packages`}
-            aria-label={locale === "bn" ? "সব প্যাকেজ দেখুন" : "View all packages"}
-            className="text-sm text-amber-600 hover:underline font-medium"
-          >
-            {locale === "bn" ? "সব দেখুন →" : "View all →"}
-          </Link>
-
-          {/* Manual Control Slide Buttons */}
-          {!isLoading && packages.length > 2 && (
-            <div className="hidden md:flex items-center gap-1.5">
-              <button
-                onClick={() => scroll("left")}
-                className="p-1.5 rounded-full border border-gray-200 bg-white shadow-sm hover:bg-gray-50 text-gray-600 transition active:scale-95"
-                aria-label="Previous slide"
-              >
-                ←
-              </button>
-              <button
-                onClick={() => scroll("right")}
-                className="p-1.5 rounded-full border border-gray-200 bg-white shadow-sm hover:bg-gray-50 text-gray-600 transition active:scale-95"
-                aria-label="Next slide"
-              >
-                →
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Main Content Area */}
-      {isLoading ? (
-        /* Loading Skeletons State */
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <div
-              key={i}
-              className="rounded-lg overflow-hidden border border-gray-100 bg-white"
-            >
-              <Skeleton className="h-56 w-full" />
-              <div className="p-3 space-y-2">
-                <Skeleton className="h-4 w-3/4" />
-                <Skeleton className="h-3 w-1/2" />
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : packages.length > 2 ? (
-        /* Slider Layout with Hover state listeners */
-        <div
-          className="relative w-full"
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-        >
-          <div
-            ref={scrollRef}
-            className="flex gap-3 overflow-x-auto snap-x snap-mandatory scrollbar-none pb-2 scroll-smooth"
-            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-          >
-            {packages.map(pkg => (
-              <div
-                key={pkg.id}
-                // Width calculations keep exact grid styling proportions (3 on Desktop, 2 on Mobile)
-                className="w-[calc(50%-6px)] md:w-[calc(33.333%-8px)] shrink-0 snap-start"
-              >
-                <PackageCard pkg={pkg} locale={locale} />
-              </div>
-            ))}
-          </div>
-        </div>
-      ) : (
-        /* Fallback Static Grid Layout (When items count is 2 or less) */
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-          {packages.map(pkg => (
-            <PackageCard key={pkg.id} pkg={pkg} locale={locale} />
-          ))}
-        </div>
-      )}
-    </section>
-  );
+export default async function HomePackages() {
+  const packages = await getPackages();
+  return <HomePackagesClient packages={packages} />;
 }
