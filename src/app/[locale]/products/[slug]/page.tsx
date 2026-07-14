@@ -1,3 +1,4 @@
+import { getMerchantReturnPolicy, getShippingDetails } from "@/lib/structuredData";
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import ProductDetailClient from "./ProductDetailClient";
@@ -50,6 +51,19 @@ async function getProduct(slugOrId: string): Promise<ProductDetail | null> {
   }
 }
 
+async function getDeliveryCharges(): Promise<{ inside_dhaka: string; outside_dhaka: string } | null> {
+  try {
+    const res = await fetch(`${API_URL}/api/delivery-charges/`, {
+      next: { revalidate: 3600 },
+    });
+    if (!res.ok) return null;
+    const json = await res.json();
+    return json.data ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const product = await getProduct(params.slug);
   const isBn = params.locale === "bn";
@@ -93,7 +107,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ProductDetailPage({ params }: Props) {
-  const product = await getProduct(params.slug);
+  const [product, deliveryCharges] = await Promise.all([
+    getProduct(params.slug),
+    getDeliveryCharges(),
+  ]);
 
   if (!product) notFound();
 
@@ -116,6 +133,8 @@ export default async function ProductDetailPage({ params }: Props) {
       priceCurrency: "BDT",
       price: product.active_discount_type ? product.effective_price : product.unit_price,
       availability: Number(product.stock_on_hand) > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+      hasMerchantReturnPolicy: getMerchantReturnPolicy(),
+      shippingDetails: getShippingDetails(deliveryCharges),
     },
     ...(product.average_rating && product.review_count > 0
       ? {
