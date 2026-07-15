@@ -1,3 +1,4 @@
+import OfferBanners from "@/components/products/OfferBanners";
 import type { Metadata } from "next";
 import TrackOrderClient from "./TrackOrderClient";
 
@@ -23,5 +24,5 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default function TrackOrderPage() {
-  return <TrackOrderClient />;
+  return <TrackOrderClient offerBanners={<OfferBanners />} />;
 }

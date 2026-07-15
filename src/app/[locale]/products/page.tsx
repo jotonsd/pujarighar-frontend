@@ -1,4 +1,5 @@
-import { Product } from "@/lib/types";
+import OfferBanners from "@/components/products/OfferBanners";
+import { Brand, Category, Product } from "@/lib/types";
 import type { Metadata } from "next";
 import ProductsPageClient from "./ProductsPageClient";
 
@@ -59,7 +60,45 @@ async function getInitialProducts(searchParams: Props["searchParams"]): Promise<
   }
 }
 
+async function getCategories(): Promise<Category[]> {
+  try {
+    const res = await fetch(`${API_URL}/api/categories/`, {
+      next: { revalidate: 300 },
+    });
+    if (!res.ok) return [];
+    const json = await res.json();
+    return json.data ?? [];
+  } catch {
+    return [];
+  }
+}
+
+async function getBrands(): Promise<Brand[]> {
+  try {
+    const res = await fetch(`${API_URL}/api/brands/`, {
+      next: { revalidate: 300 },
+    });
+    if (!res.ok) return [];
+    const json = await res.json();
+    return json.data ?? [];
+  } catch {
+    return [];
+  }
+}
+
 export default async function ProductsPage({ searchParams }: Props) {
-  const { products, totalPages } = await getInitialProducts(searchParams);
-  return <ProductsPageClient initialProducts={products} initialTotalPages={totalPages} />;
+  const [{ products, totalPages }, categories, brands] = await Promise.all([
+    getInitialProducts(searchParams),
+    getCategories(),
+    getBrands(),
+  ]);
+  return (
+    <ProductsPageClient
+      initialProducts={products}
+      initialTotalPages={totalPages}
+      initialCategories={categories}
+      initialBrands={brands}
+      offerBanners={<OfferBanners />}
+    />
+  );
 }

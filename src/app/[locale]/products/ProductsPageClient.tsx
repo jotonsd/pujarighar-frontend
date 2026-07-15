@@ -3,15 +3,14 @@
 import { useGetBrandsQuery } from "@/api/brands/brandsApi";
 import { useGetCategoriesQuery } from "@/api/categories/categoriesApi";
 import { useGetProductsQuery } from "@/api/products/productsApi";
-import OfferBanners from "@/components/products/OfferBanners";
 import ProductCard from "@/components/products/ProductCard";
 import { Checkbox, FloatingInput } from "@/components/ui/forms";
 import { FilterPanelSkeleton, ProductCardSkeleton } from "@/components/ui/skeletons";
-import { Product } from "@/lib/types";
+import { Brand, Category, Product } from "@/lib/types";
 import { ChevronDown, SlidersHorizontal, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 
 const PRICE_MAX = 5000;
 
@@ -161,9 +160,18 @@ function PriceRangeSlider({
 interface Props {
   initialProducts?: Product[];
   initialTotalPages?: number;
+  initialCategories?: Category[];
+  initialBrands?: Brand[];
+  offerBanners?: ReactNode;
 }
 
-export default function ProductsPageClient({ initialProducts = [], initialTotalPages = 1 }: Props) {
+export default function ProductsPageClient({
+  initialProducts = [],
+  initialTotalPages = 1,
+  initialCategories = [],
+  initialBrands = [],
+  offerBanners,
+}: Props) {
   const t = useTranslations();
   const locale = useLocale();
   const searchParams = useSearchParams();
@@ -241,8 +249,8 @@ export default function ProductsPageClient({ initialProducts = [], initialTotalP
     has_discount: onlyOffers || undefined,
   });
 
-  const { data: allCategories = [] } = useGetCategoriesQuery();
-  const { data: allBrands = [] } = useGetBrandsQuery();
+  const { data: allCategories = initialCategories } = useGetCategoriesQuery();
+  const { data: allBrands = initialBrands } = useGetBrandsQuery();
 
   const totalPages = data?.pagination?.total_pages ?? initialTotalPages;
   const hasMore = page < totalPages;
@@ -437,7 +445,7 @@ export default function ProductsPageClient({ initialProducts = [], initialTotalP
         </button>
       </div>
 
-      <OfferBanners />
+      {offerBanners}
 
       <div className="flex gap-3">
         <aside className="hidden lg:block w-56 shrink-0">
