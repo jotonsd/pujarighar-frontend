@@ -158,7 +158,12 @@ function PriceRangeSlider({
   );
 }
 
-export default function ProductsPageClient() {
+interface Props {
+  initialProducts?: Product[];
+  initialTotalPages?: number;
+}
+
+export default function ProductsPageClient({ initialProducts = [], initialTotalPages = 1 }: Props) {
   const t = useTranslations();
   const locale = useLocale();
   const searchParams = useSearchParams();
@@ -177,13 +182,22 @@ export default function ProductsPageClient() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [catOpen, setCatOpen] = useState(true);
   const [brandOpen, setBrandOpen] = useState(true);
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  // Seeded from the server so the first paint already has real products —
+  // avoids the skeleton flash and makes the first image LCP-discoverable.
+  const [allProducts, setAllProducts] = useState<Product[]>(initialProducts);
 
   // Refs so scroll handler always reads latest values without re-registering
   const isFetchingRef = useRef(false);
   const hasMoreRef = useRef(false);
 
+  // Skip the first run — the server already fetched page 1 matching these
+  // exact URL params, so resetting here would wipe the seeded products.
+  const isFirstUrlSync = useRef(true);
   useEffect(() => {
+    if (isFirstUrlSync.current) {
+      isFirstUrlSync.current = false;
+      return;
+    }
     setSearch(urlSearch);
     setCategories(urlCategory ? [urlCategory] : []);
     setOnlyOffers(urlOffers);
@@ -230,7 +244,7 @@ export default function ProductsPageClient() {
   const { data: allCategories = [] } = useGetCategoriesQuery();
   const { data: allBrands = [] } = useGetBrandsQuery();
 
-  const totalPages = data?.pagination?.total_pages ?? 1;
+  const totalPages = data?.pagination?.total_pages ?? initialTotalPages;
   const hasMore = page < totalPages;
 
   // Keep refs in sync every render
@@ -468,11 +482,12 @@ export default function ProductsPageClient() {
           ) : (
             <>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
-                {allProducts.map(product => (
+                {allProducts.map((product, i) => (
                   <ProductCard
                     key={product.id}
                     product={product}
                     locale={locale}
+                    priority={i < 2}
                   />
                 ))}
                 {isFetching && allProducts.length > 0 &&
