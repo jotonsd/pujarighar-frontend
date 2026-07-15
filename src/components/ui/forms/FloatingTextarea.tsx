@@ -1,6 +1,6 @@
 'use client'
 
-import { forwardRef, ReactNode, TextareaHTMLAttributes } from 'react'
+import { forwardRef, ReactNode, TextareaHTMLAttributes, useId } from 'react'
 
 interface FloatingTextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   label: string
@@ -11,7 +11,10 @@ interface FloatingTextareaProps extends TextareaHTMLAttributes<HTMLTextAreaEleme
 }
 
 const FloatingTextarea = forwardRef<HTMLTextAreaElement, FloatingTextareaProps>(
-  ({ label, error, uppercase = false, className = '', onChange, icon, rightElement, rows = 3, ...props }, ref) => {
+  ({ label, error, uppercase = false, className = '', onChange, icon, rightElement, rows = 3, id, ...props }, ref) => {
+    const generatedId = useId()
+    const inputId = id ?? generatedId
+
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       if (uppercase) e.target.value = e.target.value.toUpperCase()
       onChange?.(e)
@@ -28,6 +31,7 @@ const FloatingTextarea = forwardRef<HTMLTextAreaElement, FloatingTextareaProps>(
 
           <textarea
             ref={ref}
+            id={inputId}
             rows={rows}
             className={`block pb-2 pt-3 w-full text-sm text-gray-900 bg-transparent rounded-lg border border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-amber-600 peer resize-y ${
               error ? 'border-amber-500 focus:border-amber-500' : ''
@@ -38,6 +42,7 @@ const FloatingTextarea = forwardRef<HTMLTextAreaElement, FloatingTextareaProps>(
           />
 
           <label
+            htmlFor={inputId}
             className={`absolute text-sm duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 pointer-events-none
             peer-focus:px-2 peer-focus:text-amber-600
             peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-5

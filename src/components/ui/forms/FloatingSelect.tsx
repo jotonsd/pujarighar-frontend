@@ -1,7 +1,7 @@
 'use client'
 
 import { ChevronDown, Search, X } from 'lucide-react'
-import { forwardRef, useEffect, useMemo, useRef, useState } from 'react'
+import { forwardRef, useEffect, useId, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 
 interface SelectOption {
@@ -66,6 +66,8 @@ const FloatingSelect = forwardRef<HTMLDivElement, FloatingSelectProps>(
     const searchInputRef = useRef<HTMLInputElement>(null)
     const pointerDownRef = useRef(false)
     const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+    const generatedId = useId()
+    const inputId = id ?? generatedId
 
     const parsedOptions: SelectOption[] = useMemo(() => {
       if (options.length) return options
@@ -204,6 +206,7 @@ const FloatingSelect = forwardRef<HTMLDivElement, FloatingSelectProps>(
       <div className="relative" ref={containerRef}>
         <div className="relative">
           <div
+            id={inputId}
             onClick={handleToggleOpen}
             onKeyDown={handleKeyDown}
             onPointerDown={() => { pointerDownRef.current = true }}
@@ -214,6 +217,7 @@ const FloatingSelect = forwardRef<HTMLDivElement, FloatingSelectProps>(
             tabIndex={disabled ? -1 : 0}
             role="combobox"
             aria-expanded={isOpen}
+            aria-label={label}
             className={`block px-2.5 pb-2 pt-3 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 cursor-pointer focus:outline-none focus:ring-0 focus:border-amber-600 ${
               error ? 'border-amber-500' : ''
             } ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}
@@ -245,7 +249,7 @@ const FloatingSelect = forwardRef<HTMLDivElement, FloatingSelectProps>(
           </div>
 
           <label
-            htmlFor={id}
+            htmlFor={inputId}
             className={`absolute text-sm duration-300 transform origin-[0] bg-white px-2 pointer-events-none start-1 ${
               displayValue || (searchable && isOpen)
                 ? '-translate-y-4 scale-75 top-2 text-amber-600'
