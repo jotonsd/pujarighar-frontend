@@ -17,9 +17,10 @@ import { useEffect, useRef, useState } from "react";
 interface Props {
   product: Product;
   locale: string;
+  priority?: boolean;
 }
 
-export default function ProductCard({ product, locale }: Props) {
+export default function ProductCard({ product, locale, priority = false }: Props) {
   const t = useTranslations();
   const [qty, setQty] = useState(1);
   const [localAdding, setLocalAdding] = useState(false);
@@ -144,6 +145,7 @@ export default function ProductCard({ product, locale }: Props) {
                     : images[imgIdx].alt_en
                 }
                 fill
+                priority={priority}
                 sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
                 className="object-cover transition-opacity duration-300"
               />

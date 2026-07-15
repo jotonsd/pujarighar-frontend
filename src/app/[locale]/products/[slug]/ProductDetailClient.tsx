@@ -5,7 +5,6 @@ import { useAddToCartMutation } from "@/api/cart/cartApi";
 import { useGetProductQuery } from "@/api/products/productsApi";
 import ProductReviews from "@/components/products/ProductReviews";
 import Badge from "@/components/ui/Badge";
-import OfferBanners from "@/components/products/OfferBanners";
 import { ArrowLeft } from "lucide-react";
 import { ProductDetailSkeleton } from "@/components/ui/skeletons";
 import { useAuthStore } from "@/store/authStore";
@@ -15,9 +14,9 @@ import { toast } from "@/store/toastStore";
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 
-export default function ProductDetailClient({ id }: { id: string }) {
+export default function ProductDetailClient({ id, offerBanners }: { id: string; offerBanners: ReactNode }) {
   const t = useTranslations();
   const locale = useLocale();
   const router = useRouter();
@@ -109,7 +108,7 @@ export default function ProductDetailClient({ id }: { id: string }) {
   return (
     <div className="max-w-7xl mx-auto px-4 py-3">
       <div className="mb-4">
-        <OfferBanners />
+        {offerBanners}
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <div className="space-y-3">

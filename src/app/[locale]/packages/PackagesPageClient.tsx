@@ -2,14 +2,13 @@
 
 import { useGetCategoriesQuery } from "@/api/categories/categoriesApi";
 import { useGetProductsQuery } from "@/api/products/productsApi";
-import OfferBanners from "@/components/products/OfferBanners";
 import PackageCard from "@/components/products/PackageCard";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Product } from "@/lib/types";
 import { useLocale } from "next-intl";
-import { useEffect, useRef, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 
-export default function PackagesPageClient() {
+export default function PackagesPageClient({ offerBanners }: { offerBanners?: ReactNode }) {
   const locale = useLocale();
   const isBn = locale === "bn";
 
@@ -79,7 +78,7 @@ export default function PackagesPageClient() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-3">
       <div className="mb-6">
-        <OfferBanners />
+        {offerBanners}
       </div>
 
       {/* Category tabs */}

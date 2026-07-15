@@ -1,4 +1,5 @@
 import { getMerchantReturnPolicy, getShippingDetails } from "@/lib/structuredData";
+import OfferBanners from "@/components/products/OfferBanners";
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import PackageDetailClient from "./PackageDetailClient";
@@ -148,7 +149,7 @@ export default async function PackageDetailPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <PackageDetailClient id={pkg.id} />
+      <PackageDetailClient id={pkg.id} offerBanners={<OfferBanners />} />
     </>
   );
 }

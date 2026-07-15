@@ -1,3 +1,4 @@
+import OfferBanners from "@/components/products/OfferBanners";
 import type { Metadata } from "next";
 import PackagesPageClient from "./PackagesPageClient";
 
@@ -26,5 +27,5 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default function PackagesPage() {
-  return <PackagesPageClient />;
+  return <PackagesPageClient offerBanners={<OfferBanners />} />;
 }

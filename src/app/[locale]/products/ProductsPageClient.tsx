@@ -3,15 +3,14 @@
 import { useGetBrandsQuery } from "@/api/brands/brandsApi";
 import { useGetCategoriesQuery } from "@/api/categories/categoriesApi";
 import { useGetProductsQuery } from "@/api/products/productsApi";
-import OfferBanners from "@/components/products/OfferBanners";
 import ProductCard from "@/components/products/ProductCard";
 import { Checkbox, FloatingInput } from "@/components/ui/forms";
 import { FilterPanelSkeleton, ProductCardSkeleton } from "@/components/ui/skeletons";
-import { Product } from "@/lib/types";
+import { Brand, Category, Product } from "@/lib/types";
 import { ChevronDown, SlidersHorizontal, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 
 const PRICE_MAX = 5000;
 
@@ -158,7 +157,21 @@ function PriceRangeSlider({
   );
 }
 
-export default function ProductsPageClient() {
+interface Props {
+  initialProducts?: Product[];
+  initialTotalPages?: number;
+  initialCategories?: Category[];
+  initialBrands?: Brand[];
+  offerBanners?: ReactNode;
+}
+
+export default function ProductsPageClient({
+  initialProducts = [],
+  initialTotalPages = 1,
+  initialCategories = [],
+  initialBrands = [],
+  offerBanners,
+}: Props) {
   const t = useTranslations();
   const locale = useLocale();
   const searchParams = useSearchParams();
@@ -177,13 +190,22 @@ export default function ProductsPageClient() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [catOpen, setCatOpen] = useState(true);
   const [brandOpen, setBrandOpen] = useState(true);
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  // Seeded from the server so the first paint already has real products —
+  // avoids the skeleton flash and makes the first image LCP-discoverable.
+  const [allProducts, setAllProducts] = useState<Product[]>(initialProducts);
 
   // Refs so scroll handler always reads latest values without re-registering
   const isFetchingRef = useRef(false);
   const hasMoreRef = useRef(false);
 
+  // Skip the first run — the server already fetched page 1 matching these
+  // exact URL params, so resetting here would wipe the seeded products.
+  const isFirstUrlSync = useRef(true);
   useEffect(() => {
+    if (isFirstUrlSync.current) {
+      isFirstUrlSync.current = false;
+      return;
+    }
     setSearch(urlSearch);
     setCategories(urlCategory ? [urlCategory] : []);
     setOnlyOffers(urlOffers);
@@ -227,10 +249,10 @@ export default function ProductsPageClient() {
     has_discount: onlyOffers || undefined,
   });
 
-  const { data: allCategories = [] } = useGetCategoriesQuery();
-  const { data: allBrands = [] } = useGetBrandsQuery();
+  const { data: allCategories = initialCategories } = useGetCategoriesQuery();
+  const { data: allBrands = initialBrands } = useGetBrandsQuery();
 
-  const totalPages = data?.pagination?.total_pages ?? 1;
+  const totalPages = data?.pagination?.total_pages ?? initialTotalPages;
   const hasMore = page < totalPages;
 
   // Keep refs in sync every render
@@ -423,7 +445,7 @@ export default function ProductsPageClient() {
         </button>
       </div>
 
-      <OfferBanners />
+      {offerBanners}
 
       <div className="flex gap-3">
         <aside className="hidden lg:block w-56 shrink-0">
@@ -468,11 +490,12 @@ export default function ProductsPageClient() {
           ) : (
             <>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
-                {allProducts.map(product => (
+                {allProducts.map((product, i) => (
                   <ProductCard
                     key={product.id}
                     product={product}
                     locale={locale}
+                    priority={i < 2}
                   />
                 ))}
                 {isFetching && allProducts.length > 0 &&
