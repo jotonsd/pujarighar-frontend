@@ -18,7 +18,7 @@ import { FloatingDatePicker, FloatingSelect } from "@/components/ui/forms";
 import { toast } from "@/store/toastStore";
 import { formatAmount, formatNumber } from "@/utils/format";
 import {
-  BarChart3, CheckCircle2, Globe2, LinkIcon, Search, TrendingUp, Unplug,
+  BarChart3, CheckCircle2, Globe2, LinkIcon, Monitor, Search, Smartphone, TrendingUp, Unplug,
 } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -221,23 +221,47 @@ function ScoreRing({ score }: { score: number | null }) {
 }
 
 function PagespeedSeoCards({ isBn }: { isBn: boolean }) {
-  const { data, isLoading } = useGetPagespeedSeoQuery();
+  const [strategy, setStrategy] = useState<"MOBILE" | "DESKTOP">("MOBILE");
+  const { data, isLoading, isFetching } = useGetPagespeedSeoQuery({ strategy });
 
-  if (isLoading) return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-      {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-32 rounded-2xl" />)}
+  const strategyToggle = (
+    <div className="flex gap-1 bg-gray-50 rounded-lg p-1 w-fit">
+      {(["MOBILE", "DESKTOP"] as const).map(s => (
+        <button
+          key={s}
+          onClick={() => setStrategy(s)}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+            strategy === s ? "bg-white shadow-sm text-amber-700" : "text-gray-500 hover:text-gray-700"
+          }`}
+        >
+          {s === "MOBILE" ? <Smartphone className="w-3.5 h-3.5" /> : <Monitor className="w-3.5 h-3.5" />}
+          {s === "MOBILE" ? (isBn ? "মোবাইল" : "Mobile") : (isBn ? "ডেস্কটপ" : "Desktop")}
+        </button>
+      ))}
+    </div>
+  );
+
+  if (isLoading || isFetching) return (
+    <div className="space-y-3">
+      {strategyToggle}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-32 rounded-2xl" />)}
+      </div>
     </div>
   );
 
   if (!data?.available) {
     return (
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-        <h3 className="text-sm font-bold text-gray-800 mb-1">{isBn ? "পেজস্পিড ইনসাইটস" : "PageSpeed Insights"}</h3>
-        <EmptyNote text={
-          data?.reason === 'no_score_returned'
-            ? (isBn ? "স্কোর পাওয়া যায়নি" : "No score returned")
-            : (isBn ? "কনফিগার করা হয়নি (CRUX_API_KEY)" : "Not configured (CRUX_API_KEY missing)")
-        } />
+      <div className="space-y-3">
+        {strategyToggle}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+          <h3 className="text-sm font-bold text-gray-800 mb-1">{isBn ? "পেজস্পিড ইনসাইটস" : "PageSpeed Insights"}</h3>
+          <EmptyNote text={
+            data?.reason === 'no_score_returned'
+              ? (isBn ? "স্কোর পাওয়া যায়নি" : "No score returned")
+              : (isBn ? "কনফিগার করা হয়নি (CRUX_API_KEY)" : "Not configured (CRUX_API_KEY missing)")
+          } />
+        </div>
       </div>
     );
   }
@@ -248,6 +272,7 @@ function PagespeedSeoCards({ isBn }: { isBn: boolean }) {
 
   return (
     <div className="space-y-3">
+      {strategyToggle}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {PSI_CATEGORY_META.map(cat => (
           <div key={cat.key} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex items-center gap-3">
@@ -264,7 +289,9 @@ function PagespeedSeoCards({ isBn }: { isBn: boolean }) {
 
       {Object.keys(lab).length > 0 && (
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-          <h3 className="text-sm font-bold text-gray-800 mb-3">{isBn ? "ল্যাব পারফরম্যান্স মেট্রিক্স (মোবাইল)" : "Lab Performance Metrics (mobile)"}</h3>
+          <h3 className="text-sm font-bold text-gray-800 mb-3">
+            {isBn ? `ল্যাব পারফরম্যান্স মেট্রিক্স (${strategy === "MOBILE" ? "মোবাইল" : "ডেস্কটপ"})` : `Lab Performance Metrics (${strategy === "MOBILE" ? "mobile" : "desktop"})`}
+          </h3>
           <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
             {Object.entries(lab).map(([id, value]) => (
               <div key={id}>
