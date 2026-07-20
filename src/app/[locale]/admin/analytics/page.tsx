@@ -10,6 +10,7 @@ import {
   useGetSeoMetricsQuery,
   useGetTrafficMetricsQuery,
   useLazyGetGoogleConnectUrlQuery,
+  useRefreshPagespeedSeoMutation,
   useSelectGooglePropertyMutation,
 } from "@/api/analytics/analyticsApi";
 import PageHeader from "@/components/ui/PageHeader";
@@ -18,7 +19,7 @@ import { FloatingDatePicker, FloatingSelect } from "@/components/ui/forms";
 import { toast } from "@/store/toastStore";
 import { formatAmount, formatNumber } from "@/utils/format";
 import {
-  BarChart3, CheckCircle2, Globe2, LinkIcon, Monitor, Search, Smartphone, TrendingUp, Unplug,
+  BarChart3, CheckCircle2, Globe2, LinkIcon, Monitor, RefreshCw, Search, Smartphone, TrendingUp, Unplug,
 } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -222,42 +223,64 @@ function ScoreRing({ score }: { score: number | null }) {
 
 function PagespeedSeoCards({ isBn }: { isBn: boolean }) {
   const [strategy, setStrategy] = useState<"MOBILE" | "DESKTOP">("MOBILE");
-  const { data, isLoading, isFetching } = useGetPagespeedSeoQuery({ strategy });
+  const { data, isLoading } = useGetPagespeedSeoQuery();
+  const [refresh, { isLoading: isRefreshing }] = useRefreshPagespeedSeoMutation();
 
-  const strategyToggle = (
-    <div className="flex gap-1 bg-gray-50 rounded-lg p-1 w-fit">
-      {(["MOBILE", "DESKTOP"] as const).map(s => (
-        <button
-          key={s}
-          onClick={() => setStrategy(s)}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
-            strategy === s ? "bg-white shadow-sm text-amber-700" : "text-gray-500 hover:text-gray-700"
-          }`}
-        >
-          {s === "MOBILE" ? <Smartphone className="w-3.5 h-3.5" /> : <Monitor className="w-3.5 h-3.5" />}
-          {s === "MOBILE" ? (isBn ? "মোবাইল" : "Mobile") : (isBn ? "ডেস্কটপ" : "Desktop")}
-        </button>
-      ))}
+  const handleRefresh = async () => {
+    try {
+      await refresh().unwrap();
+      toast.success(isBn ? "নতুন করে আনা হয়েছে" : "Refreshed");
+    } catch {
+      toast.error(isBn ? "রিফ্রেশ ব্যর্থ হয়েছে" : "Refresh failed");
+    }
+  };
+
+  const toolbar = (
+    <div className="flex items-center justify-between flex-wrap gap-2">
+      <div className="flex gap-1 bg-gray-50 rounded-lg p-1 w-fit">
+        {(["MOBILE", "DESKTOP"] as const).map(s => (
+          <button
+            key={s}
+            onClick={() => setStrategy(s)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+              strategy === s ? "bg-white shadow-sm text-amber-700" : "text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            {s === "MOBILE" ? <Smartphone className="w-3.5 h-3.5" /> : <Monitor className="w-3.5 h-3.5" />}
+            {s === "MOBILE" ? (isBn ? "মোবাইল" : "Mobile") : (isBn ? "ডেস্কটপ" : "Desktop")}
+          </button>
+        ))}
+      </div>
+      <button
+        onClick={handleRefresh}
+        disabled={isRefreshing}
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-50 text-gray-600 border border-gray-200 hover:bg-gray-100 transition-colors disabled:opacity-50"
+      >
+        <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin" : ""}`} />
+        {isRefreshing ? (isBn ? "রিফ্রেশ হচ্ছে..." : "Refreshing...") : (isBn ? "রিফ্রেশ" : "Refresh")}
+      </button>
     </div>
   );
 
-  if (isLoading || isFetching) return (
+  if (isLoading) return (
     <div className="space-y-3">
-      {strategyToggle}
+      {toolbar}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-32 rounded-2xl" />)}
       </div>
     </div>
   );
 
-  if (!data?.available) {
+  const result = strategy === "MOBILE" ? data?.mobile : data?.desktop;
+
+  if (!result?.available) {
     return (
       <div className="space-y-3">
-        {strategyToggle}
+        {toolbar}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
           <h3 className="text-sm font-bold text-gray-800 mb-1">{isBn ? "পেজস্পিড ইনসাইটস" : "PageSpeed Insights"}</h3>
           <EmptyNote text={
-            data?.reason === 'no_score_returned'
+            result?.reason === 'no_score_returned'
               ? (isBn ? "স্কোর পাওয়া যায়নি" : "No score returned")
               : (isBn ? "কনফিগার করা হয়নি (CRUX_API_KEY)" : "Not configured (CRUX_API_KEY missing)")
           } />
@@ -266,13 +289,13 @@ function PagespeedSeoCards({ isBn }: { isBn: boolean }) {
     );
   }
 
-  const scores = data.scores;
-  const issues = data.failing_issues;
-  const lab = data.lab_metrics ?? {};
+  const scores = result.scores;
+  const issues = result.failing_issues;
+  const lab = result.lab_metrics ?? {};
 
   return (
     <div className="space-y-3">
-      {strategyToggle}
+      {toolbar}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {PSI_CATEGORY_META.map(cat => (
           <div key={cat.key} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex items-center gap-3">
