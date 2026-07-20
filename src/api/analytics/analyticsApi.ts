@@ -42,6 +42,11 @@ export interface TrafficSource {
   sessions: number
 }
 
+export interface CountryBreakdown {
+  country: string
+  sessions: number
+}
+
 export interface TrafficMetrics {
   sessions_total: number
   users_total: number
@@ -49,6 +54,7 @@ export interface TrafficMetrics {
   returning_users_total: number
   daily: TrafficDailyPoint[]
   top_traffic_sources: TrafficSource[]
+  country_breakdown: CountryBreakdown[]
 }
 
 export interface TopSellingProduct {

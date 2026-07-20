@@ -25,7 +25,8 @@ import { useLocale } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import {
-  CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis,
+  CartesianGrid, Cell, Legend, Line, LineChart, Pie, PieChart,
+  ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from "recharts";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -81,6 +82,10 @@ function EmptyNote({ text }: { text: string }) {
 }
 
 // ─── Traffic tab ─────────────────────────────────────────────────────────────
+// Fixed categorical order (never cycled/reassigned by rank) — last slot is reserved
+// for the "Other" bucket regardless of how many real countries precede it.
+const COUNTRY_COLORS = ["#2a78d6", "#1baf7a", "#4a3aa7", "#eb6834", "#e87ba4", "#9ca3af"];
+
 function TrafficTab({ from, to, isBn }: { from: string; to: string; isBn: boolean }) {
   const { data, isLoading } = useGetTrafficMetricsQuery({ from, to });
 
@@ -93,6 +98,7 @@ function TrafficTab({ from, to, isBn }: { from: string; to: string; isBn: boolea
     [isBn ? "ইউজার" : "Users"]: d.total_users,
   }));
   const maxSourceSessions = Math.max(...data.top_traffic_sources.map(s => s.sessions), 1);
+  const countryTotal = data.country_breakdown.reduce((sum, c) => sum + c.sessions, 0);
 
   return (
     <div className="space-y-4">
@@ -119,14 +125,60 @@ function TrafficTab({ from, to, isBn }: { from: string; to: string; isBn: boolea
         ) : <EmptyNote text={isBn ? "কোনো ডেটা নেই" : "No data yet"} />}
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-        <h3 className="text-sm font-bold text-gray-800 mb-3">{isBn ? "শীর্ষ ট্রাফিক সোর্স" : "Top Traffic Sources"}</h3>
-        {data.top_traffic_sources.length > 0 ? (
-          <RankedBars
-            rows={data.top_traffic_sources.map(s => ({ label: s.source, value: s.sessions }))}
-            max={maxSourceSessions}
-          />
-        ) : <EmptyNote text={isBn ? "কোনো ট্রাফিক ডেটা নেই" : "No traffic data yet"} />}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+          <h3 className="text-sm font-bold text-gray-800 mb-3">{isBn ? "শীর্ষ ট্রাফিক সোর্স" : "Top Traffic Sources"}</h3>
+          {data.top_traffic_sources.length > 0 ? (
+            <RankedBars
+              rows={data.top_traffic_sources.map(s => ({ label: s.source, value: s.sessions }))}
+              max={maxSourceSessions}
+            />
+          ) : <EmptyNote text={isBn ? "কোনো ট্রাফিক ডেটা নেই" : "No traffic data yet"} />}
+        </div>
+
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+          <h3 className="text-sm font-bold text-gray-800 mb-3">{isBn ? "দেশ অনুযায়ী সেশন" : "Sessions by Country"}</h3>
+          {data.country_breakdown.length > 0 ? (
+            <div className="flex items-center gap-4">
+              <ResponsiveContainer width="50%" height={200}>
+                <PieChart>
+                  <Pie
+                    data={data.country_breakdown}
+                    dataKey="sessions"
+                    nameKey="country"
+                    innerRadius={45}
+                    outerRadius={75}
+                    paddingAngle={2}
+                    strokeWidth={2}
+                    stroke="#fff"
+                  >
+                    {data.country_breakdown.map((entry, idx) => (
+                      <Cell key={entry.country} fill={COUNTRY_COLORS[idx % COUNTRY_COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    formatter={(value, _name, item) => {
+                      const num = Number(value ?? 0);
+                      return [`${formatNumber(num, "en")} (${Math.round((num / countryTotal) * 100)}%)`, item?.payload?.country];
+                    }}
+                    contentStyle={{ borderRadius: "10px", border: "1px solid #e5e7eb", fontSize: "12px" }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="flex-1 min-w-0 space-y-2">
+                {data.country_breakdown.map((c, idx) => (
+                  <div key={c.country} className="flex items-center justify-between gap-2 text-xs">
+                    <span className="flex items-center gap-1.5 min-w-0 text-gray-600">
+                      <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: COUNTRY_COLORS[idx % COUNTRY_COLORS.length] }} />
+                      <span className="truncate">{c.country}</span>
+                    </span>
+                    <span className="font-semibold text-gray-800 shrink-0">{Math.round((c.sessions / countryTotal) * 100)}%</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : <EmptyNote text={isBn ? "কোনো দেশের ডেটা নেই" : "No country data yet"} />}
+        </div>
       </div>
     </div>
   );
