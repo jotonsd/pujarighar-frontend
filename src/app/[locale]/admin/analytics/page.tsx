@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  PagespeedCategory,
   useDisconnectGoogleMutation,
   useGetGooglePropertiesQuery,
   useGetGoogleStatusQuery,
@@ -194,14 +195,44 @@ function CwvMeter({ label, bucket }: { label: string; bucket?: { good: number; n
   );
 }
 
-function PagespeedSeoCard({ isBn }: { isBn: boolean }) {
+const PSI_CATEGORY_META: { key: PagespeedCategory; label_bn: string; label_en: string }[] = [
+  { key: "performance", label_bn: "পারফরম্যান্স", label_en: "Performance" },
+  { key: "accessibility", label_bn: "অ্যাক্সেসিবিলিটি", label_en: "Accessibility" },
+  { key: "best_practices", label_bn: "বেস্ট প্র্যাকটিস", label_en: "Best Practices" },
+  { key: "seo", label_bn: "এসইও", label_en: "SEO" },
+];
+
+const PSI_LAB_METRIC_LABELS: Record<string, { bn: string; en: string }> = {
+  "first-contentful-paint": { bn: "প্রথম কন্টেন্ট পেইন্ট", en: "First Contentful Paint" },
+  "largest-contentful-paint": { bn: "লার্জেস্ট কন্টেন্ট পেইন্ট", en: "Largest Contentful Paint" },
+  "total-blocking-time": { bn: "টোটাল ব্লকিং টাইম", en: "Total Blocking Time" },
+  "cumulative-layout-shift": { bn: "কিউমুলেটিভ লেআউট শিফট", en: "Cumulative Layout Shift" },
+  "speed-index": { bn: "স্পিড ইনডেক্স", en: "Speed Index" },
+};
+
+function ScoreRing({ score }: { score: number | null }) {
+  if (score === null) return <div className="w-14 h-14 rounded-full border-4 border-gray-100 flex items-center justify-center shrink-0"><span className="text-xs text-gray-300">—</span></div>;
+  const color = score >= 90 ? "text-green-600 border-green-100 bg-green-50" : score >= 50 ? "text-amber-500 border-amber-100 bg-amber-50" : "text-red-600 border-red-100 bg-red-50";
+  return (
+    <div className={`w-14 h-14 rounded-full border-4 flex items-center justify-center shrink-0 ${color}`}>
+      <span className="text-lg font-bold">{score}</span>
+    </div>
+  );
+}
+
+function PagespeedSeoCards({ isBn }: { isBn: boolean }) {
   const { data, isLoading } = useGetPagespeedSeoQuery();
 
-  if (isLoading) return <Skeleton className="h-48 rounded-2xl" />;
+  if (isLoading) return (
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-32 rounded-2xl" />)}
+    </div>
+  );
+
   if (!data?.available) {
     return (
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-        <h3 className="text-sm font-bold text-gray-800 mb-1">{isBn ? "এসইও স্কোর (PageSpeed Insights)" : "SEO Score (PageSpeed Insights)"}</h3>
+        <h3 className="text-sm font-bold text-gray-800 mb-1">{isBn ? "পেজস্পিড ইনসাইটস" : "PageSpeed Insights"}</h3>
         <EmptyNote text={
           data?.reason === 'no_score_returned'
             ? (isBn ? "স্কোর পাওয়া যায়নি" : "No score returned")
@@ -211,35 +242,60 @@ function PagespeedSeoCard({ isBn }: { isBn: boolean }) {
     );
   }
 
-  const score = data.score ?? 0;
-  const scoreColor = score >= 90 ? "text-green-600" : score >= 50 ? "text-amber-500" : "text-red-600";
-  const ringColor = score >= 90 ? "border-green-100 bg-green-50" : score >= 50 ? "border-amber-100 bg-amber-50" : "border-red-100 bg-red-50";
+  const scores = data.scores;
+  const issues = data.failing_issues;
+  const lab = data.lab_metrics ?? {};
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-      <h3 className="text-sm font-bold text-gray-800 mb-1">{isBn ? "এসইও স্কোর (PageSpeed Insights)" : "SEO Score (PageSpeed Insights)"}</h3>
-      <p className="text-xs text-gray-400 mb-3">
-        {isBn ? "গুগলের Lighthouse অডিট থেকে বাস্তব, কার্যকরী এসইও ডেটা।" : "Real, actionable SEO data from Google's Lighthouse audit."}
-      </p>
-      <div className="flex items-start gap-5">
-        <div className={`w-16 h-16 rounded-full border-4 flex items-center justify-center shrink-0 ${ringColor}`}>
-          <span className={`text-xl font-bold ${scoreColor}`}>{score}</span>
-        </div>
-        <div className="flex-1 min-w-0">
-          {data.failing_issues && data.failing_issues.length > 0 ? (
-            <ul className="space-y-1.5">
-              {data.failing_issues.slice(0, 5).map((issue, idx) => (
-                <li key={idx} className="text-xs text-gray-600 flex items-start gap-1.5">
-                  <span className="text-red-400 mt-0.5">•</span>
-                  <span>{issue.title}</span>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-xs text-gray-400">{isBn ? "কোনো সমস্যা পাওয়া যায়নি" : "No issues found"}</p>
-          )}
-        </div>
+    <div className="space-y-3">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        {PSI_CATEGORY_META.map(cat => (
+          <div key={cat.key} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex items-center gap-3">
+            <ScoreRing score={scores?.[cat.key] ?? null} />
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-gray-800">{isBn ? cat.label_bn : cat.label_en}</p>
+              <p className="text-xs text-gray-400 mt-0.5">
+                {issues?.[cat.key]?.length ? `${issues[cat.key].length} ${isBn ? "সমস্যা" : "issues"}` : (isBn ? "কোনো সমস্যা নেই" : "No issues")}
+              </p>
+            </div>
+          </div>
+        ))}
       </div>
+
+      {Object.keys(lab).length > 0 && (
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+          <h3 className="text-sm font-bold text-gray-800 mb-3">{isBn ? "ল্যাব পারফরম্যান্স মেট্রিক্স (মোবাইল)" : "Lab Performance Metrics (mobile)"}</h3>
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+            {Object.entries(lab).map(([id, value]) => (
+              <div key={id}>
+                <p className="text-sm font-bold text-gray-800">{value}</p>
+                <p className="text-xs text-gray-400">{PSI_LAB_METRIC_LABELS[id] ? (isBn ? PSI_LAB_METRIC_LABELS[id].bn : PSI_LAB_METRIC_LABELS[id].en) : id}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {PSI_CATEGORY_META.some(cat => issues?.[cat.key]?.length) && (
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+          <h3 className="text-sm font-bold text-gray-800 mb-3">{isBn ? "সমাধানযোগ্য সমস্যা" : "Issues to Fix"}</h3>
+          <div className="space-y-4">
+            {PSI_CATEGORY_META.filter(cat => issues?.[cat.key]?.length).map(cat => (
+              <div key={cat.key}>
+                <p className="text-xs font-semibold text-gray-500 mb-1.5">{isBn ? cat.label_bn : cat.label_en}</p>
+                <ul className="space-y-1">
+                  {issues![cat.key].slice(0, 5).map((issue, idx) => (
+                    <li key={idx} className="text-xs text-gray-600 flex items-start gap-1.5">
+                      <span className="text-red-400 mt-0.5">•</span>
+                      <span>{issue.title}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -354,7 +410,7 @@ function SeoTab({ from, to, isBn }: { from: string; to: string; isBn: boolean })
         </div>
       </div>
 
-      <PagespeedSeoCard isBn={isBn} />
+      <PagespeedSeoCards isBn={isBn} />
     </div>
   );
 }
