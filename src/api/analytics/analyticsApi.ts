@@ -193,9 +193,9 @@ export const analyticsApi = baseApi.injectEndpoints({
       providesTags: ['GoogleAnalytics'],
     }),
 
-    getPagespeedSeo: build.query<PagespeedSeo, void>({
-      query: () => '/api/analytics/seo/pagespeed/',
-      transformResponse: (res: { data: PagespeedSeo }) => res.data,
+    getPagespeedSeo: build.query<PagespeedResult, { strategy: 'MOBILE' | 'DESKTOP' }>({
+      query: ({ strategy }) => `/api/analytics/seo/pagespeed/?strategy=${strategy}`,
+      transformResponse: (res: { data: PagespeedResult }) => res.data,
       providesTags: ['GooglePagespeed'],
     }),
 

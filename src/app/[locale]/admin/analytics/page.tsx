@@ -223,7 +223,7 @@ function ScoreRing({ score }: { score: number | null }) {
 
 function PagespeedSeoCards({ isBn }: { isBn: boolean }) {
   const [strategy, setStrategy] = useState<"MOBILE" | "DESKTOP">("MOBILE");
-  const { data, isLoading } = useGetPagespeedSeoQuery();
+  const { data: result, isLoading } = useGetPagespeedSeoQuery({ strategy });
   const [refresh, { isLoading: isRefreshing }] = useRefreshPagespeedSeoMutation();
 
   const handleRefresh = async () => {
@@ -270,8 +270,6 @@ function PagespeedSeoCards({ isBn }: { isBn: boolean }) {
       </div>
     </div>
   );
-
-  const result = strategy === "MOBILE" ? data?.mobile : data?.desktop;
 
   if (!result?.available) {
     return (
