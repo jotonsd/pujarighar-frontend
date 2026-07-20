@@ -5,6 +5,7 @@ import {
   InputHTMLAttributes,
   ReactNode,
   useCallback,
+  useId,
   useLayoutEffect,
   useRef,
 } from 'react'
@@ -40,10 +41,12 @@ function rawToFormattedCursor(formatted: string, rawPos: number): number {
 }
 
 const FloatingInput = forwardRef<HTMLInputElement, FloatingInputProps>(
-  ({ label, error, uppercase = false, className = '', onChange, icon, rightElement, type, value, placeholder, ...props }, ref) => {
+  ({ label, error, uppercase = false, className = '', onChange, icon, rightElement, type, value, placeholder, id, ...props }, ref) => {
     const isNumber = type === 'number'
     const internalRef = useRef<HTMLInputElement>(null)
     const pendingCursor = useRef<number | null>(null)
+    const generatedId = useId()
+    const inputId = id ?? generatedId
 
     const mergedRef = useCallback(
       (el: HTMLInputElement | null) => {
@@ -97,6 +100,7 @@ const FloatingInput = forwardRef<HTMLInputElement, FloatingInputProps>(
 
           <input
             ref={mergedRef}
+            id={inputId}
             type={isNumber ? 'text' : type}
             inputMode={isNumber ? 'decimal' : undefined}
             value={displayValue}
@@ -109,6 +113,7 @@ const FloatingInput = forwardRef<HTMLInputElement, FloatingInputProps>(
           />
 
           <label
+            htmlFor={inputId}
             className={`absolute text-sm duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 pointer-events-none
             peer-focus:px-2 peer-focus:text-amber-600
             peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2

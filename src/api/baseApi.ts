@@ -80,6 +80,7 @@ export const baseApi = createApi({
     'Cashback',
     'SiteSettings',
     'PromoEmails',
+    'GoogleAnalytics',
   ],
   endpoints: () => ({}),
 })

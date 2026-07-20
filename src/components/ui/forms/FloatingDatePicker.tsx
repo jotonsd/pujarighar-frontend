@@ -1,7 +1,7 @@
 'use client'
 
 import { Calendar, ChevronLeft, ChevronRight, X } from 'lucide-react'
-import { forwardRef, useEffect, useRef, useState } from 'react'
+import { forwardRef, useEffect, useId, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 
 interface FloatingDatePickerProps {
@@ -48,6 +48,8 @@ const FloatingDatePicker = forwardRef<HTMLDivElement, FloatingDatePickerProps>(
     const containerRef = useRef<HTMLDivElement>(null)
     const dropdownRef = useRef<HTMLDivElement>(null)
     const inputRef = useRef<HTMLInputElement>(null)
+    const generatedId = useId()
+    const inputId = id ?? generatedId
 
     const selectedDate = value ? new Date(value) : null
 
@@ -239,7 +241,7 @@ const FloatingDatePicker = forwardRef<HTMLDivElement, FloatingDatePickerProps>(
           <input
             ref={inputRef}
             type="text"
-            id={id}
+            id={inputId}
             value={inputValue}
             onChange={handleInputChange}
             onClick={() => !disabled && setIsOpen(true)}
@@ -253,6 +255,7 @@ const FloatingDatePicker = forwardRef<HTMLDivElement, FloatingDatePickerProps>(
           />
 
           <label
+            htmlFor={inputId}
             className={`absolute text-sm duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 pointer-events-none peer-focus:px-2 peer-focus:text-amber-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 start-1 ${
               error ? 'text-red-500' : 'text-gray-500'
             }`}
