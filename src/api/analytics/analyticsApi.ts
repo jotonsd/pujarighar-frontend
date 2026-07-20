@@ -54,7 +54,7 @@ export interface TrafficMetrics {
   returning_users_total: number
   daily: TrafficDailyPoint[]
   top_traffic_sources: TrafficSource[]
-  country_breakdown: CountryBreakdown[]
+  country_breakdown?: CountryBreakdown[]
 }
 
 export interface TopSellingProduct {

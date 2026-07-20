@@ -98,7 +98,8 @@ function TrafficTab({ from, to, isBn }: { from: string; to: string; isBn: boolea
     [isBn ? "ইউজার" : "Users"]: d.total_users,
   }));
   const maxSourceSessions = Math.max(...data.top_traffic_sources.map(s => s.sessions), 1);
-  const countryTotal = data.country_breakdown.reduce((sum, c) => sum + c.sessions, 0);
+  const countryBreakdown = data.country_breakdown ?? [];
+  const countryTotal = countryBreakdown.reduce((sum, c) => sum + c.sessions, 0);
 
   return (
     <div className="space-y-4">
@@ -138,12 +139,12 @@ function TrafficTab({ from, to, isBn }: { from: string; to: string; isBn: boolea
 
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
           <h3 className="text-sm font-bold text-gray-800 mb-3">{isBn ? "দেশ অনুযায়ী সেশন" : "Sessions by Country"}</h3>
-          {data.country_breakdown.length > 0 ? (
+          {countryBreakdown.length > 0 ? (
             <div className="flex items-center gap-4">
               <ResponsiveContainer width="50%" height={200}>
                 <PieChart>
                   <Pie
-                    data={data.country_breakdown}
+                    data={countryBreakdown}
                     dataKey="sessions"
                     nameKey="country"
                     innerRadius={45}
@@ -152,7 +153,7 @@ function TrafficTab({ from, to, isBn }: { from: string; to: string; isBn: boolea
                     strokeWidth={2}
                     stroke="#fff"
                   >
-                    {data.country_breakdown.map((entry, idx) => (
+                    {countryBreakdown.map((entry, idx) => (
                       <Cell key={entry.country} fill={COUNTRY_COLORS[idx % COUNTRY_COLORS.length]} />
                     ))}
                   </Pie>
@@ -166,7 +167,7 @@ function TrafficTab({ from, to, isBn }: { from: string; to: string; isBn: boolea
                 </PieChart>
               </ResponsiveContainer>
               <div className="flex-1 min-w-0 space-y-2">
-                {data.country_breakdown.map((c, idx) => (
+                {countryBreakdown.map((c, idx) => (
                   <div key={c.country} className="flex items-center justify-between gap-2 text-xs">
                     <span className="flex items-center gap-1.5 min-w-0 text-gray-600">
                       <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: COUNTRY_COLORS[idx % COUNTRY_COLORS.length] }} />
