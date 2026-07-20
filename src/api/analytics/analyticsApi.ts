@@ -129,12 +129,15 @@ export interface PagespeedSeoIssue {
   description: string
 }
 
+export type PagespeedCategory = 'performance' | 'accessibility' | 'best_practices' | 'seo'
+
 export interface PagespeedSeo {
   available: boolean
   reason?: string
-  score?: number
   strategy?: string
-  failing_issues?: PagespeedSeoIssue[]
+  scores?: Record<PagespeedCategory, number | null>
+  failing_issues?: Record<PagespeedCategory, PagespeedSeoIssue[]>
+  lab_metrics?: Record<string, string>
 }
 
 export const analyticsApi = baseApi.injectEndpoints({
