@@ -81,6 +81,7 @@ export const baseApi = createApi({
     'SiteSettings',
     'PromoEmails',
     'GoogleAnalytics',
+    'GooglePagespeed',
   ],
   endpoints: () => ({}),
 })

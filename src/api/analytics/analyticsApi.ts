@@ -131,13 +131,18 @@ export interface PagespeedSeoIssue {
 
 export type PagespeedCategory = 'performance' | 'accessibility' | 'best_practices' | 'seo'
 
-export interface PagespeedSeo {
+export interface PagespeedResult {
   available: boolean
   reason?: string
   strategy?: string
   scores?: Record<PagespeedCategory, number | null>
   failing_issues?: Record<PagespeedCategory, PagespeedSeoIssue[]>
   lab_metrics?: Record<string, string>
+}
+
+export interface PagespeedSeo {
+  mobile: PagespeedResult
+  desktop: PagespeedResult
 }
 
 export const analyticsApi = baseApi.injectEndpoints({
@@ -188,10 +193,16 @@ export const analyticsApi = baseApi.injectEndpoints({
       providesTags: ['GoogleAnalytics'],
     }),
 
-    getPagespeedSeo: build.query<PagespeedSeo, { strategy: 'MOBILE' | 'DESKTOP' }>({
-      query: ({ strategy }) => `/api/analytics/seo/pagespeed/?strategy=${strategy}`,
+    getPagespeedSeo: build.query<PagespeedSeo, void>({
+      query: () => '/api/analytics/seo/pagespeed/',
       transformResponse: (res: { data: PagespeedSeo }) => res.data,
-      providesTags: ['GoogleAnalytics'],
+      providesTags: ['GooglePagespeed'],
+    }),
+
+    refreshPagespeedSeo: build.mutation<PagespeedSeo, void>({
+      query: () => ({ url: '/api/analytics/seo/pagespeed/refresh/', method: 'POST' }),
+      transformResponse: (res: { data: PagespeedSeo }) => res.data,
+      invalidatesTags: ['GooglePagespeed'],
     }),
 
   }),
@@ -208,4 +219,5 @@ export const {
   useGetSalesMetricsQuery,
   useGetSeoMetricsQuery,
   useGetPagespeedSeoQuery,
+  useRefreshPagespeedSeoMutation,
 } = analyticsApi
