@@ -4,6 +4,7 @@ import {
   useDisconnectGoogleMutation,
   useGetGooglePropertiesQuery,
   useGetGoogleStatusQuery,
+  useGetPagespeedSeoQuery,
   useGetSalesMetricsQuery,
   useGetSeoMetricsQuery,
   useGetTrafficMetricsQuery,
@@ -193,6 +194,56 @@ function CwvMeter({ label, bucket }: { label: string; bucket?: { good: number; n
   );
 }
 
+function PagespeedSeoCard({ isBn }: { isBn: boolean }) {
+  const { data, isLoading } = useGetPagespeedSeoQuery();
+
+  if (isLoading) return <Skeleton className="h-48 rounded-2xl" />;
+  if (!data?.available) {
+    return (
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+        <h3 className="text-sm font-bold text-gray-800 mb-1">{isBn ? "এসইও স্কোর (PageSpeed Insights)" : "SEO Score (PageSpeed Insights)"}</h3>
+        <EmptyNote text={
+          data?.reason === 'no_score_returned'
+            ? (isBn ? "স্কোর পাওয়া যায়নি" : "No score returned")
+            : (isBn ? "কনফিগার করা হয়নি (CRUX_API_KEY)" : "Not configured (CRUX_API_KEY missing)")
+        } />
+      </div>
+    );
+  }
+
+  const score = data.score ?? 0;
+  const scoreColor = score >= 90 ? "text-green-600" : score >= 50 ? "text-amber-500" : "text-red-600";
+  const ringColor = score >= 90 ? "border-green-100 bg-green-50" : score >= 50 ? "border-amber-100 bg-amber-50" : "border-red-100 bg-red-50";
+
+  return (
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+      <h3 className="text-sm font-bold text-gray-800 mb-1">{isBn ? "এসইও স্কোর (PageSpeed Insights)" : "SEO Score (PageSpeed Insights)"}</h3>
+      <p className="text-xs text-gray-400 mb-3">
+        {isBn ? "গুগলের Lighthouse অডিট থেকে বাস্তব, কার্যকরী এসইও ডেটা।" : "Real, actionable SEO data from Google's Lighthouse audit."}
+      </p>
+      <div className="flex items-start gap-5">
+        <div className={`w-16 h-16 rounded-full border-4 flex items-center justify-center shrink-0 ${ringColor}`}>
+          <span className={`text-xl font-bold ${scoreColor}`}>{score}</span>
+        </div>
+        <div className="flex-1 min-w-0">
+          {data.failing_issues && data.failing_issues.length > 0 ? (
+            <ul className="space-y-1.5">
+              {data.failing_issues.slice(0, 5).map((issue, idx) => (
+                <li key={idx} className="text-xs text-gray-600 flex items-start gap-1.5">
+                  <span className="text-red-400 mt-0.5">•</span>
+                  <span>{issue.title}</span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-xs text-gray-400">{isBn ? "কোনো সমস্যা পাওয়া যায়নি" : "No issues found"}</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function SeoTab({ from, to, isBn }: { from: string; to: string; isBn: boolean }) {
   const { data, isLoading } = useGetSeoMetricsQuery({ from, to });
 
@@ -302,6 +353,8 @@ function SeoTab({ from, to, isBn }: { from: string; to: string; isBn: boolean })
           )}
         </div>
       </div>
+
+      <PagespeedSeoCard isBn={isBn} />
     </div>
   );
 }

@@ -124,6 +124,19 @@ export interface SeoMetrics {
   core_web_vitals: CoreWebVitals
 }
 
+export interface PagespeedSeoIssue {
+  title: string
+  description: string
+}
+
+export interface PagespeedSeo {
+  available: boolean
+  reason?: string
+  score?: number
+  strategy?: string
+  failing_issues?: PagespeedSeoIssue[]
+}
+
 export const analyticsApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
 
@@ -172,6 +185,12 @@ export const analyticsApi = baseApi.injectEndpoints({
       providesTags: ['GoogleAnalytics'],
     }),
 
+    getPagespeedSeo: build.query<PagespeedSeo, void>({
+      query: () => '/api/analytics/seo/pagespeed/',
+      transformResponse: (res: { data: PagespeedSeo }) => res.data,
+      providesTags: ['GoogleAnalytics'],
+    }),
+
   }),
   overrideExisting: false,
 })
@@ -185,4 +204,5 @@ export const {
   useGetTrafficMetricsQuery,
   useGetSalesMetricsQuery,
   useGetSeoMetricsQuery,
+  useGetPagespeedSeoQuery,
 } = analyticsApi
