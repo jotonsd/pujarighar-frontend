@@ -1,7 +1,6 @@
 "use client";
 
 import { useGetDashboardSummaryQuery, RecentOrder, TopProduct } from "@/api/dashboard/dashboardApi";
-import PageHeader from "@/components/ui/PageHeader";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { formatAmount, formatNumber } from "@/utils/format";
 import { useLocale, useTranslations } from "next-intl";
@@ -9,16 +8,19 @@ import {
   CartesianGrid, Legend, Line, LineChart,
   ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from "recharts";
-import { TrendingUp, TrendingDown, Minus } from "lucide-react";
+import {
+  TrendingUp, TrendingDown, Minus, ShoppingBag, Wallet, Clock,
+  AlertTriangle, Users, Package, Scale, Truck, HandCoins,
+} from "lucide-react";
 
 // ─── Stat card definitions ────────────────────────────────────────────────────
 const STAT_CARDS = [
-  { key: "today_orders",   labelKey: "todayOrders",   icon: "🛍️", color: "bg-blue-50",   text: "text-blue-600",   border: "border-blue-100" },
-  { key: "today_revenue",  labelKey: "todayRevenue",  icon: "💰", color: "bg-green-50",  text: "text-green-600",  border: "border-green-100",  isCurrency: true },
-  { key: "pending_orders", labelKey: "pendingOrders", icon: "⏳", color: "bg-amber-50",  text: "text-amber-600",  border: "border-amber-100" },
-  { key: "low_stock_count",labelKey: "lowStock",      icon: "⚠️", color: "bg-red-50",    text: "text-red-600",    border: "border-red-100" },
-  { key: "total_customers",labelKey: "totalCustomers",icon: "👥", color: "bg-purple-50", text: "text-purple-600", border: "border-purple-100" },
-  { key: "total_products", labelKey: "totalProducts", icon: "📦", color: "bg-orange-50", text: "text-orange-600", border: "border-orange-100" },
+  { key: "today_orders",   labelKey: "todayOrders",   icon: ShoppingBag,   bg: "bg-blue-600",    iconText: "text-blue-600" },
+  { key: "today_revenue",  labelKey: "todayRevenue",  icon: Wallet,        bg: "bg-emerald-700",  iconText: "text-emerald-700", isCurrency: true },
+  { key: "pending_orders", labelKey: "pendingOrders", icon: Clock,         bg: "bg-amber-700",    iconText: "text-amber-700" },
+  { key: "low_stock_count",labelKey: "lowStock",      icon: AlertTriangle, bg: "bg-red-600",      iconText: "text-red-600" },
+  { key: "total_customers",labelKey: "totalCustomers",icon: Users,         bg: "bg-purple-600",   iconText: "text-purple-600" },
+  { key: "total_products", labelKey: "totalProducts", icon: Package,       bg: "bg-orange-700",   iconText: "text-orange-700" },
 ] as const;
 
 const STATUS_META: Record<string, { label_bn: string; label_en: string; color: string }> = {
@@ -89,11 +91,6 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-5">
-      <PageHeader
-        title={t("dashboard")}
-        description={isBn ? "ব্যবসার সার্বিক অবস্থার সংক্ষিপ্ত চিত্র" : "Overview of your business performance"}
-      />
-
       {/* ── Row 1: Today / quick stats ───────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
         {STAT_CARDS.map(card => {
@@ -103,16 +100,17 @@ export default function DashboardPage() {
             : formatNumber(Number(raw ?? 0), locale);
 
           const isOutOfStock = card.key === "low_stock_count" && (data?.out_of_stock_count ?? 0) > 0;
+          const Icon = card.icon;
           return (
-            <div key={card.key} className={`bg-white rounded-2xl border ${card.border} p-4 flex items-start gap-3 shadow-sm`}>
-              <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-xl shrink-0 ${card.color}`}>
-                {card.icon}
+            <div key={card.key} className={`${card.bg} rounded-2xl p-4 flex items-start gap-3 shadow-sm hover:shadow-md transition-shadow`}>
+              <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 bg-white shadow-sm">
+                <Icon className={`w-5 h-5 ${card.iconText}`} strokeWidth={2} />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-xl font-bold text-gray-900 leading-tight">{value}</p>
-                <p className="text-xs text-gray-500 mt-0.5">{t(card.labelKey)}</p>
+                <p className="text-xl font-bold leading-tight text-white">{value}</p>
+                <p className="text-xs text-white/80 mt-0.5">{t(card.labelKey)}</p>
                 {isOutOfStock && (
-                  <p className="text-xs text-red-500 mt-0.5 font-medium">
+                  <p className="text-xs text-white mt-0.5 font-semibold">
                     +{formatNumber(data!.out_of_stock_count, locale)} {isBn ? "স্টক শেষ" : "out of stock"}
                   </p>
                 )}
@@ -125,47 +123,67 @@ export default function DashboardPage() {
       {/* ── Row 2: Financial health ──────────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {/* This month revenue */}
-        <div className="bg-white rounded-2xl border border-teal-100 p-4 shadow-sm">
-          <p className="text-xs text-gray-500 mb-1">{isBn ? "এই মাসের আয়" : "This Month Revenue"}</p>
-          <p className="text-xl font-bold text-teal-700">{formatAmount(data?.this_month_revenue ?? "0", locale, 0)}</p>
-          {revPct !== null && (
-            <div className={`flex items-center gap-1 mt-1 text-xs font-medium ${revPct > 0 ? "text-green-600" : revPct < 0 ? "text-red-500" : "text-gray-400"}`}>
-              {revPct > 0 ? <TrendingUp className="w-3 h-3" /> : revPct < 0 ? <TrendingDown className="w-3 h-3" /> : <Minus className="w-3 h-3" />}
-              {revPct > 0 ? "+" : ""}{formatNumber(revPct, locale)}% {isBn ? "গত মাসের তুলনায়" : "vs last month"}
-            </div>
-          )}
+        <div className="bg-teal-700 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow flex items-start gap-3">
+          <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 bg-white shadow-sm">
+            <TrendingUp className="w-5 h-5 text-teal-700" strokeWidth={2} />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-xs text-white/80 mb-1">{isBn ? "এই মাসের আয়" : "This Month Revenue"}</p>
+            <p className="text-xl font-bold text-white leading-tight">{formatAmount(data?.this_month_revenue ?? "0", locale, 0)}</p>
+            {revPct !== null && (
+              <div className="flex items-center gap-1 mt-1 text-xs font-medium text-white/90">
+                {revPct > 0 ? <TrendingUp className="w-3 h-3" /> : revPct < 0 ? <TrendingDown className="w-3 h-3" /> : <Minus className="w-3 h-3" />}
+                {revPct > 0 ? "+" : ""}{formatNumber(revPct, locale)}% {isBn ? "গত মাসের তুলনায়" : "vs last month"}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* This month profit */}
-        <div className={`bg-white rounded-2xl border p-4 shadow-sm ${profitVal >= 0 ? "border-green-100" : "border-red-100"}`}>
-          <p className="text-xs text-gray-500 mb-1">{isBn ? "এই মাসের নিট লাভ" : "This Month Net Profit"}</p>
-          <p className={`text-xl font-bold ${profitVal >= 0 ? "text-green-600" : "text-red-600"}`}>
-            {formatAmount(data?.this_month_profit ?? "0", locale, 0)}
-          </p>
-          <p className="text-xs text-gray-400 mt-1">{isBn ? "আয় − খরচ" : "Revenue − Expenses"}</p>
+        <div className={`rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow flex items-start gap-3 ${profitVal >= 0 ? "bg-emerald-700" : "bg-red-600"}`}>
+          <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 bg-white shadow-sm">
+            <Scale className={`w-5 h-5 ${profitVal >= 0 ? "text-emerald-700" : "text-red-600"}`} strokeWidth={2} />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-xs text-white/80 mb-1">{isBn ? "এই মাসের নিট লাভ" : "This Month Net Profit"}</p>
+            <p className="text-xl font-bold leading-tight text-white">
+              {formatAmount(data?.this_month_profit ?? "0", locale, 0)}
+            </p>
+            <p className="text-xs text-white/70 mt-1">{isBn ? "আয় − খরচ" : "Revenue − Expenses"}</p>
+          </div>
         </div>
 
         {/* Supplier outstanding */}
-        <div className="bg-white rounded-2xl border border-orange-100 p-4 shadow-sm">
-          <p className="text-xs text-gray-500 mb-1">{isBn ? "সরবরাহকারী বাকি" : "Supplier Outstanding"}</p>
-          <p className="text-xl font-bold text-orange-600">{formatAmount(data?.supplier_outstanding ?? "0", locale, 0)}</p>
-          <p className="text-xs text-gray-400 mt-1">{isBn ? "ক্রেডিট ক্রয়ের বকেয়া" : "Unpaid credit purchases"}</p>
+        <div className="bg-orange-700 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow flex items-start gap-3">
+          <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 bg-white shadow-sm">
+            <Truck className="w-5 h-5 text-orange-700" strokeWidth={2} />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-xs text-white/80 mb-1">{isBn ? "সরবরাহকারী বাকি" : "Supplier Outstanding"}</p>
+            <p className="text-xl font-bold text-white leading-tight">{formatAmount(data?.supplier_outstanding ?? "0", locale, 0)}</p>
+            <p className="text-xs text-white/70 mt-1">{isBn ? "ক্রেডিট ক্রয়ের বকেয়া" : "Unpaid credit purchases"}</p>
+          </div>
         </div>
 
         {/* Loan + partner outstanding */}
-        <div className="bg-white rounded-2xl border border-red-100 p-4 shadow-sm">
-          <p className="text-xs text-gray-500 mb-1">{isBn ? "ঋণ + অংশীদার বাকি" : "Loan + Partner Due"}</p>
-          <p className="text-xl font-bold text-red-600">
-            {formatAmount(String((parseFloat(data?.loan_outstanding ?? "0") + parseFloat(data?.partner_outstanding ?? "0")).toFixed(2)), locale, 0)}
-          </p>
-          <div className="flex gap-2 mt-1">
-            <span className="text-xs text-gray-400">
-              {isBn ? "ঋণ:" : "Loan:"} {formatAmount(data?.loan_outstanding ?? "0", locale, 0)}
-            </span>
-            <span className="text-xs text-gray-300">·</span>
-            <span className="text-xs text-gray-400">
-              {isBn ? "অংশীদার:" : "Partner:"} {formatAmount(data?.partner_outstanding ?? "0", locale, 0)}
-            </span>
+        <div className="bg-red-600 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow flex items-start gap-3">
+          <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 bg-white shadow-sm">
+            <HandCoins className="w-5 h-5 text-red-600" strokeWidth={2} />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-xs text-white/80 mb-1">{isBn ? "ঋণ + অংশীদার বাকি" : "Loan + Partner Due"}</p>
+            <p className="text-xl font-bold text-white leading-tight">
+              {formatAmount(String((parseFloat(data?.loan_outstanding ?? "0") + parseFloat(data?.partner_outstanding ?? "0")).toFixed(2)), locale, 0)}
+            </p>
+            <div className="flex gap-2 mt-1">
+              <span className="text-xs text-white/70">
+                {isBn ? "ঋণ:" : "Loan:"} {formatAmount(data?.loan_outstanding ?? "0", locale, 0)}
+              </span>
+              <span className="text-xs text-white/50">·</span>
+              <span className="text-xs text-white/70">
+                {isBn ? "অংশীদার:" : "Partner:"} {formatAmount(data?.partner_outstanding ?? "0", locale, 0)}
+              </span>
+            </div>
           </div>
         </div>
       </div>

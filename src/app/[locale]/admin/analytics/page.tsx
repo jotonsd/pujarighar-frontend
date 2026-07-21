@@ -19,7 +19,9 @@ import { FloatingDatePicker, FloatingSelect } from "@/components/ui/forms";
 import { toast } from "@/store/toastStore";
 import { formatAmount, formatNumber } from "@/utils/format";
 import {
-  BarChart3, CheckCircle2, Globe2, LinkIcon, Monitor, RefreshCw, Search, Smartphone, TrendingUp, Unplug,
+  BarChart3, CheckCircle2, Eye, Globe2, LinkIcon, ListOrdered, LucideIcon, Monitor,
+  MousePointerClick, Percent, Receipt, RefreshCw, Search, ShoppingCart, Smartphone,
+  TrendingUp, Unplug, UserCheck, UserPlus, Users, Wallet,
 } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -37,20 +39,29 @@ function fmtDate(iso: string, isBn: boolean) {
 }
 
 // ─── Small building blocks ──────────────────────────────────────────────────
-function StatTile({ label, value, tone = "gray" }: { label: string; value: string; tone?: string }) {
-  const toneMap: Record<string, string> = {
-    blue: "border-blue-100 text-blue-600",
-    teal: "border-teal-100 text-teal-700",
-    amber: "border-amber-100 text-amber-600",
-    violet: "border-violet-100 text-violet-600",
-    orange: "border-orange-100 text-orange-600",
-    red: "border-red-100 text-red-600",
-    gray: "border-gray-100 text-gray-700",
-  };
+const TONE_STYLES: Record<string, { bg: string; iconText: string }> = {
+  blue:   { bg: "bg-blue-600",    iconText: "text-blue-600" },
+  teal:   { bg: "bg-teal-700",    iconText: "text-teal-700" },
+  amber:  { bg: "bg-amber-700",   iconText: "text-amber-700" },
+  violet: { bg: "bg-violet-600",  iconText: "text-violet-600" },
+  orange: { bg: "bg-orange-700",  iconText: "text-orange-700" },
+  red:    { bg: "bg-red-600",     iconText: "text-red-600" },
+  gray:   { bg: "bg-gray-600",    iconText: "text-gray-600" },
+};
+
+function StatTile({ label, value, tone = "gray", icon: Icon }: { label: string; value: string; tone?: string; icon?: LucideIcon }) {
+  const s = TONE_STYLES[tone] ?? TONE_STYLES.gray;
   return (
-    <div className={`bg-white rounded-2xl border p-4 shadow-sm ${toneMap[tone]}`}>
-      <p className="text-xs text-gray-500 mb-1">{label}</p>
-      <p className={`text-xl font-bold ${toneMap[tone].split(" ")[1]}`}>{value}</p>
+    <div className={`${s.bg} rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow flex items-start gap-3`}>
+      {Icon && (
+        <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 bg-white shadow-sm">
+          <Icon className={`w-5 h-5 ${s.iconText}`} strokeWidth={2} />
+        </div>
+      )}
+      <div className="min-w-0 flex-1">
+        <p className="text-xs text-white/80 mb-1">{label}</p>
+        <p className="text-xl font-bold leading-tight text-white">{value}</p>
+      </div>
     </div>
   );
 }
@@ -104,10 +115,10 @@ function TrafficTab({ from, to, isBn }: { from: string; to: string; isBn: boolea
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <StatTile label={isBn ? "মোট সেশন" : "Sessions"} value={formatNumber(data.sessions_total, "en")} tone="blue" />
-        <StatTile label={isBn ? "মোট ইউজার" : "Total Users"} value={formatNumber(data.users_total, "en")} tone="teal" />
-        <StatTile label={isBn ? "নতুন ইউজার" : "New Users"} value={formatNumber(data.new_users_total, "en")} tone="violet" />
-        <StatTile label={isBn ? "ফিরে আসা ইউজার" : "Returning Users"} value={formatNumber(data.returning_users_total, "en")} tone="orange" />
+        <StatTile label={isBn ? "মোট সেশন" : "Sessions"} value={formatNumber(data.sessions_total, "en")} tone="blue" icon={MousePointerClick} />
+        <StatTile label={isBn ? "মোট ইউজার" : "Total Users"} value={formatNumber(data.users_total, "en")} tone="teal" icon={Users} />
+        <StatTile label={isBn ? "নতুন ইউজার" : "New Users"} value={formatNumber(data.new_users_total, "en")} tone="violet" icon={UserPlus} />
+        <StatTile label={isBn ? "ফিরে আসা ইউজার" : "Returning Users"} value={formatNumber(data.returning_users_total, "en")} tone="orange" icon={UserCheck} />
       </div>
 
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
@@ -203,10 +214,10 @@ function SalesTab({ from, to, isBn }: { from: string; to: string; isBn: boolean 
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <StatTile label={isBn ? "আয়" : "Revenue"} value={formatAmount(data.revenue, "en", 0)} tone="teal" />
-        <StatTile label={isBn ? "গড় অর্ডার মূল্য" : "Avg Order Value"} value={formatAmount(data.average_order_value, "en", 0)} tone="blue" />
-        <StatTile label={isBn ? "কনভার্সন রেট" : "Conversion Rate"} value={`${data.conversion_rate}%`} tone="violet" />
-        <StatTile label={isBn ? "কার্ট ছাড়ার হার" : "Cart Abandonment"} value={`${data.cart_abandonment_rate}%`} tone="orange" />
+        <StatTile label={isBn ? "আয়" : "Revenue"} value={formatAmount(data.revenue, "en", 0)} tone="teal" icon={Wallet} />
+        <StatTile label={isBn ? "গড় অর্ডার মূল্য" : "Avg Order Value"} value={formatAmount(data.average_order_value, "en", 0)} tone="blue" icon={Receipt} />
+        <StatTile label={isBn ? "কনভার্সন রেট" : "Conversion Rate"} value={`${data.conversion_rate}%`} tone="violet" icon={Percent} />
+        <StatTile label={isBn ? "কার্ট ছাড়ার হার" : "Cart Abandonment"} value={`${data.cart_abandonment_rate}%`} tone="orange" icon={ShoppingCart} />
       </div>
 
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
@@ -416,10 +427,10 @@ function SeoTab({ from, to, isBn }: { from: string; to: string; isBn: boolean })
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <StatTile label={isBn ? "ক্লিক" : "Clicks"} value={formatNumber(data.clicks_total, "en")} tone="blue" />
-        <StatTile label={isBn ? "ইমপ্রেশন" : "Impressions"} value={formatNumber(data.impressions_total, "en")} tone="teal" />
-        <StatTile label="CTR" value={`${data.ctr_total}%`} tone="violet" />
-        <StatTile label={isBn ? "গড় পজিশন" : "Avg Position"} value={`${data.avg_position}`} tone="orange" />
+        <StatTile label={isBn ? "ক্লিক" : "Clicks"} value={formatNumber(data.clicks_total, "en")} tone="blue" icon={MousePointerClick} />
+        <StatTile label={isBn ? "ইমপ্রেশন" : "Impressions"} value={formatNumber(data.impressions_total, "en")} tone="teal" icon={Eye} />
+        <StatTile label="CTR" value={`${data.ctr_total}%`} tone="violet" icon={Percent} />
+        <StatTile label={isBn ? "গড় পজিশন" : "Avg Position"} value={`${data.avg_position}`} tone="orange" icon={ListOrdered} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
