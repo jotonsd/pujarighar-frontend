@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import Toaster from "@/components/ui/Toaster";
+import ContactTray from "@/components/layout/ContactTray";
 
 export default function SiteChrome({
   navbar,
@@ -20,6 +21,7 @@ export default function SiteChrome({
       <>
         {children}
         <Toaster />
+        <ContactTray />
       </>
     );
   }
@@ -30,6 +32,7 @@ export default function SiteChrome({
       <main className="flex-1">{children}</main>
       {footer}
       <Toaster />
+      <ContactTray />
     </div>
   );
 }
