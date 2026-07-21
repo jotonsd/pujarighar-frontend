@@ -96,6 +96,17 @@ export default function ProfilePage() {
   };
 
   const handleUpdate = async () => {
+    // Mirrors the backend's exact rule (api/views/user_views.py::update_me) so an
+    // obviously malformed number is caught instantly instead of round-tripping.
+    if (form.phone && !/^01\d{9}$/.test(form.phone.trim())) {
+      setFieldErrors({
+        phone: locale === "bn"
+          ? "সঠিক ১১ ডিজিটের ফোন নম্বর দিন (যেমনঃ 01XXXXXXXXX)"
+          : "Enter a valid 11-digit phone number (e.g. 01XXXXXXXXX)",
+      });
+      return;
+    }
+
     setFieldErrors({});
     try {
       const fd = new FormData();
@@ -159,19 +170,34 @@ export default function ProfilePage() {
       if (fieldErrors[key]) setFieldErrors(prev => { const n = { ...prev }; delete n[key]; return n; });
     };
 
-  const pf = (key: keyof typeof pwForm) => (e: React.ChangeEvent<HTMLInputElement>) =>
+  const pf = (key: keyof typeof pwForm) => (e: React.ChangeEvent<HTMLInputElement>) => {
     setPwForm(p => ({ ...p, [key]: e.target.value }));
+    if (fieldErrors[key]) setFieldErrors(prev => { const n = { ...prev }; delete n[key]; return n; });
+  };
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (pwForm.new_password !== pwForm.confirm_password) {
-      toast.error(locale === "bn" ? "নতুন পাসওয়ার্ড মিলছে না" : "New passwords do not match");
+
+    const validationErrors: Record<string, string> = {};
+    if (!pwForm.old_password) {
+      validationErrors.old_password = locale === "bn" ? "বর্তমান পাসওয়ার্ড আবশ্যক" : "Current password is required";
+    }
+    if (!pwForm.new_password) {
+      validationErrors.new_password = locale === "bn" ? "নতুন পাসওয়ার্ড আবশ্যক" : "New password is required";
+    } else if (pwForm.new_password.length < 6) {
+      validationErrors.new_password = locale === "bn" ? "পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে" : "Password must be at least 6 characters";
+    }
+    if (!pwForm.confirm_password) {
+      validationErrors.confirm_password = locale === "bn" ? "পাসওয়ার্ড নিশ্চিত করুন" : "Please confirm your password";
+    } else if (pwForm.new_password !== pwForm.confirm_password) {
+      validationErrors.confirm_password = locale === "bn" ? "নতুন পাসওয়ার্ড মিলছে না" : "New passwords do not match";
+    }
+    if (Object.keys(validationErrors).length > 0) {
+      setFieldErrors(validationErrors);
       return;
     }
-    if (pwForm.new_password.length < 6) {
-      toast.error(locale === "bn" ? "পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে" : "Password must be at least 6 characters");
-      return;
-    }
+
+    setFieldErrors({});
     try {
       await changePassword({
         old_password: pwForm.old_password,
@@ -180,12 +206,21 @@ export default function ProfilePage() {
       toast.success(locale === "bn" ? "পাসওয়ার্ড পরিবর্তন হয়েছে" : "Password changed successfully");
       setPwForm({ old_password: "", new_password: "", confirm_password: "" });
     } catch (err: unknown) {
-      const msg = (err as { data?: { error?: { message_bn?: string; message_en?: string } } }).data?.error;
-      toast.error(
-        locale === "bn"
-          ? (msg?.message_bn ?? "পাসওয়ার্ড পরিবর্তন ব্যর্থ হয়েছে")
-          : (msg?.message_en ?? "Failed to change password"),
-      );
+      type FieldError = string | string[] | { message_bn?: string; message_en?: string };
+      const apiErrors = (err as { data?: { errors?: Record<string, FieldError> } }).data?.errors;
+      const parsed: Record<string, string> = {};
+      if (apiErrors && typeof apiErrors === "object") {
+        for (const [key, val] of Object.entries(apiErrors)) {
+          if (Array.isArray(val)) parsed[key] = String(val[0]);
+          else if (typeof val === "string") parsed[key] = val;
+          else if (val && typeof val === "object") {
+            parsed[key] = (locale === "bn" ? val.message_bn : val.message_en) ?? "";
+          }
+        }
+      }
+      setFieldErrors(parsed);
+      const firstMsg = Object.values(parsed)[0];
+      toast.error(firstMsg || (locale === "bn" ? "পাসওয়ার্ড পরিবর্তন ব্যর্থ হয়েছে" : "Failed to change password"));
     }
   };
 
@@ -377,23 +412,23 @@ export default function ProfilePage() {
                 <FloatingInput
                   label={locale === "bn" ? "বর্তমান পাসওয়ার্ড" : "Current Password"}
                   type="password"
-                  required
                   value={pwForm.old_password}
                   onChange={pf("old_password")}
+                  error={fieldErrors.old_password}
                 />
                 <FloatingInput
                   label={locale === "bn" ? "নতুন পাসওয়ার্ড" : "New Password"}
                   type="password"
-                  required
                   value={pwForm.new_password}
                   onChange={pf("new_password")}
+                  error={fieldErrors.new_password}
                 />
                 <FloatingInput
                   label={locale === "bn" ? "নতুন পাসওয়ার্ড নিশ্চিত করুন" : "Confirm New Password"}
                   type="password"
-                  required
                   value={pwForm.confirm_password}
                   onChange={pf("confirm_password")}
+                  error={fieldErrors.confirm_password}
                 />
                 <button type="submit" disabled={pwLoading} className="btn-primary">
                   {pwLoading
