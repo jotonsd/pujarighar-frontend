@@ -261,15 +261,15 @@ export default function SettingsPage() {
         description={isBn ? "সিস্টেম কনফিগারেশন ও পছন্দ পরিচালনা করুন" : "Manage system configuration and preferences"}
       />
 
-      <div className="flex gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-[220px_1fr] gap-4">
         {/* Left menu */}
-        <aside className="w-48 shrink-0">
-          <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-2 space-y-0.5">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-2 h-fit md:sticky md:top-20">
+          <nav className="flex md:flex-col gap-1">
             {MENU.map(item => (
               <button
                 key={item.id}
                 onClick={() => setActive(item.id)}
-                className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-left transition-colors ${
+                className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-left transition-colors ${
                   active === item.id
                     ? "bg-amber-50 text-amber-700 font-semibold"
                     : "text-gray-600 hover:bg-gray-50 hover:text-gray-800"
@@ -279,11 +279,11 @@ export default function SettingsPage() {
                 {isBn ? item.label_bn : item.label_en}
               </button>
             ))}
-          </div>
-        </aside>
+          </nav>
+        </div>
 
         {/* Right content */}
-        <div className="flex-1 bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
           <h2 className="font-semibold text-gray-700 mb-5 pb-3 border-b border-gray-100">
             {isBn ? activeMenu.label_bn : activeMenu.label_en}
           </h2>
