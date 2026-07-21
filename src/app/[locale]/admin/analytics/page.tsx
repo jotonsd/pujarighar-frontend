@@ -470,21 +470,21 @@ function SeoTab({ from, to, isBn }: { from: string; to: string; isBn: boolean })
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-          <h3 className="text-sm font-bold text-gray-800 mb-1">{isBn ? "ইনডেক্সড পেজ (সাইটম্যাপ অনুমান)" : "Indexed Pages (sitemap estimate)"}</h3>
+          <h3 className="text-sm font-bold text-gray-800 mb-1">{isBn ? "সার্চে দৃশ্যমান পেজ (ইনডেক্স অনুমান)" : "Pages Visible in Search (indexing proxy)"}</h3>
           <p className="text-xs text-gray-400 mb-3">
             {isBn
-              ? "সার্চ কনসোলে সঠিক ইনডেক্স সংখ্যার জন্য কোনো পাবলিক API নেই — এটি জমা দেওয়া সাইটম্যাপ থেকে অনুমান।"
-              : "Search Console has no public API for the exact indexed count — this is estimated from your submitted sitemap."}
+              ? "সার্চ কনসোলে সঠিক ইনডেক্স সংখ্যার জন্য কোনো পাবলিক API নেই। এটি গত ১৬ মাসে কমপক্ষে একবার সার্চে দেখানো পেজের সংখ্যা — সাইটম্যাপ-ভিত্তিক পুরনো পদ্ধতির চেয়ে অনেক বেশি নির্ভরযোগ্য, কারণ ইনডেক্স না হলে কোনো পেজ সার্চে দেখানো সম্ভবই না।"
+              : "Search Console has no public API for the exact indexed count. This counts distinct pages that got at least one search impression in the last 16 months — far more reliable than the old sitemap-based approach, since a page can't appear in Search at all unless Google has actually indexed it."}
           </p>
           {data.indexed_pages_estimate.available ? (
             <div className="flex items-center gap-6">
               <div>
                 <p className="text-2xl font-bold text-gray-800">{formatNumber(data.indexed_pages_estimate.indexed, "en")}</p>
-                <p className="text-xs text-gray-400">{isBn ? "ইনডেক্সড" : "Indexed"}</p>
+                <p className="text-xs text-gray-400">{isBn ? "সার্চে দৃশ্যমান" : "Visible in Search"}</p>
               </div>
               <div>
                 <p className="text-2xl font-bold text-gray-400">{formatNumber(data.indexed_pages_estimate.submitted, "en")}</p>
-                <p className="text-xs text-gray-400">{isBn ? "জমা দেওয়া" : "Submitted"}</p>
+                <p className="text-xs text-gray-400">{isBn ? "সাইটম্যাপে জমা দেওয়া" : "Submitted in Sitemap"}</p>
               </div>
             </div>
           ) : <EmptyNote text={isBn ? "কোনো সাইটম্যাপ জমা দেওয়া হয়নি" : "No sitemap submitted yet"} />}
