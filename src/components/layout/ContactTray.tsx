@@ -1,12 +1,13 @@
 "use client";
 
 import { useGetSiteSettingsQuery } from "@/api/settings/settingsApi";
-import { X } from "lucide-react";
+import { Mail, X } from "lucide-react";
 import { useLocale } from "next-intl";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 const FACEBOOK_PAGE_ID = "pujarighar";
+const DEFAULT_EMAIL = "pujarigharbd@gmail.com";
 
 /** A support agent — person wearing a headset — since lucide only ships bare headphone shapes. */
 function SupportAgentIcon({ className }: { className?: string }) {
@@ -65,6 +66,7 @@ export default function ContactTray() {
   if (isAdmin) return null;
 
   const waNumber = siteSettings?.contact_phone ? toWhatsAppNumber(siteSettings.contact_phone) : null;
+  const email = siteSettings?.contact_email || DEFAULT_EMAIL;
 
   return (
     <div className="fixed bottom-4 right-4 sm:bottom-5 sm:right-5 z-50 flex flex-col items-end gap-3">
@@ -77,6 +79,10 @@ export default function ContactTray() {
           {isBn ? "যোগাযোগ করুন" : "Get in touch"}
         </p>
         <div className="space-y-0.5 pb-1">
+          <TrayRow href={`mailto:${email}`} label={isBn ? "ইমেইল" : "Email"} bg="bg-slate-600">
+            <Mail className="w-5 h-5 text-white" strokeWidth={2} />
+          </TrayRow>
+
           {waNumber && (
             <TrayRow href={`https://wa.me/${waNumber}`} label={isBn ? "হোয়াটসঅ্যাপ" : "WhatsApp"} bg="bg-[#25D366]">
               <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white" aria-hidden="true">
