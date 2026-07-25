@@ -120,9 +120,11 @@ export default function OrderActions({ order, orderId }: Props) {
   const hasStatusAction = ['PENDING', 'CONFIRMED', 'PACKED'].includes(order.status)
   const hasCancelAction = !['ASSIGNED', 'ON_THE_WAY', 'DELIVERED', 'RETURNED', 'CANCELLED'].includes(order.status)
   const hasDiscountAction = ['PENDING', 'CONFIRMED'].includes(order.status) && order.payment_status === 'UNPAID'
-  // Admin can also drive the order past assignment — same statuses the delivery portal handles.
+  // Admin can drive the order through every status regardless of whether a delivery
+  // person is attached yet — the backend already allows this (admin bypasses the
+  // "must be the assigned delivery person" ownership check entirely).
   const hasAssignPersonOnly = order.status === 'ASSIGNED' && !order.delivery?.delivery_person
-  const hasDispatchAction = order.status === 'ASSIGNED' && !!order.delivery?.delivery_person
+  const hasDispatchAction = order.status === 'ASSIGNED'
   const hasDeliverAction = order.status === 'ON_THE_WAY'
   const hasReturnAction = order.status === 'DELIVERED'
   const hasAnyAction = hasPayAction || hasStatusAction || hasCancelAction || hasDiscountAction
