@@ -5,16 +5,22 @@ import { useLocale, useTranslations } from 'next-intl'
 import { toast } from '@/store/toastStore'
 import { SalesOrder, User } from '@/lib/types'
 import {
+  useApplyDiscountMutation,
   useAssignDeliveryMutation,
   useCancelOrderMutation,
   useConfirmOrderMutation,
+  useDeliverOrderMutation,
+  useDispatchOrderMutation,
   useMarkCodPaidMutation,
   usePackOrderMutation,
+  useReturnOrderMutation,
 } from '@/api/orders/ordersApi'
 import { useGetDeliveryPersonsQuery } from '@/api/users/usersApi'
 import CancelConfirmModal from './CancelConfirmModal'
+import ApplyDiscountModal from './ApplyDiscountModal'
 import PaymentConfirmModal from '@/components/ui/PaymentConfirmModal'
-import { ChevronDown } from 'lucide-react'
+import ConfirmModal from '@/components/ui/ConfirmModal'
+import { ChevronDown, CheckCircle2, Undo2 } from 'lucide-react'
 
 interface Props {
   order: SalesOrder
@@ -93,6 +99,9 @@ export default function OrderActions({ order, orderId }: Props) {
   const [deliveryPersonId, setDeliveryPersonId] = useState('')
   const [showCancelModal, setShowCancelModal]   = useState(false)
   const [showPayModal, setShowPayModal]         = useState(false)
+  const [showDiscountModal, setShowDiscountModal] = useState(false)
+  const [showDeliverModal, setShowDeliverModal] = useState(false)
+  const [showReturnModal, setShowReturnModal]   = useState(false)
 
   const { data: deliveryPersons = [] } = useGetDeliveryPersonsQuery()
   const [confirmOrder, { isLoading: confirming }] = useConfirmOrderMutation()
@@ -100,13 +109,24 @@ export default function OrderActions({ order, orderId }: Props) {
   const [assign, { isLoading: assigning }]        = useAssignDeliveryMutation()
   const [cancel, { isLoading: cancelling }]       = useCancelOrderMutation()
   const [markPaid, { isLoading: markingPaid }]    = useMarkCodPaidMutation()
+  const [applyDiscount, { isLoading: discounting }] = useApplyDiscountMutation()
+  const [dispatch, { isLoading: dispatching }]    = useDispatchOrderMutation()
+  const [deliver, { isLoading: delivering }]      = useDeliverOrderMutation()
+  const [returnOrd, { isLoading: returning }]     = useReturnOrderMutation()
 
-  const loading = confirming || packing || assigning || cancelling || markingPaid
+  const loading = confirming || packing || assigning || cancelling || markingPaid || discounting || dispatching || delivering || returning
 
   const hasPayAction = order.payment_method === 'COD' && order.payment_status === 'UNPAID' && !['CANCELLED', 'RETURNED'].includes(order.status)
   const hasStatusAction = ['PENDING', 'CONFIRMED', 'PACKED'].includes(order.status)
   const hasCancelAction = !['ASSIGNED', 'ON_THE_WAY', 'DELIVERED', 'RETURNED', 'CANCELLED'].includes(order.status)
-  const hasAnyAction = hasPayAction || hasStatusAction || hasCancelAction
+  const hasDiscountAction = ['PENDING', 'CONFIRMED'].includes(order.status) && order.payment_status === 'UNPAID'
+  // Admin can also drive the order past assignment — same statuses the delivery portal handles.
+  const hasAssignPersonOnly = order.status === 'ASSIGNED' && !order.delivery?.delivery_person
+  const hasDispatchAction = order.status === 'ASSIGNED' && !!order.delivery?.delivery_person
+  const hasDeliverAction = order.status === 'ON_THE_WAY'
+  const hasReturnAction = order.status === 'DELIVERED'
+  const hasAnyAction = hasPayAction || hasStatusAction || hasCancelAction || hasDiscountAction
+    || hasAssignPersonOnly || hasDispatchAction || hasDeliverAction || hasReturnAction
 
   if (!hasAnyAction) return null
 
@@ -165,22 +185,101 @@ export default function OrderActions({ order, orderId }: Props) {
             {t('order.pack')}
           </button>
         )}
-        {order.status === 'PACKED' && (
+        {(order.status === 'PACKED' || hasAssignPersonOnly) && (
           <div className="flex gap-2 items-center">
             <DeliveryPersonDropdown
               persons={deliveryPersons}
               value={deliveryPersonId}
               onChange={setDeliveryPersonId}
-              label={locale === 'bn' ? 'ডেলিভারিম্যান বেছে নিন' : 'Select delivery person'}
+              label={locale === 'bn' ? 'ডেলিভারিম্যান বেছে নিন (ঐচ্ছিক)' : 'Select delivery person (optional)'}
             />
-            <button disabled={!deliveryPersonId || loading} className="btn-primary text-sm whitespace-nowrap"
+            <button disabled={loading} className="btn-primary text-sm whitespace-nowrap"
               onClick={() => doAction(
-                () => assign({ id: orderId, delivery_person_id: deliveryPersonId }).unwrap(),
+                () => assign({ id: orderId, delivery_person_id: deliveryPersonId || null }).unwrap(),
                 locale === 'bn' ? 'নির্ধারিত হয়েছে' : 'Assigned',
               )}>
               {t('order.assignDelivery')}
             </button>
           </div>
+        )}
+        {hasDispatchAction && (
+          <button disabled={loading} className="btn-primary text-sm"
+            onClick={() => doAction(
+              () => dispatch(orderId).unwrap(),
+              locale === 'bn' ? 'পথে বের হয়েছে' : 'Marked as On the Way',
+            )}>
+            🚴 {locale === 'bn' ? 'পথে বের করুন' : 'Start Delivery'}
+          </button>
+        )}
+        {hasDeliverAction && (
+          <>
+            <button disabled={loading} className="btn-primary text-sm" onClick={() => setShowDeliverModal(true)}>
+              ✅ {locale === 'bn' ? 'ডেলিভারি সম্পন্ন' : 'Mark as Delivered'}
+            </button>
+            {showDeliverModal && (
+              <ConfirmModal
+                icon={<CheckCircle2 className="w-6 h-6 text-green-500" />}
+                title={locale === 'bn' ? 'ডেলিভারি নিশ্চিত করুন?' : 'Confirm delivery?'}
+                description={locale === 'bn' ? 'পণ্যটি সফলভাবে গ্রাহকের কাছে পৌঁছে দেওয়া হয়েছে?' : 'Has the order been successfully delivered to the customer?'}
+                confirmLabel={locale === 'bn' ? 'হ্যাঁ, ডেলিভারি হয়েছে' : 'Yes, Delivered'}
+                cancelLabel={locale === 'bn' ? 'ফিরে যান' : 'Go Back'}
+                confirmClassName="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-2.5 rounded-xl transition-colors text-sm"
+                loading={delivering}
+                onCancel={() => setShowDeliverModal(false)}
+                onConfirm={async () => {
+                  await doAction(() => deliver(orderId).unwrap(), locale === 'bn' ? 'ডেলিভারি সম্পন্ন হয়েছে' : 'Marked as delivered')
+                  setShowDeliverModal(false)
+                }}
+              />
+            )}
+          </>
+        )}
+        {hasReturnAction && (
+          <>
+            <button disabled={loading} className="btn-secondary text-sm" onClick={() => setShowReturnModal(true)}>
+              ↩ {locale === 'bn' ? 'ফেরত' : 'Mark as Returned'}
+            </button>
+            {showReturnModal && (
+              <ConfirmModal
+                icon={<Undo2 className="w-6 h-6 text-amber-500" />}
+                title={locale === 'bn' ? 'ফেরত নিশ্চিত করুন?' : 'Confirm return?'}
+                description={locale === 'bn' ? 'এই অর্ডারটি ফেরত হিসেবে চিহ্নিত হবে।' : 'This order will be marked as returned.'}
+                confirmLabel={locale === 'bn' ? 'হ্যাঁ, ফেরত দিন' : 'Yes, Return'}
+                cancelLabel={locale === 'bn' ? 'ফিরে যান' : 'Go Back'}
+                confirmClassName="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2.5 rounded-xl transition-colors text-sm"
+                loading={returning}
+                onCancel={() => setShowReturnModal(false)}
+                onConfirm={async () => {
+                  await doAction(() => returnOrd({ id: orderId }).unwrap(), locale === 'bn' ? 'ফেরত দেওয়া হয়েছে' : 'Marked as returned')
+                  setShowReturnModal(false)
+                }}
+              />
+            )}
+          </>
+        )}
+        {hasDiscountAction && (
+          <>
+            <button disabled={loading} className="btn-secondary text-sm" onClick={() => setShowDiscountModal(true)}>
+              🏷️ {locale === 'bn' ? 'ছাড় প্রয়োগ করুন' : 'Apply Discount'}
+            </button>
+            {showDiscountModal && (
+              <ApplyDiscountModal
+                locale={locale}
+                orderNumber={order.order_number}
+                subtotal={Number(order.subtotal)}
+                deliveryCharge={Number(order.delivery_charge)}
+                loading={discounting}
+                onCancel={() => setShowDiscountModal(false)}
+                onConfirm={async (discountType, discountValue) => {
+                  await doAction(
+                    () => applyDiscount({ id: orderId, discount_type: discountType, discount_value: discountValue }).unwrap(),
+                    locale === 'bn' ? 'ছাড় প্রয়োগ হয়েছে' : 'Discount applied',
+                  )
+                  setShowDiscountModal(false)
+                }}
+              />
+            )}
+          </>
         )}
         {!['ASSIGNED', 'ON_THE_WAY', 'DELIVERED', 'RETURNED', 'CANCELLED'].includes(order.status) && (
           <>
