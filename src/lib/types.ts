@@ -385,7 +385,7 @@ export interface StatusLogEntry {
 
 export interface DeliveryAssignment {
   id: string
-  delivery_person: string
+  delivery_person: string | null
   delivery_person_email: string
   delivery_person_phone: string
   delivery_person_name: string

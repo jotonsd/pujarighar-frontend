@@ -51,11 +51,11 @@ export const ordersApi = baseApi.injectEndpoints({
       invalidatesTags: (_r, _e, id) => ['Orders', { type: 'Order', id }, { type: 'OrderLogs', id }],
     }),
 
-    assignDelivery: build.mutation<SalesOrder, { id: string; delivery_person_id: string }>({
+    assignDelivery: build.mutation<SalesOrder, { id: string; delivery_person_id: string | null }>({
       query: ({ id, delivery_person_id }) => ({
         url: `/api/orders/${id}/assign-delivery/`,
         method: 'POST',
-        body: { delivery_person_id },
+        body: { delivery_person_id: delivery_person_id || null },
       }),
       transformResponse: (res: { data: SalesOrder }) => res.data,
       invalidatesTags: (_r, _e, { id }) => ['Orders', { type: 'Order', id }, { type: 'OrderLogs', id }],
@@ -89,6 +89,12 @@ export const ordersApi = baseApi.injectEndpoints({
       query: (id) => ({ url: `/api/orders/${id}/mark-cod-paid/`, method: 'POST' }),
       transformResponse: (res: { data: SalesOrder }) => res.data,
       invalidatesTags: (_r, _e, id) => ['Orders', { type: 'Order', id }],
+    }),
+
+    applyDiscount: build.mutation<SalesOrder, { id: string; discount_type: 'PERCENTAGE' | 'FLAT'; discount_value: number }>({
+      query: ({ id, ...body }) => ({ url: `/api/orders/${id}/apply-discount/`, method: 'POST', body }),
+      transformResponse: (res: { data: SalesOrder }) => res.data,
+      invalidatesTags: (_r, _e, { id }) => ['Orders', { type: 'Order', id }, { type: 'OrderLogs', id }],
     }),
 
     updateShipping: build.mutation<SalesOrder, { id: string; shipping_name_bn?: string; shipping_name_en?: string; shipping_phone?: string; shipping_address_bn?: string; shipping_address_en?: string; shipping_district?: string; shipping_thana?: string; shipping_post_code?: string }>({
@@ -136,6 +142,7 @@ export const {
   useReturnOrderMutation,
   useCancelOrderMutation,
   useMarkCodPaidMutation,
+  useApplyDiscountMutation,
   useUpdateShippingMutation,
   usePosCreateOrderMutation,
   useTrackByOrderNumberQuery,
