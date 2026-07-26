@@ -12,18 +12,16 @@ interface AuthState {
   hydrate: () => void
 }
 
-// Read synchronously at module load (guarded for SSR, where there's no
-// `document`) so the store's *initial* state is already correct by the time
-// the first client render happens — this is what actually avoids the old
-// "flash logged-out, then flip a moment later" behavior. The `hydrate()`
-// action below still exists for Providers.tsx to call, but is now just a
-// harmless re-sync rather than the sole source of truth.
-const initialUser = typeof document !== 'undefined' ? getUser() : null
-
+// Initial state intentionally matches what the server renders (it can't read
+// cookies) — `hydrate()` is called from a useEffect in Providers.tsx, i.e.
+// after the first client render, so the real auth state is applied as a
+// follow-up update rather than baked into the first render. Reading cookies
+// synchronously here instead would make the client's first render diverge
+// from the server's and trigger a React hydration error.
 export const useAuthStore = create<AuthState>((set) => ({
-  user: initialUser,
-  isAuthenticated: !!initialUser,
-  hydrated: typeof document !== 'undefined',
+  user: null,
+  isAuthenticated: false,
+  hydrated: false,
 
   setAuth(user, access, refresh, rememberMe = false) {
     saveTokens({ access, refresh }, rememberMe)
