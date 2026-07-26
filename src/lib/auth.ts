@@ -2,7 +2,7 @@ import Cookies from 'js-cookie'
 import { User, AuthTokens } from './types'
 
 export function saveTokens(tokens: AuthTokens, rememberMe = false) {
-  const days = rememberMe ? 30 : 3
+  const days = rememberMe ? 30 : 7
   Cookies.set('access_token',  tokens.access,  { expires: 1 / 24, sameSite: 'lax' })
   Cookies.set('refresh_token', tokens.refresh, { expires: days,   sameSite: 'lax' })
 }
@@ -14,7 +14,7 @@ export function clearTokens() {
 }
 
 export function saveUser(user: User, rememberMe = false) {
-  const days = rememberMe ? 30 : 3
+  const days = rememberMe ? 30 : 7
   Cookies.set('user', JSON.stringify(user), { expires: days, sameSite: 'lax' })
 }
 

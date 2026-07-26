@@ -176,22 +176,22 @@ function InvoicePanel({ settings, isBn }: { settings: SiteSettings; isBn: boolea
 // ── Mail panel ─────────────────────────────────────────────────────────────────
 function MailPanel({ settings, isBn }: { settings: SiteSettings; isBn: boolean }) {
   const [form, setForm] = useState({
-    email_host:          settings.email_host,
+    email_host:          settings.email_host ?? "",
     email_port:          String(settings.email_port ?? 587),
-    email_host_user:     settings.email_host_user,
-    email_host_password: settings.email_host_password,
-    email_use_tls:       settings.email_use_tls,
-    email_default_from:  settings.email_default_from,
+    email_host_user:     settings.email_host_user ?? "",
+    email_host_password: "",
+    email_use_tls:       settings.email_use_tls ?? true,
+    email_default_from:  settings.email_default_from ?? "",
   });
 
   useEffect(() => {
     setForm({
-      email_host:          settings.email_host,
+      email_host:          settings.email_host ?? "",
       email_port:          String(settings.email_port ?? 587),
-      email_host_user:     settings.email_host_user,
-      email_host_password: settings.email_host_password,
-      email_use_tls:       settings.email_use_tls,
-      email_default_from:  settings.email_default_from,
+      email_host_user:     settings.email_host_user ?? "",
+      email_host_password: "",
+      email_use_tls:       settings.email_use_tls ?? true,
+      email_default_from:  settings.email_default_from ?? "",
     });
   }, [settings]);
 
@@ -207,10 +207,10 @@ function MailPanel({ settings, isBn }: { settings: SiteSettings; isBn: boolean }
         email_host:          form.email_host,
         email_port:          Number(form.email_port) || 587,
         email_host_user:     form.email_host_user,
-        email_host_password: form.email_host_password,
+        ...(form.email_host_password ? { email_host_password: form.email_host_password } : {}),
         email_use_tls:       form.email_use_tls,
         email_default_from:  form.email_default_from,
-      } as Partial<SiteSettings>).unwrap();
+      }).unwrap();
       toast.success(isBn ? "সংরক্ষিত হয়েছে" : "Saved");
     } catch {
       toast.error(isBn ? "ব্যর্থ হয়েছে" : "Failed to save");
@@ -225,7 +225,15 @@ function MailPanel({ settings, isBn }: { settings: SiteSettings; isBn: boolean }
       </div>
       <div className="grid grid-cols-2 gap-3">
         <FloatingInput label={isBn ? "ইউজারনেম / ইমেইল" : "Username / Email"} value={form.email_host_user} onChange={f("email_host_user")} />
-        <FloatingInput label={isBn ? "পাসওয়ার্ড / অ্যাপ কী" : "Password / App Key"} type="password" value={form.email_host_password} onChange={f("email_host_password")} />
+        <div>
+          <FloatingInput
+            label={isBn ? "পাসওয়ার্ড / অ্যাপ কী" : "Password / App Key"}
+            type="password"
+            value={form.email_host_password}
+            onChange={f("email_host_password")}
+            placeholder={settings.has_email_host_password ? (isBn ? "সংরক্ষিত আছে — পরিবর্তন করতে নতুনটি লিখুন" : "Already saved — enter a new one to change") : ""}
+          />
+        </div>
       </div>
       <FloatingInput label={isBn ? "ডিফল্ট প্রেরক ইমেইল" : "Default From Email"} value={form.email_default_from} onChange={f("email_default_from")} placeholder="noreply@pujarighar.com" />
       <label className="flex items-center gap-3 cursor-pointer select-none">

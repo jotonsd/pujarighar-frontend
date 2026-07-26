@@ -6,7 +6,9 @@ import { useGuestCartStore } from "@/store/guestCartStore";
 import { formatAmount, formatNumber } from "@/utils/format";
 import { ShoppingCart } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
+const CLOSE_DELAY = 150; // ms — grace period so the pointer can cross into the panel
 
 interface PreviewItem {
   id: string;
@@ -20,7 +22,27 @@ interface PreviewItem {
 export default function CartPreview({ locale }: { locale: string }) {
   const isBn = locale === "bn";
   const [open, setOpen] = useState(false);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { isAuthenticated } = useAuthStore();
+
+  const clearCloseTimer = () => {
+    if (closeTimer.current) {
+      clearTimeout(closeTimer.current);
+      closeTimer.current = null;
+    }
+  };
+
+  const handleEnter = () => {
+    clearCloseTimer();
+    setOpen(true);
+  };
+
+  const scheduleClose = () => {
+    clearCloseTimer();
+    closeTimer.current = setTimeout(() => setOpen(false), CLOSE_DELAY);
+  };
+
+  useEffect(() => () => clearCloseTimer(), []);
 
   const { data: cart } = useGetCartQuery(undefined, { skip: !isAuthenticated });
   const guestItems = useGuestCartStore(s => s.items);
@@ -54,11 +76,11 @@ export default function CartPreview({ locale }: { locale: string }) {
   return (
     <div
       className="relative"
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
+      onMouseEnter={handleEnter}
+      onMouseLeave={scheduleClose}
     >
       <Link href={`/${locale}/cart`} onClick={() => setOpen(false)} className="relative text-gray-600 hover:text-amber-600 block">
-        🛒
+        <ShoppingCart className="w-5 h-5" />
         {count > 0 && (
           <span className="absolute -top-2 -right-2 bg-amber-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
             {count}
