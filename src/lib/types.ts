@@ -59,12 +59,29 @@ export interface NavLinkItem {
   label_en: string
 }
 
+export interface NavLeafItem {
+  href: string
+  icon: string
+  label_bn: string
+  label_en: string
+}
+
+export interface NavSubGroupItem {
+  type: 'group'
+  icon: string
+  label_bn: string
+  label_en: string
+  items: NavLeafItem[]
+}
+
+export type NavGroupChild = NavLeafItem | NavSubGroupItem
+
 export interface NavGroupItem {
   type: 'group'
   icon: string
   label_bn: string
   label_en: string
-  items: Omit<NavLinkItem, 'type'>[]
+  items: NavGroupChild[]
 }
 
 export type NavItem = NavLinkItem | NavGroupItem

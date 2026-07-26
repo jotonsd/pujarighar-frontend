@@ -4,10 +4,18 @@ import { useGetMeQuery, useLogoutMutation } from "@/api/auth/authApi";
 import { useGetSiteSettingsQuery } from "@/api/settings/settingsApi";
 import CartPreview from "@/components/layout/CartPreview";
 import NotificationBell from "@/components/ui/NotificationBell";
-import { NavGroupItem, NavItem, User } from "@/lib/types";
+import { NavGroupChild, NavGroupItem, NavItem, NavSubGroupItem, User } from "@/lib/types";
 import { useAuthStore } from "@/store/authStore";
 import { formatAmount } from "@/utils/format";
-import { Settings, Cog, Package, LogOut, Copy, Check, ScrollText } from "lucide-react";
+import {
+  Settings, Cog, Package, LogOut, Copy, Check, ScrollText,
+  Receipt, ShoppingBag, LayoutDashboard, BarChart3, TrendingUp, TrendingDown,
+  Boxes, Gift, Tag, BadgeCheck, Percent, Warehouse, ClipboardList, Truck,
+  Users as UsersIcon, Handshake, PiggyBank, Landmark, BookOpen, NotebookPen,
+  Scale, ShoppingCart, FileBarChart, Undo2, CreditCard, Megaphone,
+  GalleryHorizontal, Target, Mail, Star, Home, Store,
+  type LucideIcon,
+} from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
@@ -17,10 +25,10 @@ import LanguageSwitcher from "./LanguageSwitcher";
 
 // Fallback menu for unauthenticated (guest) users — not fetched from API
 const GUEST_MENU: NavItem[] = [
-  { type: "link", href: "/",         icon: "🏠", label_bn: "হোম",           label_en: "Home" },
-  { type: "link", href: "/products", icon: "🪔", label_bn: "পণ্য",           label_en: "Products" },
-  { type: "link", href: "/packages", icon: "🎁", label_bn: "প্যাকেজ",        label_en: "Packages" },
-  { type: "link", href: "/track",    icon: "📦", label_bn: "অর্ডার ট্র্যাক", label_en: "Track Order" },
+  { type: "link", href: "/",         icon: "home",         label_bn: "হোম",           label_en: "Home" },
+  { type: "link", href: "/products", icon: "store",        label_bn: "পণ্য",           label_en: "Products" },
+  { type: "link", href: "/packages", icon: "gift",         label_bn: "প্যাকেজ",        label_en: "Packages" },
+  { type: "link", href: "/track",    icon: "truck",        label_bn: "অর্ডার ট্র্যাক", label_en: "Track Order" },
 ];
 
 // ── helpers ───────────────────────────────────────────────────────────────────
@@ -29,7 +37,57 @@ function label(item: { label_bn: string; label_en: string }, locale: string) {
   return locale === "bn" ? item.label_bn : item.label_en;
 }
 
+function isSubGroup(item: NavGroupChild): item is NavSubGroupItem {
+  return (item as NavSubGroupItem).type === "group";
+}
+
+// Menu icons come from the backend as name keys (see _build_nav_menu) rather than
+// emoji, so they render consistently across platforms/fonts.
+const NAV_ICONS: Record<string, LucideIcon> = {
+  receipt: Receipt,
+  "shopping-bag": ShoppingBag,
+  "layout-dashboard": LayoutDashboard,
+  "bar-chart": BarChart3,
+  "trending-up": TrendingUp,
+  "trending-down": TrendingDown,
+  boxes: Boxes,
+  package: Package,
+  gift: Gift,
+  tag: Tag,
+  "badge-check": BadgeCheck,
+  percent: Percent,
+  warehouse: Warehouse,
+  "clipboard-list": ClipboardList,
+  truck: Truck,
+  users: UsersIcon,
+  handshake: Handshake,
+  "piggy-bank": PiggyBank,
+  landmark: Landmark,
+  "book-open": BookOpen,
+  "notebook-pen": NotebookPen,
+  scale: Scale,
+  "shopping-cart": ShoppingCart,
+  "file-bar-chart": FileBarChart,
+  undo: Undo2,
+  "credit-card": CreditCard,
+  megaphone: Megaphone,
+  "gallery-horizontal": GalleryHorizontal,
+  target: Target,
+  mail: Mail,
+  star: Star,
+  home: Home,
+  store: Store,
+};
+
+function NavIcon({ name, className = "w-4 h-4" }: { name: string; className?: string }) {
+  const Icon = NAV_ICONS[name];
+  return Icon ? <Icon className={className} /> : null;
+}
+
 // ── NavDropdown ───────────────────────────────────────────────────────────────
+
+const PANEL_WIDTH = 208; // px, matches w-52
+const CLOSE_DELAY = 150; // ms — small grace period so the pointer can cross into the panel/flyout
 
 function NavDropdown({
   locale,
@@ -41,32 +99,66 @@ function NavDropdown({
   group: NavGroupItem;
 }) {
   const [open, setOpen] = useState(false);
+  const [subOpen, setSubOpen] = useState<{ index: number; top: number; left: number } | null>(null);
   const [pos, setPos] = useState({ top: 0, left: 0 });
   const btnRef = useRef<HTMLButtonElement>(null);
-  const isActive = group.items.some(l =>
-    pathname.startsWith(`/${locale}${l.href}`),
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isActive = group.items.some(i =>
+    isSubGroup(i)
+      ? i.items.some(l => pathname.startsWith(`/${locale}${l.href}`))
+      : pathname.startsWith(`/${locale}${i.href}`),
   );
 
-  const handleOpen = () => {
+  const clearCloseTimer = () => {
+    if (closeTimer.current) {
+      clearTimeout(closeTimer.current);
+      closeTimer.current = null;
+    }
+  };
+
+  const scheduleClose = () => {
+    clearCloseTimer();
+    closeTimer.current = setTimeout(() => {
+      setOpen(false);
+      setSubOpen(null);
+    }, CLOSE_DELAY);
+  };
+
+  const handleEnter = () => {
+    clearCloseTimer();
     if (btnRef.current) {
       const r = btnRef.current.getBoundingClientRect();
       setPos({ top: r.bottom + 4, left: r.left });
     }
-    setOpen(o => !o);
+    setOpen(true);
   };
 
+  const handleSubEnter = (i: number, e: React.MouseEvent<HTMLDivElement>) => {
+    clearCloseTimer();
+    const r = e.currentTarget.getBoundingClientRect();
+    setSubOpen({ index: i, top: r.top, left: pos.left + PANEL_WIDTH + 4 });
+  };
+
+  const closeAll = () => {
+    setOpen(false);
+    setSubOpen(null);
+  };
+
+  const activeSubGroup =
+    subOpen && isSubGroup(group.items[subOpen.index]) ? (group.items[subOpen.index] as NavSubGroupItem) : null;
+
   return (
-    <div>
+    <div onMouseEnter={handleEnter} onMouseLeave={scheduleClose}>
       <button
         ref={btnRef}
-        onClick={handleOpen}
-        className={`flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs whitespace-nowrap shrink-0 transition-colors ${
+        onClick={() => (open ? closeAll() : handleEnter())}
+        className={`flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-semibold whitespace-nowrap shrink-0 transition-colors ${
           isActive
-            ? "bg-amber-50 text-amber-700 font-medium"
+            ? "bg-amber-50 text-amber-700"
             : "text-gray-600 hover:text-amber-600 hover:bg-gray-50"
         }`}
       >
-        <span>{group.icon}</span>
+        <NavIcon name={group.icon} />
         <span>{label(group, locale)}</span>
         <svg
           className={`w-3 h-3 transition-transform ${open ? "rotate-180" : ""}`}
@@ -79,33 +171,82 @@ function NavDropdown({
         </svg>
       </button>
       {open && (
-        <>
-          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div
-            className="fixed w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50"
-            style={{ top: pos.top, left: pos.left }}
-          >
-            {group.items.map(item => {
-              const full = `/${locale}${item.href}`;
-              const active = pathname.startsWith(full);
+        <div
+          className="fixed bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50 max-h-[70vh] overflow-y-auto"
+          style={{ top: pos.top, left: pos.left, width: PANEL_WIDTH }}
+        >
+          {group.items.map((item, i) => {
+            if (isSubGroup(item)) {
+              const subActive = item.items.some(l => pathname.startsWith(`/${locale}${l.href}`));
+              const active = subOpen?.index === i;
               return (
-                <Link
-                  key={item.href}
-                  href={full}
-                  onClick={() => setOpen(false)}
-                  className={`flex items-center gap-2 px-4 py-2.5 text-xs transition-colors ${
-                    active
-                      ? "bg-amber-50 text-amber-700 font-medium"
-                      : "text-gray-600 hover:bg-gray-50 hover:text-amber-600"
-                  }`}
-                >
-                  <span>{item.icon}</span>
-                  {label(item, locale)}
-                </Link>
+                <div key={i} onMouseEnter={e => handleSubEnter(i, e)}>
+                  <div
+                    className={`flex items-center justify-between gap-2 px-4 py-2.5 text-xs cursor-default transition-colors ${
+                      active || subActive
+                        ? "bg-amber-50 text-amber-700 font-medium"
+                        : "text-gray-600 hover:bg-gray-50 hover:text-amber-600"
+                    }`}
+                  >
+                    <span className="flex items-center gap-2">
+                      <NavIcon name={item.icon} />
+                      {label(item, locale)}
+                    </span>
+                    <svg className="w-3 h-3 -rotate-90" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="m6 9 6 6 6-6" />
+                    </svg>
+                  </div>
+                </div>
               );
-            })}
-          </div>
-        </>
+            }
+            const full = `/${locale}${item.href}`;
+            const active = pathname.startsWith(full);
+            return (
+              <Link
+                key={item.href}
+                href={full}
+                onClick={closeAll}
+                onMouseEnter={() => setSubOpen(null)}
+                className={`flex items-center gap-2 px-4 py-2.5 text-xs transition-colors ${
+                  active
+                    ? "bg-amber-50 text-amber-700 font-medium"
+                    : "text-gray-600 hover:bg-gray-50 hover:text-amber-600"
+                }`}
+              >
+                <NavIcon name={item.icon} />
+                {label(item, locale)}
+              </Link>
+            );
+          })}
+        </div>
+      )}
+      {activeSubGroup && (
+        <div
+          className="fixed w-52 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50"
+          style={{ top: subOpen!.top, left: subOpen!.left }}
+          onMouseEnter={clearCloseTimer}
+          onMouseLeave={scheduleClose}
+        >
+          {activeSubGroup.items.map(sub => {
+            const full = `/${locale}${sub.href}`;
+            const active = pathname.startsWith(full);
+            return (
+              <Link
+                key={sub.href}
+                href={full}
+                onClick={closeAll}
+                className={`flex items-center gap-2 px-4 py-2.5 text-xs transition-colors ${
+                  active
+                    ? "bg-amber-50 text-amber-700 font-medium"
+                    : "text-gray-600 hover:bg-gray-50 hover:text-amber-600"
+                }`}
+              >
+                <NavIcon name={sub.icon} />
+                {label(sub, locale)}
+              </Link>
+            );
+          })}
+        </div>
       )}
     </div>
   );
@@ -280,29 +421,33 @@ function MobileMenu({
   onSearch: (q: string) => void;
 }) {
   const [q, setQ] = useState("");
+  const [expandedSubKey, setExpandedSubKey] = useState<string | null>(null);
   const { data: siteSettings } = useGetSiteSettingsQuery();
   const logoSrc = siteSettings?.logo || "/assets/logo/pujarighar.png";
   const companyName = locale === "bn"
     ? (siteSettings?.company_name_bn || "পূজারিঘর")
     : (siteSettings?.company_name_en || "PujariGhar");
 
-  const navLink = (href: string, icon: string, lbl: string) => {
-    const full = `/${locale}${href}`;
+  const newOrderPath = `/${locale}/admin/orders/new`;
+  const navLink = (href: string, icon: string, lbl: string, indent = false) => {
+    const full = href === "/" ? `/${locale}` : `/${locale}${href}`;
     const active =
       pathname === full ||
-      (pathname.startsWith(full + "/") && full !== `/${locale}`);
+      (pathname.startsWith(full + "/") &&
+        full !== `/${locale}` &&
+        pathname !== newOrderPath);
     return (
       <Link
         key={href}
         href={full}
         onClick={onClose}
-        className={`flex items-center gap-3 px-4 py-3 text-sm transition-colors ${
+        className={`flex items-center gap-3 ${indent ? "pl-8 pr-4" : "px-4"} py-3 text-sm transition-colors ${
           active
             ? "bg-amber-50 text-amber-700 font-medium"
             : "text-gray-700 hover:bg-gray-50"
         }`}
       >
-        <span className="text-base">{icon}</span>
+        <NavIcon name={icon} className="w-[18px] h-[18px]" />
         {lbl}
       </Link>
     );
@@ -358,9 +503,43 @@ function MobileMenu({
                 <p className="px-4 py-1 text-xs text-gray-400 font-medium uppercase tracking-wide">
                   {label(grp, locale)}
                 </p>
-                {grp.items.map(sub =>
-                  navLink(sub.href, sub.icon, label(sub, locale)),
-                )}
+                {grp.items.map((sub, j) => {
+                  if (isSubGroup(sub)) {
+                    const key = `${i}-${j}`;
+                    const expanded = expandedSubKey === key;
+                    return (
+                      <div key={key}>
+                        <button
+                          type="button"
+                          onClick={() => setExpandedSubKey(expanded ? null : key)}
+                          className="w-full flex items-center justify-between gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                        >
+                          <span className="flex items-center gap-3">
+                            <NavIcon name={sub.icon} className="w-[18px] h-[18px]" />
+                            {label(sub, locale)}
+                          </span>
+                          <svg
+                            className={`w-3.5 h-3.5 text-gray-400 transition-transform ${expanded ? "rotate-180" : ""}`}
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth={2.5}
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" d="m6 9 6 6 6-6" />
+                          </svg>
+                        </button>
+                        {expanded && (
+                          <div className="bg-gray-50/60">
+                            {sub.items.map(leaf =>
+                              navLink(leaf.href, leaf.icon, label(leaf, locale), true),
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  }
+                  return navLink(sub.href, sub.icon, label(sub, locale));
+                })}
               </div>
             );
           })}
@@ -531,14 +710,14 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop: all menu items in order — links and group dropdowns together */}
-          <div className="hidden md:flex items-center overflow-x-auto flex-1 gap-1 min-w-0">
+          <div className="hidden md:flex items-center overflow-x-auto scrollbar-hide flex-1 gap-1 min-w-0">
             {menu.map((item, i) => {
               if (item.type === "group") {
                 return (
                   <NavDropdown key={i} locale={locale} pathname={pathname} group={item} />
                 );
               }
-              const full = `/${locale}${item.href}`;
+              const full = item.href === "/" ? `/${locale}` : `/${locale}${item.href}`;
               const newOrderPath = `/${locale}/admin/orders/new`;
               const active =
                 pathname === full ||
@@ -549,13 +728,13 @@ export default function Navbar() {
                 <Link
                   key={item.href}
                   href={full}
-                  className={`flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs whitespace-nowrap shrink-0 transition-colors ${
+                  className={`flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-semibold whitespace-nowrap shrink-0 transition-colors ${
                     active
-                      ? "bg-amber-50 text-amber-700 font-medium"
+                      ? "bg-amber-50 text-amber-700"
                       : "text-gray-600 hover:text-amber-600 hover:bg-gray-50"
                   }`}
                 >
-                  <span>{item.icon}</span>
+                  <NavIcon name={item.icon} />
                   {locale === "bn" ? item.label_bn : item.label_en}
                 </Link>
               );
