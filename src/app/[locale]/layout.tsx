@@ -9,7 +9,6 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { Poppins, Hind_Siliguri } from "next/font/google";
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 const API_ORIGIN = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8020";
@@ -60,7 +59,7 @@ export default async function LocaleLayout({
       <body suppressHydrationWarning>
         <NextIntlClientProvider messages={messages}>
           <Providers>
-            <SiteChrome navbar={<Suspense><Navbar /></Suspense>} footer={<Footer />}>
+            <SiteChrome navbar={<Navbar />} footer={<Footer />}>
               {children}
             </SiteChrome>
           </Providers>
