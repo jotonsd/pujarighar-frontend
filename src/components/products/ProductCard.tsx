@@ -1,7 +1,6 @@
 "use client";
 
 import { useAddToCartMutation } from "@/api/cart/cartApi";
-import Badge from "@/components/ui/Badge";
 import { Product } from "@/lib/types";
 import { useAuthStore } from "@/store/authStore";
 import { useCartStore } from "@/store/cartStore";
@@ -221,15 +220,9 @@ export default function ProductCard({ product, locale, priority = false }: Props
               </span>
             )}
           </div>
-          {inStock ? (
-            <Badge variant="green" className="text-xs">
-              {t("product.inStock")}
-            </Badge>
-          ) : (
-            <Badge variant="red" className="text-xs">
-              {t("product.outOfStock")}
-            </Badge>
-          )}
+          <span className={`badge text-xs ${inStock ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+            {locale === "bn" ? "স্টক" : "Stock"}
+          </span>
         </div>
       </Link>
 

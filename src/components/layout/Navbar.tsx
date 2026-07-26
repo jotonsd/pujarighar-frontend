@@ -35,10 +35,12 @@ function NavDropdown({
   locale,
   pathname,
   group,
+  role,
 }: {
   locale: string;
   pathname: string;
   group: NavGroupItem;
+  role?: string | null;
 }) {
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState({ top: 0, left: 0 });
@@ -60,7 +62,7 @@ function NavDropdown({
       <button
         ref={btnRef}
         onClick={handleOpen}
-        className={`flex items-center gap-1 px-2.5 py-1.5 rounded-md ${locale === "en" ? "text-[10px]" : "text-xs"} whitespace-nowrap transition-colors ${
+        className={`flex items-center gap-1 px-2.5 py-1.5 rounded-md ${role === "ADMIN" && locale === "en" ? "text-[11px]" : "text-xs"} whitespace-nowrap transition-colors ${
           isActive
             ? "bg-amber-50 text-amber-700 font-medium"
             : "text-gray-600 hover:text-amber-600 hover:bg-gray-50"
@@ -93,7 +95,7 @@ function NavDropdown({
                   key={item.href}
                   href={full}
                   onClick={() => setOpen(false)}
-                  className={`flex items-center gap-2 px-4 py-2.5 ${locale === "en" ? "text-[10px]" : "text-xs"} transition-colors ${
+                  className={`flex items-center gap-2 px-4 py-2.5 ${role === "ADMIN" && locale === "en" ? "text-[11px]" : "text-xs"} transition-colors ${
                     active
                       ? "bg-amber-50 text-amber-700 font-medium"
                       : "text-gray-600 hover:bg-gray-50 hover:text-amber-600"
@@ -535,7 +537,7 @@ export default function Navbar() {
             {menu.map((item, i) => {
               if (item.type === "group") {
                 return (
-                  <NavDropdown key={i} locale={locale} pathname={pathname} group={item} />
+                  <NavDropdown key={i} locale={locale} pathname={pathname} group={item} role={role} />
                 );
               }
               const full = `/${locale}${item.href}`;
@@ -549,7 +551,7 @@ export default function Navbar() {
                 <Link
                   key={item.href}
                   href={full}
-                  className={`flex items-center gap-1 px-2.5 py-1.5 rounded-md ${locale === "en" ? "text-[10px]" : "text-xs"} whitespace-nowrap transition-colors ${
+                  className={`flex items-center gap-1 px-2.5 py-1.5 rounded-md ${role === "ADMIN" && locale === "en" ? "text-[11px]" : "text-xs"} whitespace-nowrap transition-colors ${
                     active
                       ? "bg-amber-50 text-amber-700 font-medium"
                       : "text-gray-600 hover:text-amber-600 hover:bg-gray-50"
