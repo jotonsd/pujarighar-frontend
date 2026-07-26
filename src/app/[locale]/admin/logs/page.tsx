@@ -128,7 +128,7 @@ export default function LogViewerPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-[220px_1fr] gap-3">
         {/* File list */}
-        <div className="bg-white rounded-lg shadow-sm p-2 h-fit">
+        <div className="bg-white rounded-lg shadow-sm p-2 h-[85vh] overflow-y-auto">
           {filesLoading ? (
             <p className="text-xs text-gray-400 px-2 py-1.5">{isBn ? "লোড হচ্ছে..." : "Loading..."}</p>
           ) : (
@@ -154,7 +154,7 @@ export default function LogViewerPage() {
         </div>
 
         {/* Content viewer */}
-        <div className="bg-white rounded-lg shadow-sm p-3 flex flex-col h-[75vh]">
+        <div className="bg-white rounded-lg shadow-sm p-3 flex flex-col h-[85vh]">
           <div className="flex items-center gap-2 mb-2">
             <div className="relative flex-1">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
