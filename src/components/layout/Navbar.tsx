@@ -614,7 +614,7 @@ export default function Navbar() {
   const isAdmin = pathname.includes("/admin");
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const { isAuthenticated, logout, updateUser } = useAuthStore();
+  const { isAuthenticated, logout, updateUser, hydrated } = useAuthStore();
   const [logoutMutation] = useLogoutMutation();
 
   const { data: me, error: meError } = useGetMeQuery(undefined, {
@@ -785,14 +785,23 @@ export default function Navbar() {
             {currentUser ? (
               <ProfileDropdown locale={locale} user={currentUser} onLogout={handleLogout} t={t} />
             ) : (
-              <>
-                <Link href={`/${locale}/auth/login`} className="text-gray-600 hover:text-amber-600 text-sm">
-                  {t("nav.login")}
-                </Link>
-                <Link href={`/${locale}/auth/register`} className="btn-primary text-sm">
-                  {t("nav.register")}
-                </Link>
-              </>
+              <div className="flex items-center justify-end gap-2 w-[136px] shrink-0">
+                {!hydrated ? (
+                  <>
+                    <div className="shimmer rounded-md w-10 h-4" />
+                    <div className="shimmer rounded-lg w-20 h-8" />
+                  </>
+                ) : (
+                  <>
+                    <Link href={`/${locale}/auth/login`} className="text-gray-600 hover:text-amber-600 text-sm">
+                      {t("nav.login")}
+                    </Link>
+                    <Link href={`/${locale}/auth/register`} className="btn-primary text-sm">
+                      {t("nav.register")}
+                    </Link>
+                  </>
+                )}
+              </div>
             )}
           </div>
         </div>
