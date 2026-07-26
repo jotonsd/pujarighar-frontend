@@ -286,11 +286,14 @@ function MobileMenu({
     ? (siteSettings?.company_name_bn || "পূজারিঘর")
     : (siteSettings?.company_name_en || "PujariGhar");
 
+  const newOrderPath = `/${locale}/admin/orders/new`;
   const navLink = (href: string, icon: string, lbl: string) => {
     const full = `/${locale}${href}`;
     const active =
       pathname === full ||
-      (pathname.startsWith(full + "/") && full !== `/${locale}`);
+      (pathname.startsWith(full + "/") &&
+        full !== `/${locale}` &&
+        pathname !== newOrderPath);
     return (
       <Link
         key={href}
