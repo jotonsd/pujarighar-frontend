@@ -20,7 +20,7 @@ import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import LanguageSwitcher from "./LanguageSwitcher";
 
 // Fallback menu for unauthenticated (guest) users — not fetched from API
@@ -603,6 +603,18 @@ function MobileMenu({
   );
 }
 
+// ── SearchParamSync ───────────────────────────────────────────────────────────
+// Isolated so only this sliver needs a Suspense boundary (useSearchParams()
+// requires one) instead of the whole Navbar — wrapping the entire Navbar made
+// it stream in as a separate, later chunk behind the rest of the page.
+function SearchParamSync({ onChange }: { onChange: (q: string) => void }) {
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    onChange(searchParams.get("search") ?? "");
+  }, [searchParams, onChange]);
+  return null;
+}
+
 // ── Navbar ────────────────────────────────────────────────────────────────────
 
 export default function Navbar() {
@@ -610,7 +622,6 @@ export default function Navbar() {
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const isAdmin = pathname.includes("/admin");
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -645,8 +656,7 @@ export default function Navbar() {
   const showCart = !isAuthenticated || role === "CUSTOMER";
 
   // Search
-  const [query, setQuery] = useState(searchParams.get("search") ?? "");
-  useEffect(() => { setQuery(searchParams.get("search") ?? ""); }, [searchParams]);
+  const [query, setQuery] = useState("");
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -669,6 +679,9 @@ export default function Navbar() {
 
   return (
     <nav className="bg-white shadow-sm border-b border-amber-100 sticky top-0 z-[1010]">
+      <Suspense fallback={null}>
+        <SearchParamSync onChange={setQuery} />
+      </Suspense>
       {mobileOpen && (
         <MobileMenu
           locale={locale}
