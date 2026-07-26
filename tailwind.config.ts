@@ -10,7 +10,7 @@ const config: Config = {
     extend: {
       fontFamily: {
         bangla: ['Hind Siliguri', 'sans-serif'],
-        sans: ['Hind Siliguri', 'Inter', 'sans-serif'],
+        sans: ['Poppins', 'Hind Siliguri', 'sans-serif'],
       },
       colors: {
         primary: {
