@@ -7,7 +7,7 @@ import { GoogleAnalytics } from "@next/third-parties/google";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
-import { Arimo, Hind_Siliguri } from "next/font/google";
+import { Poppins, Hind_Siliguri } from "next/font/google";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
@@ -15,7 +15,7 @@ const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 const API_ORIGIN = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8020";
 
 // English UI font
-const arimo = Arimo({
+const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   display: "swap",
@@ -52,7 +52,7 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} className={locale === "en" ? arimo.className : hindSiliguri.className}>
+    <html lang={locale} className={locale === "en" ? poppins.className : hindSiliguri.className}>
       <head>
         <link rel="preconnect" href={API_ORIGIN} />
         <link rel="dns-prefetch" href={API_ORIGIN} />
