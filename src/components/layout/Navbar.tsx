@@ -60,7 +60,7 @@ function NavDropdown({
       <button
         ref={btnRef}
         onClick={handleOpen}
-        className={`flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs whitespace-nowrap transition-colors ${
+        className={`flex items-center gap-1 px-2.5 py-1.5 rounded-md ${locale === "en" ? "text-[10px]" : "text-xs"} whitespace-nowrap transition-colors ${
           isActive
             ? "bg-amber-50 text-amber-700 font-medium"
             : "text-gray-600 hover:text-amber-600 hover:bg-gray-50"
@@ -93,7 +93,7 @@ function NavDropdown({
                   key={item.href}
                   href={full}
                   onClick={() => setOpen(false)}
-                  className={`flex items-center gap-2 px-4 py-2.5 text-xs transition-colors ${
+                  className={`flex items-center gap-2 px-4 py-2.5 ${locale === "en" ? "text-[10px]" : "text-xs"} transition-colors ${
                     active
                       ? "bg-amber-50 text-amber-700 font-medium"
                       : "text-gray-600 hover:bg-gray-50 hover:text-amber-600"
@@ -549,7 +549,7 @@ export default function Navbar() {
                 <Link
                   key={item.href}
                   href={full}
-                  className={`flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs whitespace-nowrap transition-colors ${
+                  className={`flex items-center gap-1 px-2.5 py-1.5 rounded-md ${locale === "en" ? "text-[10px]" : "text-xs"} whitespace-nowrap transition-colors ${
                     active
                       ? "bg-amber-50 text-amber-700 font-medium"
                       : "text-gray-600 hover:text-amber-600 hover:bg-gray-50"
