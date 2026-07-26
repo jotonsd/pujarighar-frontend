@@ -531,7 +531,7 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop: all menu items in order — links and group dropdowns together */}
-          <div className="hidden md:flex items-center overflow-x-auto flex-1 gap-1 min-w-0">
+          <div className="hidden md:flex items-center overflow-x-auto scrollbar-hide flex-1 gap-1 min-w-0">
             {menu.map((item, i) => {
               if (item.type === "group") {
                 return (
