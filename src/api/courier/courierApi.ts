@@ -19,13 +19,13 @@ export const courierApi = baseApi.injectEndpoints({
       invalidatesTags: ['CourierProviders'],
     }),
 
-    updateCourierProvider: build.mutation<CourierProvider, { id: string } & Partial<CourierProvider> & { api_key?: string; secret_key?: string }>({
+    updateCourierProvider: build.mutation<CourierProvider, { id: number } & Partial<CourierProvider> & { api_key?: string; secret_key?: string }>({
       query: ({ id, ...body }) => ({ url: `/api/courier/providers/${id}/update/`, method: 'PATCH', body }),
       transformResponse: (res: { data: CourierProvider }) => res.data,
       invalidatesTags: ['CourierProviders'],
     }),
 
-    getCourierProviderBalance: build.query<{ current_balance: number }, string>({
+    getCourierProviderBalance: build.query<{ current_balance: number }, number>({
       query: providerId => `/api/courier/providers/${providerId}/balance/`,
       transformResponse: (res: { data: { current_balance: number } }) => res.data,
     }),
@@ -45,7 +45,7 @@ export const courierApi = baseApi.injectEndpoints({
       providesTags: ['CourierConsignments'],
     }),
 
-    sendOrderToCourier: build.mutation<CourierConsignment, { orderId: string; provider_id: string }>({
+    sendOrderToCourier: build.mutation<CourierConsignment, { orderId: string; provider_id: number }>({
       query: ({ orderId, provider_id }) => ({
         url: `/api/orders/${orderId}/courier/send/`,
         method: 'POST',
@@ -72,7 +72,7 @@ export const courierApi = baseApi.injectEndpoints({
       invalidatesTags: ['CourierReturnRequests'],
     }),
 
-    getCourierPayments: build.query<unknown, string>({
+    getCourierPayments: build.query<unknown, number>({
       query: providerId => `/api/courier/payments/?provider_id=${providerId}`,
       transformResponse: (res: { data: unknown }) => res.data,
     }),
