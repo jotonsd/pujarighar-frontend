@@ -64,6 +64,7 @@ const NAV_ICONS: Record<string, LucideIcon> = {
   "piggy-bank": PiggyBank,
   landmark: Landmark,
   "plus-circle": PlusCircle,
+  settings: Settings,
   "book-open": BookOpen,
   "notebook-pen": NotebookPen,
   scale: Scale,

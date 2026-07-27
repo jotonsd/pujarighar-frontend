@@ -16,11 +16,16 @@ import {
   useReturnOrderMutation,
 } from '@/api/orders/ordersApi'
 import { useGetDeliveryPersonsQuery } from '@/api/users/usersApi'
+import {
+  useGetCourierProvidersQuery,
+  useRefreshCourierStatusMutation,
+  useSendOrderToCourierMutation,
+} from '@/api/courier/courierApi'
 import CancelConfirmModal from './CancelConfirmModal'
 import ApplyDiscountModal from './ApplyDiscountModal'
 import PaymentConfirmModal from '@/components/ui/PaymentConfirmModal'
 import ConfirmModal from '@/components/ui/ConfirmModal'
-import { ChevronDown, CheckCircle2, Undo2 } from 'lucide-react'
+import { ChevronDown, CheckCircle2, Undo2, RefreshCw, Truck } from 'lucide-react'
 
 interface Props {
   order: SalesOrder
@@ -102,6 +107,8 @@ export default function OrderActions({ order, orderId }: Props) {
   const [showDiscountModal, setShowDiscountModal] = useState(false)
   const [showDeliverModal, setShowDeliverModal] = useState(false)
   const [showReturnModal, setShowReturnModal]   = useState(false)
+  const [deliveryMethod, setDeliveryMethod] = useState<'internal' | 'courier'>('internal')
+  const [courierProviderId, setCourierProviderId] = useState('')
 
   const { data: deliveryPersons = [] } = useGetDeliveryPersonsQuery()
   const [confirmOrder, { isLoading: confirming }] = useConfirmOrderMutation()
@@ -114,7 +121,13 @@ export default function OrderActions({ order, orderId }: Props) {
   const [deliver, { isLoading: delivering }]      = useDeliverOrderMutation()
   const [returnOrd, { isLoading: returning }]     = useReturnOrderMutation()
 
-  const loading = confirming || packing || assigning || cancelling || markingPaid || discounting || dispatching || delivering || returning
+  const { data: courierProviders = [] } = useGetCourierProvidersQuery()
+  const activeProviders = courierProviders.filter(p => p.is_active)
+  const [sendToCourier, { isLoading: sendingToCourier }] = useSendOrderToCourierMutation()
+  const [refreshCourierStatus, { isLoading: refreshingCourier }] = useRefreshCourierStatusMutation()
+
+  const loading = confirming || packing || assigning || cancelling || markingPaid || discounting
+    || dispatching || delivering || returning || sendingToCourier
 
   const hasPayAction = order.payment_method === 'COD' && order.payment_status === 'UNPAID' && !['CANCELLED', 'RETURNED'].includes(order.status)
   const hasStatusAction = ['PENDING', 'CONFIRMED', 'PACKED'].includes(order.status)
@@ -122,13 +135,16 @@ export default function OrderActions({ order, orderId }: Props) {
   const hasDiscountAction = ['PENDING', 'CONFIRMED'].includes(order.status) && order.payment_status === 'UNPAID'
   // Admin can drive the order through every status regardless of whether a delivery
   // person is attached yet — the backend already allows this (admin bypasses the
-  // "must be the assigned delivery person" ownership check entirely).
-  const hasAssignPersonOnly = order.status === 'ASSIGNED' && !order.delivery?.delivery_person
+  // "must be the assigned delivery person" ownership check entirely). Excluded once
+  // a courier consignment exists — that order is already being handled externally.
+  const hasAssignPersonOnly = order.status === 'ASSIGNED' && !order.delivery?.delivery_person && !order.courier_consignment
+  const hasDeliveryChoice = order.status === 'PACKED' || hasAssignPersonOnly
   const hasDispatchAction = order.status === 'ASSIGNED'
   const hasDeliverAction = order.status === 'ON_THE_WAY'
   const hasReturnAction = order.status === 'DELIVERED'
   const hasAnyAction = hasPayAction || hasStatusAction || hasCancelAction || hasDiscountAction
-    || hasAssignPersonOnly || hasDispatchAction || hasDeliverAction || hasReturnAction
+    || hasDeliveryChoice || hasDispatchAction || hasDeliverAction || hasReturnAction
+    || !!order.courier_consignment
 
   if (!hasAnyAction) return null
 
@@ -147,6 +163,36 @@ export default function OrderActions({ order, orderId }: Props) {
   return (
     <div className="card space-y-3">
       <h2 className="font-semibold text-gray-700">{locale === 'bn' ? 'অ্যাকশন' : 'Actions'}</h2>
+
+      {order.courier_consignment && (
+        <div className="bg-gray-50 rounded-xl p-3 text-sm space-y-1.5">
+          <div className="flex items-center justify-between">
+            <span className="flex items-center gap-1.5 font-medium text-gray-700">
+              <Truck className="w-4 h-4 text-amber-600" />
+              {order.courier_consignment.provider_name}
+            </span>
+            <button
+              disabled={refreshingCourier}
+              onClick={() => doAction(
+                () => refreshCourierStatus(orderId).unwrap(),
+                locale === 'bn' ? 'স্ট্যাটাস আপডেট হয়েছে' : 'Status refreshed',
+              )}
+              className="inline-flex items-center gap-1 text-xs text-amber-600 hover:underline disabled:opacity-50"
+            >
+              <RefreshCw className={`w-3 h-3 ${refreshingCourier ? 'animate-spin' : ''}`} />
+              {locale === 'bn' ? 'রিফ্রেশ' : 'Refresh'}
+            </button>
+          </div>
+          <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
+            <span>{locale === 'bn' ? 'ট্র্যাকিং কোড:' : 'Tracking code:'} <span className="font-mono text-gray-700">{order.courier_consignment.tracking_code || '—'}</span></span>
+            <span>{locale === 'bn' ? 'স্ট্যাটাস:' : 'Status:'} <span className="font-medium text-gray-700">{order.courier_consignment.status || '—'}</span></span>
+          </div>
+          {order.courier_consignment.tracking_message && (
+            <p className="text-xs text-gray-500">{order.courier_consignment.tracking_message}</p>
+          )}
+        </div>
+      )}
+
       <div className="flex flex-wrap gap-2">
         {order.payment_method === 'COD' && order.payment_status === 'UNPAID' && !['CANCELLED', 'RETURNED'].includes(order.status) && (
           <>
@@ -187,21 +233,63 @@ export default function OrderActions({ order, orderId }: Props) {
             {t('order.pack')}
           </button>
         )}
-        {(order.status === 'PACKED' || hasAssignPersonOnly) && (
-          <div className="flex gap-2 items-center">
-            <DeliveryPersonDropdown
-              persons={deliveryPersons}
-              value={deliveryPersonId}
-              onChange={setDeliveryPersonId}
-              label={locale === 'bn' ? 'ডেলিভারিম্যান বেছে নিন (ঐচ্ছিক)' : 'Select delivery person (optional)'}
-            />
-            <button disabled={loading} className="btn-primary text-sm whitespace-nowrap"
-              onClick={() => doAction(
-                () => assign({ id: orderId, delivery_person_id: deliveryPersonId || null }).unwrap(),
-                locale === 'bn' ? 'নির্ধারিত হয়েছে' : 'Assigned',
-              )}>
-              {t('order.assignDelivery')}
-            </button>
+        {hasDeliveryChoice && (
+          <div className="flex flex-col gap-2 w-full sm:w-auto">
+            {activeProviders.length > 0 && (
+              <div className="inline-flex rounded-lg border border-gray-200 p-0.5 w-fit">
+                <button
+                  type="button"
+                  onClick={() => setDeliveryMethod('internal')}
+                  className={`px-3 py-1 text-xs rounded-md transition-colors ${deliveryMethod === 'internal' ? 'bg-amber-50 text-amber-700 font-medium' : 'text-gray-500 hover:text-gray-700'}`}
+                >
+                  {locale === 'bn' ? 'নিজস্ব ডেলিভারি' : 'Internal Delivery'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setDeliveryMethod('courier')}
+                  className={`px-3 py-1 text-xs rounded-md transition-colors ${deliveryMethod === 'courier' ? 'bg-amber-50 text-amber-700 font-medium' : 'text-gray-500 hover:text-gray-700'}`}
+                >
+                  <Truck className="w-3 h-3 inline mr-1" /> {locale === 'bn' ? 'কুরিয়ার' : 'Courier'}
+                </button>
+              </div>
+            )}
+
+            {deliveryMethod === 'courier' && activeProviders.length > 0 ? (
+              <div className="flex gap-2 items-center">
+                {activeProviders.length > 1 && (
+                  <select
+                    value={courierProviderId || activeProviders[0].id}
+                    onChange={e => setCourierProviderId(e.target.value)}
+                    className="px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-amber-500"
+                  >
+                    {activeProviders.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                  </select>
+                )}
+                <button disabled={loading} className="btn-primary text-sm whitespace-nowrap"
+                  onClick={() => doAction(
+                    () => sendToCourier({ orderId, provider_id: courierProviderId || activeProviders[0].id }).unwrap(),
+                    locale === 'bn' ? 'কুরিয়ারে পাঠানো হয়েছে' : 'Sent to courier',
+                  )}>
+                  <Truck className="w-4 h-4 inline mr-1" /> {locale === 'bn' ? 'কুরিয়ারে পাঠান' : 'Send to Courier'}
+                </button>
+              </div>
+            ) : (
+              <div className="flex gap-2 items-center">
+                <DeliveryPersonDropdown
+                  persons={deliveryPersons}
+                  value={deliveryPersonId}
+                  onChange={setDeliveryPersonId}
+                  label={locale === 'bn' ? 'ডেলিভারিম্যান বেছে নিন (ঐচ্ছিক)' : 'Select delivery person (optional)'}
+                />
+                <button disabled={loading} className="btn-primary text-sm whitespace-nowrap"
+                  onClick={() => doAction(
+                    () => assign({ id: orderId, delivery_person_id: deliveryPersonId || null }).unwrap(),
+                    locale === 'bn' ? 'নির্ধারিত হয়েছে' : 'Assigned',
+                  )}>
+                  {t('order.assignDelivery')}
+                </button>
+              </div>
+            )}
           </div>
         )}
         {hasDispatchAction && (
