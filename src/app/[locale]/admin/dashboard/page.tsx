@@ -1,6 +1,7 @@
 "use client";
 
 import { useGetDashboardSummaryQuery, RecentOrder, TopProduct } from "@/api/dashboard/dashboardApi";
+import PageHeader from "@/components/ui/PageHeader";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { formatAmount, formatNumber } from "@/utils/format";
 import { useLocale, useTranslations } from "next-intl";
@@ -91,6 +92,10 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-5">
+      <PageHeader
+        title={isBn ? "ড্যাশবোর্ড" : "Dashboard"}
+        description={isBn ? "ব্যবসার সার্বিক অবস্থার সংক্ষিপ্ত চিত্র" : "Overview of your business performance"}
+      />
       {/* ── Row 1: Today / quick stats ───────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
         {STAT_CARDS.map(card => {
