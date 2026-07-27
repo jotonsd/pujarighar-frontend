@@ -267,7 +267,7 @@ export default function OrderActions({ order, orderId }: Props) {
                 )}
                 <button disabled={loading} className="btn-primary text-sm whitespace-nowrap"
                   onClick={() => doAction(
-                    () => sendToCourier({ orderId, provider_id: courierProviderId || activeProviders[0].id }).unwrap(),
+                    () => sendToCourier({ orderId, provider_id: courierProviderId ? Number(courierProviderId) : activeProviders[0].id }).unwrap(),
                     locale === 'bn' ? 'কুরিয়ারে পাঠানো হয়েছে' : 'Sent to courier',
                   )}>
                   <Truck className="w-4 h-4 inline mr-1" /> {locale === 'bn' ? 'কুরিয়ারে পাঠান' : 'Send to Courier'}

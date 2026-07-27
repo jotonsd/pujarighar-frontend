@@ -16,7 +16,7 @@ function normalizeRows(raw: unknown): Record<string, unknown>[] {
 export default function PaymentsTab({ isBn }: { isBn: boolean }) {
   const { data: providers = [] } = useGetCourierProvidersQuery();
   const activeProvider = providers.find(p => p.is_active);
-  const { data, isLoading, isError } = useGetCourierPaymentsQuery(activeProvider?.id ?? "", { skip: !activeProvider });
+  const { data, isLoading, isError } = useGetCourierPaymentsQuery(activeProvider?.id ?? 0, { skip: !activeProvider });
 
   if (!activeProvider) {
     return <p className="text-sm text-gray-400">{isBn ? "প্রথমে একটি সক্রিয় প্রোভাইডার যোগ করুন" : "Add an active provider first"}</p>;
