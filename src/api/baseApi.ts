@@ -118,6 +118,9 @@ export const baseApi = createApi({
     'PromoEmails',
     'GoogleAnalytics',
     'GooglePagespeed',
+    'CourierProviders',
+    'CourierConsignments',
+    'CourierReturnRequests',
   ],
   endpoints: () => ({}),
 })

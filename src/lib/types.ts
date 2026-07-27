@@ -443,6 +443,59 @@ export interface SalesOrder {
   notes_en: string
   items: SalesOrderItem[]
   delivery: DeliveryAssignment | null
+  courier_consignment: CourierConsignment | null
+  created_at: string
+  updated_at: string
+}
+
+// ─── Courier ──────────────────────────────────────────────────────────────────
+
+export interface CourierProvider {
+  id: number
+  code: string
+  name: string
+  base_url: string
+  is_active: boolean
+  has_api_key: boolean
+  has_secret_key: boolean
+  has_webhook_secret: boolean
+  webhook_secret?: string // present only right after creation
+}
+
+export interface CourierTrackingEvent {
+  id: string
+  status: string
+  message: string
+  source: 'WEBHOOK' | 'POLL'
+  created_at: string
+}
+
+export interface CourierConsignment {
+  id: string
+  order_id: string
+  order_number: string
+  provider: string
+  provider_code: string
+  provider_name: string
+  consignment_id: string
+  tracking_code: string
+  status: string
+  cod_amount: string
+  delivery_charge: string
+  tracking_message: string
+  created_at: string
+  updated_at: string
+  events: CourierTrackingEvent[]
+}
+
+export interface CourierReturnRequest {
+  id: string
+  consignment: string
+  order_number: string
+  tracking_code: string
+  provider_request_id: string
+  reason: string
+  status: string
   created_at: string
   updated_at: string
 }
