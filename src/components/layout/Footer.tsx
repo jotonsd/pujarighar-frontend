@@ -184,6 +184,9 @@ export default async function Footer() {
             <Link href={`/${locale}/return-policy`} className="hover:text-amber-400 transition-colors">
               {bn ? "রিটার্ন নীতি" : "Return Policy"}
             </Link>
+            <Link href={`/${locale}/faq`} className="hover:text-amber-400 transition-colors">
+              {bn ? "সচরাচর জিজ্ঞাসা" : "FAQ"}
+            </Link>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-xs text-gray-400">{bn ? "পেমেন্ট:" : "Payment:"}</span>

@@ -13,8 +13,9 @@ import CategoryCreateForm from "@/components/admin/categories/CategoryCreateForm
 import { Category } from "@/lib/types";
 import { toast } from "@/store/toastStore";
 import { useAuthStore } from "@/store/authStore";
-import { Pencil, X } from "lucide-react";
+import { Pencil, Search, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import Link from "next/link";
 import { useState } from "react";
 
 type EditForm = { name_bn: string; name_en: string; order: string };
@@ -94,12 +95,21 @@ export default function CategoriesPage() {
                       </td>
                       {isAdmin && (
                         <td className="px-4 py-3 text-right">
-                          <button
-                            onClick={() => editingId === cat.id ? setEditingId(null) : startEdit(cat)}
-                            title={editingId === cat.id ? t("common.cancel") : t("common.edit")}
-                            className={`inline-flex items-center justify-center w-8 h-8 rounded-lg border transition-colors ${editingId === cat.id ? "border-gray-200 bg-gray-100 text-gray-500 hover:bg-gray-200" : "border-amber-200 bg-amber-50 text-amber-600 hover:bg-amber-100"}`}>
-                            {editingId === cat.id ? <X className="w-3.5 h-3.5" /> : <Pencil className="w-3.5 h-3.5" />}
-                          </button>
+                          <div className="flex items-center justify-end gap-1.5">
+                            <button
+                              onClick={() => editingId === cat.id ? setEditingId(null) : startEdit(cat)}
+                              title={editingId === cat.id ? t("common.cancel") : t("common.edit")}
+                              className={`inline-flex items-center justify-center w-8 h-8 rounded-lg border transition-colors ${editingId === cat.id ? "border-gray-200 bg-gray-100 text-gray-500 hover:bg-gray-200" : "border-amber-200 bg-amber-50 text-amber-600 hover:bg-amber-100"}`}>
+                              {editingId === cat.id ? <X className="w-3.5 h-3.5" /> : <Pencil className="w-3.5 h-3.5" />}
+                            </button>
+                            <Link
+                              href={`/${locale}/admin/categories/${cat.id}/edit`}
+                              title={locale === "bn" ? "এসইও ও বিবরণ" : "SEO & Description"}
+                              className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-gray-200 bg-gray-50 text-gray-500 hover:bg-gray-100 transition-colors"
+                            >
+                              <Search className="w-3.5 h-3.5" />
+                            </Link>
+                          </div>
                         </td>
                       )}
                     </tr>

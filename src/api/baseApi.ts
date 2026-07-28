@@ -121,6 +121,7 @@ export const baseApi = createApi({
     'CourierProviders',
     'CourierConsignments',
     'CourierReturnRequests',
+    'BlogPosts',
   ],
   endpoints: () => ({}),
 })
