@@ -75,7 +75,7 @@ export default function EditCategorySeoPage({ params }: { params: { id: string }
   if (!category) return <p className="text-gray-400">{isBn ? "কেটাগরি পাওয়া যায়নি" : "Category not found"}</p>;
 
   return (
-    <div className="max-w-4xl">
+    <div className="max-w-7xl">
       <PageHeader
         title={isBn ? `এসইও ও বিবরণ — ${category.name_bn}` : `SEO & Description — ${category.name_en}`}
         description={isBn ? "কেটাগরি পেজের এসইও শিরোনাম, মেটা বিবরণ, বিস্তারিত বিবরণ ও FAQ যোগ করুন" : "Add SEO title, meta description, long-form description and FAQs for this category page"}
