@@ -1,6 +1,5 @@
 import OfferBanners from "@/components/products/OfferBanners";
 import { Brand, Category, Product } from "@/lib/types";
-import { getFAQPageSchema } from "@/lib/structuredData";
 import type { Metadata } from "next";
 import ProductsPageClient from "./ProductsPageClient";
 
@@ -134,16 +133,9 @@ export default async function ProductsPage({ params, searchParams }: Props) {
   const categoryDescription = selectedCategory
     ? (isBn ? selectedCategory.description_bn : selectedCategory.description_en)
     : "";
-  const faqSchema = selectedCategory ? getFAQPageSchema(selectedCategory.faqs, isBn) : null;
 
   return (
     <>
-      {faqSchema && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-        />
-      )}
       <ProductsPageClient
         initialProducts={products}
         initialTotalPages={totalPages}
@@ -151,32 +143,11 @@ export default async function ProductsPage({ params, searchParams }: Props) {
         initialBrands={brands}
         offerBanners={<OfferBanners />}
       />
-      {selectedCategory && (categoryDescription || selectedCategory.faqs.length > 0) && (
-        <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
-          {categoryDescription && (
-            <div className="prose prose-sm sm:prose-base max-w-none text-gray-600 whitespace-pre-line">
-              {categoryDescription}
-            </div>
-          )}
-          {selectedCategory.faqs.length > 0 && (
-            <div>
-              <h2 className="text-lg font-semibold text-gray-800 mb-4">
-                {isBn ? "সচরাচর জিজ্ঞাসা" : "Frequently Asked Questions"}
-              </h2>
-              <div className="space-y-3">
-                {selectedCategory.faqs.map((faq, i) => (
-                  <details key={i} className="rounded-xl border border-gray-100 bg-white p-4 group">
-                    <summary className="font-medium text-gray-800 cursor-pointer select-none">
-                      {isBn ? faq.question_bn : faq.question_en}
-                    </summary>
-                    <p className="text-sm text-gray-500 mt-2">
-                      {isBn ? faq.answer_bn : faq.answer_en}
-                    </p>
-                  </details>
-                ))}
-              </div>
-            </div>
-          )}
+      {selectedCategory && categoryDescription && (
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          <div className="prose prose-sm sm:prose-base max-w-none text-gray-600 whitespace-pre-line">
+            {categoryDescription}
+          </div>
         </div>
       )}
     </>

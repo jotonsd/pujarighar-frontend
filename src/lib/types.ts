@@ -101,13 +101,6 @@ export interface User {
 
 // ─── Product ─────────────────────────────────────────────────────────────────
 
-export interface CategoryFAQ {
-  question_bn: string
-  question_en: string
-  answer_bn: string
-  answer_en: string
-}
-
 export interface Category {
   id: string
   name_bn: string
@@ -125,7 +118,6 @@ export interface Category {
   meta_description_en: string
   description_bn: string
   description_en: string
-  faqs: CategoryFAQ[]
 }
 
 export interface Brand {
