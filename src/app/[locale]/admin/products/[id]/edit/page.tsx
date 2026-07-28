@@ -48,6 +48,12 @@ export default function EditProductPage({
     category: "",
     brand: "",
     is_active: true,
+    seo_title_bn: "",
+    seo_title_en: "",
+    meta_description_bn: "",
+    meta_description_en: "",
+    focus_keyword: "",
+    canonical_url: "",
   });
 
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
@@ -64,6 +70,12 @@ export default function EditProductPage({
         category:       product.category,
         brand:          product.brand ?? "",
         is_active:      product.is_active,
+        seo_title_bn:         product.seo_title_bn,
+        seo_title_en:         product.seo_title_en,
+        meta_description_bn: product.meta_description_bn,
+        meta_description_en: product.meta_description_en,
+        focus_keyword:        product.focus_keyword,
+        canonical_url:        product.canonical_url,
       });
     }
   }, [product]);
@@ -152,6 +164,26 @@ export default function EditProductPage({
           activeLabel={t("common.active")}
           inactiveLabel={t("common.inactive")}
         />
+
+        <div className="pt-2 border-t border-gray-100">
+          <h3 className="text-sm font-semibold text-gray-600 mb-3">
+            {locale === "bn" ? "এসইও (ঐচ্ছিক)" : "SEO (optional)"}
+          </h3>
+          <div className="space-y-3">
+            <div className="grid grid-cols-2 gap-3">
+              <FloatingInput label={locale === "bn" ? "এসইও শিরোনাম (বাংলা)" : "SEO Title (Bangla)"} value={form.seo_title_bn} onChange={f("seo_title_bn")} maxLength={70} />
+              <FloatingInput label={locale === "bn" ? "এসইও শিরোনাম (English)" : "SEO Title (English)"} value={form.seo_title_en} onChange={f("seo_title_en")} maxLength={70} />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <FloatingTextarea label={locale === "bn" ? "মেটা বিবরণ (বাংলা)" : "Meta Description (Bangla)"} value={form.meta_description_bn} onChange={f("meta_description_bn")} rows={2} maxLength={170} />
+              <FloatingTextarea label={locale === "bn" ? "মেটা বিবরণ (English)" : "Meta Description (English)"} value={form.meta_description_en} onChange={f("meta_description_en")} rows={2} maxLength={170} />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <FloatingInput label={locale === "bn" ? "ফোকাস কীওয়ার্ড" : "Focus Keyword"} value={form.focus_keyword} onChange={f("focus_keyword")} />
+              <FloatingInput label={locale === "bn" ? "ক্যানোনিক্যাল URL" : "Canonical URL"} value={form.canonical_url} onChange={f("canonical_url")} placeholder="https://pujarighar.com/products/..." />
+            </div>
+          </div>
+        </div>
 
         <ImageUpload
           existingImages={product?.images ?? []}

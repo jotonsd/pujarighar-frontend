@@ -4,6 +4,7 @@ import { formatAmount, formatNumber, localName } from "@/utils/format";
 import { useAddToCartMutation } from "@/api/cart/cartApi";
 import { useGetProductQuery } from "@/api/products/productsApi";
 import ProductReviews from "@/components/products/ProductReviews";
+import RecommendedForYou from "@/components/home/RecommendedForYou";
 import Badge from "@/components/ui/Badge";
 import { ArrowLeft } from "lucide-react";
 import { ProductDetailSkeleton } from "@/components/ui/skeletons";
@@ -184,7 +185,7 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
                 >
                   <Image
                     src={img.image}
-                    alt=""
+                    alt={locale === "bn" ? img.alt_bn : img.alt_en}
                     fill
                     sizes="64px"
                     className="object-cover"
@@ -278,6 +279,7 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
         </div>
       </div>
       <ProductReviews productId={id} locale={locale} />
+      <RecommendedForYou />
     </div>
   );
 }

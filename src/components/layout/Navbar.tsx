@@ -13,7 +13,7 @@ import {
   Boxes, Gift, Tag, BadgeCheck, Percent, Warehouse, ClipboardList, Truck,
   Users as UsersIcon, Handshake, PiggyBank, Landmark, BookOpen, NotebookPen, PlusCircle,
   Scale, ShoppingCart, FileBarChart, Undo2, CreditCard, Megaphone,
-  GalleryHorizontal, Target, Mail, Star, Home, Store,
+  GalleryHorizontal, Target, Mail, Star, Home, Store, FileText,
   type LucideIcon,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
@@ -28,6 +28,7 @@ const GUEST_MENU: NavItem[] = [
   { type: "link", href: "/",         icon: "home",         label_bn: "হোম",           label_en: "Home" },
   { type: "link", href: "/products", icon: "store",        label_bn: "পণ্য",           label_en: "Products" },
   { type: "link", href: "/packages", icon: "gift",         label_bn: "প্যাকেজ",        label_en: "Packages" },
+  { type: "link", href: "/blog",     icon: "file-text",    label_bn: "ব্লগ",           label_en: "Blog" },
   { type: "link", href: "/track",    icon: "truck",        label_bn: "অর্ডার ট্র্যাক", label_en: "Track Order" },
 ];
 
@@ -79,6 +80,7 @@ const NAV_ICONS: Record<string, LucideIcon> = {
   star: Star,
   home: Home,
   store: Store,
+  "file-text": FileText,
 };
 
 function NavIcon({ name, className = "w-4 h-4" }: { name: string; className?: string }) {
