@@ -1,4 +1,4 @@
-import { getMerchantReturnPolicy, getShippingDetails } from "@/lib/structuredData";
+import { getMerchantReturnPolicy, getShippingDetails, getBreadcrumbListSchema } from "@/lib/structuredData";
 import OfferBanners from "@/components/products/OfferBanners";
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
@@ -26,6 +26,11 @@ interface PackageDetail {
   images: ProductImage[];
   average_rating: number | null;
   review_count: number;
+  seo_title_bn: string;
+  seo_title_en: string;
+  meta_description_bn: string;
+  meta_description_en: string;
+  canonical_url: string;
 }
 
 interface Props {
@@ -71,14 +76,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  const url = `${SITE_URL}/${params.locale}/packages/${pkg.slug}`;
+  const url = pkg.canonical_url || `${SITE_URL}/${params.locale}/packages/${pkg.slug}`;
   const name = isBn ? pkg.name_bn : pkg.name_en;
-  const rawDesc = (isBn ? pkg.description_bn : pkg.description_en) || "";
+  const seoTitle = (isBn ? pkg.seo_title_bn : pkg.seo_title_en) || name;
+  const rawDesc = (isBn ? pkg.meta_description_bn : pkg.meta_description_en) ||
+    (isBn ? pkg.description_bn : pkg.description_en) || "";
   const description = (rawDesc || (isBn ? `${name} — পূজারিঘর থেকে অর্ডার করুন` : `Buy ${name} package online from PujariGhar`)).slice(0, 160);
   const image = pkg.images?.[0]?.image;
 
   return {
-    title: `${name} | PujariGhar`,
+    title: `${seoTitle} | PujariGhar`,
     description,
     alternates: {
       canonical: url,
@@ -88,7 +95,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       },
     },
     openGraph: {
-      title: name,
+      title: seoTitle,
       description,
       url,
       type: "website",
@@ -96,7 +103,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
     twitter: {
       card: "summary_large_image",
-      title: name,
+      title: seoTitle,
       description,
       images: image ? [image] : undefined,
     },
@@ -143,11 +150,22 @@ export default async function PackageDetailPage({ params }: Props) {
       : {}),
   };
 
+  const isBn = params.locale === "bn";
+  const breadcrumbSchema = getBreadcrumbListSchema([
+    { name: isBn ? "হোম" : "Home", url: `${SITE_URL}/${params.locale}` },
+    { name: isBn ? "প্যাকেজ" : "Packages", url: `${SITE_URL}/${params.locale}/packages` },
+    { name: isBn ? pkg.name_bn : pkg.name_en, url: `${SITE_URL}/${params.locale}/packages/${pkg.slug}` },
+  ]);
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
       <PackageDetailClient id={pkg.id} offerBanners={<OfferBanners />} />
     </>
