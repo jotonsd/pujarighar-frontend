@@ -50,10 +50,13 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   }
 
   return {
-    title: isBn ? "সকল পণ্য | PujariGhar" : "All Puja (Pooja) Products | PujariGhar",
+    title: isBn ? "পূজার সামগ্রী | PujariGhar" : "Puja Items in Bangladesh | PujariGhar",
     description: isBn
-      ? "পূজারিঘরের সকল পূজার সামগ্রী দেখুন ও ফিল্টার করুন — মূল্য, কেটাগরি ও ব্র্যান্ড অনুযায়ী।"
-      : "Browse and filter all puja (pooja) items from PujariGhar by price, category, and brand.",
+      ? "বাংলাদেশে পূজার সামগ্রী কিনুন পূজারিঘর থেকে — সকল পূজার জিনিসপত্র দেখুন ও ফিল্টার করুন মূল্য, কেটাগরি ও ব্র্যান্ড অনুযায়ী।"
+      : "Buy puja items in Bangladesh from PujariGhar — browse and filter all pooja samagri by price, category, and brand.",
+    keywords: isBn
+      ? ["পূজার সামগ্রী", "পূজারিঘর", "বাংলাদেশে পূজার সামগ্রী", "পূজার জিনিসপত্র"]
+      : ["puja items", "pujarighar", "puja items in bangladesh", "pooja samagri"],
     alternates: {
       canonical,
       languages: {

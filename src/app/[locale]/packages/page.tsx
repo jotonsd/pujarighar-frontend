@@ -12,10 +12,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const locale = params.locale;
   const isBn = locale === "bn";
   return {
-    title: isBn ? "পূজার প্যাকেজ | PujariGhar" : "Puja (Pooja) Packages | PujariGhar",
+    title: isBn ? "পূজার প্যাকেজ | PujariGhar" : "Puja Packages in Bangladesh | PujariGhar",
     description: isBn
-      ? "পূজারিঘরের সম্পূর্ণ পূজার প্যাকেজ দেখুন — এক জায়গায় সব প্রয়োজনীয় সামগ্রী।"
-      : "Browse complete puja (pooja) packages from PujariGhar — all essentials bundled in one place.",
+      ? "বাংলাদেশে পূজার প্যাকেজ কিনুন পূজারিঘর থেকে — এক জায়গায় সব প্রয়োজনীয় পূজার সামগ্রী বান্ডিল করা।"
+      : "Buy puja packages in Bangladesh from PujariGhar — complete pooja samagri bundles with all essentials in one place.",
+    keywords: isBn
+      ? ["পূজার প্যাকেজ", "পূজারিঘর", "বাংলাদেশে পূজার সামগ্রী", "পূজার বান্ডিল"]
+      : ["puja package", "pujarighar", "puja items in bangladesh", "pooja samagri bundle"],
     alternates: {
       canonical: `${SITE_URL}/${locale}/packages`,
       languages: {
