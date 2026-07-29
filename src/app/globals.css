@@ -9,8 +9,12 @@
 }
 
 @keyframes shimmer {
-  0%   { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 .shimmer {
@@ -29,14 +33,33 @@
 }
 
 /* Tighter list spacing for rich-text (Tiptap) content — the default
-   @tailwindcss/typography li margins are too generous for our editor/blog copy. */
+   @tailwindcss/typography li margins are too generous for our editor/blog copy.
+   Tiptap wraps each list item's text in a <p>, whose own margins are what
+   actually create the visible gap, so those need overriding too. */
 .rich-text li {
   margin-top: 0.1em;
   margin-bottom: 0.1em;
 }
 
+.rich-text li p {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
 .rich-text ul,
 .rich-text ol {
+  margin-top: 0.4em;
+  margin-bottom: 0.4em;
+}
+
+.rich-text h2,
+.rich-text h3,
+.rich-text h4 {
+  margin-top: 0.9em;
+  margin-bottom: 0.3em;
+}
+
+.rich-text p {
   margin-top: 0.4em;
   margin-bottom: 0.4em;
 }
