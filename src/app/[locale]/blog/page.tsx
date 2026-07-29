@@ -1,9 +1,10 @@
-import type { Metadata } from "next";
-import Image from "next/image";
-import Link from "next/link";
-import { setRequestLocale } from "next-intl/server";
+import OfferBanners from "@/components/products/OfferBanners";
 import { getCollectionPageSchema } from "@/lib/structuredData";
 import { BlogPost } from "@/lib/types";
+import type { Metadata } from "next";
+import { setRequestLocale } from "next-intl/server";
+import Image from "next/image";
+import Link from "next/link";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pujarighar.com";
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8020";
@@ -13,12 +14,17 @@ interface Props {
 }
 
 function stripHtml(html: string): string {
-  return html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+  return html
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 async function getBlogPosts(): Promise<BlogPost[]> {
   try {
-    const res = await fetch(`${API_URL}/api/blog/`, { next: { revalidate: 60 } });
+    const res = await fetch(`${API_URL}/api/blog/`, {
+      next: { revalidate: 60 },
+    });
     if (!res.ok) return [];
     const json = await res.json();
     return json.data ?? [];
@@ -58,15 +64,15 @@ export default async function BlogListPage({ params }: Props) {
   );
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
+    <div className="max-w-6xl mx-auto px-4 pt-3 pb-10">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-8">
-        {isBn ? "ব্লগ" : "Blog"}
-      </h1>
+      <div className="mb-6">
+        <OfferBanners />
+      </div>
 
       {posts.length === 0 ? (
         <p className="text-gray-400 text-sm">
@@ -76,7 +82,10 @@ export default async function BlogListPage({ params }: Props) {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {posts.map(post => {
             const title = isBn ? post.title_bn : post.title_en;
-            const excerpt = stripHtml(isBn ? post.body_bn : post.body_en).slice(0, 140);
+            const excerpt = stripHtml(isBn ? post.body_bn : post.body_en).slice(
+              0,
+              140,
+            );
             return (
               <Link
                 key={post.id}
@@ -99,15 +108,22 @@ export default async function BlogListPage({ params }: Props) {
                   )}
                 </div>
                 <div className="p-4">
-                  <h2 className="font-semibold text-gray-800 mb-1.5 line-clamp-2">{title}</h2>
-                  <p className="text-sm text-gray-500 line-clamp-3">{excerpt}</p>
+                  <h2 className="font-semibold text-gray-800 mb-1.5 line-clamp-2">
+                    {title}
+                  </h2>
+                  <p className="text-sm text-gray-500 line-clamp-3">
+                    {excerpt}
+                  </p>
                   {post.published_at && (
                     <p className="text-xs text-gray-400 mt-2">
-                      {new Date(post.published_at).toLocaleDateString(isBn ? "bn-BD" : "en-US", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })}
+                      {new Date(post.published_at).toLocaleDateString(
+                        isBn ? "bn-BD" : "en-US",
+                        {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        },
+                      )}
                     </p>
                   )}
                 </div>
