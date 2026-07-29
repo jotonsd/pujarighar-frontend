@@ -60,3 +60,93 @@ export function getShippingDetails(charges: DeliveryCharges | null) {
     },
   ];
 }
+
+interface FAQItem {
+  question_bn: string;
+  question_en: string;
+  answer_bn: string;
+  answer_en: string;
+}
+
+export function getFAQPageSchema(faqs: FAQItem[], isBn: boolean) {
+  if (!faqs || faqs.length === 0) return null;
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map(faq => ({
+      "@type": "Question",
+      name: isBn ? faq.question_bn : faq.question_en,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: isBn ? faq.answer_bn : faq.answer_en,
+      },
+    })),
+  };
+}
+
+interface BreadcrumbItem {
+  name: string;
+  url: string;
+}
+
+export function getBreadcrumbListSchema(items: BreadcrumbItem[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: item.name,
+      item: item.url,
+    })),
+  };
+}
+
+interface SiteSettingForSchema {
+  company_name_bn: string;
+  company_name_en: string;
+  contact_phone: string;
+  contact_email: string;
+  address_bn: string;
+  address_en: string;
+  logo: string | null;
+}
+
+export function getOrganizationSchema(settings: SiteSettingForSchema, isBn: boolean, siteUrl: string) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: isBn ? settings.company_name_bn : settings.company_name_en,
+    url: siteUrl,
+    ...(settings.logo ? { logo: settings.logo } : {}),
+    ...(settings.contact_phone || settings.contact_email
+      ? {
+          contactPoint: {
+            "@type": "ContactPoint",
+            ...(settings.contact_phone ? { telephone: settings.contact_phone } : {}),
+            ...(settings.contact_email ? { email: settings.contact_email } : {}),
+            contactType: "customer service",
+          },
+        }
+      : {}),
+    ...(settings.address_bn || settings.address_en
+      ? {
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: isBn ? settings.address_bn : settings.address_en,
+            addressCountry: "BD",
+          },
+        }
+      : {}),
+  };
+}
+
+export function getCollectionPageSchema(name: string, description: string, url: string) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name,
+    description,
+    url,
+  };
+}

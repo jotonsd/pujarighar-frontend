@@ -25,7 +25,7 @@ const config: Config = {
       },
     },
   },
-  plugins: [],
+  plugins: [require('@tailwindcss/typography')],
   // Gates all `hover:` utilities behind `@media (hover: hover)`, so touch devices
   // never get stuck in a lingering :hover state that eats the first tap on
   // buttons/links (the classic "need 2-3 taps on mobile" issue).

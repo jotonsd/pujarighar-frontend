@@ -112,6 +112,12 @@ export interface Category {
   order: number
   is_active: boolean
   created_at: string
+  seo_title_bn: string
+  seo_title_en: string
+  meta_description_bn: string
+  meta_description_en: string
+  description_bn: string
+  description_en: string
 }
 
 export interface Brand {
@@ -177,6 +183,34 @@ export interface Product {
   package_items: PackageItem[]
   average_rating: number | null
   review_count: number
+  seo_title_bn: string
+  seo_title_en: string
+  meta_description_bn: string
+  meta_description_en: string
+  focus_keyword: string
+  canonical_url: string
+  created_at: string
+  updated_at: string
+}
+
+export interface BlogPost {
+  id: string
+  slug: string
+  title_bn: string
+  title_en: string
+  seo_title_bn: string
+  seo_title_en: string
+  meta_description_bn: string
+  meta_description_en: string
+  focus_keyword: string
+  canonical_url: string
+  body_bn: string
+  body_en: string
+  cover_image: string | null
+  is_active: boolean
+  published_at: string | null
+  created_by: string | null
+  created_by_email: string | null
   created_at: string
   updated_at: string
 }

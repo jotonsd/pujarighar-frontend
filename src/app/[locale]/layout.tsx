@@ -3,6 +3,7 @@ import Navbar from "@/components/layout/Navbar";
 import Providers from "@/components/layout/Providers";
 import SiteChrome from "@/components/layout/SiteChrome";
 import { locales } from "@/lib/i18n";
+import { getOrganizationSchema } from "@/lib/structuredData";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
@@ -12,6 +13,28 @@ import { notFound } from "next/navigation";
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 const API_ORIGIN = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8020";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pujarighar.com";
+
+interface SiteSettingData {
+  company_name_bn: string;
+  company_name_en: string;
+  contact_phone: string;
+  contact_email: string;
+  address_bn: string;
+  address_en: string;
+  logo: string | null;
+}
+
+async function fetchSettings(): Promise<SiteSettingData | null> {
+  try {
+    const res = await fetch(`${API_ORIGIN}/api/settings/`, { next: { revalidate: 60 } });
+    if (!res.ok) return null;
+    const json = await res.json();
+    return json.data ?? null;
+  } catch {
+    return null;
+  }
+}
 
 // English UI font
 const poppins = Poppins({
@@ -48,13 +71,23 @@ export default async function LocaleLayout({
 
   setRequestLocale(locale);
 
-  const messages = await getMessages();
+  const [messages, settings] = await Promise.all([getMessages(), fetchSettings()]);
+
+  const organizationSchema = settings
+    ? getOrganizationSchema(settings, locale === "bn", SITE_URL)
+    : null;
 
   return (
     <html lang={locale} className={locale === "en" ? poppins.className : hindSiliguri.className}>
       <head>
         <link rel="preconnect" href={API_ORIGIN} />
         <link rel="dns-prefetch" href={API_ORIGIN} />
+        {organizationSchema && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+          />
+        )}
       </head>
       <body suppressHydrationWarning>
         <NextIntlClientProvider messages={messages}>

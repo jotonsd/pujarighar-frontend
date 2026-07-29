@@ -1,4 +1,4 @@
-import { getMerchantReturnPolicy, getShippingDetails } from "@/lib/structuredData";
+import { getMerchantReturnPolicy, getShippingDetails, getBreadcrumbListSchema } from "@/lib/structuredData";
 import OfferBanners from "@/components/products/OfferBanners";
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
@@ -22,6 +22,7 @@ interface ProductDetail {
   description_en: string | null;
   sku: string;
   brand_name_en: string | null;
+  category_name_bn: string | null;
   category_name_en: string | null;
   unit_price: string;
   effective_price: string;
@@ -30,6 +31,11 @@ interface ProductDetail {
   images: ProductImage[];
   average_rating: number | null;
   review_count: number;
+  seo_title_bn: string;
+  seo_title_en: string;
+  meta_description_bn: string;
+  meta_description_en: string;
+  canonical_url: string;
 }
 
 interface Props {
@@ -75,14 +81,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  const url = `${SITE_URL}/${params.locale}/products/${product.slug}`;
+  const url = product.canonical_url || `${SITE_URL}/${params.locale}/products/${product.slug}`;
   const name = isBn ? product.name_bn : product.name_en;
-  const rawDesc = (isBn ? product.description_bn : product.description_en) || "";
+  const seoTitle = (isBn ? product.seo_title_bn : product.seo_title_en) || name;
+  const rawDesc = (isBn ? product.meta_description_bn : product.meta_description_en) ||
+    (isBn ? product.description_bn : product.description_en) || "";
   const description = (rawDesc || (isBn ? `${name} — পূজারিঘর থেকে অর্ডার করুন` : `Buy ${name} online from PujariGhar`)).slice(0, 160);
   const image = product.images?.[0]?.image;
 
   return {
-    title: `${name} | PujariGhar`,
+    title: `${seoTitle} | PujariGhar`,
     description,
     alternates: {
       canonical: url,
@@ -92,7 +100,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       },
     },
     openGraph: {
-      title: name,
+      title: seoTitle,
       description,
       url,
       type: "website",
@@ -100,7 +108,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
     twitter: {
       card: "summary_large_image",
-      title: name,
+      title: seoTitle,
       description,
       images: image ? [image] : undefined,
     },
@@ -148,11 +156,28 @@ export default async function ProductDetailPage({ params }: Props) {
       : {}),
   };
 
+  const isBn = params.locale === "bn";
+  const breadcrumbSchema = getBreadcrumbListSchema([
+    { name: isBn ? "হোম" : "Home", url: `${SITE_URL}/${params.locale}` },
+    { name: isBn ? "সকল পণ্য" : "Products", url: `${SITE_URL}/${params.locale}/products` },
+    ...(product.category_name_bn || product.category_name_en
+      ? [{
+          name: (isBn ? product.category_name_bn : product.category_name_en) ?? "",
+          url: `${SITE_URL}/${params.locale}/products`,
+        }]
+      : []),
+    { name: isBn ? product.name_bn : product.name_en, url: `${SITE_URL}/${params.locale}/products/${product.slug}` },
+  ]);
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
       <ProductDetailClient id={product.id} offerBanners={<OfferBanners />} />
     </>

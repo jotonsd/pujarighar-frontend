@@ -14,16 +14,50 @@ interface Props {
   searchParams: { [key: string]: string | string[] | undefined };
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+async function getSelectedCategory(searchParams: Props["searchParams"]): Promise<Category | null> {
+  const categoryId = typeof searchParams.category === "string" ? searchParams.category : "";
+  if (!categoryId) return null;
+  try {
+    const res = await fetch(`${API_URL}/api/categories/`, { next: { revalidate: 300 } });
+    if (!res.ok) return null;
+    const json = await res.json();
+    const categories: Category[] = json.data ?? [];
+    return categories.find(c => c.id === categoryId) ?? null;
+  } catch {
+    return null;
+  }
+}
+
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const locale = params.locale;
   const isBn = locale === "bn";
+  const category = await getSelectedCategory(searchParams);
+
+  const canonical = typeof searchParams.category === "string"
+    ? `${SITE_URL}/${locale}/products?category=${searchParams.category}`
+    : `${SITE_URL}/${locale}/products`;
+
+  if (category) {
+    const title = (isBn ? category.seo_title_bn : category.seo_title_en) || (isBn ? category.name_bn : category.name_en);
+    const description = (isBn ? category.meta_description_bn : category.meta_description_en) ||
+      (isBn ? `${category.name_bn} — পূজারিঘরের সকল পণ্য দেখুন` : `Browse all ${category.name_en} products from PujariGhar`);
+    return {
+      title: `${title} | PujariGhar`,
+      description,
+      alternates: { canonical },
+    };
+  }
+
   return {
-    title: isBn ? "সকল পণ্য | PujariGhar" : "All Puja (Pooja) Products | PujariGhar",
+    title: isBn ? "পূজার সামগ্রী | PujariGhar" : "Puja Items in Bangladesh | PujariGhar",
     description: isBn
-      ? "পূজারিঘরের সকল পূজার সামগ্রী দেখুন ও ফিল্টার করুন — মূল্য, কেটাগরি ও ব্র্যান্ড অনুযায়ী।"
-      : "Browse and filter all puja (pooja) items from PujariGhar by price, category, and brand.",
+      ? "বাংলাদেশে পূজার সামগ্রী কিনুন পূজারিঘর থেকে — সকল পূজার জিনিসপত্র দেখুন ও ফিল্টার করুন মূল্য, কেটাগরি ও ব্র্যান্ড অনুযায়ী।"
+      : "Buy puja items in Bangladesh from PujariGhar — browse and filter all pooja samagri by price, category, and brand.",
+    keywords: isBn
+      ? ["পূজার সামগ্রী", "পূজারিঘর", "বাংলাদেশে পূজার সামগ্রী", "পূজার জিনিসপত্র"]
+      : ["puja items", "pujarighar", "puja items in bangladesh", "pooja samagri"],
     alternates: {
-      canonical: `${SITE_URL}/${locale}/products`,
+      canonical,
       languages: {
         bn: `${SITE_URL}/bn/products`,
         en: `${SITE_URL}/en/products`,
@@ -86,19 +120,36 @@ async function getBrands(): Promise<Brand[]> {
   }
 }
 
-export default async function ProductsPage({ searchParams }: Props) {
+export default async function ProductsPage({ params, searchParams }: Props) {
+  const isBn = params.locale === "bn";
   const [{ products, totalPages }, categories, brands] = await Promise.all([
     getInitialProducts(searchParams),
     getCategories(),
     getBrands(),
   ]);
+
+  const categoryId = typeof searchParams.category === "string" ? searchParams.category : "";
+  const selectedCategory = categoryId ? categories.find(c => c.id === categoryId) ?? null : null;
+  const categoryDescription = selectedCategory
+    ? (isBn ? selectedCategory.description_bn : selectedCategory.description_en)
+    : "";
+
   return (
-    <ProductsPageClient
-      initialProducts={products}
-      initialTotalPages={totalPages}
-      initialCategories={categories}
-      initialBrands={brands}
-      offerBanners={<OfferBanners />}
-    />
+    <>
+      <ProductsPageClient
+        initialProducts={products}
+        initialTotalPages={totalPages}
+        initialCategories={categories}
+        initialBrands={brands}
+        offerBanners={<OfferBanners />}
+      />
+      {selectedCategory && categoryDescription && (
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          <div className="prose prose-sm sm:prose-base max-w-none text-gray-600 whitespace-pre-line">
+            {categoryDescription}
+          </div>
+        </div>
+      )}
+    </>
   );
 }

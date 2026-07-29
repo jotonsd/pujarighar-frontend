@@ -17,15 +17,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const locale = params.locale;
   const isBn = locale === "bn";
   const title = isBn
-    ? "পূজারিঘর | অনলাইনে পূজার সামগ্রী কিনুন"
-    : "PujariGhar | Buy Puja (Pooja) Items Online in Bangladesh";
+    ? "পূজারিঘর | বাংলাদেশে অনলাইনে পূজার সামগ্রী কিনুন"
+    : "PujariGhar | Buy Puja Items in Bangladesh Online";
   const description = isBn
-    ? "পূজারিঘর থেকে প্রামাণিক পূজার সামগ্রী, প্যাকেজ ও সামগ্রী অনলাইনে অর্ডার করুন। দ্রুত ডেলিভারি ও বিশ্বস্ত সেবা।"
-    : "Order authentic puja (pooja) items, packages, and accessories online from PujariGhar — your trusted pooja ghar for Bangladesh. Fast delivery and trusted service nationwide.";
+    ? "বাংলাদেশে পূজার সামগ্রী কিনুন পূজারিঘর থেকে — প্রামাণিক পূজার জিনিসপত্র, পূজার প্যাকেজ ও আনুষঙ্গিক সামগ্রী অনলাইনে অর্ডার করুন। ঢাকাসহ সারা বাংলাদেশে দ্রুত ডেলিভারি ও বিশ্বস্ত সেবা।"
+    : "Buy puja items in Bangladesh online from PujariGhar — your trusted pooja ghar for authentic puja samagri, packages, and accessories. Fast delivery and reliable service nationwide.";
+  const keywords = isBn
+    ? [
+        "পূজার সামগ্রী", "পূজারিঘর", "বাংলাদেশে পূজার সামগ্রী", "পূজার জিনিসপত্র",
+        "পূজার প্যাকেজ", "অনলাইনে পূজার সামগ্রী", "দুর্গা পূজার সামগ্রী", "পূজা সামগ্রী ঢাকা",
+      ]
+    : [
+        "puja items", "pujarighar", "puja items in bangladesh", "pooja samagri",
+        "puja package", "buy puja items online", "durga puja items", "pooja items dhaka",
+      ];
 
   return {
     title,
     description,
+    keywords,
     alternates: {
       canonical: `${SITE_URL}/${locale}`,
       languages: {
