@@ -8,6 +8,7 @@ import TiptapEditor from "@/components/admin/blog/TiptapEditor";
 import PageHeader from "@/components/ui/PageHeader";
 import Spinner from "@/components/ui/Spinner";
 import { toast } from "@/store/toastStore";
+import { getErrorMessage } from "@/utils/apiError";
 import { useGetBlogPostQuery, useUpdateBlogPostMutation } from "@/api/blog/blogApi";
 
 export default function EditBlogPostPage({ params }: { params: { id: string } }) {
@@ -70,12 +71,7 @@ export default function EditBlogPostPage({ params }: { params: { id: string } })
       toast.success(locale === "bn" ? "পোস্ট আপডেট হয়েছে" : "Post updated");
       router.push(`/${locale}/admin/blog`);
     } catch (err: unknown) {
-      const e = err as { data?: { error?: { message_en?: string; message_bn?: string } } };
-      toast.error(
-        locale === "bn"
-          ? (e.data?.error?.message_bn ?? "আপডেট ব্যর্থ হয়েছে")
-          : (e.data?.error?.message_en ?? "Update failed"),
-      );
+      toast.error(getErrorMessage(err, locale));
     }
   };
 

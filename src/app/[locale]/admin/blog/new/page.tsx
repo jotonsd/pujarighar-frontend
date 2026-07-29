@@ -7,6 +7,7 @@ import { FloatingInput, FloatingTextarea, ToggleSwitch } from "@/components/ui/f
 import TiptapEditor from "@/components/admin/blog/TiptapEditor";
 import PageHeader from "@/components/ui/PageHeader";
 import { toast } from "@/store/toastStore";
+import { getErrorMessage } from "@/utils/apiError";
 import { useCreateBlogPostMutation } from "@/api/blog/blogApi";
 
 export default function NewBlogPostPage() {
@@ -51,12 +52,7 @@ export default function NewBlogPostPage() {
       toast.success(locale === "bn" ? "পোস্ট তৈরি হয়েছে" : "Post created");
       router.push(`/${locale}/admin/blog`);
     } catch (err: unknown) {
-      const e = err as { data?: { error?: { message_en?: string; message_bn?: string } } };
-      toast.error(
-        locale === "bn"
-          ? (e.data?.error?.message_bn ?? "ব্যর্থ হয়েছে")
-          : (e.data?.error?.message_en ?? "Failed"),
-      );
+      toast.error(getErrorMessage(err, locale));
     }
   };
 

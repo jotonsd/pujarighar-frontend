@@ -18,6 +18,7 @@ import {
 import PageHeader from "@/components/ui/PageHeader";
 import Spinner from "@/components/ui/Spinner";
 import { toast } from "@/store/toastStore";
+import { getErrorMessage } from "@/utils/apiError";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -89,12 +90,7 @@ export default function EditProductPage({
       toast.success(locale === "bn" ? "পণ্য আপডেট হয়েছে" : "Product updated");
       router.push(`/${locale}/admin/products`);
     } catch (err: unknown) {
-      const e = err as { data?: { error?: { message_en?: string; message_bn?: string } } };
-      toast.error(
-        locale === "bn"
-          ? (e.data?.error?.message_bn ?? "আপডেট ব্যর্থ হয়েছে")
-          : (e.data?.error?.message_en ?? "Update failed"),
-      );
+      toast.error(getErrorMessage(err, locale));
     }
   };
 

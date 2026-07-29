@@ -7,6 +7,7 @@ import { Role } from '@/lib/types'
 import { useCreateUserMutation } from '@/api/users/usersApi'
 import { FloatingInput, FloatingSelect } from '@/components/ui/forms'
 import PageHeader from '@/components/ui/PageHeader'
+import { getErrorMessage } from '@/utils/apiError'
 
 const ROLES: Role[] = ['ADMIN', 'WAREHOUSE', 'DELIVERY', 'CUSTOMER']
 
@@ -26,8 +27,7 @@ export default function NewUserPage() {
       await createUser(form).unwrap()
       router.push(`/${locale}/admin/users`)
     } catch (err: unknown) {
-      const e = err as { data?: { error?: { message_en?: string } } }
-      setError(e.data?.error?.message_en ?? 'Failed')
+      setError(getErrorMessage(err, locale))
     }
   }
 

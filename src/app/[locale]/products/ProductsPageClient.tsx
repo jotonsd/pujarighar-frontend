@@ -434,16 +434,14 @@ export default function ProductsPageClient({
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-3">
-      <div className="flex justify-end mb-4 lg:hidden">
-        <button
-          onClick={() => setSidebarOpen(true)}
-          className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition-colors"
-        >
-          <SlidersHorizontal className="w-4 h-4" />
-          {locale === "bn" ? "ফিল্টার" : "Filters"}
-          {hasFilter && <span className="w-2 h-2 rounded-full bg-amber-500" />}
-        </button>
-      </div>
+      <button
+        onClick={() => setSidebarOpen(true)}
+        className="fixed bottom-4 left-4 z-30 lg:hidden inline-flex items-center gap-2 px-4 py-3 rounded-full bg-green-600 shadow-lg text-sm font-medium text-white hover:bg-green-700 transition-colors"
+      >
+        <SlidersHorizontal className="w-4 h-4" />
+        {locale === "bn" ? "ফিল্টার" : "Filters"}
+        {hasFilter && <span className="w-2 h-2 rounded-full bg-white" />}
+      </button>
 
       {offerBanners}
 
@@ -458,7 +456,19 @@ export default function ProductsPageClient({
           <>
             <div
               className="fixed inset-0 bg-black/40 z-40 lg:hidden"
-              onClick={() => setSidebarOpen(false)}
+              onPointerDown={() => {
+                setSidebarOpen(false);
+                // The tap that closes this backdrop still produces a trailing
+                // synthetic click somewhere in the DOM once the backdrop is gone
+                // (e.g. on a product card underneath), which would otherwise
+                // navigate into it. Swallow exactly that one click, wherever it
+                // lands, regardless of the browser's touch-to-click timing.
+                const suppressNextClick = (e: MouseEvent) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                };
+                document.addEventListener("click", suppressNextClick, { capture: true, once: true });
+              }}
             />
             <div className="fixed inset-y-0 left-0 w-72 bg-white z-50 lg:hidden overflow-y-auto overscroll-contain shadow-xl">
               <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
