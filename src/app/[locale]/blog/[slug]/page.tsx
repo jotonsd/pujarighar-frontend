@@ -122,8 +122,16 @@ export default async function BlogDetailPage({ params }: Props) {
       </nav>
 
       {post.cover_image && (
-        <div className="relative w-full h-56 sm:h-72 rounded-2xl overflow-hidden mb-6 bg-gray-50">
-          <Image src={post.cover_image} alt={title} fill className="object-cover" sizes="768px" priority />
+        <div className="w-full rounded-2xl overflow-hidden mb-6 bg-gray-50">
+          <Image
+            src={post.cover_image}
+            alt={title}
+            width={1980}
+            height={960}
+            className="w-full h-auto"
+            sizes="768px"
+            priority
+          />
         </div>
       )}
 
@@ -140,7 +148,7 @@ export default async function BlogDetailPage({ params }: Props) {
       )}
 
       <div
-        className="prose prose-sm sm:prose-base max-w-none text-gray-700"
+        className="prose prose-sm sm:prose-base max-w-none rich-text text-gray-700"
         dangerouslySetInnerHTML={{ __html: body }}
       />
     </div>
