@@ -365,7 +365,7 @@ export default function ProductsPageClient({
         open={catOpen}
         onToggle={() => setCatOpen(p => !p)}
       >
-        <div className="max-h-80 overflow-y-auto pr-1 space-y-0.5 scrollbar-thin">
+        <div className="max-h-80 overflow-y-auto overscroll-contain pr-1 space-y-0.5 scrollbar-thin">
           {allCategories.map(cat => (
             <Checkbox
               key={cat.id}
@@ -460,7 +460,7 @@ export default function ProductsPageClient({
               className="fixed inset-0 bg-black/40 z-40 lg:hidden"
               onClick={() => setSidebarOpen(false)}
             />
-            <div className="fixed inset-y-0 left-0 w-72 bg-white z-50 lg:hidden overflow-y-auto shadow-xl">
+            <div className="fixed inset-y-0 left-0 w-72 bg-white z-50 lg:hidden overflow-y-auto overscroll-contain shadow-xl">
               <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
                 <span className="font-semibold text-gray-800">
                   {locale === "bn" ? "ফিল্টার" : "Filters"}
