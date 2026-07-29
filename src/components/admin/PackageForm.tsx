@@ -18,6 +18,7 @@ import {
 import PageHeader from "@/components/ui/PageHeader";
 import { Product } from "@/lib/types";
 import { toast } from "@/store/toastStore";
+import { getErrorMessage } from "@/utils/apiError";
 import { formatAmount } from "@/utils/format";
 import { Plus, Trash2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
@@ -263,14 +264,7 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
 
       router.push(`/${locale}/admin/packages`);
     } catch (err: unknown) {
-      const e = err as {
-        data?: { error?: { message_en?: string; message_bn?: string } };
-      };
-      toast.error(
-        locale === "bn"
-          ? (e.data?.error?.message_bn ?? "ব্যর্থ")
-          : (e.data?.error?.message_en ?? "Failed"),
-      );
+      toast.error(getErrorMessage(err, locale));
     }
   };
 

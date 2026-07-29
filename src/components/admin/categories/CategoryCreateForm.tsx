@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from 'next-intl'
 import { RefreshCw } from 'lucide-react'
 import { FloatingInput } from '@/components/ui/forms'
 import { toast } from '@/store/toastStore'
+import { getErrorMessage } from '@/utils/apiError'
 import { useCreateCategoryMutation } from '@/api/categories/categoriesApi'
 
 function slugify(text: string) {
@@ -35,8 +36,7 @@ export default function CategoryCreateForm({ onClose }: Props) {
       slugManualRef.current = false
       onClose()
     } catch (err: unknown) {
-      const e = err as { data?: { error?: { message_en?: string; message_bn?: string } } }
-      toast.error(locale === 'bn' ? (e.data?.error?.message_bn ?? 'ব্যর্থ হয়েছে') : (e.data?.error?.message_en ?? 'Failed'))
+      toast.error(getErrorMessage(err, locale))
     }
   }
 

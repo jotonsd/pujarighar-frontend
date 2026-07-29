@@ -69,10 +69,10 @@ export default function ContactTray() {
   const email = siteSettings?.contact_email || DEFAULT_EMAIL;
 
   return (
-    <div className="fixed bottom-4 right-4 sm:bottom-5 sm:right-5 z-50 flex flex-col items-end gap-3">
+    <div className="fixed bottom-4 right-4 sm:bottom-5 sm:right-5 z-50 flex flex-col items-end gap-3 pointer-events-none">
       <div
         className={`origin-bottom-right transition-all duration-200 ease-out w-60 bg-green-50 rounded-2xl shadow-2xl border border-green-100 p-2 ${
-          open ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 translate-y-3 pointer-events-none"
+          open ? "opacity-100 scale-100 translate-y-0 pointer-events-auto" : "opacity-0 scale-95 translate-y-3 pointer-events-none"
         }`}
       >
         <p className="px-3 pt-2 pb-1.5 text-xs font-semibold text-green-700 uppercase tracking-wide">
@@ -110,7 +110,7 @@ export default function ContactTray() {
         onClick={() => setOpen(o => !o)}
         title={isBn ? "যোগাযোগ করুন" : "Contact us"}
         aria-label={isBn ? "যোগাযোগ করুন" : "Contact us"}
-        className="relative flex items-center justify-center w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-green-600 shadow-lg hover:scale-105 hover:bg-green-700 transition-transform"
+        className="relative flex items-center justify-center w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-green-600 shadow-lg hover:scale-105 hover:bg-green-700 transition-transform pointer-events-auto"
       >
         {!open && <span className="absolute inset-0 rounded-full bg-green-600 animate-ping opacity-40" />}
         <span className="relative w-5 h-5 sm:w-6 sm:h-6 grid place-items-center">
