@@ -92,13 +92,13 @@ export default async function BlogListPage({ params }: Props) {
                 href={`/${locale}/blog/${post.slug}`}
                 className="block rounded-2xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition-shadow overflow-hidden"
               >
-                <div className="relative w-full h-40 bg-gray-50">
+                <div className="relative w-full aspect-[1980/960] bg-gray-50">
                   {post.cover_image ? (
                     <Image
                       src={post.cover_image}
                       alt={title}
                       fill
-                      className="object-cover"
+                      className="object-contain"
                       sizes="(max-width: 768px) 100vw, 33vw"
                     />
                   ) : (
