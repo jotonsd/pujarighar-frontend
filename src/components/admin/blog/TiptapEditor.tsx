@@ -46,7 +46,7 @@ export default function TiptapEditor({ label, value, onChange }: Props) {
     immediatelyRender: false,
     editorProps: {
       attributes: {
-        class: "prose prose-sm max-w-none min-h-[200px] px-3 py-2 focus:outline-none",
+        class: "prose prose-sm max-w-none rich-text min-h-[200px] px-3 py-2 focus:outline-none",
       },
     },
     onUpdate: ({ editor }) => onChange(editor.getHTML()),
