@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import { getBreadcrumbListSchema } from "@/lib/structuredData";
 import { BlogPost } from "@/lib/types";
+import OfferBanners from "@/components/products/OfferBanners";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pujarighar.com";
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8020";
@@ -136,6 +137,10 @@ export default async function BlogDetailPage({ params }: Props) {
       )}
 
       <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-3">{title}</h1>
+
+      <div className="mb-6">
+        <OfferBanners />
+      </div>
 
       {post.published_at && (
         <p className="text-xs text-gray-400 mb-6">
