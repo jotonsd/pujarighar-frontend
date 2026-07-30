@@ -1,4 +1,22 @@
-export type Role = 'ADMIN' | 'WAREHOUSE' | 'DELIVERY' | 'CUSTOMER'
+export interface Permission {
+  id: string
+  module: string
+  action: 'view' | 'create' | 'edit' | 'delete'
+  label_bn: string
+  label_en: string
+}
+
+export interface Role {
+  id: string
+  name_bn: string
+  name_en: string
+  code: string | null
+  is_system: boolean
+  permissions: Permission[]
+  user_count?: number
+  created_at?: string
+}
+
 export type Locale = 'bn' | 'en'
 export type OrderStatus = 'PENDING' | 'CONFIRMED' | 'PACKED' | 'ASSIGNED' | 'ON_THE_WAY' | 'DELIVERED' | 'RETURNED' | 'CANCELLED'
 
@@ -97,6 +115,7 @@ export interface User {
   referral_code: string
   profile: Profile
   nav_menu?: NavItem[]
+  permissions?: string[]
 }
 
 // ─── Product ─────────────────────────────────────────────────────────────────

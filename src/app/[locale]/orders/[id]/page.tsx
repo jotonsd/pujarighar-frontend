@@ -263,14 +263,14 @@ export default function OrderDetailPage({
               )}
             </div>
           </div>
-          {user?.role === "CUSTOMER" && order.status === "DELIVERED" && (
+          {user?.role.code === "CUSTOMER" && order.status === "DELIVERED" && (
             <OrderReviewSection
               orderId={order.id}
               items={order.items}
               locale={locale}
             />
           )}
-          {user?.role === "CUSTOMER" && order.status === "PENDING" && (
+          {user?.role.code === "CUSTOMER" && order.status === "PENDING" && (
             <button
               onClick={() => setShowCancelModal(true)}
               className="btn-secondary"

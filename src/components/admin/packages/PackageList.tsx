@@ -17,12 +17,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useAuthStore } from "@/store/authStore";
+import { hasPermission } from "@/utils/permissions";
 
 export default function PackageList() {
   const t = useTranslations();
   const locale = useLocale();
   const router = useRouter();
-  const isAdmin = useAuthStore(s => s.user?.role === 'ADMIN');
+  const isAdmin = useAuthStore(s => hasPermission(s.user, 'packages', 'edit'));
   const [page, setPage] = useState(1);
 
   const { data, isLoading } = useGetProductsQuery({

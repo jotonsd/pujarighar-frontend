@@ -45,11 +45,11 @@ export const courierApi = baseApi.injectEndpoints({
       providesTags: ['CourierConsignments'],
     }),
 
-    sendOrderToCourier: build.mutation<CourierConsignment, { orderId: string; provider_id: number }>({
-      query: ({ orderId, provider_id }) => ({
+    sendOrderToCourier: build.mutation<CourierConsignment, { orderId: string; provider_id: number; weight?: number }>({
+      query: ({ orderId, provider_id, weight }) => ({
         url: `/api/orders/${orderId}/courier/send/`,
         method: 'POST',
-        body: { provider_id },
+        body: { provider_id, ...(weight ? { weight } : {}) },
       }),
       transformResponse: (res: { data: CourierConsignment }) => res.data,
       invalidatesTags: ['CourierConsignments', 'Order', 'Orders'],

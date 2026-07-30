@@ -23,7 +23,7 @@ export default function ProfilePage() {
   const searchParams = useSearchParams();
 
   const { data: me } = useGetMeQuery();
-  const isCustomer = me?.role === "CUSTOMER";
+  const isCustomer = me?.role.code === "CUSTOMER";
   const tabParam = searchParams.get("tab") as Tab | null;
   const [tab, setTab] = useState<Tab>(tabParam ?? "profile");
 

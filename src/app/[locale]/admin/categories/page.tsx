@@ -13,6 +13,7 @@ import CategoryCreateForm from "@/components/admin/categories/CategoryCreateForm
 import { Category } from "@/lib/types";
 import { toast } from "@/store/toastStore";
 import { useAuthStore } from "@/store/authStore";
+import { hasPermission } from "@/utils/permissions";
 import { Pencil, Search, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
@@ -23,7 +24,7 @@ type EditForm = { name_bn: string; name_en: string; order: string };
 export default function CategoriesPage() {
   const t       = useTranslations();
   const locale  = useLocale();
-  const isAdmin = useAuthStore(s => s.user?.role === 'ADMIN');
+  const isAdmin = useAuthStore(s => hasPermission(s.user, 'categories', 'edit'));
 
   const { data: categories = [], isLoading } = useGetCategoriesQuery({ includeInactive: true });
   const [updateCategory] = useUpdateCategoryMutation();
