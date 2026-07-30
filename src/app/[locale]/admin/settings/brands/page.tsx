@@ -14,6 +14,7 @@ import TableSkeleton from "@/components/ui/skeletons";
 import { Brand } from "@/lib/types";
 import { toast } from "@/store/toastStore";
 import { useAuthStore } from "@/store/authStore";
+import { hasPermission } from "@/utils/permissions";
 import { Pencil, Trash2, X } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useState } from "react";
@@ -28,7 +29,7 @@ function slugify(text: string) {
 export default function BrandsPage() {
   const locale  = useLocale();
   const isBn    = locale === "bn";
-  const isAdmin = useAuthStore(s => s.user?.role === 'ADMIN');
+  const isAdmin = useAuthStore(s => hasPermission(s.user, 'brands', 'edit'));
 
   const { data: brands = [], isLoading } = useGetBrandsQuery({ includeInactive: true });
   const [createBrand, { isLoading: creating }] = useCreateBrandMutation();

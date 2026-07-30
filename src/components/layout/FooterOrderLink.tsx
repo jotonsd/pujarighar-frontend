@@ -9,7 +9,7 @@ export default function FooterOrderLink() {
   const locale = useLocale();
   const bn = locale === "bn";
 
-  if (user?.role !== "CUSTOMER") return null;
+  if (user?.role.code !== "CUSTOMER") return null;
 
   return (
     <li>

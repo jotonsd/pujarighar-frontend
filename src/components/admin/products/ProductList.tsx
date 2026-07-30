@@ -17,12 +17,13 @@ import { useGetBrandsQuery } from '@/api/brands/brandsApi'
 import { useGetCategoriesQuery } from '@/api/categories/categoriesApi'
 import { useGetProductsQuery, useUpdateProductMutation } from '@/api/products/productsApi'
 import { useAuthStore } from '@/store/authStore'
+import { hasPermission } from '@/utils/permissions'
 
 export default function ProductList() {
   const t      = useTranslations()
   const locale = useLocale()
   const router = useRouter()
-  const isAdmin = useAuthStore(s => s.user?.role === 'ADMIN')
+  const isAdmin = useAuthStore(s => hasPermission(s.user, 'products', 'edit'))
   const [page, setPage]           = useState(1)
   const [search, setSearch]       = useState('')
   const [category, setCategory]   = useState('')

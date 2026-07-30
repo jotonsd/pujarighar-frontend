@@ -1,6 +1,6 @@
 "use client";
 
-import { useFacebookLoginMutation, useGoogleLoginMutation, useLoginMutation } from "@/api/auth/authApi";
+import { useFacebookLoginMutation, useGetMeQuery, useGoogleLoginMutation, useLoginMutation } from "@/api/auth/authApi";
 import { Checkbox, FloatingInput } from "@/components/ui/forms";
 import { useAuthStore } from "@/store/authStore";
 import { toast } from "@/store/toastStore";
@@ -27,6 +27,7 @@ function LoginForm() {
   const locale = useLocale();
   const router = useRouter();
   const setAuth = useAuthStore(s => s.setAuth);
+  const updateUser = useAuthStore(s => s.updateUser);
   const isBn = locale === "bn";
 
   const [form, setForm] = useState({ identifier: "", password: "" });
@@ -42,17 +43,35 @@ function LoginForm() {
     if (appId) loadFacebookSdk(appId);
   }, []);
 
-  const handleAuthSuccess = (data: { user: { role: string; preferred_language?: string } }) => {
-    toast.success(isBn ? "সফলভাবে লগইন হয়েছে" : "Logged in successfully");
-    const role = data.user?.role;
-    const dest = data.user?.preferred_language || "bn";
-    if (role === "ADMIN" || role === "WAREHOUSE") {
+  const goToDestination = (roleCode: string | null, preferredLanguage?: string) => {
+    const dest = preferredLanguage || "bn";
+    if (roleCode === "ADMIN" || roleCode === "WAREHOUSE") {
       router.push(`/${dest}/admin/orders/new`);
-    } else if (role === "DELIVERY") {
+    } else if (roleCode === "DELIVERY") {
       router.push(`/${dest}/delivery/orders`);
     } else {
       router.push(`/${dest}`);
     }
+  };
+
+  // The middleware can only see whether a refresh_token cookie EXISTS, not
+  // whether it's still valid — so it no longer redirects away from this page
+  // on cookie presence alone. This is the real check: if a genuinely valid
+  // session exists (this call actually succeeds against the backend, going
+  // through the normal access/refresh flow), redirect away for real; if the
+  // cookie was stale, this 401s/fails silently and the login form just stays.
+  const { data: me } = useGetMeQuery();
+  useEffect(() => {
+    if (me) {
+      updateUser(me);
+      goToDestination(me.role.code, me.preferred_language);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [me]);
+
+  const handleAuthSuccess = (data: { user: { role: { code: string | null }; preferred_language?: string } }) => {
+    toast.success(isBn ? "সফলভাবে লগইন হয়েছে" : "Logged in successfully");
+    goToDestination(data.user?.role.code, data.user?.preferred_language);
   };
 
   const startFacebookLogin = async () => {

@@ -1,5 +1,5 @@
 import { baseApi } from '@/api/baseApi'
-import { User, Role, ApiMeta, ShippingAddress } from '@/lib/types'
+import { User, ApiMeta, ShippingAddress } from '@/lib/types'
 
 interface UserListResponse { data: User[]; pagination: ApiMeta }
 
@@ -29,7 +29,7 @@ export const usersApi = baseApi.injectEndpoints({
       providesTags: ['DeliveryPersons'],
     }),
 
-    createUser: build.mutation<User, { email: string; phone: string; password: string; role: Role; full_name_bn?: string }>({
+    createUser: build.mutation<User, { email: string; phone: string; password: string; role: string; full_name_bn?: string }>({
       query: (body) => ({ url: '/api/users/create/', method: 'POST', body }),
       transformResponse: (res: { data: User }) => res.data,
       invalidatesTags: ['Users'],
@@ -58,7 +58,7 @@ export const usersApi = baseApi.injectEndpoints({
       invalidatesTags: (_r, _e, id) => ['Users', { type: 'User', id }],
     }),
 
-    changeRole: build.mutation<User, { id: string; role: Role }>({
+    changeRole: build.mutation<User, { id: string; role: string }>({
       query: ({ id, role }) => ({ url: `/api/users/${id}/change-role/`, method: 'POST', body: { role } }),
       transformResponse: (res: { data: User }) => res.data,
       invalidatesTags: (_r, _e, { id }) => ['Users', { type: 'User', id }],

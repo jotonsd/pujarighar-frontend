@@ -169,7 +169,7 @@ export default function ProductReviews({
   const { isAuthenticated, user } = useAuthStore();
   const { data: reviews = [], isLoading } = useGetProductReviewsQuery(productId);
 
-  const canReview = isAuthenticated && user?.role === "CUSTOMER";
+  const canReview = isAuthenticated && user?.role.code === "CUSTOMER";
 
   if (!isLoading && reviews.length === 0 && !canReview) return null;
 

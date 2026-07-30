@@ -58,7 +58,11 @@ async function refreshAccessToken(
     Cookies.remove('access_token')
     Cookies.remove('refresh_token')
     Cookies.remove('user')
-    if (typeof window !== 'undefined') {
+    // Skip the hard redirect if we're already on an auth page — otherwise a
+    // failed refresh triggered from /auth/login itself (e.g. a stale cookie
+    // check) reloads that same page, which re-fires the check and reloads
+    // again: an infinite loop instead of just showing the login form as-is.
+    if (typeof window !== 'undefined' && !window.location.pathname.includes('/auth/')) {
       const locale = Cookies.get('locale') ?? 'bn'
       window.location.href = `/${locale}/auth/login`
     }
@@ -122,6 +126,7 @@ export const baseApi = createApi({
     'CourierConsignments',
     'CourierReturnRequests',
     'BlogPosts',
+    'Roles',
   ],
   endpoints: () => ({}),
 })

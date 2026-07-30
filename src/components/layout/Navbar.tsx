@@ -13,7 +13,7 @@ import {
   Boxes, Gift, Tag, BadgeCheck, Percent, Warehouse, ClipboardList, Truck,
   Users as UsersIcon, Handshake, PiggyBank, Landmark, BookOpen, NotebookPen, PlusCircle,
   Scale, ShoppingCart, FileBarChart, Undo2, CreditCard, Megaphone,
-  GalleryHorizontal, Target, Mail, Star, Home, Store, FileText,
+  GalleryHorizontal, Target, Mail, Star, Home, Store, FileText, Shield,
   type LucideIcon,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
@@ -81,6 +81,7 @@ const NAV_ICONS: Record<string, LucideIcon> = {
   home: Home,
   store: Store,
   "file-text": FileText,
+  shield: Shield,
 };
 
 function NavIcon({ name, className = "w-4 h-4" }: { name: string; className?: string }) {
@@ -97,17 +98,19 @@ function NavDropdown({
   locale,
   pathname,
   group,
+  forceActive = false,
 }: {
   locale: string;
   pathname: string;
   group: NavGroupItem;
+  forceActive?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [subOpen, setSubOpen] = useState<{ index: number; top: number; left: number } | null>(null);
   const [pos, setPos] = useState({ top: 0, left: 0 });
   const btnRef = useRef<HTMLButtonElement>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const isActive = group.items.some(i =>
+  const isActive = forceActive || group.items.some(i =>
     isSubGroup(i)
       ? i.items.some(l => pathname.startsWith(`/${locale}${l.href}`))
       : pathname.startsWith(`/${locale}${i.href}`),
@@ -280,7 +283,7 @@ function ProfileDropdown({
   return (
     <div className="relative flex items-center gap-1.5">
       {/* Cashback balance chip — always visible for customers */}
-      {user.role === "CUSTOMER" && (
+      {user.role.code === "CUSTOMER" && (
         <span className="flex items-center gap-1 px-2 h-8 bg-amber-50 border border-amber-200 rounded-md text-xs font-bold text-amber-700 whitespace-nowrap">
           {formatAmount(balance, locale, 0)}
         </span>
@@ -316,8 +319,8 @@ function ProfileDropdown({
                 {user.profile?.full_name_bn || user.profile?.full_name_en || "—"}
               </p>
               <p className="text-xs text-gray-400 truncate">{user.email}</p>
-              <p className="text-xs text-amber-500 font-medium mt-0.5">{user.role}</p>
-              {user.role === "CUSTOMER" && (
+              <p className="text-xs text-amber-500 font-medium mt-0.5">{isBn ? user.role.name_bn : user.role.name_en}</p>
+              {user.role.code === "CUSTOMER" && (
                 <>
                   <div className="mt-1.5 flex items-center gap-1.5 bg-amber-50 rounded-lg px-2 py-1.5">
                     <div>
@@ -365,7 +368,7 @@ function ProfileDropdown({
               <Cog className="w-4 h-4" /> {isBn ? "সেটিং" : "Settings"}
             </Link>
 
-            {user.role === "ADMIN" && (
+            {user.role.code === "ADMIN" && (
               <Link
                 href={`/${locale}/admin/logs`}
                 onClick={() => setOpen(false)}
@@ -375,7 +378,7 @@ function ProfileDropdown({
               </Link>
             )}
 
-            {user.role === "CUSTOMER" && (
+            {user.role.code === "CUSTOMER" && (
               <Link
                 href={`/${locale}/orders`}
                 onClick={() => setOpen(false)}
@@ -426,6 +429,8 @@ function MobileMenu({
 }) {
   const [q, setQ] = useState("");
   const [expandedSubKey, setExpandedSubKey] = useState<string | null>(null);
+  const role = currentUser?.role.code ?? null;
+  const hideSearch = pathname.includes("/admin") || (!!currentUser && role !== "CUSTOMER");
   const { data: siteSettings } = useGetSiteSettingsQuery();
   const logoSrc = siteSettings?.logo || "/assets/logo/pujarighar.png";
   const companyName = locale === "bn"
@@ -477,22 +482,24 @@ function MobileMenu({
           </button>
         </div>
 
-        {/* Search */}
-        <form onSubmit={handleSearch} className="px-4 py-3 border-b border-gray-100">
-          <div className="relative">
-            <input
-              type="text"
-              value={q}
-              onChange={e => setQ(e.target.value)}
-              placeholder={t("common.search")}
-              className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-300 bg-gray-50"
-            />
-            <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-              <circle cx="11" cy="11" r="8" />
-              <path d="m21 21-4.35-4.35" />
-            </svg>
-          </div>
-        </form>
+        {/* Search — only for guest/customer */}
+        {!hideSearch && (
+          <form onSubmit={handleSearch} className="px-4 py-3 border-b border-gray-100">
+            <div className="relative">
+              <input
+                type="text"
+                value={q}
+                onChange={e => setQ(e.target.value)}
+                placeholder={t("common.search")}
+                className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-300 bg-gray-50"
+              />
+              <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.35-4.35" />
+              </svg>
+            </div>
+          </form>
+        )}
 
         {/* Nav links — driven by menu */}
         <div className="flex-1 overflow-y-auto py-2">
@@ -566,7 +573,7 @@ function MobileMenu({
                   {currentUser.profile?.full_name_bn || currentUser.email}
                 </p>
               </div>
-              {currentUser.role === "CUSTOMER" && (
+              {currentUser.role.code === "CUSTOMER" && (
                 <div className="flex items-center gap-1.5 bg-amber-50 rounded-lg px-2.5 py-1.5">
                   <div>
                     <p className="text-[10px] text-amber-600">{locale === "bn" ? "ক্যাশব্যাক" : "Cashback Balance"}</p>
@@ -628,11 +635,17 @@ export default function Navbar() {
   const isAdmin = pathname.includes("/admin");
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const { isAuthenticated, logout, updateUser, hydrated } = useAuthStore();
+  const { logout, updateUser, hydrated } = useAuthStore();
   const [logoutMutation] = useLogoutMutation();
 
+  // Not gated on the store's `isAuthenticated` flag — that's derived from a
+  // client-side cookie read on mount and can be stale/wrong after a refresh
+  // (e.g. right after the store's own hydrate() effect hasn't run yet, or
+  // read a momentarily-inconsistent cookie). This call is the actual source
+  // of truth: it goes through the normal access/refresh flow regardless, so
+  // a genuinely valid session is always detected, and a truly logged-out
+  // guest just gets a cheap, harmless 401 with no side effects.
   const { data: me, error: meError } = useGetMeQuery(undefined, {
-    skip: !isAuthenticated,
     refetchOnMountOrArgChange: true,
   });
 
@@ -644,8 +657,8 @@ export default function Navbar() {
     if (me) updateUser(me);
   }, [me]);
 
-  const currentUser = isAuthenticated ? (me ?? null) : null;
-  const role = currentUser?.role ?? null;
+  const currentUser = me ?? null;
+  const role = currentUser?.role.code ?? null;
 
   const { data: siteSettings } = useGetSiteSettingsQuery();
   const logoSrc = siteSettings?.logo || "/assets/logo/pujarighar.png";
@@ -656,7 +669,7 @@ export default function Navbar() {
   // Active menu: backend-driven for authenticated users, guest fallback otherwise
   const menu: NavItem[] = currentUser?.nav_menu ?? GUEST_MENU;
 
-  const showCart = !isAuthenticated || role === "CUSTOMER";
+  const showCart = !currentUser || role === "CUSTOMER";
 
   // Search
   const [query, setQuery] = useState("");
@@ -672,6 +685,8 @@ export default function Navbar() {
       const Cookies = (await import("js-cookie")).default;
       await logoutMutation({ refresh: Cookies.get("refresh_token") ?? "" }).unwrap();
     } catch {}
+    // logout() itself resets the RTK Query cache (see authStore.ts) so the
+    // Navbar doesn't keep rendering the previous user's stale data.
     logout();
     router.push(`/${locale}`);
   };
@@ -729,14 +744,30 @@ export default function Navbar() {
           {/* Desktop: all menu items in order — links and group dropdowns together */}
           <div className="hidden md:flex items-center overflow-x-auto scrollbar-hide flex-1 gap-1 min-w-0">
             {menu.map((item, i) => {
+              // Staff-type users (not customer, not guest) land on pages that don't
+              // always match a specific nav item (e.g. right after login) — rather
+              // than showing nothing highlighted, default to the first menu item.
+              const isStaffUser = !!currentUser && role !== "CUSTOMER";
+              const anyActive = menu.some(m =>
+                m.type === "group"
+                  ? m.items.some(sub =>
+                      isSubGroup(sub)
+                        ? sub.items.some(l => pathname.startsWith(`/${locale}${l.href}`))
+                        : pathname.startsWith(`/${locale}${sub.href}`),
+                    )
+                  : pathname.startsWith(`/${locale}${m.href}`),
+              );
+              const forceFirstActive = i === 0 && isStaffUser && !anyActive;
+
               if (item.type === "group") {
                 return (
-                  <NavDropdown key={i} locale={locale} pathname={pathname} group={item} />
+                  <NavDropdown key={i} locale={locale} pathname={pathname} group={item} forceActive={forceFirstActive} />
                 );
               }
               const full = item.href === "/" ? `/${locale}` : `/${locale}${item.href}`;
               const newOrderPath = `/${locale}/admin/orders/new`;
               const active =
+                forceFirstActive ||
                 pathname === full ||
                 (pathname.startsWith(full + "/") &&
                   full !== `/${locale}` &&
@@ -762,7 +793,7 @@ export default function Navbar() {
           <form
             onSubmit={handleSearch}
             className={`shrink-0 justify-end ${
-              isAdmin || role === "ADMIN" || role === "WAREHOUSE" || role === "DELIVERY"
+              isAdmin || (!!currentUser && role !== "CUSTOMER")
                 ? "hidden"
                 : "hidden md:flex w-64 lg:w-80"
             }`}
