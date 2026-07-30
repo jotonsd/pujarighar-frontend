@@ -76,6 +76,10 @@ export async function middleware(request: NextRequest) {
   // longer makes its allow/deny decision from this cookie snapshot (see
   // comment further down).
   const role = userObj?.role?.code ?? null
+  // Any logged-in, non-customer, non-delivery user (ADMIN, WAREHOUSE, or a
+  // custom admin-staff role — the latter has a null code, same as a guest,
+  // which is why this also checks `userObj` is actually present).
+  const isStaff = !!userObj && role !== 'CUSTOMER' && role !== 'DELIVERY'
 
   // Show maintenance page to everyone except admins (mirrors backend bypass) and login/maintenance routes
   if (
@@ -86,8 +90,9 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL(`/${locale}/maintenance`, request.url))
   }
 
-  // Send admins straight to the POS page from the homepage
-  if (pathWithoutLocale === '/' && role === 'ADMIN') {
+  // Staff-type users (admin-staff of any kind) never see the public storefront
+  // homepage — send them straight to the POS page instead.
+  if (pathWithoutLocale === '/' && isStaff) {
     return NextResponse.redirect(new URL(`/${locale}/admin/orders/new`, request.url))
   }
 

@@ -45,12 +45,15 @@ function LoginForm() {
 
   const goToDestination = (roleCode: string | null, preferredLanguage?: string) => {
     const dest = preferredLanguage || "bn";
-    if (roleCode === "ADMIN" || roleCode === "WAREHOUSE") {
-      router.push(`/${dest}/admin/orders/new`);
-    } else if (roleCode === "DELIVERY") {
+    if (roleCode === "DELIVERY") {
       router.push(`/${dest}/delivery/orders`);
-    } else {
+    } else if (roleCode === "CUSTOMER") {
       router.push(`/${dest}`);
+    } else {
+      // ADMIN, WAREHOUSE, or a custom (non-system) admin-staff role — the
+      // latter has a null code, same as a logged-out guest, but a valid
+      // logged-in role.code here is never null except for exactly this case.
+      router.push(`/${dest}/admin/orders/new`);
     }
   };
 

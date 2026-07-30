@@ -730,10 +730,10 @@ export default function Navbar() {
           {/* Logo */}
           <Link
             href={
-              role === "ADMIN" || role === "WAREHOUSE"
-                ? `/${locale}/admin/orders/new`
-                : role === "DELIVERY"
-                  ? `/${locale}/delivery/orders`
+              role === "DELIVERY"
+                ? `/${locale}/delivery/orders`
+                : !!currentUser && role !== "CUSTOMER"
+                  ? `/${locale}/admin/orders/new`
                   : `/${locale}`
             }
             className="flex-1 md:flex-none shrink-0"
@@ -744,10 +744,14 @@ export default function Navbar() {
           {/* Desktop: all menu items in order — links and group dropdowns together */}
           <div className="hidden md:flex items-center overflow-x-auto scrollbar-hide flex-1 gap-1 min-w-0">
             {menu.map((item, i) => {
-              // Staff-type users (not customer, not guest) land on pages that don't
-              // always match a specific nav item (e.g. right after login) — rather
-              // than showing nothing highlighted, default to the first menu item.
-              const isStaffUser = !!currentUser && role !== "CUSTOMER";
+              // Staff-type users (not customer, not guest) can land on admin pages
+              // that don't literally match a specific nav item (e.g. an order
+              // detail page) — rather than showing nothing highlighted, default to
+              // the first menu item. Scoped to the admin section only, so this
+              // never fires while a staff user is simply browsing the public site
+              // (e.g. the homepage), which would otherwise show "POS" as active
+              // while a completely different page is on screen.
+              const isStaffUser = !!currentUser && role !== "CUSTOMER" && pathname.startsWith(`/${locale}/admin`);
               const anyActive = menu.some(m =>
                 m.type === "group"
                   ? m.items.some(sub =>
