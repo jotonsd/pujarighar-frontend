@@ -2,12 +2,11 @@
 
 import { useState } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
-import { Role, User } from '@/lib/types'
+import { User } from '@/lib/types'
 import { toast } from '@/store/toastStore'
 import { FloatingSelect } from '@/components/ui/forms'
 import { useChangeRoleMutation, useActivateUserMutation, useDeactivateUserMutation } from '@/api/users/usersApi'
-
-const ROLES: Role[] = ['ADMIN', 'WAREHOUSE', 'DELIVERY', 'CUSTOMER']
+import { useGetRolesQuery } from '@/api/roles/rolesApi'
 
 interface Props {
   user: User
@@ -16,8 +15,10 @@ interface Props {
 export default function UserRolePanel({ user }: Props) {
   const t      = useTranslations()
   const locale = useLocale()
-  const [newRole, setNewRole] = useState<Role | ''>('')
+  const isBn   = locale === 'bn'
+  const [newRole, setNewRole] = useState('')
 
+  const { data: roles = [] } = useGetRolesQuery()
   const [changeRole, { isLoading: changingRole }] = useChangeRoleMutation()
   const [activate]   = useActivateUserMutation()
   const [deactivate] = useDeactivateUserMutation()
@@ -38,9 +39,9 @@ export default function UserRolePanel({ user }: Props) {
     <div className="card space-y-4">
       <div className="flex gap-2 items-end">
         <div className="flex-1">
-          <FloatingSelect label="Change Role" value={newRole} onChange={val => setNewRole(val as Role)}>
+          <FloatingSelect label="Change Role" value={newRole} onChange={val => setNewRole(val)}>
             <option value="">Select role</option>
-            {ROLES.map(r => <option key={r} value={r}>{t(`role.${r}`)}</option>)}
+            {roles.map(r => <option key={r.id} value={r.id}>{isBn ? r.name_bn : r.name_en}</option>)}
           </FloatingSelect>
         </div>
         <button onClick={handleChangeRole} disabled={!newRole || changingRole} className="btn-primary whitespace-nowrap">

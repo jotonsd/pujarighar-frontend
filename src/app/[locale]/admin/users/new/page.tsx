@@ -1,21 +1,31 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
-import { Role } from '@/lib/types'
 import { useCreateUserMutation } from '@/api/users/usersApi'
+import { useGetRolesQuery } from '@/api/roles/rolesApi'
 import { FloatingInput, FloatingSelect } from '@/components/ui/forms'
 import PageHeader from '@/components/ui/PageHeader'
-
-const ROLES: Role[] = ['ADMIN', 'WAREHOUSE', 'DELIVERY', 'CUSTOMER']
+import { getErrorMessage } from '@/utils/apiError'
 
 export default function NewUserPage() {
   const t      = useTranslations()
   const locale = useLocale()
+  const isBn   = locale === 'bn'
   const router = useRouter()
 
-  const [form, setForm] = useState({ email: '', phone: '', password: '', role: 'CUSTOMER' as Role, full_name_bn: '' })
+  const { data: roles = [] } = useGetRolesQuery()
+  const [form, setForm] = useState({ email: '', phone: '', password: '', role: '', full_name_bn: '' })
+
+  useEffect(() => {
+    if (!form.role && roles.length) {
+      const customer = roles.find(r => r.code === 'CUSTOMER')
+      setForm(p => ({ ...p, role: customer?.id ?? roles[0].id }))
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [roles])
+
   const [error, setError] = useState('')
 
   const [createUser, { isLoading }] = useCreateUserMutation()
@@ -26,8 +36,7 @@ export default function NewUserPage() {
       await createUser(form).unwrap()
       router.push(`/${locale}/admin/users`)
     } catch (err: unknown) {
-      const e = err as { data?: { error?: { message_en?: string } } }
-      setError(e.data?.error?.message_en ?? 'Failed')
+      setError(getErrorMessage(err, locale))
     }
   }
 
@@ -48,8 +57,8 @@ export default function NewUserPage() {
         <FloatingInput label={t('auth.phone')} required value={form.phone} onChange={f('phone')} />
         <FloatingInput label={t('auth.password')} type="password" required value={form.password} onChange={f('password')} />
         <FloatingInput label="Full Name (Bangla)" value={form.full_name_bn} onChange={f('full_name_bn')} />
-        <FloatingSelect label="Role" value={form.role} onChange={(val) => setForm((p) => ({ ...p, role: val as Role }))}>
-          {ROLES.map((r) => <option key={r} value={r}>{t(`role.${r}`)}</option>)}
+        <FloatingSelect label="Role" value={form.role} onChange={(val) => setForm((p) => ({ ...p, role: val }))}>
+          {roles.map((r) => <option key={r.id} value={r.id}>{isBn ? r.name_bn : r.name_en}</option>)}
         </FloatingSelect>
         <div className="flex gap-3">
           <button onClick={handleCreate} disabled={isLoading} className="btn-primary">

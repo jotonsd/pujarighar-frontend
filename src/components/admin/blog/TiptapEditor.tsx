@@ -6,6 +6,7 @@ import { EditorContent, useEditor } from "@tiptap/react";
 import {
   Bold, Italic, Link as LinkIcon, List, ListOrdered, Heading2, Heading3, Undo, Redo,
 } from "lucide-react";
+import { useEffect } from "react";
 
 interface Props {
   label: string;
@@ -45,11 +46,19 @@ export default function TiptapEditor({ label, value, onChange }: Props) {
     immediatelyRender: false,
     editorProps: {
       attributes: {
-        class: "prose prose-sm max-w-none min-h-[200px] px-3 py-2 focus:outline-none",
+        class: "prose prose-sm max-w-none rich-text min-h-[200px] px-3 py-2 focus:outline-none",
       },
     },
     onUpdate: ({ editor }) => onChange(editor.getHTML()),
   });
+
+  // Tiptap only reads `content` on initial mount — when `value` arrives later
+  // (e.g. after an async fetch resolves), sync it in manually.
+  useEffect(() => {
+    if (editor && value !== editor.getHTML()) {
+      editor.commands.setContent(value, { emitUpdate: false });
+    }
+  }, [value, editor]);
 
   const setLink = () => {
     if (!editor) return;

@@ -9,18 +9,19 @@ import ToggleSwitch from '@/components/ui/forms/ToggleSwitch'
 import PageHeader from '@/components/ui/PageHeader'
 import { ReusableTable, Column } from '@/components/ui/ReusableTable'
 import { FloatingInput, FloatingSelect } from '@/components/ui/forms'
-import { Role, User } from '@/lib/types'
+import { User } from '@/lib/types'
 import { useAuthStore } from '@/store/authStore'
 import { useGetUsersQuery, useActivateUserMutation, useDeactivateUserMutation } from '@/api/users/usersApi'
+import { useGetRolesQuery } from '@/api/roles/rolesApi'
 
-const roleVariants: Record<Role, 'blue' | 'yellow' | 'orange' | 'green'> = {
+const SYSTEM_ROLE_VARIANTS: Record<string, 'blue' | 'yellow' | 'orange' | 'green'> = {
   ADMIN: 'blue', WAREHOUSE: 'yellow', DELIVERY: 'orange', CUSTOMER: 'green',
 }
-const ROLES: Role[] = ['ADMIN', 'WAREHOUSE', 'DELIVERY', 'CUSTOMER']
 
 export default function UserList() {
   const t      = useTranslations()
   const locale = useLocale()
+  const isBn   = locale === 'bn'
   const [page, setPage]     = useState(1)
   const [limit, setLimit]   = useState(10)
   const [role, setRole]     = useState('')
@@ -28,6 +29,7 @@ export default function UserList() {
 
   const currentUserId = useAuthStore(s => s.user?.id)
   const { data, isLoading } = useGetUsersQuery({ page, page_size: limit, role, search })
+  const { data: roles = [] } = useGetRolesQuery()
   const [activate]   = useActivateUserMutation()
   const [deactivate] = useDeactivateUserMutation()
 
@@ -36,7 +38,15 @@ export default function UserList() {
   const columns: Column<User>[] = [
     { header: t('auth.email'), accessor: 'email', className: 'px-4 py-3 text-sm text-gray-800 font-medium', exportValue: u => u.email },
     { header: t('auth.phone'), accessor: 'phone', className: 'px-4 py-3 text-sm text-gray-600', exportValue: u => u.phone },
-    { header: 'Role', accessor: u => <Badge variant={roleVariants[u.role]}>{t(`role.${u.role}`)}</Badge>, exportValue: u => u.role },
+    {
+      header: 'Role',
+      accessor: u => (
+        <Badge variant={(u.role.code && SYSTEM_ROLE_VARIANTS[u.role.code]) || 'gray'}>
+          {isBn ? u.role.name_bn : u.role.name_en}
+        </Badge>
+      ),
+      exportValue: u => isBn ? u.role.name_bn : u.role.name_en,
+    },
     {
       header: locale === 'bn' ? 'স্ট্যাটাস' : 'Status',
       accessor: u => (
@@ -71,7 +81,7 @@ export default function UserList() {
         <div className="w-48">
           <FloatingSelect label="Role" value={role} onChange={val => { setRole(val); setPage(1) }}>
             <option value="">{t('common.all')}</option>
-            {ROLES.map(r => <option key={r} value={r}>{t(`role.${r}`)}</option>)}
+            {roles.map(r => <option key={r.id} value={r.id}>{isBn ? r.name_bn : r.name_en}</option>)}
           </FloatingSelect>
         </div>
       </div>

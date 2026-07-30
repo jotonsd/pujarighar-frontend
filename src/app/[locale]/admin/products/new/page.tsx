@@ -14,6 +14,7 @@ import {
 import ImageUpload from "@/components/ui/ImageUpload";
 import PageHeader from "@/components/ui/PageHeader";
 import { toast } from "@/store/toastStore";
+import { getErrorMessage } from "@/utils/apiError";
 import { RefreshCw } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -68,14 +69,7 @@ export default function NewProductPage() {
       toast.success(locale === "bn" ? "পণ্য তৈরি হয়েছে" : "Product created");
       router.push(`/${locale}/admin/products`);
     } catch (err: unknown) {
-      const e = err as {
-        data?: { error?: { message_en?: string; message_bn?: string } };
-      };
-      toast.error(
-        locale === "bn"
-          ? (e.data?.error?.message_bn ?? "ব্যর্থ")
-          : (e.data?.error?.message_en ?? "Failed"),
-      );
+      toast.error(getErrorMessage(err, locale));
     }
   };
 

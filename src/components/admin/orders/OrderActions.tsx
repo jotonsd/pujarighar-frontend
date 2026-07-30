@@ -109,6 +109,7 @@ export default function OrderActions({ order, orderId }: Props) {
   const [showReturnModal, setShowReturnModal]   = useState(false)
   const [deliveryMethod, setDeliveryMethod] = useState<'internal' | 'courier'>('internal')
   const [courierProviderId, setCourierProviderId] = useState('')
+  const [courierWeight, setCourierWeight] = useState('')
 
   const { data: deliveryPersons = [] } = useGetDeliveryPersonsQuery()
   const [confirmOrder, { isLoading: confirming }] = useConfirmOrderMutation()
@@ -255,7 +256,7 @@ export default function OrderActions({ order, orderId }: Props) {
             )}
 
             {deliveryMethod === 'courier' && activeProviders.length > 0 ? (
-              <div className="flex gap-2 items-center">
+              <div className="flex gap-2 items-center flex-wrap">
                 {activeProviders.length > 1 && (
                   <select
                     value={courierProviderId || activeProviders[0].id}
@@ -265,9 +266,23 @@ export default function OrderActions({ order, orderId }: Props) {
                     {activeProviders.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                   </select>
                 )}
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  inputMode="decimal"
+                  value={courierWeight}
+                  onChange={e => setCourierWeight(e.target.value)}
+                  placeholder={locale === 'bn' ? 'ওজন (কেজি)' : 'Weight (kg)'}
+                  className="w-32 px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-amber-500"
+                />
                 <button disabled={loading} className="btn-primary text-sm whitespace-nowrap"
                   onClick={() => doAction(
-                    () => sendToCourier({ orderId, provider_id: courierProviderId ? Number(courierProviderId) : activeProviders[0].id }).unwrap(),
+                    () => sendToCourier({
+                      orderId,
+                      provider_id: courierProviderId ? Number(courierProviderId) : activeProviders[0].id,
+                      weight: courierWeight ? Number(courierWeight) : undefined,
+                    }).unwrap(),
                     locale === 'bn' ? 'কুরিয়ারে পাঠানো হয়েছে' : 'Sent to courier',
                   )}>
                   <Truck className="w-4 h-4 inline mr-1" /> {locale === 'bn' ? 'কুরিয়ারে পাঠান' : 'Send to Courier'}

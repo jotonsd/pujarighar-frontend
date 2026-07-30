@@ -11,7 +11,6 @@ const intlMiddleware = createMiddleware({
 
 const ADMIN_PATHS       = ['/admin']
 const DELIVERY_PATHS    = ['/delivery']
-const AUTH_PATHS        = ['/auth/login', '/auth/register']
 const PROTECTED_PATHS   = ['/profile', '/orders', '/notifications']
 const MAINTENANCE_PATHS = ['/maintenance', '/auth/login']
 
@@ -69,7 +68,18 @@ export async function middleware(request: NextRequest) {
   // `refresh_token` (and `user`) live for the full session (3-30 days), so use that.
   const isLoggedIn = !!request.cookies.get('refresh_token')?.value
   const userRaw    = request.cookies.get('user')?.value
-  const role       = userRaw ? JSON.parse(userRaw).role : null
+  const userObj    = userRaw ? JSON.parse(userRaw) : null
+  // `role` here is the role's `code` — null for both "not logged in" and "a
+  // custom (non-system) admin-staff role" (only ADMIN/WAREHOUSE/DELIVERY/
+  // CUSTOMER have a fixed code). Used only for the maintenance/POS-redirect
+  // shortcuts and the delivery-portal gate below — the admin-path gate no
+  // longer makes its allow/deny decision from this cookie snapshot (see
+  // comment further down).
+  const role = userObj?.role?.code ?? null
+  // Any logged-in, non-customer, non-delivery user (ADMIN, WAREHOUSE, or a
+  // custom admin-staff role — the latter has a null code, same as a guest,
+  // which is why this also checks `userObj` is actually present).
+  const isStaff = !!userObj && role !== 'CUSTOMER' && role !== 'DELIVERY'
 
   // Show maintenance page to everyone except admins (mirrors backend bypass) and login/maintenance routes
   if (
@@ -80,29 +90,33 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL(`/${locale}/maintenance`, request.url))
   }
 
-  // Send admins straight to the POS page from the homepage
-  if (pathWithoutLocale === '/' && role === 'ADMIN') {
+  // Staff-type users (admin-staff of any kind) never see the public storefront
+  // homepage — send them straight to the POS page instead.
+  if (pathWithoutLocale === '/' && isStaff) {
     return NextResponse.redirect(new URL(`/${locale}/admin/orders/new`, request.url))
   }
 
-  // Redirect authenticated users away from auth pages
-  if (AUTH_PATHS.some((p) => pathWithoutLocale.startsWith(p)) && isLoggedIn) {
-    return NextResponse.redirect(new URL(`/${locale}`, request.url))
-  }
+  // Redirecting authenticated users away from /auth/login is handled
+  // client-side on the login page itself (via a real useGetMeQuery() call),
+  // not here — this middleware only sees whether a refresh_token cookie
+  // EXISTS, not whether it's still valid, and a stale-but-present cookie
+  // would otherwise trap a user who genuinely needs to log in again.
 
   // Protect customer routes
   if (PROTECTED_PATHS.some((p) => pathWithoutLocale.startsWith(p)) && !isLoggedIn) {
     return NextResponse.redirect(new URL(`/${locale}/auth/login`, request.url))
   }
 
-  // Protect admin routes
-  if (ADMIN_PATHS.some((p) => pathWithoutLocale.startsWith(p))) {
-    if (!isLoggedIn) {
-      return NextResponse.redirect(new URL(`/${locale}/auth/login`, request.url))
-    }
-    if (role !== 'ADMIN' && role !== 'WAREHOUSE') {
-      return NextResponse.redirect(new URL(`/${locale}/403`, request.url))
-    }
+  // Protect admin routes — only checks isLoggedIn here. The CUSTOMER/DELIVERY
+  // exclusion used to also be decided here from the `user` cookie, but that
+  // cookie is only as fresh as the last client-side getMe() call, and a
+  // request landing here can easily use a snapshot from *before* a role was
+  // granted/changed — producing a false 403 that "shouldn't" happen. That
+  // finer check now lives in the admin layout itself (AdminLayout.tsx),
+  // which asks the backend directly with live data instead of trusting a
+  // potentially-stale cookie snapshot.
+  if (ADMIN_PATHS.some((p) => pathWithoutLocale.startsWith(p)) && !isLoggedIn) {
+    return NextResponse.redirect(new URL(`/${locale}/auth/login`, request.url))
   }
 
   // Protect delivery routes

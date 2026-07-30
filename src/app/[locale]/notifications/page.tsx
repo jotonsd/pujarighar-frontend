@@ -62,7 +62,7 @@ export default function NotificationsPage() {
 
   const handleClick = async (n: AppNotification) => {
     if (!n.is_read) await markOne(n.id);
-    const link = notificationLink(n, me?.role, locale);
+    const link = notificationLink(n, me?.role.code ?? undefined, locale);
     if (link) router.push(link);
   };
 
@@ -133,7 +133,7 @@ export default function NotificationsPage() {
               </p>
             ) : (
               notifications.map((n) => {
-                const link = notificationLink(n, me?.role, locale);
+                const link = notificationLink(n, me?.role.code ?? undefined, locale);
                 return (
                   <div
                     key={n.id}
