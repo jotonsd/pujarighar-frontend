@@ -138,12 +138,8 @@ export default async function BlogDetailPage({ params }: Props) {
 
       <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-3">{title}</h1>
 
-      <div className="mb-6">
-        <OfferBanners />
-      </div>
-
       {post.published_at && (
-        <p className="text-xs text-gray-400 mb-6">
+        <p className="text-xs text-gray-400 mb-3">
           {new Date(post.published_at).toLocaleDateString(isBn ? "bn-BD" : "en-US", {
             year: "numeric",
             month: "long",
@@ -151,6 +147,10 @@ export default async function BlogDetailPage({ params }: Props) {
           })}
         </p>
       )}
+
+      <div className="mb-6">
+        <OfferBanners />
+      </div>
 
       <div
         className="prose prose-sm sm:prose-base max-w-none rich-text text-gray-700"
