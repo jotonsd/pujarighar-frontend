@@ -30,6 +30,10 @@ export default function BrandsPage() {
   const locale  = useLocale();
   const isBn    = locale === "bn";
   const isAdmin = useAuthStore(s => hasPermission(s.user, 'brands', 'edit'));
+  // Deleting is no longer a grantable permission (removed system-wide) — the
+  // backend hardcodes it ADMIN-only forever, so showing this button to any
+  // other role that merely has 'brands.edit' would just 403 when clicked.
+  const canDelete = useAuthStore(s => s.user?.role.code === 'ADMIN');
 
   const { data: brands = [], isLoading } = useGetBrandsQuery({ includeInactive: true });
   const [createBrand, { isLoading: creating }] = useCreateBrandMutation();
@@ -150,7 +154,7 @@ export default function BrandsPage() {
                   <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">{isBn ? "নাম (ইংরেজি)" : "Name (EN)"}</th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">Slug</th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">{isBn ? "স্ট্যাটাস" : "Status"}</th>
-                  {isAdmin && <th className="px-4 py-3 text-right text-xs font-semibold text-amber-600 uppercase tracking-wider">{isBn ? "অ্যাকশন" : "Actions"}</th>}
+                  {(isAdmin || canDelete) && <th className="px-4 py-3 text-right text-xs font-semibold text-amber-600 uppercase tracking-wider">{isBn ? "অ্যাকশন" : "Actions"}</th>}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -166,22 +170,26 @@ export default function BrandsPage() {
                               activeLabel={isBn ? "সক্রিয়" : "Active"} inactiveLabel={isBn ? "নিষ্ক্রিয়" : "Inactive"} />
                           : <Badge variant={brand.is_active ? "green" : "red"}>{brand.is_active ? (isBn ? "সক্রিয়" : "Active") : (isBn ? "নিষ্ক্রিয়" : "Inactive")}</Badge>}
                       </td>
-                      {isAdmin && (
+                      {(isAdmin || canDelete) && (
                         <td className="px-4 py-3 text-right flex items-center justify-end gap-2">
-                          <button
-                            onClick={() => editingId === brand.id ? setEditingId(null) : startEdit(brand)}
-                            title={editingId === brand.id ? (isBn ? "বাতিল" : "Cancel") : (isBn ? "সম্পাদনা" : "Edit")}
-                            className={`inline-flex items-center justify-center w-8 h-8 rounded-lg border transition-colors ${editingId === brand.id ? "border-gray-200 bg-gray-100 text-gray-500 hover:bg-gray-200" : "border-amber-200 bg-amber-50 text-amber-600 hover:bg-amber-100"}`}
-                          >
-                            {editingId === brand.id ? <X className="w-3.5 h-3.5" /> : <Pencil className="w-3.5 h-3.5" />}
-                          </button>
-                          <button
-                            onClick={() => handleDelete(brand.id)}
-                            title={isBn ? "মুছুন" : "Delete"}
-                            className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-red-200 bg-red-50 text-red-500 hover:bg-red-100 transition-colors"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
+                          {isAdmin && (
+                            <button
+                              onClick={() => editingId === brand.id ? setEditingId(null) : startEdit(brand)}
+                              title={editingId === brand.id ? (isBn ? "বাতিল" : "Cancel") : (isBn ? "সম্পাদনা" : "Edit")}
+                              className={`inline-flex items-center justify-center w-8 h-8 rounded-lg border transition-colors ${editingId === brand.id ? "border-gray-200 bg-gray-100 text-gray-500 hover:bg-gray-200" : "border-amber-200 bg-amber-50 text-amber-600 hover:bg-amber-100"}`}
+                            >
+                              {editingId === brand.id ? <X className="w-3.5 h-3.5" /> : <Pencil className="w-3.5 h-3.5" />}
+                            </button>
+                          )}
+                          {canDelete && (
+                            <button
+                              onClick={() => handleDelete(brand.id)}
+                              title={isBn ? "মুছুন" : "Delete"}
+                              className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-red-200 bg-red-50 text-red-500 hover:bg-red-100 transition-colors"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          )}
                         </td>
                       )}
                     </tr>
