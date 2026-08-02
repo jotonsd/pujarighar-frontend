@@ -5,7 +5,7 @@ import { useLocale, useTranslations } from 'next-intl'
 import { RefreshCw } from 'lucide-react'
 import { FloatingInput } from '@/components/ui/forms'
 import { toast } from '@/store/toastStore'
-import { getErrorMessage } from '@/utils/apiError'
+import { getErrorMessage, getFieldErrors } from '@/utils/apiError'
 import { useCreateCategoryMutation } from '@/api/categories/categoriesApi'
 
 function slugify(text: string) {
@@ -22,6 +22,7 @@ export default function CategoryCreateForm({ onClose }: Props) {
   const slugManualRef = useRef(false)
 
   const [form, setForm] = useState({ name_bn: '', name_en: '', slug: '', order: '0' })
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const [createCategory, { isLoading: creating }] = useCreateCategoryMutation()
 
   const handleCreate = async () => {
@@ -29,6 +30,7 @@ export default function CategoryCreateForm({ onClose }: Props) {
       toast.error(locale === 'bn' ? 'সব ফিল্ড পূরণ করুন' : 'All fields are required')
       return
     }
+    setFieldErrors({})
     try {
       await createCategory({ ...form, order: Number(form.order) || 0 }).unwrap()
       toast.success(locale === 'bn' ? 'কেটাগরি তৈরি হয়েছে' : 'Category created')
@@ -37,6 +39,7 @@ export default function CategoryCreateForm({ onClose }: Props) {
       onClose()
     } catch (err: unknown) {
       toast.error(getErrorMessage(err, locale))
+      setFieldErrors(getFieldErrors(err))
     }
   }
 
@@ -45,17 +48,18 @@ export default function CategoryCreateForm({ onClose }: Props) {
       <h2 className="font-medium text-gray-700">{locale === 'bn' ? 'নতুন কেটাগরি' : 'New Category'}</h2>
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
         <FloatingInput label="নাম (বাংলা) *" value={form.name_bn}
-          onChange={e => setForm(f => ({ ...f, name_bn: e.target.value }))} />
+          onChange={e => setForm(f => ({ ...f, name_bn: e.target.value }))} error={fieldErrors.name_bn} />
         <FloatingInput label="Name (English) *" value={form.name_en}
           onChange={e => {
             const val = e.target.value
             setForm(f => ({ ...f, name_en: val, ...(!slugManualRef.current && { slug: slugify(val) }) }))
-          }} />
+          }} error={fieldErrors.name_en} />
         <FloatingInput label={locale === 'bn' ? 'ক্রম' : 'Order'} type="number" value={form.order}
-          onChange={e => setForm(f => ({ ...f, order: e.target.value }))} />
+          onChange={e => setForm(f => ({ ...f, order: e.target.value }))} error={fieldErrors.order} />
         <div className="flex gap-2 items-start">
           <FloatingInput label="Slug *" value={form.slug}
             onChange={e => { slugManualRef.current = true; setForm(f => ({ ...f, slug: e.target.value })) }}
+            error={fieldErrors.slug}
             className="flex-1" />
           <button type="button"
             onClick={() => { slugManualRef.current = false; setForm(f => ({ ...f, slug: slugify(f.name_en) })) }}

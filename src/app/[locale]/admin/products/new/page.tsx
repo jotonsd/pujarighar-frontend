@@ -16,7 +16,7 @@ import ImageUpload from "@/components/ui/ImageUpload";
 import PageHeader from "@/components/ui/PageHeader";
 import { ProductBadge } from "@/lib/types";
 import { toast } from "@/store/toastStore";
-import { getErrorMessage } from "@/utils/apiError";
+import { getErrorMessage, getFieldErrors } from "@/utils/apiError";
 import { RefreshCw } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -56,6 +56,7 @@ export default function NewProductPage() {
     badges: [] as ProductBadge[],
   });
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const skuManualRef = useRef(false);
 
   const { data: categories = [] } = useGetCategoriesQuery();
@@ -64,6 +65,7 @@ export default function NewProductPage() {
   const [addImages] = useAddProductImagesMutation();
 
   const handleCreate = async () => {
+    setFieldErrors({});
     try {
       const product = await createProduct(form).unwrap();
       if (pendingFiles.length > 0) {
@@ -73,6 +75,7 @@ export default function NewProductPage() {
       router.push(`/${locale}/admin/products`);
     } catch (err: unknown) {
       toast.error(getErrorMessage(err, locale));
+      setFieldErrors(getFieldErrors(err));
     }
   };
 
@@ -116,12 +119,14 @@ export default function NewProductPage() {
             required
             value={form.name_bn}
             onChange={f("name_bn")}
+            error={fieldErrors.name_bn}
           />
           <FloatingInput
             label="Name (English)"
             required
             value={form.name_en}
             onChange={handleNameEnChange}
+            error={fieldErrors.name_en}
           />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -134,6 +139,7 @@ export default function NewProductPage() {
                 skuManualRef.current = true;
                 f("sku")(e);
               }}
+              error={fieldErrors.sku}
               className="flex-1"
             />
             <button
@@ -149,6 +155,7 @@ export default function NewProductPage() {
             label={t("product.category")}
             value={form.category}
             onChange={val => setForm(p => ({ ...p, category: val }))}
+            error={fieldErrors.category}
           >
             <option value="">
               {locale === "bn" ? "কেটাগরি নির্বাচন করুন" : "Select category"}

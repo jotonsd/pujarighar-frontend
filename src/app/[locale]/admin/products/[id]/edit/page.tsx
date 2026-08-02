@@ -20,7 +20,7 @@ import PageHeader from "@/components/ui/PageHeader";
 import Spinner from "@/components/ui/Spinner";
 import { ProductBadge } from "@/lib/types";
 import { toast } from "@/store/toastStore";
-import { getErrorMessage } from "@/utils/apiError";
+import { getErrorMessage, getFieldErrors } from "@/utils/apiError";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -61,6 +61,7 @@ export default function EditProductPage({
   });
 
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (product) {
@@ -86,6 +87,7 @@ export default function EditProductPage({
   }, [product]);
 
   const handleUpdate = async () => {
+    setFieldErrors({});
     try {
       await updateProduct({ id: params.id, ...form }).unwrap();
       if (pendingFiles.length > 0) {
@@ -95,6 +97,7 @@ export default function EditProductPage({
       router.push(`/${locale}/admin/products`);
     } catch (err: unknown) {
       toast.error(getErrorMessage(err, locale));
+      setFieldErrors(getFieldErrors(err));
     }
   };
 
@@ -116,12 +119,13 @@ export default function EditProductPage({
 
       <div className="card space-y-4">
         <div className="grid grid-cols-2 gap-3">
-          <FloatingInput label="নাম (বাংলা)"      value={form.name_bn} onChange={f("name_bn")} />
-          <FloatingInput label="Name (English)"    value={form.name_en} onChange={f("name_en")} />
+          <FloatingInput label="নাম (বাংলা)"      value={form.name_bn} onChange={f("name_bn")} error={fieldErrors.name_bn} />
+          <FloatingInput label="Name (English)"    value={form.name_en} onChange={f("name_en")} error={fieldErrors.name_en} />
           <FloatingSelect
             label={t("product.category")}
             value={form.category}
             onChange={val => setForm(p => ({ ...p, category: val }))}
+            error={fieldErrors.category}
           >
             {categories.map(c => (
               <option key={c.id} value={c.id}>
