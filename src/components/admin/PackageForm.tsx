@@ -10,13 +10,14 @@ import {
     useGetProductsQuery,
     useUpdateProductMutation,
 } from "@/api/products/productsApi";
+import BadgePicker from "@/components/admin/products/BadgePicker";
 import {
     FloatingInput,
     FloatingSelect,
     FloatingTextarea,
 } from "@/components/ui/forms";
 import PageHeader from "@/components/ui/PageHeader";
-import { Product } from "@/lib/types";
+import { Product, ProductBadge } from "@/lib/types";
 import { toast } from "@/store/toastStore";
 import { getErrorMessage } from "@/utils/apiError";
 import { formatAmount } from "@/utils/format";
@@ -58,6 +59,7 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
       | "FLAT",
     discount_value: pkg?.discount_value ?? "0",
     is_active: pkg?.is_active ?? true,
+    badges: (pkg?.badges ?? []) as ProductBadge[],
     seo_title_bn: pkg?.seo_title_bn ?? "",
     seo_title_en: pkg?.seo_title_en ?? "",
     meta_description_bn: pkg?.meta_description_bn ?? "",
@@ -687,6 +689,13 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
                 {t("common.active")}
               </span>
             </label>
+
+            <BadgePicker
+              value={form.badges}
+              onChange={badges => setForm(p => ({ ...p, badges }))}
+              locale={locale}
+            />
+
             <button
               type="button"
               onClick={handleSave}

@@ -1,6 +1,7 @@
 "use client";
 
 import OfferBadge from "@/components/ui/OfferBadge";
+import ProductBadges from "@/components/products/ProductBadges";
 import { Product } from "@/lib/types";
 import { formatAmount, formatNumber, localName } from "@/utils/format";
 import Image from "next/image";
@@ -42,6 +43,7 @@ export default function PackageCard({ pkg, locale }: Props) {
       <div className="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-100 hover:shadow-md transition-shadow flex flex-col h-full">
         {/* Image */}
         <div className="h-36 md:h-56 bg-amber-50 relative overflow-hidden">
+          <ProductBadges badges={pkg.badges} locale={locale} />
           {pkg.images?.[0] ? (
             <Image
               src={pkg.images[0].image}

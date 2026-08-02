@@ -326,8 +326,14 @@ export default function ProductsPageClient({
                 onChange={() => { setSortOrder(opt.value); setPage(1); setAllProducts([]); }}
                 className="w-4 h-4 accent-amber-500 cursor-pointer"
               />
-              <span className="text-sm text-gray-700 group-hover:text-gray-900">
+              <span className="text-sm text-gray-700 group-hover:text-gray-900 flex items-center gap-1.5">
                 {locale === "bn" ? opt.bn : opt.en}
+                {opt.value === "newest" && (
+                  <span className="relative inline-flex w-2 h-2">
+                    <span className="absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75 animate-ping" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-red-600" />
+                  </span>
+                )}
               </span>
             </label>
           ))}
