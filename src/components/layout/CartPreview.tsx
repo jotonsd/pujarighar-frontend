@@ -79,7 +79,12 @@ export default function CartPreview({ locale }: { locale: string }) {
       onMouseEnter={handleEnter}
       onMouseLeave={scheduleClose}
     >
-      <Link href={`/${locale}/cart`} onClick={() => setOpen(false)} className="relative text-gray-600 hover:text-amber-600 block">
+      <Link
+        href={`/${locale}/cart`}
+        onClick={() => setOpen(false)}
+        aria-label={isBn ? "কার্ট" : "Cart"}
+        className="relative text-gray-600 hover:text-amber-700 block"
+      >
         <ShoppingCart className="w-5 h-5" />
         {count > 0 && (
           <span className="absolute -top-2 -right-2 bg-amber-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
@@ -123,7 +128,7 @@ export default function CartPreview({ locale }: { locale: string }) {
                         {formatNumber(item.quantity, locale)} × {formatAmount(item.unitPrice, locale, 0)}
                       </p>
                     </div>
-                    <span className="text-xs font-bold text-amber-600 shrink-0">
+                    <span className="text-xs font-bold text-amber-700 shrink-0">
                       {formatAmount(item.lineTotal, locale, 0)}
                     </span>
                   </div>
@@ -133,7 +138,7 @@ export default function CartPreview({ locale }: { locale: string }) {
               <div className="px-4 py-3 border-t border-gray-100 space-y-2.5">
                 <div className="flex justify-between text-sm font-bold text-gray-800">
                   <span>{isBn ? "সাবটোটাল" : "Subtotal"}</span>
-                  <span className="text-amber-600">{formatAmount(subtotal, locale, 0)}</span>
+                  <span className="text-amber-700">{formatAmount(subtotal, locale, 0)}</span>
                 </div>
                 <Link
                   href={`/${locale}/cart`}

@@ -131,8 +131,8 @@ export function ReusableTable<T>({
     const key = col.sortKey || (typeof col.accessor === 'string' ? String(col.accessor) : '')
     if (sortKey !== key || sortDir === null) return <ArrowUpDown className="w-3.5 h-3.5 text-gray-400" />
     return sortDir === 'asc'
-      ? <ArrowUp className="w-3.5 h-3.5 text-amber-600" />
-      : <ArrowDown className="w-3.5 h-3.5 text-amber-600" />
+      ? <ArrowUp className="w-3.5 h-3.5 text-amber-700" />
+      : <ArrowDown className="w-3.5 h-3.5 text-amber-700" />
   }
 
   const extractText = (node: ReactNode): string => {
@@ -297,14 +297,14 @@ export function ReusableTable<T>({
                       checked={isAllSelected}
                       ref={el => { if (el) el.indeterminate = isSomeSelected }}
                       onChange={handleSelectAll}
-                      className="w-4 h-4 rounded border-gray-300 text-amber-600 focus:ring-amber-500"
+                      className="w-4 h-4 rounded border-gray-300 text-amber-700 focus:ring-amber-500"
                     />
                   </th>
                 )}
                 {columns.map((col, i) => (
                   <th
                     key={i}
-                    className={col.headerClassName || 'px-4 py-3 text-left text-xs font-bold text-amber-600 uppercase tracking-wider'}
+                    className={col.headerClassName || 'px-4 py-3 text-left text-xs font-bold text-amber-700 uppercase tracking-wider'}
                   >
                     {col.sortable && enableSorting ? (
                       <button
@@ -320,7 +320,7 @@ export function ReusableTable<T>({
                   </th>
                 ))}
                 {quickActions && quickActions.length > 0 && (
-                  <th className="px-4 py-3 text-right text-xs font-bold text-amber-600 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-right text-xs font-bold text-amber-700 uppercase tracking-wider">
                     {isBn ? 'অ্যাকশন' : 'Actions'}
                   </th>
                 )}
@@ -341,7 +341,7 @@ export function ReusableTable<T>({
                           type="checkbox"
                           checked={isSelected}
                           onChange={() => handleSelectRow(id)}
-                          className="w-4 h-4 rounded border-gray-300 text-amber-600 focus:ring-amber-500"
+                          className="w-4 h-4 rounded border-gray-300 text-amber-700 focus:ring-amber-500"
                         />
                       </td>
                     )}

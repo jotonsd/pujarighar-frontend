@@ -65,7 +65,7 @@ export default function HomePackagesClient({ packages }: { packages: Product[] }
           <Link
             href={`/${locale}/packages`}
             aria-label={locale === "bn" ? "সব প্যাকেজ দেখুন" : "View all packages"}
-            className="text-sm text-amber-600 hover:underline font-medium"
+            className="text-sm text-amber-700 hover:underline font-medium"
           >
             {locale === "bn" ? "সব দেখুন →" : "View all →"}
           </Link>

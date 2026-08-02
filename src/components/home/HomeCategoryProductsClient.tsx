@@ -33,7 +33,7 @@ export default function HomeCategoryProductsClient({
                   ? `${category.name_bn} - সব দেখুন`
                   : `View all ${category.name_en}`
               }
-              className="text-sm text-amber-600 hover:underline font-medium shrink-0"
+              className="text-sm text-amber-700 hover:underline font-medium shrink-0"
             >
               {isBn ? "সব দেখুন →" : "View all →"}
             </Link>

@@ -75,7 +75,7 @@ export default function PackageCard({ pkg, locale }: Props) {
           {/* Mobile: price stacked, button below — Desktop: price + button in same row */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
             <div className="flex items-baseline gap-1.5">
-              <span className="text-base font-bold text-amber-600">
+              <span className="text-base font-bold text-amber-700">
                 {formatAmount(finalPrice, locale, 0)}
               </span>
               {hasDiscount && (

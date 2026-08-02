@@ -81,7 +81,7 @@ export default function AdminReviewsPage() {
               className="card flex flex-col sm:flex-row sm:items-start gap-4"
             >
               <div className="flex-1 space-y-1.5">
-                <p className="text-xs font-semibold text-amber-600 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded-full w-fit">
+                <p className="text-xs font-semibold text-amber-700 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded-full w-fit">
                   {localName(review.product_name_bn, review.product_name_en, isBn)}
                 </p>
                 <div className="flex items-center gap-2 flex-wrap">

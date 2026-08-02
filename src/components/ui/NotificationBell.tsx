@@ -55,7 +55,7 @@ export default function NotificationBell({ isAdmin }: { isAdmin: boolean }) {
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen(o => !o)}
-        className="relative flex items-center justify-center text-gray-600 hover:text-amber-600 transition-colors"
+        className="relative flex items-center justify-center text-gray-600 hover:text-amber-700 transition-colors"
         aria-label="Notifications"
       >
         <Bell className="w-5 h-5" />
@@ -83,7 +83,7 @@ export default function NotificationBell({ isAdmin }: { isAdmin: boolean }) {
               {unread > 0 && (
                 <button
                   onClick={handleMarkAll}
-                  className="text-xs text-amber-600 hover:text-amber-700 font-medium"
+                  className="text-xs text-amber-700 hover:text-amber-700 font-medium"
                 >
                   {isBn ? "সব পড়া হয়েছে" : "Mark all read"}
                 </button>
@@ -129,7 +129,7 @@ export default function NotificationBell({ isAdmin }: { isAdmin: boolean }) {
             <Link
               href={`/${locale}/notifications`}
               onClick={() => setOpen(false)}
-              className="block text-center text-sm font-medium text-amber-600 hover:bg-amber-50 py-2.5 border-t border-gray-100 transition-colors"
+              className="block text-center text-sm font-medium text-amber-700 hover:bg-amber-50 py-2.5 border-t border-gray-100 transition-colors"
             >
               {isBn ? "সব দেখুন" : "View all"}
             </Link>

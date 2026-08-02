@@ -12,7 +12,7 @@ export default async function MaintenancePage() {
 
       <div className="relative text-center max-w-lg">
         <div className="mx-auto mb-6 w-16 h-16 rounded-2xl bg-amber-100 flex items-center justify-center">
-          <Wrench className="w-8 h-8 text-amber-600" />
+          <Wrench className="w-8 h-8 text-amber-700" />
         </div>
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-3">
           {isBn ? "সাইট রক্ষণাবেক্ষণে আছে" : "Site Under Maintenance"}

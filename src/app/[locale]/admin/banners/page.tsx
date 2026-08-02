@@ -85,7 +85,7 @@ export default function BannersAdminPage() {
   ]
 
   const quickActions: QuickAction<Banner>[] = [
-    { label: 'Edit', icon: <Pencil className="w-3.5 h-3.5" />, onClick: openEdit, className: 'inline-flex items-center justify-center w-8 h-8 rounded-lg border border-amber-200 bg-amber-50 text-amber-600 hover:bg-amber-100 transition-colors' },
+    { label: 'Edit', icon: <Pencil className="w-3.5 h-3.5" />, onClick: openEdit, className: 'inline-flex items-center justify-center w-8 h-8 rounded-lg border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors' },
     { label: 'Delete', icon: <Trash2 className="w-3.5 h-3.5" />, onClick: b => setDeleteTarget(b.id), className: 'inline-flex items-center justify-center w-8 h-8 rounded-lg border border-red-200 bg-red-50 text-red-500 hover:bg-red-100 transition-colors' },
   ]
 

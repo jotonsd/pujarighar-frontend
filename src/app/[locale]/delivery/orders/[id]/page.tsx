@@ -98,7 +98,7 @@ const [showDeliverModal, setShowDeliverModal] = useState(false);
           <button
             onClick={() => setShowReturnModal(true)}
             disabled={isPending}
-            className="flex-1 py-2 px-4 rounded-lg bg-amber-50 text-amber-600 border border-amber-200 hover:bg-amber-100 font-medium transition-colors"
+            className="flex-1 py-2 px-4 rounded-lg bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 font-medium transition-colors"
           >
             {isPending
               ? loading
@@ -246,7 +246,7 @@ const [showDeliverModal, setShowDeliverModal] = useState(false);
             <hr className="my-2" />
             <div className="flex justify-between font-bold text-sm">
               <span>{locale === "bn" ? "মোট" : "Total"}</span>
-              <span className="text-amber-600">
+              <span className="text-amber-700">
                 {formatAmount(order.grand_total, locale)}
               </span>
             </div>

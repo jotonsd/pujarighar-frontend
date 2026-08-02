@@ -34,7 +34,7 @@ export default function BadgePicker({
               type="checkbox"
               checked={value.includes(opt.value)}
               onChange={() => toggle(opt.value)}
-              className="w-4 h-4 rounded border-gray-300 text-amber-600 focus:ring-amber-500"
+              className="w-4 h-4 rounded border-gray-300 text-amber-700 focus:ring-amber-500"
             />
             {locale === "bn" ? opt.bn : opt.en}
           </label>

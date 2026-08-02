@@ -215,7 +215,7 @@ export default function DiscountList() {
     {
       header: isBn ? "ছাড়" : "Discount",
       accessor: d => (
-        <span className="text-sm font-bold text-amber-600">
+        <span className="text-sm font-bold text-amber-700">
           {d.discount_type === "PERCENTAGE"
             ? `${formatNumber(d.discount_value, locale)}% ${isBn ? "ছাড়" : "OFF"}`
             : `${formatAmount(d.discount_value, locale, 0)} ${isBn ? "ছাড়" : "OFF"}`}

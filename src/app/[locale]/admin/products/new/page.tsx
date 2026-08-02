@@ -140,7 +140,7 @@ export default function NewProductPage() {
               type="button"
               onClick={regenerateSku}
               title={locale === "bn" ? "পুনরায় তৈরি করুন" : "Regenerate SKU"}
-              className="h-10 w-10 shrink-0 flex items-center justify-center rounded-lg border border-gray-300 text-gray-500 hover:text-amber-600 hover:border-amber-400 transition-colors"
+              className="h-10 w-10 shrink-0 flex items-center justify-center rounded-lg border border-gray-300 text-gray-500 hover:text-amber-700 hover:border-amber-400 transition-colors"
             >
               <RefreshCw className="w-4 h-4" />
             </button>

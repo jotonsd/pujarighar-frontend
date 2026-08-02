@@ -86,7 +86,7 @@ export default function NotificationsPage() {
           unreadCount > 0 ? (
             <button
               onClick={() => markAll()}
-              className="text-sm text-amber-600 hover:text-amber-700 font-medium"
+              className="text-sm text-amber-700 hover:text-amber-700 font-medium"
             >
               {isBn ? "সব পড়া হয়েছে" : "Mark all read"}
             </button>

@@ -142,7 +142,7 @@ function TierModal({
                 ? `${formatAmount(form.min_order_amount, locale, 0)} অর্ডারে ক্যাশব্যাক → ${formatAmount(preview, locale)}`
                 : `${formatAmount(form.min_order_amount, locale, 0)} order → ${formatAmount(preview, locale)} cashback`}
               {Number(form.max_cashback) > 0 && (
-                <span className="text-amber-600 ml-2 text-xs">
+                <span className="text-amber-700 ml-2 text-xs">
                   ({isBn
                     ? `সর্বোচ্চ ${formatAmount(form.max_cashback, locale, 0)}`
                     : `max ${formatAmount(form.max_cashback, locale, 0)}`})

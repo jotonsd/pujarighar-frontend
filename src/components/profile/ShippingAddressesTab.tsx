@@ -212,7 +212,7 @@ export default function ShippingAddressesTab({ locale }: { locale: string }) {
                 {!a.is_default && (
                   <button
                     onClick={() => handleSetDefault(a)}
-                    className="inline-flex items-center gap-1 text-[11px] font-medium text-amber-600 hover:text-amber-700"
+                    className="inline-flex items-center gap-1 text-[11px] font-medium text-amber-700 hover:text-amber-700"
                   >
                     <CheckCircle className="w-3 h-3" />
                     {isBn ? "ডিফল্ট করুন" : "Set as default"}

@@ -72,7 +72,7 @@ function AverageRating({ reviews, isBn }: { reviews: Review[]; isBn: boolean }) 
   const avg = reviews.reduce((s, r) => s + r.rating, 0) / reviews.length;
   return (
     <div className="flex items-center gap-3 mb-4 p-4 bg-amber-50 border border-amber-100 rounded-xl">
-      <span className="text-4xl font-bold text-amber-600">
+      <span className="text-4xl font-bold text-amber-700">
         {avg.toLocaleString(isBn ? "bn-BD" : "en-US", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
       </span>
       <div>

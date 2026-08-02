@@ -40,7 +40,7 @@ export default function TiptapEditor({ label, value, onChange }: Props) {
   const editor = useEditor({
     extensions: [
       StarterKit,
-      Link.configure({ openOnClick: false, HTMLAttributes: { class: "text-amber-600 underline" } }),
+      Link.configure({ openOnClick: false, HTMLAttributes: { class: "text-amber-700 underline" } }),
     ],
     content: value,
     immediatelyRender: false,

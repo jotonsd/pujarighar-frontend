@@ -265,7 +265,7 @@ const FloatingSelect = forwardRef<HTMLDivElement, FloatingSelectProps>(
             htmlFor={inputId}
             className={`absolute text-sm duration-300 transform origin-[0] bg-white px-2 pointer-events-none start-1 ${
               displayValue || (searchable && isOpen)
-                ? '-translate-y-4 scale-75 top-2 text-amber-600'
+                ? '-translate-y-4 scale-75 top-2 text-amber-700'
                 : 'scale-100 -translate-y-1/2 top-1/2 text-gray-500'
             } ${error ? '!text-amber-500' : ''}`}
           >

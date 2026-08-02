@@ -318,7 +318,7 @@ export default function ProfilePage() {
                       : "Click photo to change"}
                   </p>
                   {avatarFile && (
-                    <p className="text-xs text-amber-600 mt-0.5">{avatarFile.name}</p>
+                    <p className="text-xs text-amber-700 mt-0.5">{avatarFile.name}</p>
                   )}
                   {fieldErrors.avatar && (
                     <p className="text-xs text-red-500 mt-0.5">{fieldErrors.avatar}</p>

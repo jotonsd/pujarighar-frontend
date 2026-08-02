@@ -51,7 +51,7 @@ export default function OrderShipping({ order }: Props) {
         {!editing && !order.delivery && (
           <button
             onClick={() => setEditing(true)}
-            className="inline-flex items-center gap-1 text-xs text-amber-600 hover:text-amber-700 border border-amber-200 bg-amber-50 hover:bg-amber-100 px-2.5 py-1 rounded-lg transition-colors"
+            className="inline-flex items-center gap-1 text-xs text-amber-700 hover:text-amber-700 border border-amber-200 bg-amber-50 hover:bg-amber-100 px-2.5 py-1 rounded-lg transition-colors"
           >
             <Pencil className="w-3 h-3" />
             {isBn ? 'সম্পাদনা' : 'Edit'}
