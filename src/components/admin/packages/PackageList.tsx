@@ -97,7 +97,7 @@ export default function PackageList() {
     {
       header: locale === "bn" ? "মূল্য" : "Price",
       accessor: p => (
-        <span className="font-bold text-amber-600">
+        <span className="font-bold text-amber-700">
           {formatAmount(p.unit_price, locale, 0)}
         </span>
       ),
@@ -153,7 +153,7 @@ export default function PackageList() {
             render: p => (
               <Link
                 href={`/${locale}/admin/packages/${p.id}/edit`}
-                className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-amber-200 bg-amber-50 text-amber-600 hover:bg-amber-100 transition-colors"
+                className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors"
                 title={t("common.edit")}
               >
                 <Pencil className="w-3.5 h-3.5" />

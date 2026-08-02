@@ -86,12 +86,12 @@ export default function MovementReportView({ titleBn, titleEn, descriptionBn, de
           <table className="w-full text-sm">
             <thead className="bg-amber-50 border-b border-amber-200">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">{isBn ? "তারিখ" : "Date"}</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">{isBn ? "পণ্য" : "Product"}</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">{isBn ? "সরবরাহকারী" : "Supplier"}</th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-600 uppercase tracking-wider">{isBn ? "পরিমাণ" : "Count"}</th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-600 uppercase tracking-wider">{isBn ? "একক মূল্য" : "Unit Price"}</th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-600 uppercase tracking-wider">{isBn ? "মোট" : "Total"}</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "তারিখ" : "Date"}</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "পণ্য" : "Product"}</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "সরবরাহকারী" : "Supplier"}</th>
+                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "পরিমাণ" : "Count"}</th>
+                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "একক মূল্য" : "Unit Price"}</th>
+                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "মোট" : "Total"}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -120,7 +120,7 @@ export default function MovementReportView({ titleBn, titleEn, descriptionBn, de
                   </td>
                   <td className="px-4 py-3 text-right text-xs text-gray-700">{formatNumber(r.quantity, locale)}</td>
                   <td className="px-4 py-3 text-right text-xs text-gray-600">{formatAmount(r.unit_cost, locale, 2)}</td>
-                  <td className="px-4 py-3 text-right text-xs font-bold text-amber-600">{formatAmount(r.line_total, locale, 2)}</td>
+                  <td className="px-4 py-3 text-right text-xs font-bold text-amber-700">{formatAmount(r.line_total, locale, 2)}</td>
                 </tr>
               ))}
             </tbody>

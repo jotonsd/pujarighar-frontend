@@ -73,7 +73,7 @@ export default function ProductList() {
     {
       header: locale === 'bn' ? 'ব্র্যান্ড' : 'Brand',
       accessor: p => p.brand_name_bn || p.brand_name_en
-        ? <span className="text-xs font-semibold text-amber-600 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded-full">{locale === 'bn' ? (p.brand_name_bn ?? p.brand_name_en) : (p.brand_name_en ?? p.brand_name_bn)}</span>
+        ? <span className="text-xs font-semibold text-amber-700 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded-full">{locale === 'bn' ? (p.brand_name_bn ?? p.brand_name_en) : (p.brand_name_en ?? p.brand_name_bn)}</span>
         : <span className="text-gray-300 text-xs">—</span>,
       exportValue: p => locale === 'bn' ? (p.brand_name_bn ?? '') : (p.brand_name_en ?? ''),
     },
@@ -138,7 +138,7 @@ export default function ProductList() {
           label: t('common.edit'),
           render: p => (
             <Link href={`/${locale}/admin/products/${p.id}/edit`}
-              className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-amber-200 bg-amber-50 text-amber-600 hover:bg-amber-100 transition-colors"
+              className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors"
               title={t('common.edit')}>
               <Pencil className="w-3.5 h-3.5" />
             </Link>

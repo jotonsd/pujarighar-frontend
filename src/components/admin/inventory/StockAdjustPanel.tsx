@@ -80,7 +80,7 @@ export default function StockAdjustPanel({ product }: Props) {
           </h2>
         </div>
         <div className="text-right shrink-0">
-          <p className="text-3xl font-bold text-amber-600">
+          <p className="text-3xl font-bold text-amber-700">
             {stockData?.stock_on_hand
               ? formatNumber(parseFloat(stockData.stock_on_hand), locale)
               : "..."}
@@ -239,13 +239,13 @@ export default function StockAdjustPanel({ product }: Props) {
                     ? ({ PURCHASE: "ক্রয়", SALE: "বিক্রয়", RETURN: "ফেরত", ADJUSTMENT: "সমন্বয়", SUPPLIER_RETURN: "সরবরাহকারীকে ফেরত" } as Record<string, string>)[m.movement_type] ?? m.movement_type
                     : ({ SUPPLIER_RETURN: "Return to Supplier" } as Record<string, string>)[m.movement_type] ?? m.movement_type}
                   {m.supplier_display && (
-                    <span className="ml-1 text-xs text-amber-600">— {m.supplier_display}</span>
+                    <span className="ml-1 text-xs text-amber-700">— {m.supplier_display}</span>
                   )}
                   {m.payment_method === "CREDIT" && (m.movement_type === "PURCHASE" || m.movement_type === "SUPPLIER_RETURN") && (
                     <span className="ml-1 text-xs text-blue-500">{isBn ? "(বাকি)" : "(credit)"}</span>
                   )}
                 </span>
-                <span className={Number(m.quantity) > 0 ? "text-green-600 font-bold" : "text-amber-600 font-bold"}>
+                <span className={Number(m.quantity) > 0 ? "text-green-600 font-bold" : "text-amber-700 font-bold"}>
                   {Number(m.quantity) > 0 ? "+" : ""}
                   {formatNumber(m.quantity, locale)}
                 </span>

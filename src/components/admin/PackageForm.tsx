@@ -425,16 +425,16 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
                 <table className="w-full text-sm">
                   <thead className="bg-amber-50 border-b border-amber-200">
                     <tr>
-                      <th className="px-4 py-2.5 text-left text-xs font-semibold text-amber-600 uppercase">
+                      <th className="px-4 py-2.5 text-left text-xs font-semibold text-amber-700 uppercase">
                         {locale === "bn" ? "পণ্য" : "Product"}
                       </th>
-                      <th className="px-4 py-2.5 text-right text-xs font-semibold text-amber-600 uppercase">
+                      <th className="px-4 py-2.5 text-right text-xs font-semibold text-amber-700 uppercase">
                         {locale === "bn" ? "একক মূল্য" : "Unit Price"}
                       </th>
-                      <th className="px-4 py-2.5 text-center text-xs font-semibold text-amber-600 uppercase">
+                      <th className="px-4 py-2.5 text-center text-xs font-semibold text-amber-700 uppercase">
                         {locale === "bn" ? "পরিমাণ" : "Qty"}
                       </th>
-                      <th className="px-4 py-2.5 text-right text-xs font-semibold text-amber-600 uppercase">
+                      <th className="px-4 py-2.5 text-right text-xs font-semibold text-amber-700 uppercase">
                         {locale === "bn" ? "মোট" : "Total"}
                       </th>
                       <th className="px-4 py-2.5 w-10" />
@@ -470,7 +470,7 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
                             className="w-16 text-center text-sm border border-gray-200 rounded-lg px-2 py-1 focus:outline-none focus:border-amber-500"
                           />
                         </td>
-                        <td className="px-4 py-2.5 text-right font-semibold text-amber-600">
+                        <td className="px-4 py-2.5 text-right font-semibold text-amber-700">
                           {formatAmount(
                             parseFloat(item.unit_price || "0") * item.quantity,
                             locale,
@@ -583,7 +583,7 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
                 <span>
                   {locale === "bn" ? "চূড়ান্ত মূল্য" : "Final Price"}
                 </span>
-                <span className="text-amber-600">
+                <span className="text-amber-700">
                   {formatAmount(computedFinalPrice(), locale, 0)}
                 </span>
               </div>
@@ -683,7 +683,7 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
                 onChange={e =>
                   setForm(p => ({ ...p, is_active: e.target.checked }))
                 }
-                className="w-4 h-4 rounded border-gray-300 text-amber-600 focus:ring-amber-500"
+                className="w-4 h-4 rounded border-gray-300 text-amber-700 focus:ring-amber-500"
               />
               <span className="text-sm text-gray-700">
                 {t("common.active")}

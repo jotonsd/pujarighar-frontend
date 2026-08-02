@@ -96,7 +96,7 @@ function POSProductCard({
       )}
       {product.active_discount_type && parseFloat(String(product.effective_price)) < parseFloat(String(product.unit_price)) ? (
         <div className="mt-0.5 flex items-baseline gap-1">
-          <p className="text-sm font-bold text-amber-600">
+          <p className="text-sm font-bold text-amber-700">
             {formatAmount(product.effective_price, locale, 0)}
           </p>
           <p className="text-[10px] text-gray-400 line-through">
@@ -104,12 +104,12 @@ function POSProductCard({
           </p>
         </div>
       ) : (
-        <p className="text-sm font-bold text-amber-600 mt-0.5">
+        <p className="text-sm font-bold text-amber-700 mt-0.5">
           {formatAmount(product.effective_price ?? product.unit_price, locale, 0)}
         </p>
       )}
       {inCart && (
-        <p className="text-xs text-amber-600 font-bold mt-0.5">
+        <p className="text-xs text-amber-700 font-bold mt-0.5">
           {locale === "bn"
             ? `কার্টে: ${formatNumber(inCart.quantity, locale)}`
             : `In cart: ${formatNumber(inCart.quantity, locale)}`}
@@ -533,7 +533,7 @@ export default function POSPage() {
                         +
                       </button>
                     </div>
-                    <p className="text-xs font-bold text-amber-600 w-14 text-right shrink-0">
+                    <p className="text-xs font-bold text-amber-700 w-14 text-right shrink-0">
                       {formatAmount(
                         parseFloat(line.product.effective_price) * line.quantity,
                         locale,
@@ -631,7 +631,7 @@ export default function POSPage() {
               )}
               <div className="flex justify-between font-bold text-sm pt-1 border-t border-gray-100">
                 <span>{locale === "bn" ? "সর্বমোট" : "Grand Total"}</span>
-                <span className="text-amber-600">
+                <span className="text-amber-700">
                   {formatAmount(grandTotal, locale, 0)}
                 </span>
               </div>
@@ -774,7 +774,7 @@ export default function POSPage() {
                               <button
                                 type="button"
                                 onClick={() => startEdit(addr)}
-                                className="text-gray-400 hover:text-amber-600 transition-colors p-0.5"
+                                className="text-gray-400 hover:text-amber-700 transition-colors p-0.5"
                                 title={locale === "bn" ? "সম্পাদনা" : "Edit"}
                               >
                                 <Pencil className="w-3 h-3" />
@@ -793,7 +793,7 @@ export default function POSPage() {
                 <button
                   type="button"
                   onClick={() => { setShowNewAddrForm(true); setSelectedAddressId(null); }}
-                  className="w-full flex items-center justify-center gap-1.5 border border-dashed border-gray-300 rounded-lg py-2 text-xs text-gray-500 hover:border-amber-400 hover:text-amber-600 transition-colors"
+                  className="w-full flex items-center justify-center gap-1.5 border border-dashed border-gray-300 rounded-lg py-2 text-xs text-gray-500 hover:border-amber-400 hover:text-amber-700 transition-colors"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   {locale === "bn" ? "নতুন ঠিকানা যোগ করুন" : "Add new address"}

@@ -340,7 +340,7 @@ export default function ProductsPageClient({
           {sortOrder && (
             <button
               onClick={() => { setSortOrder(""); setPage(1); setAllProducts([]); }}
-              className="text-xs text-amber-600 hover:underline mt-1"
+              className="text-xs text-amber-700 hover:underline mt-1"
             >
               {locale === "bn" ? "বাতিল করুন" : "Clear"}
             </button>
@@ -384,7 +384,7 @@ export default function ProductsPageClient({
         {categories.length > 0 && (
           <button
             onClick={() => { setCategories([]); setPage(1); setAllProducts([]); }}
-            className="mt-2 text-xs text-amber-600 hover:underline"
+            className="mt-2 text-xs text-amber-700 hover:underline"
           >
             {locale === "bn"
               ? `${categories.length}টি নির্বাচিত — মুছুন`
@@ -417,7 +417,7 @@ export default function ProductsPageClient({
           {selectedBrands.length > 0 && (
             <button
               onClick={() => { setSelectedBrands([]); setPage(1); setAllProducts([]); }}
-              className="mt-2 text-xs text-amber-600 hover:underline"
+              className="mt-2 text-xs text-amber-700 hover:underline"
             >
               {locale === "bn"
                 ? `${selectedBrands.length}টি নির্বাচিত — মুছুন`
@@ -528,7 +528,7 @@ export default function ProductsPageClient({
                   {hasFilter && (
                     <button
                       onClick={resetFilters}
-                      className="mt-3 text-amber-600 hover:underline text-sm"
+                      className="mt-3 text-amber-700 hover:underline text-sm"
                     >
                       {locale === "bn" ? "ফিল্টার মুছুন" : "Clear filters"}
                     </button>

@@ -78,7 +78,7 @@ export default function OrdersPage() {
                   </div>
                 </div>
                 <div className="text-right shrink-0">
-                  <p className="font-bold text-amber-600 mb-1">
+                  <p className="font-bold text-amber-700 mb-1">
                     {formatAmount(order.grand_total, locale)}
                   </p>
                   <OrderStatusBadge status={order.status} locale={locale} />

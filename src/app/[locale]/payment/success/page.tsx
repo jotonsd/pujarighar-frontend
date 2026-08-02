@@ -31,7 +31,7 @@ export default function PaymentSuccessPage() {
             </Link>
           </div>
         )}
-        <Link href={`/${locale}/products`} className="block text-sm text-amber-600 hover:underline">
+        <Link href={`/${locale}/products`} className="block text-sm text-amber-700 hover:underline">
           {isBn ? 'কেনাকাটা চালিয়ে যান' : 'Continue Shopping'}
         </Link>
       </div>

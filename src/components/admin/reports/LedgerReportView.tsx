@@ -78,10 +78,10 @@ export default function LedgerReportView({
           <table className="w-full text-sm">
             <thead className="bg-amber-50 border-b border-amber-200">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">{isBn ? "তারিখ" : "Date"}</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">{isBn ? "হিসাব" : "Account"}</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">{isBn ? "বিবরণ" : "Description"}</th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-600 uppercase tracking-wider">{isBn ? "পরিমাণ" : "Amount"}</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "তারিখ" : "Date"}</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "হিসাব" : "Account"}</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "বিবরণ" : "Description"}</th>
+                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "পরিমাণ" : "Amount"}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">

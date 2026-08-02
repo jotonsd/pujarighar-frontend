@@ -69,7 +69,7 @@ export default function LedgerPage() {
         </span>
       ),
       headerClassName:
-        "px-4 py-3 text-right text-xs font-semibold text-amber-600 uppercase tracking-wider",
+        "px-4 py-3 text-right text-xs font-semibold text-amber-700 uppercase tracking-wider",
       exportValue: l => Number(l.debit) || 0,
     },
     {
@@ -84,18 +84,18 @@ export default function LedgerPage() {
         </span>
       ),
       headerClassName:
-        "px-4 py-3 text-right text-xs font-semibold text-amber-600 uppercase tracking-wider",
+        "px-4 py-3 text-right text-xs font-semibold text-amber-700 uppercase tracking-wider",
       exportValue: l => Number(l.credit) || 0,
     },
     {
       header: t("balance"),
       accessor: l => (
-        <span className="text-right block font-bold text-amber-600">
+        <span className="text-right block font-bold text-amber-700">
           {formatAmount(l.balance, locale, 2)}
         </span>
       ),
       headerClassName:
-        "px-4 py-3 text-right text-xs font-semibold text-amber-600 uppercase tracking-wider",
+        "px-4 py-3 text-right text-xs font-semibold text-amber-700 uppercase tracking-wider",
       exportValue: l => Number(l.balance) || 0,
     },
   ];
@@ -151,7 +151,7 @@ export default function LedgerPage() {
           </span>
           <span>
             {locale === "bn" ? "সমাপ্তি ব্যালেন্স" : "Closing Balance"}:{" "}
-            <strong className="text-amber-600">
+            <strong className="text-amber-700">
               {formatAmount(ledger.closing_balance, locale, 2)}
             </strong>
           </span>

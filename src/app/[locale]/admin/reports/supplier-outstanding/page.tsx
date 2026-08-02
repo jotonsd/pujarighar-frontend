@@ -63,11 +63,11 @@ export default function SupplierOutstandingReportPage() {
           <table className="w-full text-sm">
             <thead className="bg-amber-50 border-b border-amber-200">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">{isBn ? "সরবরাহকারী" : "Supplier"}</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">{isBn ? "ফোন" : "Phone"}</th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-600 uppercase tracking-wider">{isBn ? "মোট ক্রেডিট" : "Total Credit"}</th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-600 uppercase tracking-wider">{isBn ? "পরিশোধ" : "Paid"}</th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-600 uppercase tracking-wider">{isBn ? "বকেয়া" : "Outstanding"}</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "সরবরাহকারী" : "Supplier"}</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "ফোন" : "Phone"}</th>
+                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "মোট ক্রেডিট" : "Total Credit"}</th>
+                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "পরিশোধ" : "Paid"}</th>
+                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "বকেয়া" : "Outstanding"}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">

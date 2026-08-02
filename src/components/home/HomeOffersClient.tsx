@@ -25,7 +25,7 @@ export default function HomeOffersClient({ products }: { products: Product[] }) 
         <Link
           href={`/${locale}/products?offers=true`}
           aria-label={locale === "bn" ? "সব অফার দেখুন" : "View all offers"}
-          className="text-sm text-amber-600 hover:underline font-medium"
+          className="text-sm text-amber-700 hover:underline font-medium"
         >
           {locale === "bn" ? "সব দেখুন →" : "View all →"}
         </Link>

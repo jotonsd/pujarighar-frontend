@@ -92,7 +92,7 @@ function Avatar({ src, name }: { src: string | null; name: string }) {
     // eslint-disable-next-line @next/next/no-img-element
     <img src={src} alt={name} referrerPolicy="no-referrer" className="w-5 h-5 rounded-full object-cover shrink-0" />
   ) : (
-    <div className="w-5 h-5 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-xs font-bold shrink-0">
+    <div className="w-5 h-5 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center text-xs font-bold shrink-0">
       {name[0]?.toUpperCase()}
     </div>
   )
@@ -169,7 +169,7 @@ export default function OrderActions({ order, orderId }: Props) {
         <div className="bg-gray-50 rounded-xl p-3 text-sm space-y-1.5">
           <div className="flex items-center justify-between">
             <span className="flex items-center gap-1.5 font-medium text-gray-700">
-              <Truck className="w-4 h-4 text-amber-600" />
+              <Truck className="w-4 h-4 text-amber-700" />
               {order.courier_consignment.provider_name}
             </span>
             <button
@@ -178,7 +178,7 @@ export default function OrderActions({ order, orderId }: Props) {
                 () => refreshCourierStatus(orderId).unwrap(),
                 locale === 'bn' ? 'স্ট্যাটাস আপডেট হয়েছে' : 'Status refreshed',
               )}
-              className="inline-flex items-center gap-1 text-xs text-amber-600 hover:underline disabled:opacity-50"
+              className="inline-flex items-center gap-1 text-xs text-amber-700 hover:underline disabled:opacity-50"
             >
               <RefreshCw className={`w-3 h-3 ${refreshingCourier ? 'animate-spin' : ''}`} />
               {locale === 'bn' ? 'রিফ্রেশ' : 'Refresh'}

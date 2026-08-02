@@ -163,7 +163,7 @@ export default function TrackOrderClient({ offerBanners }: { offerBanners?: Reac
                 className={
                   order.payment_status === "PAID"
                     ? "text-green-600"
-                    : "text-amber-600"
+                    : "text-amber-700"
                 }
               >
                 {order.payment_status === "PAID"
@@ -175,7 +175,7 @@ export default function TrackOrderClient({ offerBanners }: { offerBanners?: Reac
                     : "Unpaid"}
               </span>
             </div>
-            <p className="font-bold text-amber-600 text-lg">
+            <p className="font-bold text-amber-700 text-lg">
               {formatAmount(order.grand_total, locale)}
             </p>
           </div>

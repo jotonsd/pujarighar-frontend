@@ -44,7 +44,7 @@ export default function ReportsPage() {
           <button
             key={s}
             onClick={() => setTab(s)}
-            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${tab === s ? "border-amber-500 text-amber-600" : "border-transparent text-gray-500 hover:text-gray-700"}`}
+            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${tab === s ? "border-amber-500 text-amber-700" : "border-transparent text-gray-500 hover:text-gray-700"}`}
           >
             {s === "pl"
               ? t("profitLoss")
@@ -168,16 +168,16 @@ export default function ReportsPage() {
                   <table className="w-full text-sm">
                     <thead className="bg-amber-50 border-b border-amber-200">
                       <tr>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">
                           Code
                         </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">
                           {t("account")}
                         </th>
-                        <th className="px-4 py-3 text-right text-xs font-semibold text-amber-600 uppercase tracking-wider">
+                        <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 uppercase tracking-wider">
                           {t("debit")}
                         </th>
-                        <th className="px-4 py-3 text-right text-xs font-semibold text-amber-600 uppercase tracking-wider">
+                        <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 uppercase tracking-wider">
                           {t("credit")}
                         </th>
                       </tr>

@@ -44,7 +44,7 @@ const FloatingTextarea = forwardRef<HTMLTextAreaElement, FloatingTextareaProps>(
           <label
             htmlFor={inputId}
             className={`absolute text-sm duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 pointer-events-none
-            peer-focus:px-2 peer-focus:text-amber-600
+            peer-focus:px-2 peer-focus:text-amber-700
             peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-5
             peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4
             ${icon ? 'start-9 peer-placeholder-shown:start-9 peer-focus:start-2' : 'start-1'}

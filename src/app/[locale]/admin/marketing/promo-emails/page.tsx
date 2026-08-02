@@ -93,7 +93,7 @@ export default function PromoEmailsAdminPage() {
       label: "Resend",
       icon: <RefreshCw className="w-3.5 h-3.5" />,
       onClick: setResendTarget,
-      className: "inline-flex items-center justify-center w-8 h-8 rounded-lg border border-amber-200 bg-amber-50 text-amber-600 hover:bg-amber-100 transition-colors",
+      className: "inline-flex items-center justify-center w-8 h-8 rounded-lg border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors",
     },
   ];
 

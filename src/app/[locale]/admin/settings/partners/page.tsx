@@ -250,7 +250,7 @@ function PaymentHistoryModal({
         </span>
       ),
       headerClassName:
-        "px-4 py-3 text-right text-xs font-bold text-amber-600 uppercase tracking-wider",
+        "px-4 py-3 text-right text-xs font-bold text-amber-700 uppercase tracking-wider",
       className: "px-4 py-3 text-sm text-right",
     },
     {
@@ -261,7 +261,7 @@ function PaymentHistoryModal({
         </span>
       ),
       headerClassName:
-        "px-4 py-3 text-right text-xs font-bold text-amber-600 uppercase tracking-wider",
+        "px-4 py-3 text-right text-xs font-bold text-amber-700 uppercase tracking-wider",
       className: "px-4 py-3 text-sm text-right",
     },
     {
@@ -272,20 +272,20 @@ function PaymentHistoryModal({
         </span>
       ),
       headerClassName:
-        "px-4 py-3 text-right text-xs font-bold text-amber-600 uppercase tracking-wider",
+        "px-4 py-3 text-right text-xs font-bold text-amber-700 uppercase tracking-wider",
       className: "px-4 py-3 text-sm text-right",
     },
     {
       header: isBn ? "বাকি" : "Balance",
       accessor: p => (
         <span
-          className={`font-semibold ${parseFloat(p.balance) > 0 ? "text-amber-600" : "text-gray-400"}`}
+          className={`font-semibold ${parseFloat(p.balance) > 0 ? "text-amber-700" : "text-gray-400"}`}
         >
           {formatAmount(p.balance, locale, 2)}
         </span>
       ),
       headerClassName:
-        "px-4 py-3 text-right text-xs font-bold text-amber-600 uppercase tracking-wider",
+        "px-4 py-3 text-right text-xs font-bold text-amber-700 uppercase tracking-wider",
       className: "px-4 py-3 text-sm text-right",
     },
     {
@@ -294,7 +294,7 @@ function PaymentHistoryModal({
         <span className="text-xs text-gray-400">{p.paid_date ?? "—"}</span>
       ),
       headerClassName:
-        "px-4 py-3 text-right text-xs font-bold text-amber-600 uppercase tracking-wider",
+        "px-4 py-3 text-right text-xs font-bold text-amber-700 uppercase tracking-wider",
       className: "px-4 py-3 text-sm text-right",
     },
   ];
@@ -305,7 +305,7 @@ function PaymentHistoryModal({
       icon: <Pencil className="w-3 h-3" />,
       onClick: openEdit,
       className:
-        "inline-flex items-center justify-center w-7 h-7 rounded-lg border border-amber-200 bg-amber-50 text-amber-600 hover:bg-amber-100 transition-colors",
+        "inline-flex items-center justify-center w-7 h-7 rounded-lg border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors",
     },
     {
       label: "Delete",
@@ -371,7 +371,7 @@ function PaymentHistoryModal({
                 {isBn ? "বাকি" : "Outstanding"}
               </p>
               <p
-                className={`font-bold ${parseFloat(totalBalance) > 0 ? "text-amber-600" : "text-gray-400"}`}
+                className={`font-bold ${parseFloat(totalBalance) > 0 ? "text-amber-700" : "text-gray-400"}`}
               >
                 {formatAmount(totalBalance, locale, 2)}
               </p>
@@ -450,7 +450,7 @@ function PaymentHistoryModal({
                             ? `অংশীদারের প্রাপ্য (${formatNumber(partner.equity_percentage, locale)}%)`
                             : `Share (${partner.equity_percentage}%)`}
                         </p>
-                        <p className="text-xl font-bold text-amber-600">
+                        <p className="text-xl font-bold text-amber-700">
                           {autoShare
                             ? formatAmount(autoShare, locale, 2)
                             : "৳ 0.00"}
@@ -479,7 +479,7 @@ function PaymentHistoryModal({
                   <p className="text-xs text-gray-400 mb-0.5">
                     {isBn ? "প্রাপ্য অংশ" : "Share Amount"}
                   </p>
-                  <p className="text-xl font-bold text-amber-600">
+                  <p className="text-xl font-bold text-amber-700">
                     {formatAmount(editingPayment.share_amount, locale, 2)}
                   </p>
                 </div>
@@ -686,7 +686,7 @@ export default function PartnersPage() {
         </span>
       ),
       headerClassName:
-        "px-4 py-3 text-right text-xs font-bold text-amber-600 uppercase tracking-wider",
+        "px-4 py-3 text-right text-xs font-bold text-amber-700 uppercase tracking-wider",
       className: "px-4 py-3 text-sm text-right",
     },
     {
@@ -697,7 +697,7 @@ export default function PartnersPage() {
         </span>
       ),
       headerClassName:
-        "px-4 py-3 text-center text-xs font-bold text-amber-600 uppercase tracking-wider",
+        "px-4 py-3 text-center text-xs font-bold text-amber-700 uppercase tracking-wider",
       className: "px-4 py-3 text-sm text-center",
     },
     {
@@ -708,7 +708,7 @@ export default function PartnersPage() {
         </span>
       ),
       headerClassName:
-        "px-4 py-3 text-right text-xs font-bold text-amber-600 uppercase tracking-wider",
+        "px-4 py-3 text-right text-xs font-bold text-amber-700 uppercase tracking-wider",
       className: "px-4 py-3 text-sm text-right",
     },
     {
@@ -719,20 +719,20 @@ export default function PartnersPage() {
         </span>
       ),
       headerClassName:
-        "px-4 py-3 text-right text-xs font-bold text-amber-600 uppercase tracking-wider",
+        "px-4 py-3 text-right text-xs font-bold text-amber-700 uppercase tracking-wider",
       className: "px-4 py-3 text-sm text-right",
     },
     {
       header: isBn ? "বাকি" : "Balance",
       accessor: p => (
         <span
-          className={`font-bold ${parseFloat(p.total_balance || "0") > 0 ? "text-amber-600" : "text-gray-400"}`}
+          className={`font-bold ${parseFloat(p.total_balance || "0") > 0 ? "text-amber-700" : "text-gray-400"}`}
         >
           {formatAmount(p.total_balance || "0", locale, 2)}
         </span>
       ),
       headerClassName:
-        "px-4 py-3 text-right text-xs font-bold text-amber-600 uppercase tracking-wider",
+        "px-4 py-3 text-right text-xs font-bold text-amber-700 uppercase tracking-wider",
       className: "px-4 py-3 text-sm text-right",
     },
     {
@@ -748,7 +748,7 @@ export default function PartnersPage() {
         </div>
       ),
       headerClassName:
-        "px-4 py-3 text-center text-xs font-bold text-amber-600 uppercase tracking-wider",
+        "px-4 py-3 text-center text-xs font-bold text-amber-700 uppercase tracking-wider",
       className: "px-4 py-3 text-sm",
     },
   ];
@@ -759,7 +759,7 @@ export default function PartnersPage() {
       icon: <Pencil className="w-3.5 h-3.5" />,
       onClick: openEdit,
       className:
-        "inline-flex items-center justify-center w-8 h-8 rounded-lg border border-amber-200 bg-amber-50 text-amber-600 hover:bg-amber-100 transition-colors",
+        "inline-flex items-center justify-center w-8 h-8 rounded-lg border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors",
     },
     {
       label: isBn ? "মুছুন" : "Delete",
@@ -790,7 +790,7 @@ export default function PartnersPage() {
             <p className="text-xs text-gray-500 mb-1">
               {isBn ? "মোট বিনিয়োগ" : "Total Invested"}
             </p>
-            <p className="text-2xl font-bold text-amber-600">
+            <p className="text-2xl font-bold text-amber-700">
               {formatAmount(String(totalInvested), locale, 2)}
             </p>
           </div>
@@ -806,7 +806,7 @@ export default function PartnersPage() {
             <p className="text-xs text-gray-500 mb-1">
               {isBn ? "ব্যবহৃত ইক্যুইটি" : "Assigned Equity"}
             </p>
-            <p className="text-2xl font-bold text-amber-600">
+            <p className="text-2xl font-bold text-amber-700">
               {formatNumber(totalEquity.toFixed(2), locale)}%
             </p>
           </div>

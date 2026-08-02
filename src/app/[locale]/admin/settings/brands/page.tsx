@@ -150,11 +150,11 @@ export default function BrandsPage() {
             <table className="w-full">
               <thead className="bg-amber-50 border-b border-amber-200">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">{isBn ? "নাম (বাংলা)" : "Name (BN)"}</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">{isBn ? "নাম (ইংরেজি)" : "Name (EN)"}</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">Slug</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">{isBn ? "স্ট্যাটাস" : "Status"}</th>
-                  {(isAdmin || canDelete) && <th className="px-4 py-3 text-right text-xs font-semibold text-amber-600 uppercase tracking-wider">{isBn ? "অ্যাকশন" : "Actions"}</th>}
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "নাম (বাংলা)" : "Name (BN)"}</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "নাম (ইংরেজি)" : "Name (EN)"}</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">Slug</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "স্ট্যাটাস" : "Status"}</th>
+                  {(isAdmin || canDelete) && <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "অ্যাকশন" : "Actions"}</th>}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -176,7 +176,7 @@ export default function BrandsPage() {
                             <button
                               onClick={() => editingId === brand.id ? setEditingId(null) : startEdit(brand)}
                               title={editingId === brand.id ? (isBn ? "বাতিল" : "Cancel") : (isBn ? "সম্পাদনা" : "Edit")}
-                              className={`inline-flex items-center justify-center w-8 h-8 rounded-lg border transition-colors ${editingId === brand.id ? "border-gray-200 bg-gray-100 text-gray-500 hover:bg-gray-200" : "border-amber-200 bg-amber-50 text-amber-600 hover:bg-amber-100"}`}
+                              className={`inline-flex items-center justify-center w-8 h-8 rounded-lg border transition-colors ${editingId === brand.id ? "border-gray-200 bg-gray-100 text-gray-500 hover:bg-gray-200" : "border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100"}`}
                             >
                               {editingId === brand.id ? <X className="w-3.5 h-3.5" /> : <Pencil className="w-3.5 h-3.5" />}
                             </button>

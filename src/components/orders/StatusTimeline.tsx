@@ -61,7 +61,7 @@ export default function StatusTimeline({ logs, locale, deliveryInfo }: Props) {
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={deliveryInfo.avatar} alt="" referrerPolicy="no-referrer" className="w-7 h-7 rounded-full object-cover shrink-0" />
                 ) : (
-                  <div className="w-7 h-7 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-xs font-bold shrink-0">
+                  <div className="w-7 h-7 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center text-xs font-bold shrink-0">
                     {(deliveryInfo.name_bn || deliveryInfo.name_en || "D")[0].toUpperCase()}
                   </div>
                 )}

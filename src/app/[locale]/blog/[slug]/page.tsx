@@ -115,9 +115,9 @@ export default async function BlogDetailPage({ params }: Props) {
       />
 
       <nav className="text-xs text-gray-400 mb-4 flex items-center gap-1.5">
-        <Link href={`/${locale}`} className="hover:text-amber-600">{isBn ? "হোম" : "Home"}</Link>
+        <Link href={`/${locale}`} className="hover:text-amber-700">{isBn ? "হোম" : "Home"}</Link>
         <span>/</span>
-        <Link href={`/${locale}/blog`} className="hover:text-amber-600">{isBn ? "ব্লগ" : "Blog"}</Link>
+        <Link href={`/${locale}/blog`} className="hover:text-amber-700">{isBn ? "ব্লগ" : "Blog"}</Link>
         <span>/</span>
         <span className="text-gray-500 truncate">{title}</span>
       </nav>

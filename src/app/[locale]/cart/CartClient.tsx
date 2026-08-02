@@ -341,7 +341,7 @@ function ConfirmModal({
             <span className="text-gray-800">
               {locale === "bn" ? "সর্বমোট" : "Grand Total"}
             </span>
-            <span className="text-amber-600">{grandTotal}</span>
+            <span className="text-amber-700">{grandTotal}</span>
           </div>
         </div>
 
@@ -552,7 +552,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
           </h2>
           <p className="text-gray-700">
             {locale === "bn" ? "অর্ডার নম্বর:" : "Order Number:"}{" "}
-            <strong className="text-amber-600">{orderSuccess.number}</strong>
+            <strong className="text-amber-700">{orderSuccess.number}</strong>
           </p>
           <p className="text-gray-500 text-sm">
             {locale === "bn"
@@ -697,7 +697,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                         </div>
                         {/* Total + remove */}
                         <div className="text-right shrink-0 w-20">
-                          <p className="font-bold text-amber-600 text-sm">
+                          <p className="font-bold text-amber-700 text-sm">
                             {formatAmount(item.line_total, locale, 0)}
                           </p>
                           <button
@@ -756,7 +756,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                   </h3>
                   <button
                     onClick={() => setShowAddAddressModal(true)}
-                    className="text-xs text-amber-600 hover:underline"
+                    className="text-xs text-amber-700 hover:underline"
                   >
                     + {locale === "bn" ? "নতুন" : "Add New"}
                   </button>
@@ -765,7 +765,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                 {addresses.length === 0 ? (
                   <button
                     onClick={() => setShowAddAddressModal(true)}
-                    className="w-full text-sm text-amber-600 border-2 border-dashed border-amber-200 rounded-xl py-3 hover:bg-amber-50 transition-colors"
+                    className="w-full text-sm text-amber-700 border-2 border-dashed border-amber-200 rounded-xl py-3 hover:bg-amber-50 transition-colors"
                   >
                     + {locale === "bn" ? "ঠিকানা যোগ করুন" : "Add Address"}
                   </button>
@@ -923,7 +923,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                 })()}
                 <div className="flex justify-between text-lg font-bold border-t border-gray-100 pt-2">
                   <span>{locale === "bn" ? "সর্বমোট" : "Grand Total"}</span>
-                  <span className="text-amber-600">
+                  <span className="text-amber-700">
                     {(() => {
                       const sub = parseFloat(String(cart?.subtotal ?? 0));
                       const dc = deliveryRates
@@ -1130,7 +1130,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                         </button>
                       </div>
                       <div className="text-right shrink-0 w-20">
-                        <p className="font-bold text-amber-600 text-sm">
+                        <p className="font-bold text-amber-700 text-sm">
                           {formatAmount(total, locale, 0)}
                         </p>
                         <button
@@ -1181,7 +1181,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
             <p className="text-base text-gray-500 mt-3">
               <Link
                 href={`/${locale}/auth/login`}
-                className="text-amber-600 hover:underline font-medium"
+                className="text-amber-700 hover:underline font-medium"
               >
                 {t("nav.login")}
               </Link>{" "}
@@ -1317,7 +1317,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                   </div>
                   <div className="flex justify-between text-sm font-bold border-t border-gray-100 pt-1.5">
                     <span>{locale === "bn" ? "সর্বমোট" : "Grand Total"}</span>
-                    <span className="text-amber-600">
+                    <span className="text-amber-700">
                       {formatAmount(
                         guestSubtotal() +
                           parseFloat(

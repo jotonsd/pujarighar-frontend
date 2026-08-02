@@ -8,6 +8,7 @@ import NotificationBell from "@/components/ui/NotificationBell";
 import { NavGroupChild, NavGroupItem, NavItem, NavSubGroupItem, User } from "@/lib/types";
 import { useAuthStore } from "@/store/authStore";
 import { formatAmount } from "@/utils/format";
+import Cookies from "js-cookie";
 import {
   Settings, Cog, Package, LogOut, Copy, Check, ScrollText,
   Receipt, ShoppingBag, LayoutDashboard, BarChart3, TrendingUp, TrendingDown,
@@ -165,7 +166,7 @@ function NavDropdown({
         className={`flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-semibold whitespace-nowrap shrink-0 transition-colors ${
           isActive
             ? "bg-amber-50 text-amber-700"
-            : "text-gray-600 hover:text-amber-600 hover:bg-gray-50"
+            : "text-gray-600 hover:text-amber-700 hover:bg-gray-50"
         }`}
       >
         <NavIcon name={group.icon} />
@@ -195,7 +196,7 @@ function NavDropdown({
                     className={`flex items-center justify-between gap-2 px-4 py-2.5 text-xs cursor-default transition-colors ${
                       active || subActive
                         ? "bg-amber-50 text-amber-700 font-medium"
-                        : "text-gray-600 hover:bg-gray-50 hover:text-amber-600"
+                        : "text-gray-600 hover:bg-gray-50 hover:text-amber-700"
                     }`}
                   >
                     <span className="flex items-center gap-2">
@@ -220,7 +221,7 @@ function NavDropdown({
                 className={`flex items-center gap-2 px-4 py-2.5 text-xs transition-colors ${
                   active
                     ? "bg-amber-50 text-amber-700 font-medium"
-                    : "text-gray-600 hover:bg-gray-50 hover:text-amber-600"
+                    : "text-gray-600 hover:bg-gray-50 hover:text-amber-700"
                 }`}
               >
                 <NavIcon name={item.icon} />
@@ -248,7 +249,7 @@ function NavDropdown({
                 className={`flex items-center gap-2 px-4 py-2.5 text-xs transition-colors ${
                   active
                     ? "bg-amber-50 text-amber-700 font-medium"
-                    : "text-gray-600 hover:bg-gray-50 hover:text-amber-600"
+                    : "text-gray-600 hover:bg-gray-50 hover:text-amber-700"
                 }`}
               >
                 <NavIcon name={sub.icon} />
@@ -294,7 +295,7 @@ function ProfileDropdown({
 
       <button
         onClick={() => setOpen(o => !o)}
-        className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-amber-600 transition-colors"
+        className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-amber-700 transition-colors"
       >
         <span className="w-8 h-8 rounded-full bg-amber-100 text-amber-700 font-bold flex items-center justify-center text-sm overflow-hidden shrink-0">
           {user.profile?.avatar ? (
@@ -327,7 +328,7 @@ function ProfileDropdown({
                 <>
                   <div className="mt-1.5 flex items-center gap-1.5 bg-amber-50 rounded-lg px-2 py-1.5">
                     <div>
-                      <p className="text-[10px] text-amber-600 leading-none">
+                      <p className="text-[10px] text-amber-700 leading-none">
                         {isBn ? "ক্যাশব্যাক ব্যালেন্স" : "Cashback Balance"}
                       </p>
                       <p className="text-xs font-bold text-amber-700 leading-tight mt-0.5">
@@ -478,7 +479,11 @@ function MobileMenu({
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100">
           <Image src={logoSrc} alt={companyName} width={75} height={32} className="h-8 w-auto object-contain" />
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 p-1">
+          <button
+            onClick={onClose}
+            aria-label={locale === "bn" ? "বন্ধ করুন" : "Close menu"}
+            className="text-gray-400 hover:text-gray-600 p-1"
+          >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -579,7 +584,7 @@ function MobileMenu({
               {currentUser.role.code === "CUSTOMER" && (
                 <div className="flex items-center gap-1.5 bg-amber-50 rounded-lg px-2.5 py-1.5">
                   <div>
-                    <p className="text-[10px] text-amber-600">{locale === "bn" ? "ক্যাশব্যাক" : "Cashback Balance"}</p>
+                    <p className="text-[10px] text-amber-700">{locale === "bn" ? "ক্যাশব্যাক" : "Cashback Balance"}</p>
                     <p className="text-xs font-bold text-amber-700">{formatAmount(currentUser.profile?.cashback_balance ?? "0", locale, 0)}</p>
                   </div>
                 </div>
@@ -646,9 +651,19 @@ export default function Navbar() {
   // (e.g. right after the store's own hydrate() effect hasn't run yet, or
   // read a momentarily-inconsistent cookie). This call is the actual source
   // of truth: it goes through the normal access/refresh flow regardless, so
-  // a genuinely valid session is always detected, and a truly logged-out
-  // guest just gets a cheap, harmless 401 with no side effects.
+  // a genuinely valid session is always detected.
+  //
+  // It IS skipped when there's no `refresh_token` cookie at all — unlike the
+  // `isAuthenticated` flag, a cookie read is synchronous and always current
+  // as of this render (setAuth()/logout() write/clear it before updating the
+  // store, and this component re-renders on every store change), so this
+  // can't go stale the way the old flag-based skip did. This just avoids
+  // sending a call that's guaranteed to 401 for the majority of storefront
+  // traffic (guests with no session), without reintroducing the staleness
+  // bugs — anyone who actually has a session cookie still gets the real,
+  // server-validated check every time.
   const { data: me, error: meError } = useGetMeQuery(undefined, {
+    skip: !Cookies.get("refresh_token"),
     refetchOnMountOrArgChange: true,
   });
 
@@ -766,7 +781,7 @@ export default function Navbar() {
           {/* Hamburger */}
           {role !== "DELIVERY" && (
             <button
-              className="md:hidden text-gray-600 hover:text-amber-600 p-1 -ml-1"
+              className="md:hidden text-gray-600 hover:text-amber-700 p-1 -ml-1"
               onClick={() => setMobileOpen(true)}
               aria-label="Open menu"
             >
@@ -832,7 +847,7 @@ export default function Navbar() {
                   className={`flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-semibold whitespace-nowrap shrink-0 transition-colors ${
                     active
                       ? "bg-amber-50 text-amber-700"
-                      : "text-gray-600 hover:text-amber-600 hover:bg-gray-50"
+                      : "text-gray-600 hover:text-amber-700 hover:bg-gray-50"
                   }`}
                 >
                   <NavIcon name={item.icon} />
@@ -859,7 +874,7 @@ export default function Navbar() {
                 type="button"
                 onClick={() => setSearchOpen(true)}
                 aria-label={t("common.search")}
-                className="p-2 text-gray-500 hover:text-amber-600 hover:bg-gray-50 rounded-md transition-colors"
+                className="p-2 text-gray-500 hover:text-amber-700 hover:bg-gray-50 rounded-md transition-colors"
               >
                 <Search className="w-5 h-5" />
               </button>
@@ -910,7 +925,7 @@ export default function Navbar() {
             {role === "ADMIN" && (
               <Link
                 href={`/${locale}/admin/settings`}
-                className="text-gray-500 hover:text-amber-600 transition-colors"
+                className="text-gray-500 hover:text-amber-700 transition-colors"
                 title={locale === "bn" ? "সেটিং" : "Settings"}
               >
                 <Settings className="w-5 h-5" />
@@ -932,7 +947,7 @@ export default function Navbar() {
                   </>
                 ) : (
                   <>
-                    <Link href={`/${locale}/auth/login`} className="text-gray-600 hover:text-amber-600 text-sm">
+                    <Link href={`/${locale}/auth/login`} className="text-gray-600 hover:text-amber-700 text-sm">
                       {t("nav.login")}
                     </Link>
                     <Link href={`/${locale}/auth/register`} className="btn-primary text-sm">

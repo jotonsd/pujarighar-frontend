@@ -157,7 +157,7 @@ function InvoicePanel({ settings, isBn }: { settings: SiteSettings; isBn: boolea
               <p className="text-xs text-gray-400 mt-0.5">{isBn ? opt.desc_bn : opt.desc_en}</p>
             </div>
             {selected && (
-              <span className="text-xs font-bold text-amber-600 bg-amber-100 px-2 py-0.5 rounded-full">
+              <span className="text-xs font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">
                 {isBn ? "নির্বাচিত" : "Active"}
               </span>
             )}

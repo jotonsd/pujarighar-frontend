@@ -89,7 +89,7 @@ export default function PackagesPageClient({ offerBanners }: { offerBanners?: Re
             className={`shrink-0 px-4 py-1.5 rounded-full text-sm font-medium border transition-colors ${
               selectedCategory === ""
                 ? "bg-amber-500 text-white border-amber-500"
-                : "bg-white text-gray-600 border-gray-200 hover:border-amber-400 hover:text-amber-600"
+                : "bg-white text-gray-600 border-gray-200 hover:border-amber-400 hover:text-amber-700"
             }`}
           >
             {isBn ? "সব" : "All"}
@@ -101,7 +101,7 @@ export default function PackagesPageClient({ offerBanners }: { offerBanners?: Re
               className={`shrink-0 px-4 py-1.5 rounded-full text-sm font-medium border transition-colors ${
                 selectedCategory === cat.id
                   ? "bg-amber-500 text-white border-amber-500"
-                  : "bg-white text-gray-600 border-gray-200 hover:border-amber-400 hover:text-amber-600"
+                  : "bg-white text-gray-600 border-gray-200 hover:border-amber-400 hover:text-amber-700"
               }`}
             >
               {isBn ? cat.name_bn : cat.name_en}
@@ -125,7 +125,7 @@ export default function PackagesPageClient({ offerBanners }: { offerBanners?: Re
               {selectedCategory && (
                 <button
                   onClick={() => selectCategory("")}
-                  className="mt-3 text-amber-600 hover:underline text-sm"
+                  className="mt-3 text-amber-700 hover:underline text-sm"
                 >
                   {isBn ? "সব দেখুন" : "View all"}
                 </button>

@@ -209,7 +209,7 @@ export default function ProductCard({ product, locale, priority = false }: Props
           <div>
             {product.active_discount_type && parseFloat(String(product.effective_price)) < parseFloat(String(product.unit_price)) ? (
               <>
-                <span className="text-amber-600 font-bold">
+                <span className="text-amber-700 font-bold">
                   {formatAmount(product.effective_price, locale, 0)}
                 </span>
                 <span className="text-xs text-gray-500 line-through ml-1.5">
@@ -217,7 +217,7 @@ export default function ProductCard({ product, locale, priority = false }: Props
                 </span>
               </>
             ) : (
-              <span className="text-amber-600 font-bold">
+              <span className="text-amber-700 font-bold">
                 {formatAmount(product.effective_price ?? product.unit_price, locale, 0)}
               </span>
             )}

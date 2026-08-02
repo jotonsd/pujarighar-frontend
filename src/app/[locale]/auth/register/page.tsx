@@ -239,7 +239,7 @@ export default function RegisterPage() {
             </span>
             <Link
               href={`/${locale}/auth/login`}
-              className="text-amber-600 hover:text-amber-700 font-semibold transition-colors hover:underline"
+              className="text-amber-700 hover:text-amber-700 font-semibold transition-colors hover:underline"
             >
               {isBn ? "লগইন করুন" : "Sign in"}
             </Link>
