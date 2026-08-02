@@ -43,10 +43,22 @@ interface ProfitLossData {
 export const accountingApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
 
-    getAccounts: build.query<Account[], void>({
-      query: () => '/api/accounting/accounts/',
+    getAccounts: build.query<Account[], { includeInactive?: boolean } | void>({
+      query: (args) => `/api/accounting/accounts/${args?.includeInactive ? '?include_inactive=true' : ''}`,
       transformResponse: (res: { data: Account[] }) => res.data,
       providesTags: ['Accounts'],
+    }),
+
+    createAccount: build.mutation<Account, { code: string; name_bn: string; name_en: string; account_type: Account['account_type']; parent?: string | null }>({
+      query: (body) => ({ url: '/api/accounting/accounts/create/', method: 'POST', body }),
+      transformResponse: (res: { data: Account }) => res.data,
+      invalidatesTags: ['Accounts'],
+    }),
+
+    updateAccount: build.mutation<Account, { id: string } & Partial<Pick<Account, 'name_bn' | 'name_en' | 'account_type' | 'parent' | 'is_active'>>>({
+      query: ({ id, ...body }) => ({ url: `/api/accounting/accounts/${id}/update/`, method: 'PATCH', body }),
+      transformResponse: (res: { data: Account }) => res.data,
+      invalidatesTags: ['Accounts'],
     }),
 
     getJournalEntries: build.query<JournalListResponse, { page?: number }>({
@@ -113,6 +125,8 @@ export const accountingApi = baseApi.injectEndpoints({
 
 export const {
   useGetAccountsQuery,
+  useCreateAccountMutation,
+  useUpdateAccountMutation,
   useGetJournalEntriesQuery,
   useGetLedgerQuery,
   useGetTrialBalanceQuery,
