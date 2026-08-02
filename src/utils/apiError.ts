@@ -47,3 +47,27 @@ export function getErrorMessage(err: unknown, locale: string): string {
   if (e.data?.message) return e.data.message;
   return fallback;
 }
+
+/**
+ * Extracts per-field messages from a raw DRF serializer error response
+ * ({ field_name: ["message", ...], ... }) so they can be shown inline under
+ * the matching input (via its `error` prop) instead of only as one combined
+ * toast. Bilingual service-layer errors ({ message_bn, message_en }) have no
+ * single field to attach to, so they're left out — getErrorMessage's toast
+ * still covers those.
+ */
+export function getFieldErrors(err: unknown): Record<string, string> {
+  const e = err as ApiErrorShape;
+  const errors = e.data?.errors;
+  if (!errors || typeof errors !== "object") return {};
+
+  const bag = errors as Record<string, unknown>;
+  if ("message_bn" in bag || "message_en" in bag) return {};
+
+  const fields: Record<string, string> = {};
+  for (const [field, msgs] of Object.entries(bag)) {
+    const msg = Array.isArray(msgs) ? msgs[0] : msgs;
+    if (msg) fields[field] = String(msg);
+  }
+  return fields;
+}

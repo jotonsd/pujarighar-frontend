@@ -8,7 +8,7 @@ import TiptapEditor from "@/components/admin/blog/TiptapEditor";
 import PageHeader from "@/components/ui/PageHeader";
 import Spinner from "@/components/ui/Spinner";
 import { toast } from "@/store/toastStore";
-import { getErrorMessage } from "@/utils/apiError";
+import { getErrorMessage, getFieldErrors } from "@/utils/apiError";
 import { useGetBlogPostQuery, useUpdateBlogPostMutation } from "@/api/blog/blogApi";
 
 export default function EditBlogPostPage({ params }: { params: { id: string } }) {
@@ -36,6 +36,7 @@ export default function EditBlogPostPage({ params }: { params: { id: string } })
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
   const [clearCover, setClearCover] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (post) {
@@ -62,6 +63,7 @@ export default function EditBlogPostPage({ params }: { params: { id: string } })
       setForm(p => ({ ...p, [key]: e.target.value }));
 
   const handleUpdate = async () => {
+    setFieldErrors({});
     try {
       const fd = new FormData();
       Object.entries(form).forEach(([k, v]) => fd.append(k, String(v)));
@@ -72,6 +74,7 @@ export default function EditBlogPostPage({ params }: { params: { id: string } })
       router.push(`/${locale}/admin/blog`);
     } catch (err: unknown) {
       toast.error(getErrorMessage(err, locale));
+      setFieldErrors(getFieldErrors(err));
     }
   };
 
@@ -89,8 +92,8 @@ export default function EditBlogPostPage({ params }: { params: { id: string } })
 
       <div className="card space-y-4">
         <div className="grid grid-cols-2 gap-3">
-          <FloatingInput label="শিরোনাম (বাংলা) *" value={form.title_bn} onChange={f("title_bn")} />
-          <FloatingInput label="Title (English) *" value={form.title_en} onChange={f("title_en")} />
+          <FloatingInput label="শিরোনাম (বাংলা) *" value={form.title_bn} onChange={f("title_bn")} error={fieldErrors.title_bn} />
+          <FloatingInput label="Title (English) *" value={form.title_en} onChange={f("title_en")} error={fieldErrors.title_en} />
         </div>
 
         <div>

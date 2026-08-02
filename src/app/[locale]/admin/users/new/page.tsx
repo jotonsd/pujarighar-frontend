@@ -7,7 +7,7 @@ import { useCreateUserMutation } from '@/api/users/usersApi'
 import { useGetRolesQuery } from '@/api/roles/rolesApi'
 import { FloatingInput, FloatingSelect } from '@/components/ui/forms'
 import PageHeader from '@/components/ui/PageHeader'
-import { getErrorMessage } from '@/utils/apiError'
+import { getErrorMessage, getFieldErrors } from '@/utils/apiError'
 
 export default function NewUserPage() {
   const t      = useTranslations()
@@ -27,16 +27,19 @@ export default function NewUserPage() {
   }, [roles])
 
   const [error, setError] = useState('')
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
 
   const [createUser, { isLoading }] = useCreateUserMutation()
 
   const handleCreate = async () => {
     setError('')
+    setFieldErrors({})
     try {
       await createUser(form).unwrap()
       router.push(`/${locale}/admin/users`)
     } catch (err: unknown) {
       setError(getErrorMessage(err, locale))
+      setFieldErrors(getFieldErrors(err))
     }
   }
 
@@ -53,11 +56,11 @@ export default function NewUserPage() {
       {error && <p className="text-amber-500 text-sm mb-4 bg-amber-50 p-3 rounded-lg">{error}</p>}
 
       <div className="card space-y-4">
-        <FloatingInput label={t('auth.email')} type="email" required value={form.email} onChange={f('email')} />
-        <FloatingInput label={t('auth.phone')} required value={form.phone} onChange={f('phone')} />
-        <FloatingInput label={t('auth.password')} type="password" required value={form.password} onChange={f('password')} />
-        <FloatingInput label="Full Name (Bangla)" value={form.full_name_bn} onChange={f('full_name_bn')} />
-        <FloatingSelect label="Role" value={form.role} onChange={(val) => setForm((p) => ({ ...p, role: val }))}>
+        <FloatingInput label={t('auth.email')} type="email" required value={form.email} onChange={f('email')} error={fieldErrors.email} />
+        <FloatingInput label={t('auth.phone')} required value={form.phone} onChange={f('phone')} error={fieldErrors.phone} />
+        <FloatingInput label={t('auth.password')} type="password" required value={form.password} onChange={f('password')} error={fieldErrors.password} />
+        <FloatingInput label="Full Name (Bangla)" value={form.full_name_bn} onChange={f('full_name_bn')} error={fieldErrors.full_name_bn} />
+        <FloatingSelect label="Role" value={form.role} onChange={(val) => setForm((p) => ({ ...p, role: val }))} error={fieldErrors.role}>
           {roles.map((r) => <option key={r.id} value={r.id}>{isBn ? r.name_bn : r.name_en}</option>)}
         </FloatingSelect>
         <div className="flex gap-3">

@@ -19,7 +19,7 @@ import {
 import PageHeader from "@/components/ui/PageHeader";
 import { Product, ProductBadge } from "@/lib/types";
 import { toast } from "@/store/toastStore";
-import { getErrorMessage } from "@/utils/apiError";
+import { getErrorMessage, getFieldErrors } from "@/utils/apiError";
 import { formatAmount } from "@/utils/format";
 import { Plus, Trash2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
@@ -86,6 +86,7 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [existingImages, setExistingImages] = useState(pkg?.images ?? []);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const fileRef = useRef<HTMLInputElement>(null);
 
   const { data: categories = [] } = useGetCategoriesQuery({
@@ -172,6 +173,7 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
     );
 
   const handleSave = async () => {
+    setFieldErrors({});
     if (!form.name_bn || !form.name_en || !form.sku || !form.category) {
       toast.error(
         locale === "bn"
@@ -267,6 +269,7 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
       router.push(`/${locale}/admin/packages`);
     } catch (err: unknown) {
       toast.error(getErrorMessage(err, locale));
+      setFieldErrors(getFieldErrors(err));
     }
   };
 
@@ -305,11 +308,13 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
                 label="নাম (বাংলা) *"
                 value={form.name_bn}
                 onChange={f("name_bn")}
+                error={fieldErrors.name_bn}
               />
               <FloatingInput
                 label="Name (English) *"
                 value={form.name_en}
                 onChange={f("name_en")}
+                error={fieldErrors.name_en}
               />
             </div>
             <div className="grid grid-cols-2 gap-3">
@@ -317,11 +322,13 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
                 label="SKU *"
                 value={form.sku}
                 onChange={f("sku")}
+                error={fieldErrors.sku}
               />
               <FloatingSelect
                 label={locale === "bn" ? "কেটাগরি *" : "Category *"}
                 value={form.category}
                 onChange={val => setForm(p => ({ ...p, category: val }))}
+                error={fieldErrors.category}
               >
                 <option value="">
                   {locale === "bn" ? "কেটাগরি বেছে নিন" : "Select category"}

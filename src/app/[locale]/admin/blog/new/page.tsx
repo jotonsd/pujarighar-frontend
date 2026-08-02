@@ -7,7 +7,7 @@ import { FloatingInput, FloatingTextarea, ToggleSwitch } from "@/components/ui/f
 import TiptapEditor from "@/components/admin/blog/TiptapEditor";
 import PageHeader from "@/components/ui/PageHeader";
 import { toast } from "@/store/toastStore";
-import { getErrorMessage } from "@/utils/apiError";
+import { getErrorMessage, getFieldErrors } from "@/utils/apiError";
 import { useCreateBlogPostMutation } from "@/api/blog/blogApi";
 
 export default function NewBlogPostPage() {
@@ -31,6 +31,7 @@ export default function NewBlogPostPage() {
   });
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const [createBlogPost, { isLoading }] = useCreateBlogPostMutation();
 
@@ -44,6 +45,7 @@ export default function NewBlogPostPage() {
       toast.error(locale === "bn" ? "শিরোনাম আবশ্যিক" : "Title is required");
       return;
     }
+    setFieldErrors({});
     try {
       const fd = new FormData();
       Object.entries(form).forEach(([k, v]) => fd.append(k, String(v)));
@@ -53,6 +55,7 @@ export default function NewBlogPostPage() {
       router.push(`/${locale}/admin/blog`);
     } catch (err: unknown) {
       toast.error(getErrorMessage(err, locale));
+      setFieldErrors(getFieldErrors(err));
     }
   };
 
@@ -68,8 +71,8 @@ export default function NewBlogPostPage() {
 
       <div className="card space-y-4">
         <div className="grid grid-cols-2 gap-3">
-          <FloatingInput label="শিরোনাম (বাংলা) *" value={form.title_bn} onChange={f("title_bn")} />
-          <FloatingInput label="Title (English) *" value={form.title_en} onChange={f("title_en")} />
+          <FloatingInput label="শিরোনাম (বাংলা) *" value={form.title_bn} onChange={f("title_bn")} error={fieldErrors.title_bn} />
+          <FloatingInput label="Title (English) *" value={form.title_en} onChange={f("title_en")} error={fieldErrors.title_en} />
         </div>
 
         <div>
