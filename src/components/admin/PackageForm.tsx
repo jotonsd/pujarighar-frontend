@@ -359,16 +359,16 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
               </h3>
               <div className="space-y-3">
                 <div className="grid grid-cols-2 gap-3">
-                  <FloatingInput label={locale === "bn" ? "এসইও শিরোনাম (বাংলা)" : "SEO Title (Bangla)"} value={form.seo_title_bn} onChange={f("seo_title_bn")} maxLength={70} />
-                  <FloatingInput label={locale === "bn" ? "এসইও শিরোনাম (English)" : "SEO Title (English)"} value={form.seo_title_en} onChange={f("seo_title_en")} maxLength={70} />
+                  <FloatingInput label={locale === "bn" ? "এসইও শিরোনাম (বাংলা)" : "SEO Title (Bangla)"} value={form.seo_title_bn} onChange={f("seo_title_bn")} maxLength={70} error={fieldErrors.seo_title_bn} />
+                  <FloatingInput label={locale === "bn" ? "এসইও শিরোনাম (English)" : "SEO Title (English)"} value={form.seo_title_en} onChange={f("seo_title_en")} maxLength={70} error={fieldErrors.seo_title_en} />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
-                  <FloatingTextarea label={locale === "bn" ? "মেটা বিবরণ (বাংলা)" : "Meta Description (Bangla)"} value={form.meta_description_bn} onChange={f("meta_description_bn")} rows={2} maxLength={170} />
-                  <FloatingTextarea label={locale === "bn" ? "মেটা বিবরণ (English)" : "Meta Description (English)"} value={form.meta_description_en} onChange={f("meta_description_en")} rows={2} maxLength={170} />
+                  <FloatingTextarea label={locale === "bn" ? "মেটা বিবরণ (বাংলা)" : "Meta Description (Bangla)"} value={form.meta_description_bn} onChange={f("meta_description_bn")} rows={2} maxLength={170} error={fieldErrors.meta_description_bn} />
+                  <FloatingTextarea label={locale === "bn" ? "মেটা বিবরণ (English)" : "Meta Description (English)"} value={form.meta_description_en} onChange={f("meta_description_en")} rows={2} maxLength={170} error={fieldErrors.meta_description_en} />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
-                  <FloatingInput label={locale === "bn" ? "ফোকাস কীওয়ার্ড" : "Focus Keyword"} value={form.focus_keyword} onChange={f("focus_keyword")} />
-                  <FloatingInput label={locale === "bn" ? "ক্যানোনিক্যাল URL" : "Canonical URL"} value={form.canonical_url} onChange={f("canonical_url")} placeholder="https://pujarighar.com/packages/..." />
+                  <FloatingInput label={locale === "bn" ? "ফোকাস কীওয়ার্ড" : "Focus Keyword"} value={form.focus_keyword} onChange={f("focus_keyword")} maxLength={150} error={fieldErrors.focus_keyword} />
+                  <FloatingInput label={locale === "bn" ? "ক্যানোনিক্যাল URL" : "Canonical URL"} value={form.canonical_url} onChange={f("canonical_url")} placeholder="https://pujarighar.com/packages/..." maxLength={500} error={fieldErrors.canonical_url} />
                 </div>
               </div>
             </div>
@@ -532,6 +532,7 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
                   discount_type: val as "NONE" | "PERCENTAGE" | "FLAT",
                 }))
               }
+              error={fieldErrors.discount_type}
             >
               <option value="NONE">
                 {locale === "bn" ? "কোনো ছাড় নেই" : "No Discount"}
@@ -561,6 +562,7 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
                 step="0.01"
                 value={form.discount_value}
                 onChange={f("discount_value")}
+                error={fieldErrors.discount_value}
               />
             )}
           </div>
