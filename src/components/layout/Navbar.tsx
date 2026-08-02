@@ -879,23 +879,27 @@ export default function Navbar() {
                 <Search className="w-5 h-5" />
               </button>
             )}
-            {/* Anchored to the right edge (same spot as the icon button) and
-                grows leftward — a right-to-left reveal, not a dropdown from
-                below. `overflow-hidden` on the fixed-width inner form clips
-                it during the width transition instead of squishing the input. */}
+            {/* Anchored to the right edge (same spot as the icon button),
+                sliding in from the right and fading in — a right-to-left
+                reveal, not a dropdown from below. Animates only `transform`
+                and `opacity` (not `width`) so it's GPU-composited instead of
+                triggering layout on every frame. */}
             <div
-              className={`absolute right-0 top-1/2 -translate-y-1/2 overflow-hidden transition-all duration-300 ease-out z-50 ${
-                searchOpen ? "w-64 lg:w-80 opacity-100" : "w-0 opacity-0"
+              className={`absolute right-0 top-1/2 w-64 lg:w-80 z-50 transition-[transform,opacity] duration-300 ease-out ${
+                searchOpen
+                  ? "-translate-y-1/2 translate-x-0 opacity-100"
+                  : "-translate-y-1/2 translate-x-4 opacity-0 pointer-events-none"
               }`}
             >
               <form
                 onSubmit={e => { handleSearch(e); setSearchOpen(false); }}
-                className="w-64 lg:w-80"
+                className="w-full"
               >
                 <div className="relative w-full">
                   <input
                     ref={searchInputRef}
                     type="text"
+                    tabIndex={searchOpen ? 0 : -1}
                     value={query}
                     onChange={e => setQuery(e.target.value)}
                     placeholder={t("common.search")}
@@ -907,6 +911,7 @@ export default function Navbar() {
                   </svg>
                   <button
                     type="button"
+                    tabIndex={searchOpen ? 0 : -1}
                     onClick={() => setSearchOpen(false)}
                     aria-label={locale === "bn" ? "বন্ধ করুন" : "Close"}
                     className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
