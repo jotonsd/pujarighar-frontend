@@ -14,7 +14,7 @@ import {
   Boxes, Gift, Tag, BadgeCheck, Percent, Warehouse, ClipboardList, Truck,
   Users as UsersIcon, Handshake, PiggyBank, Landmark, BookOpen, NotebookPen, PlusCircle,
   Scale, ShoppingCart, FileBarChart, Undo2, CreditCard, Megaphone,
-  GalleryHorizontal, Target, Mail, Star, Home, Store, FileText, Shield, ListTree,
+  GalleryHorizontal, Target, Mail, Star, Home, Store, FileText, Shield, ListTree, Search, ChevronRight,
   type LucideIcon,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
@@ -84,6 +84,7 @@ const NAV_ICONS: Record<string, LucideIcon> = {
   "file-text": FileText,
   shield: Shield,
   "list-tree": ListTree,
+  "chevron-right": ChevronRight,
 };
 
 function NavIcon({ name, className = "w-4 h-4" }: { name: string; className?: string }) {
@@ -684,8 +685,8 @@ export default function Navbar() {
     label_bn: "ক্যাটাগরি",
     label_en: "Category",
     items: navCategories.map(c => ({
-      href: `/products?category=${c.id}`,
-      icon: "tag",
+      href: `/products?category=${c.slug}`,
+      icon: "chevron-right",
       label_bn: c.name_bn,
       label_en: c.name_en,
     })),
@@ -700,6 +701,27 @@ export default function Navbar() {
 
   // Search
   const [query, setQuery] = useState("");
+  const [searchOpen, setSearchOpen] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    // Input stays mounted (needed so the width transition has something to
+    // animate to/from) — focus it manually on open instead of `autoFocus`,
+    // which only fires once on initial mount.
+    if (searchOpen) searchInputRef.current?.focus();
+  }, [searchOpen]);
+
+  useEffect(() => {
+    if (!searchOpen) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setSearchOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [searchOpen]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -820,29 +842,68 @@ export default function Navbar() {
             })}
           </div>
 
-          {/* Search — only for guest/customer */}
-          <form
-            onSubmit={handleSearch}
-            className={`shrink-0 justify-end ${
+          {/* Search — only for guest/customer. Collapsed to an icon button by
+              default (expands on click) so it doesn't eat a fixed 256-320px
+              of row width and squeeze out later menu items (e.g. "Track
+              Order" was getting clipped in the longer English label). */}
+          <div
+            ref={searchRef}
+            className={`relative shrink-0 items-center h-9 ${
               isAdmin || (!!currentUser && role !== "CUSTOMER")
                 ? "hidden"
-                : "hidden md:flex w-64 lg:w-80"
+                : "hidden md:flex"
             }`}
           >
-            <div className="relative w-full">
-              <input
-                type="text"
-                value={query}
-                onChange={e => setQuery(e.target.value)}
-                placeholder={t("common.search")}
-                className="w-full pl-9 pr-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-300 bg-gray-50"
-              />
-              <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                <circle cx="11" cy="11" r="8" />
-                <path d="m21 21-4.35-4.35" />
-              </svg>
+            {!searchOpen && (
+              <button
+                type="button"
+                onClick={() => setSearchOpen(true)}
+                aria-label={t("common.search")}
+                className="p-2 text-gray-500 hover:text-amber-600 hover:bg-gray-50 rounded-md transition-colors"
+              >
+                <Search className="w-5 h-5" />
+              </button>
+            )}
+            {/* Anchored to the right edge (same spot as the icon button) and
+                grows leftward — a right-to-left reveal, not a dropdown from
+                below. `overflow-hidden` on the fixed-width inner form clips
+                it during the width transition instead of squishing the input. */}
+            <div
+              className={`absolute right-0 top-1/2 -translate-y-1/2 overflow-hidden transition-all duration-300 ease-out z-50 ${
+                searchOpen ? "w-64 lg:w-80 opacity-100" : "w-0 opacity-0"
+              }`}
+            >
+              <form
+                onSubmit={e => { handleSearch(e); setSearchOpen(false); }}
+                className="w-64 lg:w-80"
+              >
+                <div className="relative w-full">
+                  <input
+                    ref={searchInputRef}
+                    type="text"
+                    value={query}
+                    onChange={e => setQuery(e.target.value)}
+                    placeholder={t("common.search")}
+                    className="w-full pl-9 pr-9 py-1.5 text-sm border-2 border-gray-200 rounded-lg shadow-lg focus:outline-none focus:border-amber-400 bg-white"
+                  />
+                  <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="m21 21-4.35-4.35" />
+                  </svg>
+                  <button
+                    type="button"
+                    onClick={() => setSearchOpen(false)}
+                    aria-label={locale === "bn" ? "বন্ধ করুন" : "Close"}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </form>
             </div>
-          </form>
+          </div>
 
           {/* Right actions */}
           <div className="flex items-center gap-3 shrink-0">

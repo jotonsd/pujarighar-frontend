@@ -255,7 +255,7 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
               <button
                 onClick={handleAddToCart}
                 disabled={adding}
-                className="btn-secondary flex-1 min-w-[45%] md:min-w-0 font-bold"
+                className="btn-secondary bg-gray-200 hover:bg-gray-300 flex-1 min-w-[45%] md:min-w-0 font-bold"
               >
                 {adding ? t("common.loading") : t("product.addToCart")}
               </button>

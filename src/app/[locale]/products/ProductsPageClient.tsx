@@ -375,8 +375,8 @@ export default function ProductsPageClient({
           {allCategories.map(cat => (
             <Checkbox
               key={cat.id}
-              checked={categories.includes(cat.id)}
-              onChange={() => toggleCategory(cat.id)}
+              checked={categories.includes(cat.slug)}
+              onChange={() => toggleCategory(cat.slug)}
               label={locale === "bn" ? cat.name_bn : cat.name_en}
             />
           ))}
