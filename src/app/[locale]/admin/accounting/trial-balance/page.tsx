@@ -31,7 +31,7 @@ export default function TrialBalancePage() {
         </div>
         {tb && (
           <div className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold ${
-            balanced ? "bg-green-50 text-green-700 border border-green-200" : "bg-red-50 text-red-600 border border-red-200"
+            balanced ? "bg-green-50 text-green-700 border border-green-200" : "bg-red-50 text-red-700 border border-red-200"
           }`}>
             <span>{balanced ? "✓" : "✗"}</span>
             <span>

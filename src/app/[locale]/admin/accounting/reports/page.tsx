@@ -150,7 +150,7 @@ export default function ReportsPage() {
                   className={`flex items-center gap-2 mb-3 px-4 py-2.5 rounded-xl text-sm font-semibold w-fit ${
                     balanced
                       ? "bg-green-50 text-green-700 border border-green-200"
-                      : "bg-red-50 text-red-600 border border-red-200"
+                      : "bg-red-50 text-red-700 border border-red-200"
                   }`}
                 >
                   <span>{balanced ? "✓" : "✗"}</span>

@@ -111,7 +111,7 @@ export default function NotificationsPage() {
                 {f.icon}
                 <span className="flex-1">{isBn ? f.bn : f.en}</span>
                 {!!f.count && (
-                  <span className="bg-red-100 text-red-600 text-xs font-semibold px-1.5 py-0.5 rounded-full">
+                  <span className="bg-red-100 text-red-700 text-xs font-semibold px-1.5 py-0.5 rounded-full">
                     {f.count}
                   </span>
                 )}

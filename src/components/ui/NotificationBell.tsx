@@ -75,7 +75,7 @@ export default function NotificationBell({ isAdmin }: { isAdmin: boolean }) {
               <h3 className="text-sm font-bold text-gray-800">
                 {isBn ? "নোটিফিকেশন" : "Notifications"}
                 {unread > 0 && (
-                  <span className="ml-2 bg-red-100 text-red-600 text-xs font-semibold px-1.5 py-0.5 rounded-full">
+                  <span className="ml-2 bg-red-100 text-red-700 text-xs font-semibold px-1.5 py-0.5 rounded-full">
                     {unread}
                   </span>
                 )}

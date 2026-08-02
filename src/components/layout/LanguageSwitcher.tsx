@@ -52,10 +52,10 @@ export default function LanguageSwitcher() {
           isBn ? 'translate-x-0' : 'translate-x-[30px]'
         }`}
       />
-      <span className={`relative z-10 w-8 text-center text-[11px] font-bold transition-colors ${isBn ? 'text-amber-700' : 'text-gray-400'}`}>
+      <span className={`relative z-10 w-8 text-center text-[11px] font-bold transition-colors ${isBn ? 'text-amber-700' : 'text-gray-700'}`}>
         বাং
       </span>
-      <span className={`relative z-10 w-8 text-center text-[11px] font-bold transition-colors ${isBn ? 'text-gray-400' : 'text-amber-700'}`}>
+      <span className={`relative z-10 w-8 text-center text-[11px] font-bold transition-colors ${isBn ? 'text-gray-700' : 'text-amber-700'}`}>
         EN
       </span>
     </button>

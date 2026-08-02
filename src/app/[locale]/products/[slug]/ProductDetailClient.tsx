@@ -220,7 +220,7 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
                 <span className="text-sm text-gray-500 line-through">
                   {formatAmount(product.unit_price, locale, 0)}
                 </span>
-                <span className="text-xs font-bold bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full">
+                <span className="text-xs font-bold bg-red-100 text-red-700 px-1.5 py-0.5 rounded-full">
                   {product.active_discount_type === "PERCENTAGE"
                     ? `${formatNumber(Number(product.active_discount_value), locale)}% ${locale === "bn" ? "ছাড়" : "OFF"}`
                     : `${formatAmount(Number(product.active_discount_value), locale, 0)} ${locale === "bn" ? "ছাড়" : "OFF"}`}

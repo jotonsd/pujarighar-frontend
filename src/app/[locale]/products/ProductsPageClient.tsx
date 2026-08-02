@@ -329,9 +329,9 @@ export default function ProductsPageClient({
               <span className="text-sm text-gray-700 group-hover:text-gray-900 flex items-center gap-1.5">
                 {locale === "bn" ? opt.bn : opt.en}
                 {opt.value === "newest" && (
-                  <span className="relative inline-flex w-2 h-2">
+                  <span className="relative inline-flex w-3 h-3">
                     <span className="absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75 animate-ping" />
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-red-600" />
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-red-600" />
                   </span>
                 )}
               </span>

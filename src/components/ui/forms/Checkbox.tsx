@@ -11,7 +11,7 @@ const variants: Record<Variant, { active: string; input: string; ring: string }>
     ring:   'focus:ring-amber-400',
   },
   red: {
-    active: 'bg-red-50 text-red-600',
+    active: 'bg-red-50 text-red-700',
     input:  'text-red-500',
     ring:   'focus:ring-red-400',
   },

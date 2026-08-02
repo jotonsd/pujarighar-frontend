@@ -18,7 +18,7 @@ export default function HomeOffersClient({ products }: { products: Product[] }) 
           <h2 className="text-xl font-bold text-gray-800">
             {locale === "bn" ? "অফার" : "Offers"}
           </h2>
-          <span className="text-xs font-semibold bg-red-100 text-red-600 px-2 py-0.5 rounded-full">
+          <span className="text-xs font-semibold bg-red-100 text-red-700 px-2 py-0.5 rounded-full">
             {locale === "bn" ? "ছাড়" : "Sale"}
           </span>
         </div>

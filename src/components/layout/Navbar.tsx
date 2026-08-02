@@ -517,6 +517,47 @@ function MobileMenu({
             }
             // group
             const grp = item as NavGroupItem;
+
+            // The Category dropdown is a synthetic, potentially-long flat
+            // list of live category data — rendered as its own collapsible
+            // row (same look as a regular link, chevron, collapsed by
+            // default) instead of the "always-expanded list under a header"
+            // treatment used for the backend-driven admin nav groups below.
+            if (grp.id === "category-menu") {
+              const key = `top-${i}`;
+              const expanded = expandedSubKey === key;
+              return (
+                <div key={i}>
+                  <button
+                    type="button"
+                    onClick={() => setExpandedSubKey(expanded ? null : key)}
+                    className="w-full flex items-center justify-between gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    <span className="flex items-center gap-3">
+                      <NavIcon name={grp.icon} className="w-[18px] h-[18px]" />
+                      {label(grp, locale)}
+                    </span>
+                    <svg
+                      className={`w-3.5 h-3.5 text-gray-400 transition-transform ${expanded ? "rotate-180" : ""}`}
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={2.5}
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="m6 9 6 6 6-6" />
+                    </svg>
+                  </button>
+                  {expanded && (
+                    <div className="bg-gray-50/60">
+                      {grp.items.map(leaf =>
+                        isSubGroup(leaf) ? null : navLink(leaf.href, leaf.icon, label(leaf, locale), true),
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
             return (
               <div key={i} className="border-t border-gray-100 mt-2 pt-2">
                 <p className="px-4 py-1 text-xs text-gray-400 font-medium uppercase tracking-wide">
@@ -696,6 +737,7 @@ export default function Navbar() {
   const { data: navCategories = [] } = useGetCategoriesQuery();
   const categoriesGroup: NavGroupItem | null = navCategories.length > 0 ? {
     type: "group",
+    id: "category-menu",
     icon: "tag",
     label_bn: "ক্যাটাগরি",
     label_en: "Category",
@@ -874,9 +916,9 @@ export default function Navbar() {
                 type="button"
                 onClick={() => setSearchOpen(true)}
                 aria-label={t("common.search")}
-                className="p-2 text-gray-500 hover:text-amber-700 hover:bg-gray-50 rounded-md transition-colors"
+                className="p-2 text-gray-700 hover:text-amber-700 hover:bg-gray-50 rounded-md transition-colors"
               >
-                <Search className="w-5 h-5" />
+                <Search className="w-5 h-5" strokeWidth={2.5} />
               </button>
             )}
             {/* Anchored to the right edge (same spot as the icon button),

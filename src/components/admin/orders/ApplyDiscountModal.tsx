@@ -70,7 +70,7 @@ export default function ApplyDiscountModal({
           <div className="bg-gray-50 rounded-xl p-3 text-sm space-y-1">
             <div className="flex justify-between text-gray-500">
               <span>{isBn ? 'ছাড়' : 'Discount'}</span>
-              <span className="text-red-600">−৳{discountAmount.toLocaleString()}</span>
+              <span className="text-red-700">−৳{discountAmount.toLocaleString()}</span>
             </div>
             <div className="flex justify-between font-semibold text-gray-800">
               <span>{isBn ? 'নতুন সর্বমোট' : 'New Grand Total'}</span>

@@ -45,7 +45,7 @@ const TONE_STYLES: Record<string, { bg: string; iconText: string }> = {
   amber:  { bg: "bg-amber-700",   iconText: "text-amber-700" },
   violet: { bg: "bg-violet-600",  iconText: "text-violet-600" },
   orange: { bg: "bg-orange-700",  iconText: "text-orange-700" },
-  red:    { bg: "bg-red-600",     iconText: "text-red-600" },
+  red:    { bg: "bg-red-600",     iconText: "text-red-700" },
   gray:   { bg: "bg-gray-600",    iconText: "text-gray-600" },
 };
 
@@ -277,7 +277,7 @@ const PSI_LAB_METRIC_LABELS: Record<string, { bn: string; en: string }> = {
 
 function ScoreRing({ score }: { score: number | null }) {
   if (score === null) return <div className="w-14 h-14 rounded-full border-4 border-gray-100 flex items-center justify-center shrink-0"><span className="text-xs text-gray-300">—</span></div>;
-  const color = score >= 90 ? "text-green-600 border-green-100 bg-green-50" : score >= 50 ? "text-amber-500 border-amber-100 bg-amber-50" : "text-red-600 border-red-100 bg-red-50";
+  const color = score >= 90 ? "text-green-600 border-green-100 bg-green-50" : score >= 50 ? "text-amber-500 border-amber-100 bg-amber-50" : "text-red-700 border-red-100 bg-red-50";
   return (
     <div className={`w-14 h-14 rounded-full border-4 flex items-center justify-center shrink-0 ${color}`}>
       <span className="text-lg font-bold">{score}</span>
@@ -659,7 +659,7 @@ export default function AnalyticsPage() {
         actions={status?.is_connected ? (
           <button
             onClick={handleDisconnect}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-red-50 text-red-600 border border-red-100 hover:bg-red-100 transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-red-50 text-red-700 border border-red-100 hover:bg-red-100 transition-colors"
           >
             <Unplug className="w-3.5 h-3.5" />
             {isBn ? "বিচ্ছিন্ন করুন" : "Disconnect"}

@@ -280,7 +280,7 @@ export default function SuppliersPage() {
       accessor: (s) => {
         const bal = parseFloat(s.total_balance || "0");
         return (
-          <span className={`font-bold ${bal > 0 ? "text-red-600" : "text-gray-400"}`}>
+          <span className={`font-bold ${bal > 0 ? "text-red-700" : "text-gray-400"}`}>
             {formatAmount(s.total_balance, locale, 0)}
           </span>
         );

@@ -542,7 +542,7 @@ export default function POSPage() {
                     </p>
                     <button
                       onClick={() => removeFromCart(line.product.id)}
-                      className="w-5 h-5 flex items-center justify-center rounded text-red-400 hover:bg-red-50 hover:text-red-600 transition-colors shrink-0"
+                      className="w-5 h-5 flex items-center justify-center rounded text-red-400 hover:bg-red-50 hover:text-red-700 transition-colors shrink-0"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>

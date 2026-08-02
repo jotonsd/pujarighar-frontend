@@ -432,7 +432,7 @@ function PaymentHistoryModal({
                             : "Net Profit (from P&L)"}
                         </p>
                         <p
-                          className={`text-xl font-bold ${netProfit >= 0 ? "text-green-600" : "text-red-600"}`}
+                          className={`text-xl font-bold ${netProfit >= 0 ? "text-green-600" : "text-red-700"}`}
                         >
                           {formatAmount(plData.net_profit, locale, 2)}
                         </p>
@@ -829,7 +829,7 @@ export default function PartnersPage() {
               {isBn ? "মোট বাকি" : "Outstanding"}
             </p>
             <p
-              className={`text-2xl font-bold ${totalOutstanding > 0 ? "text-red-600" : "text-gray-400"}`}
+              className={`text-2xl font-bold ${totalOutstanding > 0 ? "text-red-700" : "text-gray-400"}`}
             >
               {formatAmount(String(totalOutstanding.toFixed(2)), locale, 2)}
             </p>
