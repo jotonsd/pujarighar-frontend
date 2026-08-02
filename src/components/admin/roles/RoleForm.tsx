@@ -33,7 +33,7 @@ const GROUPS: { bn: string; en: string; modules: string[] }[] = [
   { bn: "ড্যাশবোর্ড", en: "Dashboard", modules: ["dashboard_overview", "analytics", "courier"] },
   { bn: "পণ্য ব্যবস্থাপনা", en: "Product Management", modules: ["products", "packages", "categories", "brands", "discounts", "inventory_stock", "suppliers"] },
   { bn: "ব্যবহারকারী", en: "Users", modules: ["users_admin", "partners", "loans"] },
-  { bn: "ফিন্যান্স", en: "Finance", modules: ["accounting_journal", "accounting_ledger", "accounting_profit_loss", "accounting_trial_balance", "accounting_sales_summary", "expenses", "delivery_charges", "cashback"] },
+  { bn: "ফিন্যান্স", en: "Finance", modules: ["accounting_chart", "accounting_journal", "accounting_ledger", "accounting_profit_loss", "accounting_trial_balance", "accounting_sales_summary", "expenses", "delivery_charges", "cashback"] },
   { bn: "রিপোর্ট", en: "Reports", modules: ["reports_purchases", "reports_supplier_returns", "reports_supplier_outstanding", "reports_product_stock", "reports_income", "reports_expenses"] },
   { bn: "মার্কেটিং", en: "Marketing", modules: ["hero_slider", "banners", "blog", "promo_emails", "reviews"] },
   { bn: "অন্যান্য", en: "Other", modules: ["shipping_addresses", "site_settings"] },

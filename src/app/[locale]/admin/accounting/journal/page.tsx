@@ -431,9 +431,16 @@ export default function JournalPage() {
 
                       <td className="px-4 py-2 align-top">
                         {isFirst && (
-                          <Badge variant={badge.variant}>
-                            {isBn ? badge.label_bn : badge.label_en}
-                          </Badge>
+                          <div className="flex flex-wrap gap-1">
+                            <Badge variant={badge.variant}>
+                              {isBn ? badge.label_bn : badge.label_en}
+                            </Badge>
+                            <Badge variant={entry.is_balanced ? "green" : "red"}>
+                              {entry.is_balanced
+                                ? (isBn ? "সুষম" : "Balanced")
+                                : (isBn ? "অসামঞ্জস্যপূর্ণ" : "Imbalanced")}
+                            </Badge>
+                          </div>
                         )}
                       </td>
 

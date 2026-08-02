@@ -591,6 +591,7 @@ export interface JournalEntry {
   lines: JournalLine[]
   total_debit: string
   total_credit: string
+  is_balanced: boolean
 }
 
 // ─── Review ──────────────────────────────────────────────────────────────────
