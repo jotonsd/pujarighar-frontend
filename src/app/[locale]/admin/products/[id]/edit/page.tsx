@@ -8,6 +8,7 @@ import {
   useGetProductQuery,
   useUpdateProductMutation,
 } from "@/api/products/productsApi";
+import BadgePicker from "@/components/admin/products/BadgePicker";
 import ImageUpload from "@/components/ui/ImageUpload";
 import {
   FloatingInput,
@@ -17,6 +18,7 @@ import {
 } from "@/components/ui/forms";
 import PageHeader from "@/components/ui/PageHeader";
 import Spinner from "@/components/ui/Spinner";
+import { ProductBadge } from "@/lib/types";
 import { toast } from "@/store/toastStore";
 import { getErrorMessage } from "@/utils/apiError";
 import { useLocale, useTranslations } from "next-intl";
@@ -55,6 +57,7 @@ export default function EditProductPage({
     meta_description_en: "",
     focus_keyword: "",
     canonical_url: "",
+    badges: [] as ProductBadge[],
   });
 
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
@@ -77,6 +80,7 @@ export default function EditProductPage({
         meta_description_en: product.meta_description_en,
         focus_keyword:        product.focus_keyword,
         canonical_url:        product.canonical_url,
+        badges:               product.badges,
       });
     }
   }, [product]);
@@ -159,6 +163,12 @@ export default function EditProductPage({
           onChange={() => setForm(p => ({ ...p, is_active: !p.is_active }))}
           activeLabel={t("common.active")}
           inactiveLabel={t("common.inactive")}
+        />
+
+        <BadgePicker
+          value={form.badges}
+          onChange={badges => setForm(p => ({ ...p, badges }))}
+          locale={locale}
         />
 
         <div className="pt-2 border-t border-gray-100">
