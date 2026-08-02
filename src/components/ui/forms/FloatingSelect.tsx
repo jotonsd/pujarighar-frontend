@@ -232,7 +232,7 @@ const FloatingSelect = forwardRef<HTMLDivElement, FloatingSelectProps>(
             aria-expanded={isOpen}
             aria-label={label}
             className={`block px-2.5 pb-2 pt-3 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 cursor-pointer focus:outline-none focus:ring-0 focus:border-amber-600 ${
-              error ? 'border-amber-500' : ''
+              error ? 'border-red-500' : ''
             } ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}
           >
             {searchable && isOpen ? (
@@ -267,7 +267,7 @@ const FloatingSelect = forwardRef<HTMLDivElement, FloatingSelectProps>(
               displayValue || (searchable && isOpen)
                 ? '-translate-y-4 scale-75 top-2 text-amber-700'
                 : 'scale-100 -translate-y-1/2 top-1/2 text-gray-500'
-            } ${error ? '!text-amber-500' : ''}`}
+            } ${error ? '!text-red-500' : ''}`}
           >
             {label}
           </label>
@@ -290,7 +290,7 @@ const FloatingSelect = forwardRef<HTMLDivElement, FloatingSelectProps>(
           />
         </div>
 
-        {error && <p className="mt-1 text-xs text-amber-500">{error}</p>}
+        {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
 
         {isOpen &&
           dropdownPosition &&

@@ -172,6 +172,7 @@ export default function NewProductPage() {
             onChange={val => setForm(p => ({ ...p, brand: val }))}
             showClearButton={!!form.brand}
             onClear={() => setForm(p => ({ ...p, brand: "" }))}
+            error={fieldErrors.brand}
           >
             <option value="">{locale === "bn" ? "ব্র্যান্ড নির্বাচন করুন" : "Select brand"}</option>
             {brands.map(b => (

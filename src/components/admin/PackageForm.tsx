@@ -532,6 +532,7 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
                   discount_type: val as "NONE" | "PERCENTAGE" | "FLAT",
                 }))
               }
+              error={fieldErrors.discount_type}
             >
               <option value="NONE">
                 {locale === "bn" ? "কোনো ছাড় নেই" : "No Discount"}
@@ -561,6 +562,7 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
                 step="0.01"
                 value={form.discount_value}
                 onChange={f("discount_value")}
+                error={fieldErrors.discount_value}
               />
             )}
           </div>
