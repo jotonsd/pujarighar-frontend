@@ -4,7 +4,6 @@ const OPTIONS: { value: ProductBadge; bn: string; en: string }[] = [
   { value: "new",        bn: "নতুন",       en: "New" },
   { value: "trendy",     bn: "ট্রেন্ডি",    en: "Trendy" },
   { value: "flash_sale", bn: "ফ্ল্যাশ সেল", en: "Flash Sale" },
-  { value: "popular",    bn: "জনপ্রিয়",    en: "Popular" },
 ];
 
 export default function BadgePicker({

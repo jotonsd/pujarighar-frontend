@@ -213,7 +213,7 @@ export interface Product {
   updated_at: string
 }
 
-export type ProductBadge = 'new' | 'trendy' | 'flash_sale' | 'popular'
+export type ProductBadge = 'new' | 'trendy' | 'flash_sale'
 
 export interface BlogPost {
   id: string

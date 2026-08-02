@@ -20,10 +20,9 @@ interface Props {
 }
 
 const BADGE_STYLE: Record<string, { bn: string; en: string; className: string }> = {
-  new:         { bn: "নতুন",        en: "New",        className: "bg-red-800 text-white" },
-  trendy:      { bn: "ট্রেন্ডি",     en: "Trendy",     className: "bg-purple-500 text-white" },
+  new:         { bn: "নতুন",        en: "New",        className: "bg-red-700 text-white" },
+  trendy:      { bn: "ট্রেন্ডি",     en: "Trendy",     className: "bg-purple-700 text-white" },
   flash_sale:  { bn: "ফ্ল্যাশ সেল",  en: "Flash Sale", className: "bg-gray-900 text-white" },
-  popular:     { bn: "জনপ্রিয়",     en: "Popular",    className: "bg-green-800 text-white" },
 };
 
 export default function ProductCard({ product, locale, priority = false }: Props) {
