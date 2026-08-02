@@ -19,6 +19,13 @@ interface Props {
   priority?: boolean;
 }
 
+const BADGE_STYLE: Record<string, { bn: string; en: string; className: string }> = {
+  new:         { bn: "নতুন",        en: "New",        className: "bg-red-800 text-white" },
+  trendy:      { bn: "ট্রেন্ডি",     en: "Trendy",     className: "bg-purple-500 text-white" },
+  flash_sale:  { bn: "ফ্ল্যাশ সেল",  en: "Flash Sale", className: "bg-gray-900 text-white" },
+  popular:     { bn: "জনপ্রিয়",     en: "Popular",    className: "bg-green-800 text-white" },
+};
+
 export default function ProductCard({ product, locale, priority = false }: Props) {
   const t = useTranslations();
   const [qty, setQty] = useState(1);
@@ -134,6 +141,19 @@ export default function ProductCard({ product, locale, priority = false }: Props
       >
         <div className="relative mb-4">
           <div className="aspect-square bg-amber-50 rounded-lg overflow-hidden relative">
+          {product.badges.length > 0 && (
+            <div className="absolute top-1.5 left-1.5 z-10 flex flex-col gap-1 items-start">
+              {product.badges.map(b => {
+                const style = BADGE_STYLE[b];
+                if (!style) return null;
+                return (
+                  <span key={b} className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${style.className}`}>
+                    {locale === "bn" ? style.bn : style.en}
+                  </span>
+                );
+              })}
+            </div>
+          )}
           {images.length > 0 ? (
             <>
               <Image

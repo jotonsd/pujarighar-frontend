@@ -197,6 +197,7 @@ export interface Product {
   active_discount_type: 'PERCENTAGE' | 'FLAT' | null
   active_discount_value: string | null
   is_active: boolean
+  badges: ProductBadge[]
   stock_on_hand: string
   images: ProductImage[]
   package_items: PackageItem[]
@@ -211,6 +212,8 @@ export interface Product {
   created_at: string
   updated_at: string
 }
+
+export type ProductBadge = 'new' | 'trendy' | 'flash_sale' | 'popular'
 
 export interface BlogPost {
   id: string

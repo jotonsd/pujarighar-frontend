@@ -11,8 +11,10 @@ import {
     FloatingSelect,
     FloatingTextarea,
 } from "@/components/ui/forms";
+import BadgePicker from "@/components/admin/products/BadgePicker";
 import ImageUpload from "@/components/ui/ImageUpload";
 import PageHeader from "@/components/ui/PageHeader";
+import { ProductBadge } from "@/lib/types";
 import { toast } from "@/store/toastStore";
 import { getErrorMessage } from "@/utils/apiError";
 import { RefreshCw } from "lucide-react";
@@ -51,6 +53,7 @@ export default function NewProductPage() {
     meta_description_en: "",
     focus_keyword: "",
     canonical_url: "",
+    badges: [] as ProductBadge[],
   });
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
   const skuManualRef = useRef(false);
@@ -194,6 +197,12 @@ export default function NewProductPage() {
           value={form.description_en}
           onChange={f("description_en")}
           rows={3}
+        />
+
+        <BadgePicker
+          value={form.badges}
+          onChange={badges => setForm(p => ({ ...p, badges }))}
+          locale={locale}
         />
 
         <div className="pt-2 border-t border-gray-100">

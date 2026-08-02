@@ -1,6 +1,7 @@
 "use client";
 
 import { useGetMeQuery, useLogoutMutation } from "@/api/auth/authApi";
+import { useGetCategoriesQuery } from "@/api/categories/categoriesApi";
 import { useGetSiteSettingsQuery } from "@/api/settings/settingsApi";
 import CartPreview from "@/components/layout/CartPreview";
 import NotificationBell from "@/components/ui/NotificationBell";
@@ -668,7 +669,32 @@ export default function Navbar() {
     : (siteSettings?.company_name_en || "PujariGhar");
 
   // Active menu: backend-driven for authenticated users, guest fallback otherwise
-  const menu: NavItem[] = currentUser?.nav_menu ?? GUEST_MENU;
+  const baseMenu: NavItem[] = currentUser?.nav_menu ?? GUEST_MENU;
+
+  // "Category" dropdown — only guest/customer menus have a plain '/products'
+  // link (staff nav uses '/admin/products'), so splicing it in right after
+  // that link naturally scopes this to guest/customer only, with no extra
+  // role check needed. Categories are per-tenant data, not static like the
+  // rest of the menu, so this is built here rather than baked into
+  // GUEST_MENU or the backend's hardcoded CUSTOMER menu.
+  const { data: navCategories = [] } = useGetCategoriesQuery();
+  const categoriesGroup: NavGroupItem | null = navCategories.length > 0 ? {
+    type: "group",
+    icon: "tag",
+    label_bn: "ক্যাটাগরি",
+    label_en: "Category",
+    items: navCategories.map(c => ({
+      href: `/products?category=${c.id}`,
+      icon: "tag",
+      label_bn: c.name_bn,
+      label_en: c.name_en,
+    })),
+  } : null;
+  const menu: NavItem[] = categoriesGroup
+    ? baseMenu.flatMap(item =>
+        item.type === "link" && item.href === "/products" ? [item, categoriesGroup] : [item],
+      )
+    : baseMenu;
 
   const showCart = !currentUser || role === "CUSTOMER";
 
