@@ -124,7 +124,7 @@ export default function AddExpensePage() {
                   <td className="px-4 py-3 text-xs text-gray-500 whitespace-nowrap">{formatDate(r.date)}</td>
                   <td className="px-4 py-3 text-gray-800">{isBn ? r.account_name_bn : r.account_name_en}</td>
                   <td className="px-4 py-3 text-xs text-gray-600">{isBn ? r.description_bn : r.description_en}</td>
-                  <td className="px-4 py-3 text-right text-xs font-bold text-red-600">{formatAmount(r.amount, locale, 2)}</td>
+                  <td className="px-4 py-3 text-right text-xs font-bold text-red-700">{formatAmount(r.amount, locale, 2)}</td>
                 </tr>
               ))}
             </tbody>

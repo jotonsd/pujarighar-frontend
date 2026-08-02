@@ -708,7 +708,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                                 isGuest: false,
                               })
                             }
-                            className="text-xs text-red-400 hover:text-red-600"
+                            className="text-xs text-red-400 hover:text-red-700"
                           >
                             {t("cart.remove")}
                           </button>
@@ -1141,7 +1141,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                               isGuest: true,
                             })
                           }
-                          className="text-xs text-red-400 hover:text-red-600"
+                          className="text-xs text-red-400 hover:text-red-700"
                         >
                           {t("cart.remove")}
                         </button>

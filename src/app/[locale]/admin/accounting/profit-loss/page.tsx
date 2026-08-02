@@ -42,7 +42,7 @@ export default function ProfitLossPage() {
               {
                 label: t("netProfit"),
                 value: pl.net_profit,
-                color: Number(pl.net_profit) >= 0 ? "text-green-700" : "text-red-600",
+                color: Number(pl.net_profit) >= 0 ? "text-green-700" : "text-red-700",
               },
             ].map(({ label, value, color }) => (
               <div key={label} className="flex justify-between py-3 border-b last:border-0">
@@ -63,7 +63,7 @@ export default function ProfitLossPage() {
                     <p className="text-sm text-gray-800">{locale === "bn" ? s.name_bn || s.name_en : s.name_en || s.name_bn}</p>
                     <p className="text-xs text-amber-500">{formatNumber(s.percentage, locale)}%</p>
                   </div>
-                  <span className={`font-bold text-sm ${Number(s.share_amount) >= 0 ? "text-green-700" : "text-red-600"}`}>
+                  <span className={`font-bold text-sm ${Number(s.share_amount) >= 0 ? "text-green-700" : "text-red-700"}`}>
                     {formatAmount(s.share_amount, locale, 2)}
                   </span>
                 </div>

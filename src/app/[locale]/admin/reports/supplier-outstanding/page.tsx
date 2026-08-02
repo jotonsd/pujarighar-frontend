@@ -84,7 +84,7 @@ export default function SupplierOutstandingReportPage() {
                     <td className="px-4 py-3 text-xs text-gray-600">{s.phone || "—"}</td>
                     <td className="px-4 py-3 text-right text-xs text-blue-700 font-semibold">{formatAmount(s.total_credit, locale, 0)}</td>
                     <td className="px-4 py-3 text-right text-xs text-green-700 font-semibold">{formatAmount(s.total_paid, locale, 0)}</td>
-                    <td className={`px-4 py-3 text-right text-xs font-bold ${balance > 0 ? "text-red-600" : "text-gray-400"}`}>
+                    <td className={`px-4 py-3 text-right text-xs font-bold ${balance > 0 ? "text-red-700" : "text-gray-400"}`}>
                       {formatAmount(s.total_balance, locale, 0)}
                     </td>
                   </tr>

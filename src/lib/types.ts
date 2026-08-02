@@ -100,6 +100,10 @@ export interface NavGroupItem {
   label_bn: string
   label_en: string
   items: NavGroupChild[]
+  /** Frontend-only marker for synthetic groups (e.g. the Category dropdown,
+   *  built client-side from live category data) that need different mobile
+   *  rendering than the backend-driven admin nav groups. */
+  id?: string
 }
 
 export type NavItem = NavLinkItem | NavGroupItem

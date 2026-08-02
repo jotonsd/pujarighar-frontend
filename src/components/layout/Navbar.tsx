@@ -517,6 +517,47 @@ function MobileMenu({
             }
             // group
             const grp = item as NavGroupItem;
+
+            // The Category dropdown is a synthetic, potentially-long flat
+            // list of live category data — rendered as its own collapsible
+            // row (same look as a regular link, chevron, collapsed by
+            // default) instead of the "always-expanded list under a header"
+            // treatment used for the backend-driven admin nav groups below.
+            if (grp.id === "category-menu") {
+              const key = `top-${i}`;
+              const expanded = expandedSubKey === key;
+              return (
+                <div key={i}>
+                  <button
+                    type="button"
+                    onClick={() => setExpandedSubKey(expanded ? null : key)}
+                    className="w-full flex items-center justify-between gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    <span className="flex items-center gap-3">
+                      <NavIcon name={grp.icon} className="w-[18px] h-[18px]" />
+                      {label(grp, locale)}
+                    </span>
+                    <svg
+                      className={`w-3.5 h-3.5 text-gray-400 transition-transform ${expanded ? "rotate-180" : ""}`}
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={2.5}
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="m6 9 6 6 6-6" />
+                    </svg>
+                  </button>
+                  {expanded && (
+                    <div className="bg-gray-50/60">
+                      {grp.items.map(leaf =>
+                        isSubGroup(leaf) ? null : navLink(leaf.href, leaf.icon, label(leaf, locale), true),
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
             return (
               <div key={i} className="border-t border-gray-100 mt-2 pt-2">
                 <p className="px-4 py-1 text-xs text-gray-400 font-medium uppercase tracking-wide">
@@ -696,6 +737,7 @@ export default function Navbar() {
   const { data: navCategories = [] } = useGetCategoriesQuery();
   const categoriesGroup: NavGroupItem | null = navCategories.length > 0 ? {
     type: "group",
+    id: "category-menu",
     icon: "tag",
     label_bn: "ক্যাটাগরি",
     label_en: "Category",
@@ -874,28 +916,32 @@ export default function Navbar() {
                 type="button"
                 onClick={() => setSearchOpen(true)}
                 aria-label={t("common.search")}
-                className="p-2 text-gray-500 hover:text-amber-700 hover:bg-gray-50 rounded-md transition-colors"
+                className="p-2 text-gray-700 hover:text-amber-700 hover:bg-gray-50 rounded-md transition-colors"
               >
-                <Search className="w-5 h-5" />
+                <Search className="w-5 h-5" strokeWidth={2.5} />
               </button>
             )}
-            {/* Anchored to the right edge (same spot as the icon button) and
-                grows leftward — a right-to-left reveal, not a dropdown from
-                below. `overflow-hidden` on the fixed-width inner form clips
-                it during the width transition instead of squishing the input. */}
+            {/* Anchored to the right edge (same spot as the icon button),
+                sliding in from the right and fading in — a right-to-left
+                reveal, not a dropdown from below. Animates only `transform`
+                and `opacity` (not `width`) so it's GPU-composited instead of
+                triggering layout on every frame. */}
             <div
-              className={`absolute right-0 top-1/2 -translate-y-1/2 overflow-hidden transition-all duration-300 ease-out z-50 ${
-                searchOpen ? "w-64 lg:w-80 opacity-100" : "w-0 opacity-0"
+              className={`absolute right-0 top-1/2 w-64 lg:w-80 z-50 transition-[transform,opacity] duration-300 ease-out ${
+                searchOpen
+                  ? "-translate-y-1/2 translate-x-0 opacity-100"
+                  : "-translate-y-1/2 translate-x-4 opacity-0 pointer-events-none"
               }`}
             >
               <form
                 onSubmit={e => { handleSearch(e); setSearchOpen(false); }}
-                className="w-64 lg:w-80"
+                className="w-full"
               >
                 <div className="relative w-full">
                   <input
                     ref={searchInputRef}
                     type="text"
+                    tabIndex={searchOpen ? 0 : -1}
                     value={query}
                     onChange={e => setQuery(e.target.value)}
                     placeholder={t("common.search")}
@@ -907,6 +953,7 @@ export default function Navbar() {
                   </svg>
                   <button
                     type="button"
+                    tabIndex={searchOpen ? 0 : -1}
                     onClick={() => setSearchOpen(false)}
                     aria-label={locale === "bn" ? "বন্ধ করুন" : "Close"}
                     className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"

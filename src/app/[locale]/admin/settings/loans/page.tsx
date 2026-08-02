@@ -224,7 +224,7 @@ function LoanPaymentsModal({
                 {isBn ? "বাকি আসল" : "Remaining"}
               </p>
               <p
-                className={`font-bold ${remaining > 0 ? "text-red-600" : "text-green-600"}`}
+                className={`font-bold ${remaining > 0 ? "text-red-700" : "text-green-600"}`}
               >
                 {formatAmount(String(remaining.toFixed(2)), locale, 2)}
               </p>
@@ -596,7 +596,7 @@ export default function LoansPage() {
               {isBn ? "বাকি মূল ঋণ" : "Outstanding Principal"}
             </p>
             <p
-              className={`text-2xl font-bold ${totalRemaining > 0 ? "text-red-600" : "text-green-600"}`}
+              className={`text-2xl font-bold ${totalRemaining > 0 ? "text-red-700" : "text-green-600"}`}
             >
               {formatAmount(String(totalRemaining.toFixed(2)), locale, 2)}
             </p>
