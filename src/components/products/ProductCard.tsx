@@ -7,6 +7,7 @@ import { useCartStore } from "@/store/cartStore";
 import { useGuestCartStore } from "@/store/guestCartStore";
 import { toast } from "@/store/toastStore";
 import OfferBadge from "@/components/ui/OfferBadge";
+import ProductBadges from "@/components/products/ProductBadges";
 import { formatAmount, formatNumber, localName } from "@/utils/format";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
@@ -18,12 +19,6 @@ interface Props {
   locale: string;
   priority?: boolean;
 }
-
-const BADGE_STYLE: Record<string, { bn: string; en: string; className: string }> = {
-  new:         { bn: "নতুন",        en: "New",        className: "bg-red-700 text-white" },
-  trendy:      { bn: "ট্রেন্ডি",     en: "Trendy",     className: "bg-purple-700 text-white" },
-  flash_sale:  { bn: "ফ্ল্যাশ সেল",  en: "Flash Sale", className: "bg-gray-900 text-white" },
-};
 
 export default function ProductCard({ product, locale, priority = false }: Props) {
   const t = useTranslations();
@@ -140,19 +135,7 @@ export default function ProductCard({ product, locale, priority = false }: Props
       >
         <div className="relative mb-4">
           <div className="aspect-square bg-amber-50 rounded-lg overflow-hidden relative">
-          {product.badges.length > 0 && (
-            <div className="absolute top-1.5 left-1.5 z-10 flex flex-col gap-1 items-start">
-              {product.badges.map(b => {
-                const style = BADGE_STYLE[b];
-                if (!style) return null;
-                return (
-                  <span key={b} className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${style.className}`}>
-                    {locale === "bn" ? style.bn : style.en}
-                  </span>
-                );
-              })}
-            </div>
-          )}
+          <ProductBadges badges={product.badges} locale={locale} />
           {images.length > 0 ? (
             <>
               <Image
