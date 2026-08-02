@@ -10,6 +10,15 @@ interface SelectOption {
   image?: string | null
 }
 
+// Flattens JSX children into plain text — an <option> written as
+// `{code} — {name}` has an ARRAY of children (not one string), and the
+// default Array-to-string conversion joins entries with commas.
+function childrenToText(children: React.ReactNode): string {
+  if (Array.isArray(children)) return children.map(childrenToText).join('')
+  if (children === null || children === undefined || typeof children === 'boolean') return ''
+  return String(children)
+}
+
 interface FloatingSelectProps {
   id?: string
   label: string
@@ -78,7 +87,11 @@ const FloatingSelect = forwardRef<HTMLDivElement, FloatingSelectProps>(
         .filter(Boolean) as React.ReactElement<{ value: string; children: React.ReactNode }>[]
       return flat.map((child) => ({
         value: child.props?.value ?? '',
-        label: String(child.props?.children ?? ''),
+        // An <option> with multiple JSX expressions (e.g. `{code} — {name}`)
+        // has an ARRAY of children, not a single string — String(array) joins
+        // with commas ("1000, — ,নগদ"), so this must be flattened manually
+        // instead of relying on the default Array-to-string conversion.
+        label: childrenToText(child.props?.children),
       }))
     }, [options, children],
     )
