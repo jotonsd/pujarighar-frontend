@@ -25,12 +25,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     : "Buy puja items in Bangladesh online from PujariGhar — your trusted pooja ghar for authentic puja samagri, packages, and accessories. Fast delivery and reliable service nationwide.";
   const keywords = isBn
     ? [
-        "পূজার সামগ্রী", "পূজারিঘর", "বাংলাদেশে পূজার সামগ্রী", "পূজার জিনিসপত্র",
-        "পূজার প্যাকেজ", "অনলাইনে পূজার সামগ্রী", "দুর্গা পূজার সামগ্রী", "পূজা সামগ্রী ঢাকা",
+        "পূজার সামগ্রী",
+        "পূজারিঘর",
+        "বাংলাদেশে পূজার সামগ্রী",
+        "পূজার জিনিসপত্র",
+        "পূজার প্যাকেজ",
+        "অনলাইনে পূজার সামগ্রী",
+        "দুর্গা পূজার সামগ্রী",
+        "পূজা সামগ্রী ঢাকা",
       ]
     : [
-        "puja items", "pujarighar", "puja items in bangladesh", "pooja samagri",
-        "puja package", "buy puja items online", "durga puja items", "pooja items dhaka",
+        "puja items",
+        "pujarighar",
+        "puja items in bangladesh",
+        "pooja samagri",
+        "puja package",
+        "buy puja items online",
+        "durga puja items",
+        "pooja items dhaka",
       ];
 
   return {
@@ -89,14 +101,14 @@ export default async function HomePage({ params }: Props) {
       {/* Packages */}
       <HomePackages />
 
+      {/* Offers — discounted products */}
+      <HomeOffers />
+
       {/* Offer Banners */}
       <OfferBanners />
 
       {/* Recommended for you — personalized by view/search history */}
       <RecommendedForYou />
-
-      {/* Offers — discounted products */}
-      <HomeOffers />
 
       {/* Products — category-wise, top 12 by sales */}
       <HomeCategoryProducts />
