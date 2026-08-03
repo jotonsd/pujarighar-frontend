@@ -2,6 +2,7 @@
 
 import { CategoryWithProducts } from "@/api/products/productsApi";
 import ProductCard from "@/components/products/ProductCard";
+import { Layers } from "lucide-react";
 import { useLocale } from "next-intl";
 import Link from "next/link";
 
@@ -21,7 +22,7 @@ export default function HomeCategoryProductsClient({
         <section key={category.id}>
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-2">
-              <span className="text-2xl">🪔</span>
+              <Layers className="w-5 h-5 text-amber-600" />
               <h2 className="text-xl font-bold text-gray-800">
                 {isBn ? category.name_bn : category.name_en}
               </h2>
