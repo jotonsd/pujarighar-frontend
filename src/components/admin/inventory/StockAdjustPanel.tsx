@@ -1,11 +1,13 @@
 "use client";
 
-import { useAdjustStockMutation, useGetStockQuery } from "@/api/stock/stockApi";
+import { useAdjustStockMutation, useGetStockQuery, useUpdateStockMovementMutation } from "@/api/stock/stockApi";
 import { useGetSuppliersQuery } from "@/api/suppliers/suppliersApi";
 import { FloatingInput, FloatingSelect } from "@/components/ui/forms";
-import { Product } from "@/lib/types";
+import { Product, StockMovement } from "@/lib/types";
 import { toast } from "@/store/toastStore";
+import { getErrorMessage } from "@/utils/apiError";
 import { formatAmount, formatNumber } from "@/utils/format";
+import { Pencil } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 
@@ -33,11 +35,42 @@ export default function StockAdjustPanel({ product }: Props) {
   const { data: stockData } = useGetStockQuery(product.id);
   const { data: suppliers = [] } = useGetSuppliersQuery();
   const [adjustStock, { isLoading: adjusting }] = useAdjustStockMutation();
+  const [updateMovement, { isLoading: savingEdit }] = useUpdateStockMovementMutation();
+
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState({ quantity: "", unit_cost: "", unit_price: "", payment_method: "CASH" as "CASH" | "CREDIT" });
 
   const isBn = locale === "bn";
   const isPurchase = adjForm.movement_type === "PURCHASE";
   const isSupplierReturn = adjForm.movement_type === "SUPPLIER_RETURN";
   const needsCostAndSupplier = isPurchase || isSupplierReturn;
+
+  const startEditMovement = (m: StockMovement) => {
+    setEditingId(m.id);
+    setEditForm({
+      quantity: String(Math.abs(parseFloat(m.quantity))),
+      unit_cost: m.unit_cost,
+      unit_price: m.movement_type === "PURCHASE" ? (product.unit_price ?? "") : "",
+      payment_method: m.payment_method,
+    });
+  };
+
+  const handleSaveMovement = async (movementId: string, movementType: string) => {
+    try {
+      await updateMovement({
+        productId: product.id,
+        movementId,
+        quantity: Number(editForm.quantity),
+        payment_method: editForm.payment_method,
+        ...(editForm.unit_cost && { unit_cost: Number(editForm.unit_cost) }),
+        ...(movementType === "PURCHASE" && editForm.unit_price && { unit_price: Number(editForm.unit_price) }),
+      }).unwrap();
+      setEditingId(null);
+      toast.success(isBn ? "এন্ট্রি সংশোধন হয়েছে" : "Entry corrected");
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, locale));
+    }
+  };
 
   const handleAdjust = async () => {
     if (!adjForm.quantity) return;
@@ -231,35 +264,108 @@ export default function StockAdjustPanel({ product }: Props) {
           <h3 className="font-medium text-gray-700 mb-3">
             {isBn ? "সাম্প্রতিক মুভমেন্ট" : "Recent Movements"}
           </h3>
-          {stockData.movements.map(m => (
-            <div key={m.id} className="py-2 border-b last:border-0 text-sm">
-              <div className="flex justify-between">
-                <span className="text-gray-600">
-                  {isBn
-                    ? ({ PURCHASE: "ক্রয়", SALE: "বিক্রয়", RETURN: "ফেরত", ADJUSTMENT: "সমন্বয়", SUPPLIER_RETURN: "সরবরাহকারীকে ফেরত" } as Record<string, string>)[m.movement_type] ?? m.movement_type
-                    : ({ SUPPLIER_RETURN: "Return to Supplier" } as Record<string, string>)[m.movement_type] ?? m.movement_type}
-                  {m.supplier_display && (
-                    <span className="ml-1 text-xs text-amber-700">— {m.supplier_display}</span>
-                  )}
-                  {m.payment_method === "CREDIT" && (m.movement_type === "PURCHASE" || m.movement_type === "SUPPLIER_RETURN") && (
-                    <span className="ml-1 text-xs text-blue-500">{isBn ? "(বাকি)" : "(credit)"}</span>
-                  )}
-                </span>
-                <span className={Number(m.quantity) > 0 ? "text-green-600 font-bold" : "text-amber-700 font-bold"}>
-                  {Number(m.quantity) > 0 ? "+" : ""}
-                  {formatNumber(m.quantity, locale)}
-                </span>
+          {stockData.movements.map(m => {
+            const canEdit = m.movement_type === "PURCHASE" || m.movement_type === "SUPPLIER_RETURN";
+            const isEditing = editingId === m.id;
+            return (
+              <div key={m.id} className="py-2 border-b last:border-0 text-sm">
+                {isEditing ? (
+                  <div className="space-y-2 bg-gray-50 rounded-lg p-2 -mx-1">
+                    <div className="grid grid-cols-2 gap-2">
+                      <FloatingInput
+                        label={translations("product.quantity")}
+                        type="number"
+                        value={editForm.quantity}
+                        onChange={e => setEditForm(p => ({ ...p, quantity: e.target.value }))}
+                      />
+                      <FloatingInput
+                        label={isBn ? "ক্রয় মূল্য (প্রতি একক)" : "Cost (per unit)"}
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={editForm.unit_cost}
+                        onChange={e => setEditForm(p => ({ ...p, unit_cost: e.target.value }))}
+                      />
+                      <FloatingSelect
+                        label={isBn ? "পেমেন্ট পদ্ধতি" : "Payment Method"}
+                        value={editForm.payment_method}
+                        onChange={val => setEditForm(p => ({ ...p, payment_method: val as "CASH" | "CREDIT" }))}
+                      >
+                        <option value="CASH">{isBn ? "নগদ" : "Cash"}</option>
+                        <option value="CREDIT">{isBn ? "বাকিতে (দেনা)" : "Credit (Payable)"}</option>
+                      </FloatingSelect>
+                      {m.movement_type === "PURCHASE" && (
+                        <FloatingInput
+                          label={isBn ? "বিক্রয় মূল্য (ঐচ্ছিক)" : "Selling Price (optional)"}
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          value={editForm.unit_price}
+                          onChange={e => setEditForm(p => ({ ...p, unit_price: e.target.value }))}
+                        />
+                      )}
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleSaveMovement(m.id, m.movement_type)}
+                        disabled={!editForm.quantity || savingEdit}
+                        className="btn-primary flex-1 text-sm py-1.5"
+                      >
+                        {savingEdit
+                          ? translations("common.loading")
+                          : isBn ? "সংরক্ষণ করুন" : "Save"}
+                      </button>
+                      <button
+                        onClick={() => setEditingId(null)}
+                        className="flex-1 text-sm py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-100"
+                      >
+                        {isBn ? "বাতিল" : "Cancel"}
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex justify-between items-start gap-2">
+                      <span className="text-gray-600">
+                        {isBn
+                          ? ({ PURCHASE: "ক্রয়", SALE: "বিক্রয়", RETURN: "ফেরত", ADJUSTMENT: "সমন্বয়", SUPPLIER_RETURN: "সরবরাহকারীকে ফেরত" } as Record<string, string>)[m.movement_type] ?? m.movement_type
+                          : ({ SUPPLIER_RETURN: "Return to Supplier" } as Record<string, string>)[m.movement_type] ?? m.movement_type}
+                        {m.supplier_display && (
+                          <span className="ml-1 text-xs text-amber-700">— {m.supplier_display}</span>
+                        )}
+                        {m.payment_method === "CREDIT" && (m.movement_type === "PURCHASE" || m.movement_type === "SUPPLIER_RETURN") && (
+                          <span className="ml-1 text-xs text-blue-500">{isBn ? "(বাকি)" : "(credit)"}</span>
+                        )}
+                      </span>
+                      <span className="flex items-center gap-2 shrink-0">
+                        <span className={Number(m.quantity) > 0 ? "text-green-600 font-bold" : "text-amber-700 font-bold"}>
+                          {Number(m.quantity) > 0 ? "+" : ""}
+                          {formatNumber(m.quantity, locale)}
+                        </span>
+                        {canEdit && (
+                          <button
+                            onClick={() => startEditMovement(m)}
+                            className="text-gray-400 hover:text-amber-700"
+                            title={isBn ? "সম্পাদনা করুন" : "Edit"}
+                          >
+                            <Pencil className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </span>
+                    </div>
+                    {m.unit_cost && Number(m.unit_cost) > 0 && (m.movement_type === "PURCHASE" || m.movement_type === "SUPPLIER_RETURN") && (
+                      <div className="flex justify-between text-xs text-gray-400 mt-0.5">
+                        <span>{isBn ? "ক্রয় মূল্য" : "Cost"}: {formatAmount(m.unit_cost, locale, 2)}</span>
+                        <span>{isBn ? "মোট" : "Total"}: {formatAmount(
+                          (parseFloat(m.unit_cost) * Math.abs(parseFloat(m.quantity))).toString(), locale, 2,
+                        )}</span>
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
-              {m.unit_cost && Number(m.unit_cost) > 0 && (m.movement_type === "PURCHASE" || m.movement_type === "SUPPLIER_RETURN") && (
-                <div className="flex justify-between text-xs text-gray-400 mt-0.5">
-                  <span>{isBn ? "ক্রয় মূল্য" : "Cost"}: {formatAmount(m.unit_cost, locale, 2)}</span>
-                  <span>{isBn ? "মোট" : "Total"}: {formatAmount(
-                    (parseFloat(m.unit_cost) * Math.abs(parseFloat(m.quantity))).toString(), locale, 2,
-                  )}</span>
-                </div>
-              )}
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
