@@ -464,6 +464,12 @@ function MobileMenu({
       >
         <NavIcon name={icon} className="w-[18px] h-[18px]" />
         {lbl}
+        {href === "/bayna" && (
+          <span className="relative inline-flex w-2 h-2">
+            <span className="absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75 animate-ping" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-red-600" />
+          </span>
+        )}
       </Link>
     );
   };
@@ -896,6 +902,12 @@ export default function Navbar() {
                 >
                   <NavIcon name={item.icon} />
                   {locale === "bn" ? item.label_bn : item.label_en}
+                  {item.href === "/bayna" && (
+                    <span className="relative inline-flex w-2 h-2 ml-0.5">
+                      <span className="absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75 animate-ping" />
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-red-600" />
+                    </span>
+                  )}
                 </Link>
               );
             })}
