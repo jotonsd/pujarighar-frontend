@@ -101,14 +101,14 @@ export default async function HomePage({ params }: Props) {
       {/* Packages */}
       <HomePackages />
 
-      {/* Recommended for you — personalized by view/search history */}
-      <RecommendedForYou />
+      {/* Offers — discounted products */}
+      <HomeOffers />
 
       {/* Offer Banners */}
       <OfferBanners />
 
-      {/* Offers — discounted products */}
-      <HomeOffers />
+      {/* Recommended for you — personalized by view/search history */}
+      <RecommendedForYou />
 
       {/* Products — category-wise, top 12 by sales */}
       <HomeCategoryProducts />
