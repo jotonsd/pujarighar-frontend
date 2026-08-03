@@ -8,7 +8,7 @@ export default function ConfirmModal({
   description,
   confirmLabel,
   cancelLabel = 'বাতিল / Cancel',
-  confirmClassName = 'flex-1 bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2.5 rounded-xl transition-colors text-sm',
+  confirmClassName = 'flex-1 bg-amber-600 hover:bg-amber-600 text-white font-semibold py-2.5 rounded-xl transition-colors text-sm',
   loading = false,
   onConfirm,
   onCancel,

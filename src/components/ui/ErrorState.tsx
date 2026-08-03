@@ -36,7 +36,7 @@ export default function ErrorState({
         <div className="flex items-center justify-center gap-3 mb-10">
           <Link
             href={`/${locale}`}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-sm font-semibold transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-amber-600 hover:bg-amber-600 text-white text-sm font-semibold transition-colors"
           >
             <Home className="w-4 h-4" />
             {isBn ? "হোমে যান" : "Go Home"}

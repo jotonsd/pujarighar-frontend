@@ -173,7 +173,7 @@ export default function ShippingAddressesTab({ locale }: { locale: string }) {
           <MapPin className="w-4 h-4" />
           {isBn ? "শিপিং ঠিকানা" : "Shipping Addresses"}
         </h2>
-        <button onClick={openAdd} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-amber-600 hover:bg-amber-700 text-white transition-colors">
+        <button onClick={openAdd} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-amber-600 hover:bg-amber-600 text-white transition-colors">
           <Plus className="w-3.5 h-3.5" />
           {isBn ? "নতুন ঠিকানা" : "Add Address"}
         </button>

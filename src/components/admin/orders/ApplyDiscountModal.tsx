@@ -83,7 +83,7 @@ export default function ApplyDiscountModal({
           <button
             onClick={() => onConfirm(discountType, numValue)}
             disabled={loading || !isValid}
-            className="flex-1 bg-amber-600 hover:bg-amber-700 disabled:opacity-50 text-white font-semibold py-2.5 rounded-xl transition-colors text-sm"
+            className="flex-1 bg-amber-600 hover:bg-amber-600 disabled:opacity-50 text-white font-semibold py-2.5 rounded-xl transition-colors text-sm"
           >
             {loading ? (isBn ? 'প্রয়োগ হচ্ছে...' : 'Applying...') : (isBn ? 'ছাড় প্রয়োগ করুন' : 'Apply Discount')}
           </button>

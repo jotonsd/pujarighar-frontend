@@ -94,7 +94,7 @@ function PriceRangeInputs({
       </div>
       <button
         onClick={apply}
-        className="w-full py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold transition-colors"
+        className="w-full py-1.5 rounded-lg bg-amber-600 hover:bg-amber-600 text-white text-xs font-semibold transition-colors"
       >
         {isBn ? "ফিল্টার করুন" : "Filter"}
       </button>

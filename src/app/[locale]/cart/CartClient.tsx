@@ -1,5 +1,6 @@
 "use client";
 import { formatAmount } from "@/utils/format";
+import { ShoppingCart } from "lucide-react";
 
 import { useGetMeQuery } from "@/api/auth/authApi";
 import {
@@ -600,7 +601,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
         {offerBanners}
         {items.length === 0 ? (
           <div className="card text-center py-16 text-gray-400">
-            <p className="text-4xl mb-4">🛒</p>
+            <ShoppingCart className="w-10 h-10 mx-auto mb-4 text-gray-300" />
             <p>{t("cart.empty")}</p>
           </div>
         ) : (
@@ -1040,7 +1041,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
       {offerBanners}
       {guestItems.length === 0 ? (
         <div className="card text-center py-16 text-gray-400">
-          <p className="text-4xl mb-4">🛒</p>
+          <ShoppingCart className="w-10 h-10 mx-auto mb-4 text-gray-300" />
           <p>{t("cart.empty")}</p>
         </div>
       ) : (
