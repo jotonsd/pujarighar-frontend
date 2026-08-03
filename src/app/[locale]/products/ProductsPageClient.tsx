@@ -194,9 +194,10 @@ export default function ProductsPageClient({
   // avoids the skeleton flash and makes the first image LCP-discoverable.
   const [allProducts, setAllProducts] = useState<Product[]>(initialProducts);
 
-  // Refs so scroll handler always reads latest values without re-registering
+  // Refs so the observer callback always reads latest values without re-registering
   const isFetchingRef = useRef(false);
   const hasMoreRef = useRef(false);
+  const sentinelRef = useRef<HTMLDivElement>(null);
 
   // Skip the first run — the server already fetched page 1 matching these
   // exact URL params, so resetting here would wipe the seeded products.
@@ -266,18 +267,27 @@ export default function ProductsPageClient({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
-  // Window scroll — registered once, never fires on mount
+  // A sentinel placed right after the product grid, observed via
+  // IntersectionObserver — triggers the next page once it's within 400px of
+  // the viewport. Unlike measuring against document.scrollHeight, this is
+  // anchored to the grid's own position, so a tall footer below it can never
+  // delay the trigger (the old scrollHeight-based check counted the footer's
+  // height as part of "the bottom," so on mobile — where the footer stacks
+  // much taller — the page had to scroll well past the grid, into the
+  // footer, before the next page loaded).
   useEffect(() => {
-    const onScroll = () => {
-      const nearBottom =
-        window.innerHeight + window.scrollY >=
-        document.documentElement.scrollHeight - 300;
-      if (nearBottom && !isFetchingRef.current && hasMoreRef.current) {
-        setPage(prev => prev + 1);
-      }
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !isFetchingRef.current && hasMoreRef.current) {
+          setPage(prev => prev + 1);
+        }
+      },
+      { rootMargin: "400px 0px" },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
   }, []);
 
   const FilterPanel = () => (
@@ -520,6 +530,8 @@ export default function ProductsPageClient({
                   ))
                 }
               </div>
+
+              <div ref={sentinelRef} className="h-1" />
 
               {!allProducts.length && !isFetching && (
                 <div className="text-center py-16 text-gray-400">

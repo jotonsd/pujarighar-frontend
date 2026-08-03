@@ -28,7 +28,7 @@ export default function HomeCategoryProductsClient({
               </h2>
             </div>
             <Link
-              href={`/${locale}/products?category=${category.id}`}
+              href={`/${locale}/products?category=${category.slug}`}
               aria-label={
                 isBn
                   ? `${category.name_bn} - সব দেখুন`
