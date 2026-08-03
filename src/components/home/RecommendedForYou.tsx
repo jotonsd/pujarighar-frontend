@@ -3,6 +3,7 @@
 import { useGetRecommendedProductsQuery } from "@/api/products/productsApi";
 import ProductCard from "@/components/products/ProductCard";
 import { ProductCardSkeleton } from "@/components/ui/skeletons";
+import { Sparkles } from "lucide-react";
 import { useLocale } from "next-intl";
 
 export default function RecommendedForYou() {
@@ -17,7 +18,7 @@ export default function RecommendedForYou() {
   return (
     <section className="mb-8">
       <div className="flex items-center gap-2 mb-5">
-        <span className="text-2xl">✨</span>
+        <Sparkles className="w-6 h-6 text-amber-600" />
         <h2 className="text-xl font-bold text-gray-800">
           {locale === "bn" ? "শুধু আপনার জন্য" : "Recommended for You"}
         </h2>

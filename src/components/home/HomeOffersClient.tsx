@@ -2,6 +2,7 @@
 
 import { Product } from "@/lib/types";
 import ProductCard from "@/components/products/ProductCard";
+import { Tag } from "lucide-react";
 import { useLocale } from "next-intl";
 import Link from "next/link";
 
@@ -14,7 +15,7 @@ export default function HomeOffersClient({ products }: { products: Product[] }) 
     <section className="mb-8">
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-2">
-          <span className="text-2xl">🏷️</span>
+          <Tag className="w-6 h-6 text-amber-600" />
           <h2 className="text-xl font-bold text-gray-800">
             {locale === "bn" ? "অফার" : "Offers"}
           </h2>
