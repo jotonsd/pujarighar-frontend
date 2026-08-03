@@ -31,7 +31,7 @@ function moduleLabel(perm: Permission, isBn: boolean): string {
 const GROUPS: { bn: string; en: string; modules: string[] }[] = [
   { bn: "POS ও অর্ডার", en: "POS & Orders", modules: ["pos", "orders"] },
   { bn: "ড্যাশবোর্ড", en: "Dashboard", modules: ["dashboard_overview", "analytics", "courier"] },
-  { bn: "পণ্য ব্যবস্থাপনা", en: "Product Management", modules: ["products", "packages", "categories", "brands", "discounts", "inventory_stock", "suppliers"] },
+  { bn: "পণ্য ব্যবস্থাপনা", en: "Product Management", modules: ["products", "packages", "categories", "brands", "discounts", "inventory_stock", "suppliers", "bayna"] },
   { bn: "ব্যবহারকারী", en: "Users", modules: ["users_admin", "partners", "loans"] },
   { bn: "ফিন্যান্স", en: "Finance", modules: ["accounting_chart", "accounting_journal", "accounting_ledger", "accounting_profit_loss", "accounting_trial_balance", "accounting_sales_summary", "expenses", "delivery_charges", "cashback"] },
   { bn: "রিপোর্ট", en: "Reports", modules: ["reports_purchases", "reports_supplier_returns", "reports_supplier_outstanding", "reports_product_stock", "reports_income", "reports_expenses"] },
@@ -185,7 +185,7 @@ export default function RoleForm({ mode, role }: Props) {
                     if (rows.length === 0) return null;
                     return (
                       <>
-                        <tr key={`group-${group.en}`} className="bg-gray-50">
+                        <tr key={`group-${group.en}`} className="bg-gray-100">
                           <td colSpan={ACTIONS.length + 2} className="py-1.5 px-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
                             {isBn ? group.bn : group.en}
                           </td>

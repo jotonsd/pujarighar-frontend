@@ -601,6 +601,26 @@ export interface JournalEntry {
   is_balanced: boolean
 }
 
+// ─── Bayna Booking ───────────────────────────────────────────────────────────
+
+export type BaynaServiceType = 'PUJARI' | 'DHAKI' | 'MURTI'
+export type BaynaStatus = 'PENDING' | 'CONTACTED' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED'
+
+export interface BaynaBooking {
+  id: string
+  service_type: BaynaServiceType
+  event_date: string
+  name: string
+  phone: string
+  email: string
+  location: string
+  description: string
+  status: BaynaStatus
+  admin_notes: string
+  created_at: string
+  updated_at: string
+}
+
 // ─── Review ──────────────────────────────────────────────────────────────────
 
 export interface Review {
