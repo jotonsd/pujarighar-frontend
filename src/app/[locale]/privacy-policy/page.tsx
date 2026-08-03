@@ -90,8 +90,8 @@ export default async function PrivacyPolicyPage({ params }: Props) {
           </h2>
           <p>
             {isBn
-              ? "এই নীতি সম্পর্কে কোনো প্রশ্ন থাকলে আমাদের সাথে যোগাযোগ করুন: support@pujarighar.com"
-              : "If you have any questions about this policy, please contact us at support@pujarighar.com."}
+              ? "এই নীতি সম্পর্কে কোনো প্রশ্ন থাকলে আমাদের সাথে যোগাযোগ করুন: pujarigharbd@gmail.com"
+              : "If you have any questions about this policy, please contact us at pujarigharbd@gmail.com."}
           </p>
         </section>
       </div>

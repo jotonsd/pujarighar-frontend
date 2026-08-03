@@ -215,7 +215,7 @@ export default function DiscountList() {
     {
       header: isBn ? "ছাড়" : "Discount",
       accessor: d => (
-        <span className="text-sm font-bold text-amber-600">
+        <span className="text-sm font-bold text-amber-700">
           {d.discount_type === "PERCENTAGE"
             ? `${formatNumber(d.discount_value, locale)}% ${isBn ? "ছাড়" : "OFF"}`
             : `${formatAmount(d.discount_value, locale, 0)} ${isBn ? "ছাড়" : "OFF"}`}
@@ -253,13 +253,13 @@ export default function DiscountList() {
             {d.end_date && (
               <p className={expired ? "text-red-500" : "text-gray-500"}>
                 {isBn ? "শেষ: " : "To: "}
-                <span className={`font-medium ${expired ? "text-red-600" : "text-gray-700"}`}>
+                <span className={`font-medium ${expired ? "text-red-700" : "text-gray-700"}`}>
                   {formatDate(d.end_date, locale)}
                 </span>
               </p>
             )}
             {(expired || notStarted) && (
-              <span className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold ${expired ? "bg-red-50 text-red-600" : "bg-yellow-50 text-yellow-700"}`}>
+              <span className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold ${expired ? "bg-red-50 text-red-700" : "bg-yellow-50 text-yellow-700"}`}>
                 {expired
                   ? (isBn ? "মেয়াদ শেষ" : "Expired")
                   : (isBn ? "শুরু হয়নি" : "Not started")}

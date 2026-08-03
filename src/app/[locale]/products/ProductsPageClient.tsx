@@ -94,7 +94,7 @@ function PriceRangeInputs({
       </div>
       <button
         onClick={apply}
-        className="w-full py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold transition-colors"
+        className="w-full py-1.5 rounded-lg bg-amber-600 hover:bg-amber-600 text-white text-xs font-semibold transition-colors"
       >
         {isBn ? "ফিল্টার করুন" : "Filter"}
       </button>
@@ -326,15 +326,21 @@ export default function ProductsPageClient({
                 onChange={() => { setSortOrder(opt.value); setPage(1); setAllProducts([]); }}
                 className="w-4 h-4 accent-amber-500 cursor-pointer"
               />
-              <span className="text-sm text-gray-700 group-hover:text-gray-900">
+              <span className="text-sm text-gray-700 group-hover:text-gray-900 flex items-center gap-1.5">
                 {locale === "bn" ? opt.bn : opt.en}
+                {opt.value === "newest" && (
+                  <span className="relative inline-flex w-3 h-3">
+                    <span className="absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75 animate-ping" />
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-red-600" />
+                  </span>
+                )}
               </span>
             </label>
           ))}
           {sortOrder && (
             <button
               onClick={() => { setSortOrder(""); setPage(1); setAllProducts([]); }}
-              className="text-xs text-amber-600 hover:underline mt-1"
+              className="text-xs text-amber-700 hover:underline mt-1"
             >
               {locale === "bn" ? "বাতিল করুন" : "Clear"}
             </button>
@@ -369,8 +375,8 @@ export default function ProductsPageClient({
           {allCategories.map(cat => (
             <Checkbox
               key={cat.id}
-              checked={categories.includes(cat.id)}
-              onChange={() => toggleCategory(cat.id)}
+              checked={categories.includes(cat.slug)}
+              onChange={() => toggleCategory(cat.slug)}
               label={locale === "bn" ? cat.name_bn : cat.name_en}
             />
           ))}
@@ -378,7 +384,7 @@ export default function ProductsPageClient({
         {categories.length > 0 && (
           <button
             onClick={() => { setCategories([]); setPage(1); setAllProducts([]); }}
-            className="mt-2 text-xs text-amber-600 hover:underline"
+            className="mt-2 text-xs text-amber-700 hover:underline"
           >
             {locale === "bn"
               ? `${categories.length}টি নির্বাচিত — মুছুন`
@@ -411,7 +417,7 @@ export default function ProductsPageClient({
           {selectedBrands.length > 0 && (
             <button
               onClick={() => { setSelectedBrands([]); setPage(1); setAllProducts([]); }}
-              className="mt-2 text-xs text-amber-600 hover:underline"
+              className="mt-2 text-xs text-amber-700 hover:underline"
             >
               {locale === "bn"
                 ? `${selectedBrands.length}টি নির্বাচিত — মুছুন`
@@ -436,7 +442,7 @@ export default function ProductsPageClient({
     <div className="max-w-7xl mx-auto px-4 py-3">
       <button
         onClick={() => setSidebarOpen(true)}
-        className="fixed bottom-4 left-4 z-30 lg:hidden inline-flex items-center gap-2 px-4 py-3 rounded-full bg-green-600 shadow-lg text-sm font-medium text-white hover:bg-green-700 transition-colors"
+        className="fixed bottom-4 left-4 z-30 lg:hidden inline-flex items-center gap-2 px-4 py-3 rounded-full bg-green-700 shadow-lg text-sm font-medium text-white hover:bg-green-700 transition-colors"
       >
         <SlidersHorizontal className="w-4 h-4" />
         {locale === "bn" ? "ফিল্টার" : "Filters"}
@@ -447,7 +453,7 @@ export default function ProductsPageClient({
 
       <div className="flex gap-3">
         <aside className="hidden lg:block w-56 shrink-0">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 sticky top-20">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto overscroll-contain scrollbar-hide">
             {isLoading && allProducts.length === 0 ? <FilterPanelSkeleton /> : <FilterPanel />}
           </div>
         </aside>
@@ -522,7 +528,7 @@ export default function ProductsPageClient({
                   {hasFilter && (
                     <button
                       onClick={resetFilters}
-                      className="mt-3 text-amber-600 hover:underline text-sm"
+                      className="mt-3 text-amber-700 hover:underline text-sm"
                     >
                       {locale === "bn" ? "ফিল্টার মুছুন" : "Clear filters"}
                     </button>

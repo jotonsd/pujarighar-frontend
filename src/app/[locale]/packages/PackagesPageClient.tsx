@@ -5,6 +5,7 @@ import { useGetProductsQuery } from "@/api/products/productsApi";
 import PackageCard from "@/components/products/PackageCard";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Product } from "@/lib/types";
+import { Gift } from "lucide-react";
 import { useLocale } from "next-intl";
 import { ReactNode, useEffect, useRef, useState } from "react";
 
@@ -88,8 +89,8 @@ export default function PackagesPageClient({ offerBanners }: { offerBanners?: Re
             onClick={() => selectCategory("")}
             className={`shrink-0 px-4 py-1.5 rounded-full text-sm font-medium border transition-colors ${
               selectedCategory === ""
-                ? "bg-amber-500 text-white border-amber-500"
-                : "bg-white text-gray-600 border-gray-200 hover:border-amber-400 hover:text-amber-600"
+                ? "bg-amber-600 text-white border-amber-500"
+                : "bg-white text-gray-600 border-gray-200 hover:border-amber-400 hover:text-amber-700"
             }`}
           >
             {isBn ? "সব" : "All"}
@@ -100,8 +101,8 @@ export default function PackagesPageClient({ offerBanners }: { offerBanners?: Re
               onClick={() => selectCategory(cat.id)}
               className={`shrink-0 px-4 py-1.5 rounded-full text-sm font-medium border transition-colors ${
                 selectedCategory === cat.id
-                  ? "bg-amber-500 text-white border-amber-500"
-                  : "bg-white text-gray-600 border-gray-200 hover:border-amber-400 hover:text-amber-600"
+                  ? "bg-amber-600 text-white border-amber-500"
+                  : "bg-white text-gray-600 border-gray-200 hover:border-amber-400 hover:text-amber-700"
               }`}
             >
               {isBn ? cat.name_bn : cat.name_en}
@@ -120,12 +121,12 @@ export default function PackagesPageClient({ offerBanners }: { offerBanners?: Re
         <>
           {allPackages.length === 0 && !isFetching ? (
             <div className="text-center py-20 text-gray-400">
-              <p className="text-4xl mb-3">🎁</p>
+              <Gift className="w-10 h-10 mx-auto mb-3 text-gray-300" />
               <p>{isBn ? "কোনো প্যাকেজ নেই" : "No packages available"}</p>
               {selectedCategory && (
                 <button
                   onClick={() => selectCategory("")}
-                  className="mt-3 text-amber-600 hover:underline text-sm"
+                  className="mt-3 text-amber-700 hover:underline text-sm"
                 >
                   {isBn ? "সব দেখুন" : "View all"}
                 </button>

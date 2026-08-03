@@ -112,7 +112,7 @@ export default function HeroSliderClient({ slides }: { slides: HeroSlide[] }) {
               <span
                 className={`block rounded-full transition-all duration-300 ${
                   i === current
-                    ? "w-5 h-1.5 bg-amber-500"
+                    ? "w-5 h-1.5 bg-amber-600"
                     : "w-1.5 h-1.5 bg-white/60"
                 }`}
               />

@@ -141,7 +141,7 @@ export default function InvoiceModal({ orderId, orderNumber, onClose }: Props) {
             <button
               onClick={handleDownload}
               disabled={downloading || loading}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-medium transition-colors disabled:opacity-40"
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-amber-600 hover:bg-amber-600 text-white text-xs font-medium transition-colors disabled:opacity-40"
             >
               {downloading
                 ? <Loader className="w-3.5 h-3.5 animate-spin" />

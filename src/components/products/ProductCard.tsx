@@ -7,6 +7,7 @@ import { useCartStore } from "@/store/cartStore";
 import { useGuestCartStore } from "@/store/guestCartStore";
 import { toast } from "@/store/toastStore";
 import OfferBadge from "@/components/ui/OfferBadge";
+import ProductBadges from "@/components/products/ProductBadges";
 import { formatAmount, formatNumber, localName } from "@/utils/format";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
@@ -134,6 +135,7 @@ export default function ProductCard({ product, locale, priority = false }: Props
       >
         <div className="relative mb-4">
           <div className="aspect-square bg-amber-50 rounded-lg overflow-hidden relative">
+          <ProductBadges badges={product.badges} locale={locale} />
           {images.length > 0 ? (
             <>
               <Image
@@ -207,7 +209,7 @@ export default function ProductCard({ product, locale, priority = false }: Props
           <div>
             {product.active_discount_type && parseFloat(String(product.effective_price)) < parseFloat(String(product.unit_price)) ? (
               <>
-                <span className="text-amber-600 font-bold">
+                <span className="text-amber-700 font-bold">
                   {formatAmount(product.effective_price, locale, 0)}
                 </span>
                 <span className="text-xs text-gray-500 line-through ml-1.5">
@@ -215,7 +217,7 @@ export default function ProductCard({ product, locale, priority = false }: Props
                 </span>
               </>
             ) : (
-              <span className="text-amber-600 font-bold">
+              <span className="text-amber-700 font-bold">
                 {formatAmount(product.effective_price ?? product.unit_price, locale, 0)}
               </span>
             )}
@@ -232,7 +234,8 @@ export default function ProductCard({ product, locale, priority = false }: Props
             <>
               <button
                 onClick={dec}
-                className="w-6 h-6 rounded bg-amber-50 hover:bg-amber-100 text-amber-700 font-bold text-sm flex items-center justify-center transition-colors shrink-0"
+                disabled={qty <= 1}
+                className="w-6 h-6 rounded bg-amber-50 hover:bg-amber-100 text-amber-700 font-bold text-sm flex items-center justify-center transition-colors shrink-0 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-amber-50"
               >
                 −
               </button>
@@ -241,7 +244,9 @@ export default function ProductCard({ product, locale, priority = false }: Props
               </span>
               <button
                 onClick={inc}
-                className="w-6 h-6 rounded bg-amber-50 hover:bg-amber-100 text-amber-700 font-bold text-sm flex items-center justify-center transition-colors shrink-0"
+                disabled={qty >= maxStock}
+                title={qty >= maxStock ? (locale === "bn" ? "সর্বোচ্চ স্টক সীমা" : "Max stock reached") : undefined}
+                className="w-6 h-6 rounded bg-amber-50 hover:bg-amber-100 text-amber-700 font-bold text-sm flex items-center justify-center transition-colors shrink-0 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-amber-50"
               >
                 +
               </button>
@@ -252,7 +257,7 @@ export default function ProductCard({ product, locale, priority = false }: Props
             disabled={!inStock || adding}
             className={`flex-1 h-6 rounded text-[10px] font-bold transition-colors ${
               inStock
-                ? "bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-white"
+                ? "bg-amber-600 hover:bg-amber-600 active:bg-amber-700 text-white"
                 : "bg-gray-100 text-gray-400 cursor-not-allowed"
             }`}
           >

@@ -35,9 +35,9 @@ export default function ProductSelector({ selected, onSelect }: Props) {
           <table className="w-full text-sm">
             <thead className="bg-amber-50 border-b border-amber-200 sticky top-0 z-10">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">{t('product.name')}</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">SKU</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">{t('product.stock')}</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{t('product.name')}</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">SKU</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{t('product.stock')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">

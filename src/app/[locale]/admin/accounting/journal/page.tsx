@@ -221,7 +221,7 @@ function ManualEntryModal({
 
             <button
               onClick={addLine}
-              className="mt-2 flex items-center gap-1.5 text-xs text-amber-600 hover:text-amber-700 font-medium"
+              className="mt-2 flex items-center gap-1.5 text-xs text-amber-700 hover:text-amber-700 font-medium"
             >
               <Plus className="w-3.5 h-3.5" />{" "}
               {isBn ? "লাইন যোগ করুন" : "Add line"}
@@ -252,7 +252,7 @@ function ManualEntryModal({
               <p className="text-xs text-gray-500 mb-0.5">
                 {isBn ? "পার্থক্য" : "Difference"}
               </p>
-              <p className={balanced ? "text-green-600" : "text-amber-600"}>
+              <p className={balanced ? "text-green-600" : "text-amber-700"}>
                 {balanced
                   ? isBn
                     ? "✓ সুষম"
@@ -377,25 +377,25 @@ export default function JournalPage() {
           <table className="w-full text-sm">
             <thead className="bg-amber-50 border-b border-amber-200">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">
                   {isBn ? "জার্নাল নং" : "Entry #"}
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">
                   {isBn ? "ধরন" : "Type"}
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">
                   {isBn ? "বিবরণ" : "Description"}
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">
                   {isBn ? "অ্যাকাউন্ট" : "Account"}
                 </th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-600 uppercase tracking-wider">
+                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 uppercase tracking-wider">
                   {t("debit")}
                 </th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-600 uppercase tracking-wider">
+                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 uppercase tracking-wider">
                   {t("credit")}
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">
                   {isBn ? "তারিখ" : "Date"}
                 </th>
               </tr>
@@ -431,9 +431,16 @@ export default function JournalPage() {
 
                       <td className="px-4 py-2 align-top">
                         {isFirst && (
-                          <Badge variant={badge.variant}>
-                            {isBn ? badge.label_bn : badge.label_en}
-                          </Badge>
+                          <div className="flex flex-wrap gap-1">
+                            <Badge variant={badge.variant}>
+                              {isBn ? badge.label_bn : badge.label_en}
+                            </Badge>
+                            <Badge variant={entry.is_balanced ? "green" : "red"}>
+                              {entry.is_balanced
+                                ? (isBn ? "সুষম" : "Balanced")
+                                : (isBn ? "অসামঞ্জস্যপূর্ণ" : "Imbalanced")}
+                            </Badge>
+                          </div>
                         )}
                       </td>
 

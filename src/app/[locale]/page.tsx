@@ -4,6 +4,7 @@ import HomeOffers from "@/components/home/HomeOffers";
 import HomePackages from "@/components/home/HomePackages";
 import RecommendedForYou from "@/components/home/RecommendedForYou";
 import OfferBanners from "@/components/products/OfferBanners";
+import { BadgeCheck, HeartHandshake, Truck } from "lucide-react";
 import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 
@@ -24,12 +25,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     : "Buy puja items in Bangladesh online from PujariGhar — your trusted pooja ghar for authentic puja samagri, packages, and accessories. Fast delivery and reliable service nationwide.";
   const keywords = isBn
     ? [
-        "পূজার সামগ্রী", "পূজারিঘর", "বাংলাদেশে পূজার সামগ্রী", "পূজার জিনিসপত্র",
-        "পূজার প্যাকেজ", "অনলাইনে পূজার সামগ্রী", "দুর্গা পূজার সামগ্রী", "পূজা সামগ্রী ঢাকা",
+        "পূজার সামগ্রী",
+        "পূজারিঘর",
+        "বাংলাদেশে পূজার সামগ্রী",
+        "পূজার জিনিসপত্র",
+        "পূজার প্যাকেজ",
+        "অনলাইনে পূজার সামগ্রী",
+        "দুর্গা পূজার সামগ্রী",
+        "পূজা সামগ্রী ঢাকা",
       ]
     : [
-        "puja items", "pujarighar", "puja items in bangladesh", "pooja samagri",
-        "puja package", "buy puja items online", "durga puja items", "pooja items dhaka",
+        "puja items",
+        "pujarighar",
+        "puja items in bangladesh",
+        "pooja samagri",
+        "puja package",
+        "buy puja items online",
+        "durga puja items",
+        "pooja items dhaka",
       ];
 
   return {
@@ -58,21 +71,21 @@ export default async function HomePage({ params }: Props) {
 
   const features = [
     {
-      icon: "🪔",
+      icon: BadgeCheck,
       title_bn: "প্রামাণিক পণ্য",
       title_en: "Authentic Products",
       desc_bn: "বিশুদ্ধ ও মানসম্পন্ন পূজার সামগ্রী",
       desc_en: "Pure and quality puja items",
     },
     {
-      icon: "🚚",
+      icon: Truck,
       title_bn: "দ্রুত ডেলিভারি",
       title_en: "Fast Delivery",
       desc_bn: "দরজায় পৌঁছে দেই",
       desc_en: "Delivered to your doorstep",
     },
     {
-      icon: "🙏",
+      icon: HeartHandshake,
       title_bn: "বিশ্বস্ত সেবা",
       title_en: "Trusted Service",
       desc_bn: "গ্রাহক সন্তুষ্টি আমাদের লক্ষ্য",
@@ -88,11 +101,11 @@ export default async function HomePage({ params }: Props) {
       {/* Packages */}
       <HomePackages />
 
-      {/* Offer Banners */}
-      <OfferBanners />
-
       {/* Offers — discounted products */}
       <HomeOffers />
+
+      {/* Offer Banners */}
+      <OfferBanners />
 
       {/* Recommended for you — personalized by view/search history */}
       <RecommendedForYou />
@@ -108,7 +121,7 @@ export default async function HomePage({ params }: Props) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {features.map((f, i) => (
             <div key={i} className="card text-center">
-              <div className="text-4xl mb-4">{f.icon}</div>
+              <f.icon className="w-10 h-10 mx-auto mb-4 text-amber-600" />
               <h3 className="font-semibold text-gray-800 mb-2">
                 {locale === "bn" ? f.title_bn : f.title_en}
               </h3>

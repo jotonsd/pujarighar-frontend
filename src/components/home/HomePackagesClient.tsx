@@ -2,6 +2,7 @@
 
 import { Product } from "@/lib/types";
 import PackageCard from "@/components/products/PackageCard";
+import { Gift } from "lucide-react";
 import { useLocale } from "next-intl";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -54,7 +55,7 @@ export default function HomePackagesClient({ packages }: { packages: Product[] }
       {/* Header Section */}
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-2">
-          <span className="text-2xl">🎁</span>
+          <Gift className="w-6 h-6 text-amber-600" />
           <h2 className="text-xl font-bold text-gray-800">
             {locale === "bn" ? "পূজার প্যাকেজ" : "Puja Packages"}
           </h2>
@@ -65,7 +66,7 @@ export default function HomePackagesClient({ packages }: { packages: Product[] }
           <Link
             href={`/${locale}/packages`}
             aria-label={locale === "bn" ? "সব প্যাকেজ দেখুন" : "View all packages"}
-            className="text-sm text-amber-600 hover:underline font-medium"
+            className="text-sm text-amber-700 hover:underline font-medium"
           >
             {locale === "bn" ? "সব দেখুন →" : "View all →"}
           </Link>

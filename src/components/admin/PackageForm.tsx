@@ -10,15 +10,16 @@ import {
     useGetProductsQuery,
     useUpdateProductMutation,
 } from "@/api/products/productsApi";
+import BadgePicker from "@/components/admin/products/BadgePicker";
 import {
     FloatingInput,
     FloatingSelect,
     FloatingTextarea,
 } from "@/components/ui/forms";
 import PageHeader from "@/components/ui/PageHeader";
-import { Product } from "@/lib/types";
+import { Product, ProductBadge } from "@/lib/types";
 import { toast } from "@/store/toastStore";
-import { getErrorMessage } from "@/utils/apiError";
+import { getErrorMessage, getFieldErrors } from "@/utils/apiError";
 import { formatAmount } from "@/utils/format";
 import { Plus, Trash2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
@@ -58,6 +59,7 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
       | "FLAT",
     discount_value: pkg?.discount_value ?? "0",
     is_active: pkg?.is_active ?? true,
+    badges: (pkg?.badges ?? []) as ProductBadge[],
     seo_title_bn: pkg?.seo_title_bn ?? "",
     seo_title_en: pkg?.seo_title_en ?? "",
     meta_description_bn: pkg?.meta_description_bn ?? "",
@@ -84,6 +86,7 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [existingImages, setExistingImages] = useState(pkg?.images ?? []);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const fileRef = useRef<HTMLInputElement>(null);
 
   const { data: categories = [] } = useGetCategoriesQuery({
@@ -170,6 +173,7 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
     );
 
   const handleSave = async () => {
+    setFieldErrors({});
     if (!form.name_bn || !form.name_en || !form.sku || !form.category) {
       toast.error(
         locale === "bn"
@@ -265,6 +269,7 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
       router.push(`/${locale}/admin/packages`);
     } catch (err: unknown) {
       toast.error(getErrorMessage(err, locale));
+      setFieldErrors(getFieldErrors(err));
     }
   };
 
@@ -303,11 +308,13 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
                 label="নাম (বাংলা) *"
                 value={form.name_bn}
                 onChange={f("name_bn")}
+                error={fieldErrors.name_bn}
               />
               <FloatingInput
                 label="Name (English) *"
                 value={form.name_en}
                 onChange={f("name_en")}
+                error={fieldErrors.name_en}
               />
             </div>
             <div className="grid grid-cols-2 gap-3">
@@ -315,11 +322,13 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
                 label="SKU *"
                 value={form.sku}
                 onChange={f("sku")}
+                error={fieldErrors.sku}
               />
               <FloatingSelect
                 label={locale === "bn" ? "কেটাগরি *" : "Category *"}
                 value={form.category}
                 onChange={val => setForm(p => ({ ...p, category: val }))}
+                error={fieldErrors.category}
               >
                 <option value="">
                   {locale === "bn" ? "কেটাগরি বেছে নিন" : "Select category"}
@@ -350,16 +359,16 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
               </h3>
               <div className="space-y-3">
                 <div className="grid grid-cols-2 gap-3">
-                  <FloatingInput label={locale === "bn" ? "এসইও শিরোনাম (বাংলা)" : "SEO Title (Bangla)"} value={form.seo_title_bn} onChange={f("seo_title_bn")} maxLength={70} />
-                  <FloatingInput label={locale === "bn" ? "এসইও শিরোনাম (English)" : "SEO Title (English)"} value={form.seo_title_en} onChange={f("seo_title_en")} maxLength={70} />
+                  <FloatingInput label={locale === "bn" ? "এসইও শিরোনাম (বাংলা)" : "SEO Title (Bangla)"} value={form.seo_title_bn} onChange={f("seo_title_bn")} maxLength={70} error={fieldErrors.seo_title_bn} />
+                  <FloatingInput label={locale === "bn" ? "এসইও শিরোনাম (English)" : "SEO Title (English)"} value={form.seo_title_en} onChange={f("seo_title_en")} maxLength={70} error={fieldErrors.seo_title_en} />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
-                  <FloatingTextarea label={locale === "bn" ? "মেটা বিবরণ (বাংলা)" : "Meta Description (Bangla)"} value={form.meta_description_bn} onChange={f("meta_description_bn")} rows={2} maxLength={170} />
-                  <FloatingTextarea label={locale === "bn" ? "মেটা বিবরণ (English)" : "Meta Description (English)"} value={form.meta_description_en} onChange={f("meta_description_en")} rows={2} maxLength={170} />
+                  <FloatingTextarea label={locale === "bn" ? "মেটা বিবরণ (বাংলা)" : "Meta Description (Bangla)"} value={form.meta_description_bn} onChange={f("meta_description_bn")} rows={2} maxLength={170} error={fieldErrors.meta_description_bn} />
+                  <FloatingTextarea label={locale === "bn" ? "মেটা বিবরণ (English)" : "Meta Description (English)"} value={form.meta_description_en} onChange={f("meta_description_en")} rows={2} maxLength={170} error={fieldErrors.meta_description_en} />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
-                  <FloatingInput label={locale === "bn" ? "ফোকাস কীওয়ার্ড" : "Focus Keyword"} value={form.focus_keyword} onChange={f("focus_keyword")} />
-                  <FloatingInput label={locale === "bn" ? "ক্যানোনিক্যাল URL" : "Canonical URL"} value={form.canonical_url} onChange={f("canonical_url")} placeholder="https://pujarighar.com/packages/..." />
+                  <FloatingInput label={locale === "bn" ? "ফোকাস কীওয়ার্ড" : "Focus Keyword"} value={form.focus_keyword} onChange={f("focus_keyword")} maxLength={150} error={fieldErrors.focus_keyword} />
+                  <FloatingInput label={locale === "bn" ? "ক্যানোনিক্যাল URL" : "Canonical URL"} value={form.canonical_url} onChange={f("canonical_url")} placeholder="https://pujarighar.com/packages/..." maxLength={500} error={fieldErrors.canonical_url} />
                 </div>
               </div>
             </div>
@@ -404,7 +413,7 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
                 type="button"
                 onClick={addItem}
                 disabled={!selectedProductId}
-                className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-lg text-xs font-medium bg-amber-600 hover:bg-amber-700 text-white transition-colors disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-lg text-xs font-medium bg-amber-600 hover:bg-amber-600 text-white transition-colors disabled:opacity-50"
               >
                 <Plus className="w-3.5 h-3.5" />
                 {locale === "bn" ? "যোগ করুন" : "Add"}
@@ -423,16 +432,16 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
                 <table className="w-full text-sm">
                   <thead className="bg-amber-50 border-b border-amber-200">
                     <tr>
-                      <th className="px-4 py-2.5 text-left text-xs font-semibold text-amber-600 uppercase">
+                      <th className="px-4 py-2.5 text-left text-xs font-semibold text-amber-700 uppercase">
                         {locale === "bn" ? "পণ্য" : "Product"}
                       </th>
-                      <th className="px-4 py-2.5 text-right text-xs font-semibold text-amber-600 uppercase">
+                      <th className="px-4 py-2.5 text-right text-xs font-semibold text-amber-700 uppercase">
                         {locale === "bn" ? "একক মূল্য" : "Unit Price"}
                       </th>
-                      <th className="px-4 py-2.5 text-center text-xs font-semibold text-amber-600 uppercase">
+                      <th className="px-4 py-2.5 text-center text-xs font-semibold text-amber-700 uppercase">
                         {locale === "bn" ? "পরিমাণ" : "Qty"}
                       </th>
-                      <th className="px-4 py-2.5 text-right text-xs font-semibold text-amber-600 uppercase">
+                      <th className="px-4 py-2.5 text-right text-xs font-semibold text-amber-700 uppercase">
                         {locale === "bn" ? "মোট" : "Total"}
                       </th>
                       <th className="px-4 py-2.5 w-10" />
@@ -468,7 +477,7 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
                             className="w-16 text-center text-sm border border-gray-200 rounded-lg px-2 py-1 focus:outline-none focus:border-amber-500"
                           />
                         </td>
-                        <td className="px-4 py-2.5 text-right font-semibold text-amber-600">
+                        <td className="px-4 py-2.5 text-right font-semibold text-amber-700">
                           {formatAmount(
                             parseFloat(item.unit_price || "0") * item.quantity,
                             locale,
@@ -523,6 +532,7 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
                   discount_type: val as "NONE" | "PERCENTAGE" | "FLAT",
                 }))
               }
+              error={fieldErrors.discount_type}
             >
               <option value="NONE">
                 {locale === "bn" ? "কোনো ছাড় নেই" : "No Discount"}
@@ -552,6 +562,7 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
                 step="0.01"
                 value={form.discount_value}
                 onChange={f("discount_value")}
+                error={fieldErrors.discount_value}
               />
             )}
           </div>
@@ -581,7 +592,7 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
                 <span>
                   {locale === "bn" ? "চূড়ান্ত মূল্য" : "Final Price"}
                 </span>
-                <span className="text-amber-600">
+                <span className="text-amber-700">
                   {formatAmount(computedFinalPrice(), locale, 0)}
                 </span>
               </div>
@@ -620,7 +631,7 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
                           toast.error("Failed to delete image");
                         }
                       }}
-                      className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-amber-500 text-white rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-amber-600 text-white rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                     >
                       ×
                     </button>
@@ -644,7 +655,7 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
                     setImageFile(null);
                     setImagePreview(null);
                   }}
-                  className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-amber-500 text-white rounded-full text-xs flex items-center justify-center"
+                  className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-amber-600 text-white rounded-full text-xs flex items-center justify-center"
                 >
                   ×
                 </button>
@@ -681,12 +692,19 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
                 onChange={e =>
                   setForm(p => ({ ...p, is_active: e.target.checked }))
                 }
-                className="w-4 h-4 rounded border-gray-300 text-amber-600 focus:ring-amber-500"
+                className="w-4 h-4 rounded border-gray-300 text-amber-700 focus:ring-amber-500"
               />
               <span className="text-sm text-gray-700">
                 {t("common.active")}
               </span>
             </label>
+
+            <BadgePicker
+              value={form.badges}
+              onChange={badges => setForm(p => ({ ...p, badges }))}
+              locale={locale}
+            />
+
             <button
               type="button"
               onClick={handleSave}

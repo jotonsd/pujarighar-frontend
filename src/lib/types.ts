@@ -100,6 +100,10 @@ export interface NavGroupItem {
   label_bn: string
   label_en: string
   items: NavGroupChild[]
+  /** Frontend-only marker for synthetic groups (e.g. the Category dropdown,
+   *  built client-side from live category data) that need different mobile
+   *  rendering than the backend-driven admin nav groups. */
+  id?: string
 }
 
 export type NavItem = NavLinkItem | NavGroupItem
@@ -197,6 +201,7 @@ export interface Product {
   active_discount_type: 'PERCENTAGE' | 'FLAT' | null
   active_discount_value: string | null
   is_active: boolean
+  badges: ProductBadge[]
   stock_on_hand: string
   images: ProductImage[]
   package_items: PackageItem[]
@@ -211,6 +216,8 @@ export interface Product {
   created_at: string
   updated_at: string
 }
+
+export type ProductBadge = 'new' | 'trendy' | 'flash_sale'
 
 export interface BlogPost {
   id: string
@@ -591,6 +598,27 @@ export interface JournalEntry {
   lines: JournalLine[]
   total_debit: string
   total_credit: string
+  is_balanced: boolean
+}
+
+// ─── Bayna Booking ───────────────────────────────────────────────────────────
+
+export type BaynaServiceType = 'PUJARI' | 'DHAKI' | 'MURTI'
+export type BaynaStatus = 'PENDING' | 'CONTACTED' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED'
+
+export interface BaynaBooking {
+  id: string
+  service_type: BaynaServiceType
+  event_date: string
+  name: string
+  phone: string
+  email: string
+  location: string
+  description: string
+  status: BaynaStatus
+  admin_notes: string
+  created_at: string
+  updated_at: string
 }
 
 // ─── Review ──────────────────────────────────────────────────────────────────

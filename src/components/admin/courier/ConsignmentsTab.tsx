@@ -53,12 +53,12 @@ export default function ConsignmentsTab({ locale, isBn }: { locale: string; isBn
       <table className="w-full text-sm">
         <thead className="bg-amber-50 border-b border-amber-200">
           <tr>
-            <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">{isBn ? "অর্ডার" : "Order"}</th>
-            <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">{isBn ? "প্রোভাইডার" : "Provider"}</th>
-            <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">{isBn ? "ট্র্যাকিং কোড" : "Tracking Code"}</th>
-            <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">{isBn ? "স্ট্যাটাস" : "Status"}</th>
-            <th className="px-4 py-3 text-right text-xs font-semibold text-amber-600 uppercase tracking-wider">{isBn ? "সিওডি" : "COD"}</th>
-            <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">{isBn ? "সর্বশেষ" : "Last Update"}</th>
+            <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "অর্ডার" : "Order"}</th>
+            <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "প্রোভাইডার" : "Provider"}</th>
+            <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "ট্র্যাকিং কোড" : "Tracking Code"}</th>
+            <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "স্ট্যাটাস" : "Status"}</th>
+            <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "সিওডি" : "COD"}</th>
+            <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "সর্বশেষ" : "Last Update"}</th>
             <th className="px-4 py-3"></th>
           </tr>
         </thead>
@@ -66,7 +66,7 @@ export default function ConsignmentsTab({ locale, isBn }: { locale: string; isBn
           {rows.map(c => (
             <tr key={c.id} className="hover:bg-gray-50 transition-colors">
               <td className="px-4 py-3">
-                <Link href={`/${locale}/admin/orders/${c.order_id}`} className="text-amber-600 hover:underline font-medium">
+                <Link href={`/${locale}/admin/orders/${c.order_id}`} className="text-amber-700 hover:underline font-medium">
                   {c.order_number}
                 </Link>
               </td>
@@ -94,7 +94,7 @@ export default function ConsignmentsTab({ locale, isBn }: { locale: string; isBn
                   <div className="relative group">
                     <button
                       onClick={() => setReturnTargetId(c.id)}
-                      className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-amber-200 bg-amber-50 text-amber-600 hover:bg-amber-100 transition-colors"
+                      className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors"
                     >
                       <Undo2 className="w-3.5 h-3.5" />
                     </button>

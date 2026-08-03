@@ -58,7 +58,7 @@ export default function ResetPasswordPage() {
               ? "এই লিংকটি অবৈধ বা মেয়াদ শেষ হয়ে গেছে। নতুন করে চেষ্টা করুন।"
               : "This link is invalid or has expired. Please request a new one."}
           </p>
-          <Link href={`/${locale}/auth/forgot-password`} className="text-amber-600 hover:text-amber-700 font-semibold text-sm hover:underline">
+          <Link href={`/${locale}/auth/forgot-password`} className="text-amber-700 hover:text-amber-700 font-semibold text-sm hover:underline">
             {isBn ? "নতুন লিংক পাঠান" : "Request New Link"}
           </Link>
         </div>

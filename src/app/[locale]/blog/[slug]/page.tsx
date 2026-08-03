@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import { getBreadcrumbListSchema } from "@/lib/structuredData";
 import { BlogPost } from "@/lib/types";
+import OfferBanners from "@/components/products/OfferBanners";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pujarighar.com";
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8020";
@@ -114,9 +115,9 @@ export default async function BlogDetailPage({ params }: Props) {
       />
 
       <nav className="text-xs text-gray-400 mb-4 flex items-center gap-1.5">
-        <Link href={`/${locale}`} className="hover:text-amber-600">{isBn ? "হোম" : "Home"}</Link>
+        <Link href={`/${locale}`} className="hover:text-amber-700">{isBn ? "হোম" : "Home"}</Link>
         <span>/</span>
-        <Link href={`/${locale}/blog`} className="hover:text-amber-600">{isBn ? "ব্লগ" : "Blog"}</Link>
+        <Link href={`/${locale}/blog`} className="hover:text-amber-700">{isBn ? "ব্লগ" : "Blog"}</Link>
         <span>/</span>
         <span className="text-gray-500 truncate">{title}</span>
       </nav>
@@ -138,7 +139,7 @@ export default async function BlogDetailPage({ params }: Props) {
       <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-3">{title}</h1>
 
       {post.published_at && (
-        <p className="text-xs text-gray-400 mb-6">
+        <p className="text-xs text-gray-400 mb-3">
           {new Date(post.published_at).toLocaleDateString(isBn ? "bn-BD" : "en-US", {
             year: "numeric",
             month: "long",
@@ -146,6 +147,10 @@ export default async function BlogDetailPage({ params }: Props) {
           })}
         </p>
       )}
+
+      <div className="mb-6">
+        <OfferBanners />
+      </div>
 
       <div
         className="prose prose-sm sm:prose-base max-w-none rich-text text-gray-700"

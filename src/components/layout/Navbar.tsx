@@ -1,19 +1,21 @@
 "use client";
 
 import { useGetMeQuery, useLogoutMutation } from "@/api/auth/authApi";
+import { useGetCategoriesQuery } from "@/api/categories/categoriesApi";
 import { useGetSiteSettingsQuery } from "@/api/settings/settingsApi";
 import CartPreview from "@/components/layout/CartPreview";
 import NotificationBell from "@/components/ui/NotificationBell";
 import { NavGroupChild, NavGroupItem, NavItem, NavSubGroupItem, User } from "@/lib/types";
 import { useAuthStore } from "@/store/authStore";
 import { formatAmount } from "@/utils/format";
+import Cookies from "js-cookie";
 import {
   Settings, Cog, Package, LogOut, Copy, Check, ScrollText,
   Receipt, ShoppingBag, LayoutDashboard, BarChart3, TrendingUp, TrendingDown,
   Boxes, Gift, Tag, BadgeCheck, Percent, Warehouse, ClipboardList, Truck,
   Users as UsersIcon, Handshake, PiggyBank, Landmark, BookOpen, NotebookPen, PlusCircle,
   Scale, ShoppingCart, FileBarChart, Undo2, CreditCard, Megaphone,
-  GalleryHorizontal, Target, Mail, Star, Home, Store, FileText, Shield,
+  GalleryHorizontal, Target, Mail, Star, Home, Store, FileText, Shield, ListTree, Search, ChevronRight, Calendar,
   type LucideIcon,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
@@ -28,6 +30,7 @@ const GUEST_MENU: NavItem[] = [
   { type: "link", href: "/",         icon: "home",         label_bn: "হোম",           label_en: "Home" },
   { type: "link", href: "/products", icon: "store",        label_bn: "পণ্য",           label_en: "Products" },
   { type: "link", href: "/packages", icon: "gift",         label_bn: "প্যাকেজ",        label_en: "Packages" },
+  { type: "link", href: "/bayna",    icon: "calendar",     label_bn: "বায়না",          label_en: "Bayna" },
   { type: "link", href: "/blog",     icon: "file-text",    label_bn: "ব্লগ",           label_en: "Blog" },
   { type: "link", href: "/track",    icon: "truck",        label_bn: "অর্ডার ট্র্যাক", label_en: "Track Order" },
 ];
@@ -82,6 +85,9 @@ const NAV_ICONS: Record<string, LucideIcon> = {
   store: Store,
   "file-text": FileText,
   shield: Shield,
+  "list-tree": ListTree,
+  "chevron-right": ChevronRight,
+  calendar: Calendar,
 };
 
 function NavIcon({ name, className = "w-4 h-4" }: { name: string; className?: string }) {
@@ -162,7 +168,7 @@ function NavDropdown({
         className={`flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-semibold whitespace-nowrap shrink-0 transition-colors ${
           isActive
             ? "bg-amber-50 text-amber-700"
-            : "text-gray-600 hover:text-amber-600 hover:bg-gray-50"
+            : "text-gray-600 hover:text-amber-700 hover:bg-gray-50"
         }`}
       >
         <NavIcon name={group.icon} />
@@ -192,7 +198,7 @@ function NavDropdown({
                     className={`flex items-center justify-between gap-2 px-4 py-2.5 text-xs cursor-default transition-colors ${
                       active || subActive
                         ? "bg-amber-50 text-amber-700 font-medium"
-                        : "text-gray-600 hover:bg-gray-50 hover:text-amber-600"
+                        : "text-gray-600 hover:bg-gray-50 hover:text-amber-700"
                     }`}
                   >
                     <span className="flex items-center gap-2">
@@ -217,7 +223,7 @@ function NavDropdown({
                 className={`flex items-center gap-2 px-4 py-2.5 text-xs transition-colors ${
                   active
                     ? "bg-amber-50 text-amber-700 font-medium"
-                    : "text-gray-600 hover:bg-gray-50 hover:text-amber-600"
+                    : "text-gray-600 hover:bg-gray-50 hover:text-amber-700"
                 }`}
               >
                 <NavIcon name={item.icon} />
@@ -245,7 +251,7 @@ function NavDropdown({
                 className={`flex items-center gap-2 px-4 py-2.5 text-xs transition-colors ${
                   active
                     ? "bg-amber-50 text-amber-700 font-medium"
-                    : "text-gray-600 hover:bg-gray-50 hover:text-amber-600"
+                    : "text-gray-600 hover:bg-gray-50 hover:text-amber-700"
                 }`}
               >
                 <NavIcon name={sub.icon} />
@@ -291,7 +297,7 @@ function ProfileDropdown({
 
       <button
         onClick={() => setOpen(o => !o)}
-        className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-amber-600 transition-colors"
+        className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-amber-700 transition-colors"
       >
         <span className="w-8 h-8 rounded-full bg-amber-100 text-amber-700 font-bold flex items-center justify-center text-sm overflow-hidden shrink-0">
           {user.profile?.avatar ? (
@@ -324,7 +330,7 @@ function ProfileDropdown({
                 <>
                   <div className="mt-1.5 flex items-center gap-1.5 bg-amber-50 rounded-lg px-2 py-1.5">
                     <div>
-                      <p className="text-[10px] text-amber-600 leading-none">
+                      <p className="text-[10px] text-amber-700 leading-none">
                         {isBn ? "ক্যাশব্যাক ব্যালেন্স" : "Cashback Balance"}
                       </p>
                       <p className="text-xs font-bold text-amber-700 leading-tight mt-0.5">
@@ -458,6 +464,12 @@ function MobileMenu({
       >
         <NavIcon name={icon} className="w-[18px] h-[18px]" />
         {lbl}
+        {href === "/bayna" && (
+          <span className="relative inline-flex w-2 h-2">
+            <span className="absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75 animate-ping" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-red-600" />
+          </span>
+        )}
       </Link>
     );
   };
@@ -475,7 +487,11 @@ function MobileMenu({
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100">
           <Image src={logoSrc} alt={companyName} width={75} height={32} className="h-8 w-auto object-contain" />
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 p-1">
+          <button
+            onClick={onClose}
+            aria-label={locale === "bn" ? "বন্ধ করুন" : "Close menu"}
+            className="text-gray-400 hover:text-gray-600 p-1"
+          >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -509,6 +525,47 @@ function MobileMenu({
             }
             // group
             const grp = item as NavGroupItem;
+
+            // The Category dropdown is a synthetic, potentially-long flat
+            // list of live category data — rendered as its own collapsible
+            // row (same look as a regular link, chevron, collapsed by
+            // default) instead of the "always-expanded list under a header"
+            // treatment used for the backend-driven admin nav groups below.
+            if (grp.id === "category-menu") {
+              const key = `top-${i}`;
+              const expanded = expandedSubKey === key;
+              return (
+                <div key={i}>
+                  <button
+                    type="button"
+                    onClick={() => setExpandedSubKey(expanded ? null : key)}
+                    className="w-full flex items-center justify-between gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    <span className="flex items-center gap-3">
+                      <NavIcon name={grp.icon} className="w-[18px] h-[18px]" />
+                      {label(grp, locale)}
+                    </span>
+                    <svg
+                      className={`w-3.5 h-3.5 text-gray-400 transition-transform ${expanded ? "rotate-180" : ""}`}
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={2.5}
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="m6 9 6 6 6-6" />
+                    </svg>
+                  </button>
+                  {expanded && (
+                    <div className="bg-gray-50/60">
+                      {grp.items.map(leaf =>
+                        isSubGroup(leaf) ? null : navLink(leaf.href, leaf.icon, label(leaf, locale), true),
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
             return (
               <div key={i} className="border-t border-gray-100 mt-2 pt-2">
                 <p className="px-4 py-1 text-xs text-gray-400 font-medium uppercase tracking-wide">
@@ -576,7 +633,7 @@ function MobileMenu({
               {currentUser.role.code === "CUSTOMER" && (
                 <div className="flex items-center gap-1.5 bg-amber-50 rounded-lg px-2.5 py-1.5">
                   <div>
-                    <p className="text-[10px] text-amber-600">{locale === "bn" ? "ক্যাশব্যাক" : "Cashback Balance"}</p>
+                    <p className="text-[10px] text-amber-700">{locale === "bn" ? "ক্যাশব্যাক" : "Cashback Balance"}</p>
                     <p className="text-xs font-bold text-amber-700">{formatAmount(currentUser.profile?.cashback_balance ?? "0", locale, 0)}</p>
                   </div>
                 </div>
@@ -643,9 +700,19 @@ export default function Navbar() {
   // (e.g. right after the store's own hydrate() effect hasn't run yet, or
   // read a momentarily-inconsistent cookie). This call is the actual source
   // of truth: it goes through the normal access/refresh flow regardless, so
-  // a genuinely valid session is always detected, and a truly logged-out
-  // guest just gets a cheap, harmless 401 with no side effects.
+  // a genuinely valid session is always detected.
+  //
+  // It IS skipped when there's no `refresh_token` cookie at all — unlike the
+  // `isAuthenticated` flag, a cookie read is synchronous and always current
+  // as of this render (setAuth()/logout() write/clear it before updating the
+  // store, and this component re-renders on every store change), so this
+  // can't go stale the way the old flag-based skip did. This just avoids
+  // sending a call that's guaranteed to 401 for the majority of storefront
+  // traffic (guests with no session), without reintroducing the staleness
+  // bugs — anyone who actually has a session cookie still gets the real,
+  // server-validated check every time.
   const { data: me, error: meError } = useGetMeQuery(undefined, {
+    skip: !Cookies.get("refresh_token"),
     refetchOnMountOrArgChange: true,
   });
 
@@ -667,12 +734,59 @@ export default function Navbar() {
     : (siteSettings?.company_name_en || "PujariGhar");
 
   // Active menu: backend-driven for authenticated users, guest fallback otherwise
-  const menu: NavItem[] = currentUser?.nav_menu ?? GUEST_MENU;
+  const baseMenu: NavItem[] = currentUser?.nav_menu ?? GUEST_MENU;
+
+  // "Category" dropdown — only guest/customer menus have a plain '/products'
+  // link (staff nav uses '/admin/products'), so splicing it in right after
+  // that link naturally scopes this to guest/customer only, with no extra
+  // role check needed. Categories are per-tenant data, not static like the
+  // rest of the menu, so this is built here rather than baked into
+  // GUEST_MENU or the backend's hardcoded CUSTOMER menu.
+  const { data: navCategories = [] } = useGetCategoriesQuery();
+  const categoriesGroup: NavGroupItem | null = navCategories.length > 0 ? {
+    type: "group",
+    id: "category-menu",
+    icon: "tag",
+    label_bn: "ক্যাটাগরি",
+    label_en: "Category",
+    items: navCategories.map(c => ({
+      href: `/products?category=${c.slug}`,
+      icon: "chevron-right",
+      label_bn: c.name_bn,
+      label_en: c.name_en,
+    })),
+  } : null;
+  const menu: NavItem[] = categoriesGroup
+    ? baseMenu.flatMap(item =>
+        item.type === "link" && item.href === "/products" ? [item, categoriesGroup] : [item],
+      )
+    : baseMenu;
 
   const showCart = !currentUser || role === "CUSTOMER";
 
   // Search
   const [query, setQuery] = useState("");
+  const [searchOpen, setSearchOpen] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    // Input stays mounted (needed so the width transition has something to
+    // animate to/from) — focus it manually on open instead of `autoFocus`,
+    // which only fires once on initial mount.
+    if (searchOpen) searchInputRef.current?.focus();
+  }, [searchOpen]);
+
+  useEffect(() => {
+    if (!searchOpen) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setSearchOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [searchOpen]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -717,7 +831,7 @@ export default function Navbar() {
           {/* Hamburger */}
           {role !== "DELIVERY" && (
             <button
-              className="md:hidden text-gray-600 hover:text-amber-600 p-1 -ml-1"
+              className="md:hidden text-gray-600 hover:text-amber-700 p-1 -ml-1"
               onClick={() => setMobileOpen(true)}
               aria-label="Open menu"
             >
@@ -783,46 +897,96 @@ export default function Navbar() {
                   className={`flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-semibold whitespace-nowrap shrink-0 transition-colors ${
                     active
                       ? "bg-amber-50 text-amber-700"
-                      : "text-gray-600 hover:text-amber-600 hover:bg-gray-50"
+                      : "text-gray-600 hover:text-amber-700 hover:bg-gray-50"
                   }`}
                 >
                   <NavIcon name={item.icon} />
                   {locale === "bn" ? item.label_bn : item.label_en}
+                  {item.href === "/bayna" && (
+                    <span className="relative inline-flex w-2 h-2 ml-0.5">
+                      <span className="absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75 animate-ping" />
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-red-600" />
+                    </span>
+                  )}
                 </Link>
               );
             })}
           </div>
 
-          {/* Search — only for guest/customer */}
-          <form
-            onSubmit={handleSearch}
-            className={`shrink-0 justify-end ${
+          {/* Search — only for guest/customer. Collapsed to an icon button by
+              default (expands on click) so it doesn't eat a fixed 256-320px
+              of row width and squeeze out later menu items (e.g. "Track
+              Order" was getting clipped in the longer English label). */}
+          <div
+            ref={searchRef}
+            className={`relative shrink-0 items-center h-9 ${
               isAdmin || (!!currentUser && role !== "CUSTOMER")
                 ? "hidden"
-                : "hidden md:flex w-64 lg:w-80"
+                : "hidden md:flex"
             }`}
           >
-            <div className="relative w-full">
-              <input
-                type="text"
-                value={query}
-                onChange={e => setQuery(e.target.value)}
-                placeholder={t("common.search")}
-                className="w-full pl-9 pr-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-300 bg-gray-50"
-              />
-              <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                <circle cx="11" cy="11" r="8" />
-                <path d="m21 21-4.35-4.35" />
-              </svg>
+            {!searchOpen && (
+              <button
+                type="button"
+                onClick={() => setSearchOpen(true)}
+                aria-label={t("common.search")}
+                className="p-2 text-gray-700 hover:text-amber-700 hover:bg-gray-50 rounded-md transition-colors"
+              >
+                <Search className="w-5 h-5" strokeWidth={2.5} />
+              </button>
+            )}
+            {/* Anchored to the right edge (same spot as the icon button),
+                sliding in from the right and fading in — a right-to-left
+                reveal, not a dropdown from below. Animates only `transform`
+                and `opacity` (not `width`) so it's GPU-composited instead of
+                triggering layout on every frame. */}
+            <div
+              className={`absolute right-0 top-1/2 w-64 lg:w-80 z-50 transition-[transform,opacity] duration-300 ease-out ${
+                searchOpen
+                  ? "-translate-y-1/2 translate-x-0 opacity-100"
+                  : "-translate-y-1/2 translate-x-4 opacity-0 pointer-events-none"
+              }`}
+            >
+              <form
+                onSubmit={e => { handleSearch(e); setSearchOpen(false); }}
+                className="w-full"
+              >
+                <div className="relative w-full">
+                  <input
+                    ref={searchInputRef}
+                    type="text"
+                    tabIndex={searchOpen ? 0 : -1}
+                    value={query}
+                    onChange={e => setQuery(e.target.value)}
+                    placeholder={t("common.search")}
+                    className="w-full pl-9 pr-9 py-1.5 text-sm border-2 border-gray-200 rounded-lg shadow-lg focus:outline-none focus:border-amber-400 bg-white"
+                  />
+                  <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="m21 21-4.35-4.35" />
+                  </svg>
+                  <button
+                    type="button"
+                    tabIndex={searchOpen ? 0 : -1}
+                    onClick={() => setSearchOpen(false)}
+                    aria-label={locale === "bn" ? "বন্ধ করুন" : "Close"}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </form>
             </div>
-          </form>
+          </div>
 
           {/* Right actions */}
           <div className="flex items-center gap-3 shrink-0">
             {role === "ADMIN" && (
               <Link
                 href={`/${locale}/admin/settings`}
-                className="text-gray-500 hover:text-amber-600 transition-colors"
+                className="text-gray-500 hover:text-amber-700 transition-colors"
                 title={locale === "bn" ? "সেটিং" : "Settings"}
               >
                 <Settings className="w-5 h-5" />
@@ -844,7 +1008,7 @@ export default function Navbar() {
                   </>
                 ) : (
                   <>
-                    <Link href={`/${locale}/auth/login`} className="text-gray-600 hover:text-amber-600 text-sm">
+                    <Link href={`/${locale}/auth/login`} className="text-gray-600 hover:text-amber-700 text-sm">
                       {t("nav.login")}
                     </Link>
                     <Link href={`/${locale}/auth/register`} className="btn-primary text-sm">

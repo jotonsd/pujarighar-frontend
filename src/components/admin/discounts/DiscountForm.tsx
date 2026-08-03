@@ -91,7 +91,7 @@ export default function DiscountForm() {
               <div className="flex items-center gap-4 pt-2 border-t border-gray-200">
                 <div>
                   <p className="text-gray-400">{isBn ? 'বিদ্যমান ছাড়' : 'Existing Discount'}</p>
-                  <p className="font-semibold text-amber-600">
+                  <p className="font-semibold text-amber-700">
                     {selectedProduct.active_discount_type === 'PERCENTAGE'
                       ? `${selectedProduct.active_discount_value}%`
                       : formatAmount(selectedProduct.active_discount_value ?? '0', locale, 2)}

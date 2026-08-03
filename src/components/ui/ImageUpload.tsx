@@ -104,7 +104,7 @@ export default function ImageUpload({
               <X className="w-3.5 h-3.5" />
             </button>
             {!item.isExisting && (
-              <span className="absolute bottom-1.5 left-1.5 bg-amber-500/80 text-white text-[10px] px-1.5 py-0.5 rounded">
+              <span className="absolute bottom-1.5 left-1.5 bg-amber-600/80 text-white text-[10px] px-1.5 py-0.5 rounded">
                 {isBn ? 'নতুন' : 'New'}
               </span>
             )}
@@ -186,11 +186,11 @@ export default function ImageUpload({
                 <button
                   type="button"
                   onClick={() => removePending(i)}
-                  className="absolute top-1 right-1 w-5 h-5 bg-amber-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow"
+                  className="absolute top-1 right-1 w-5 h-5 bg-amber-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow"
                 >
                   <X className="w-3 h-3" />
                 </button>
-                <span className="absolute bottom-0 inset-x-0 bg-amber-500/80 text-white text-[10px] text-center py-0.5">
+                <span className="absolute bottom-0 inset-x-0 bg-amber-600/80 text-white text-[10px] text-center py-0.5">
                   {isBn ? 'নতুন' : 'New'}
                 </span>
               </div>

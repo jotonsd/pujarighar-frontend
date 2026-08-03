@@ -67,7 +67,7 @@ export default function UserList() {
         description={locale === 'bn' ? 'সকল ব্যবহারকারীর তালিকা, ভূমিকা ও অ্যাকাউন্ট পরিচালনা' : 'Manage all user accounts, roles and access'}
         actions={
           <Link href={`/${locale}/admin/users/new`}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-amber-600 hover:bg-amber-700 text-white transition-colors">
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-amber-600 hover:bg-amber-600 text-white transition-colors">
             {t('common.create')}
           </Link>
         }
@@ -94,7 +94,7 @@ export default function UserList() {
           label: t('common.edit'),
           render: u => (
             <Link href={`/${locale}/admin/users/${u.id}`}
-              className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-amber-200 bg-amber-50 text-amber-600 hover:bg-amber-100 transition-colors"
+              className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors"
               title={t('common.edit')}>
               <Pencil className="w-3.5 h-3.5" />
             </Link>

@@ -66,7 +66,7 @@ export default function ForgotPasswordPage() {
                   ? `যদি ${email} নিবন্ধিত থাকে, একটি পাসওয়ার্ড রিসেট লিংক পাঠানো হয়েছে।`
                   : `If ${email} is registered, a password reset link has been sent.`}
               </p>
-              <Link href={`/${locale}/auth/login`} className="text-amber-600 hover:text-amber-700 font-semibold text-sm hover:underline">
+              <Link href={`/${locale}/auth/login`} className="text-amber-700 hover:text-amber-700 font-semibold text-sm hover:underline">
                 {isBn ? "লগইনে ফিরে যান" : "Back to Login"}
               </Link>
             </div>

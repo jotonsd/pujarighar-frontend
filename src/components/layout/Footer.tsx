@@ -16,11 +16,32 @@ async function fetchSettings() {
   }
 }
 
+interface FooterCategory {
+  slug: string;
+  name_bn: string;
+  name_en: string;
+}
+
+async function fetchCategories(): Promise<FooterCategory[]> {
+  try {
+    const base = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+    // Categories are already returned sorted by their admin-managed `order`
+    // (sequence) field — just take the first 5.
+    const res = await fetch(`${base}/api/categories/`, { next: { revalidate: 300 } });
+    if (!res.ok) return [];
+    const json = await res.json();
+    return (json.data ?? []).slice(0, 5);
+  } catch {
+    return [];
+  }
+}
+
 export default async function Footer() {
   const locale = await getLocale();
   const bn = locale === "bn";
   const year = new Date().getFullYear();
   const settings = await fetchSettings();
+  const categories = await fetchCategories();
 
   const companyName = bn
     ? (settings?.company_name_bn || "পূজারিঘর")
@@ -71,7 +92,7 @@ export default async function Footer() {
                 },
                 {
                   label: "YouTube",
-                  href: "#",
+                  href: "https://www.youtube.com/@pujarigharbd",
                   icon: (
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M21.8 8.001s-.2-1.4-.8-2c-.77-.8-1.63-.8-2.03-.86C16.1 5 12 5 12 5h-.01s-4.1 0-6.97.15c-.4.05-1.26.06-2.03.86-.6.6-.8 2-.8 2S2 9.6 2 11.2v1.6c0 1.6.2 3.2.2 3.2s.2 1.4.8 2c.77.8 1.78.78 2.23.86C6.9 19 12 19 12 19s4.1 0 6.97-.15c.4-.06 1.26-.06 2.03-.86.6-.6.8-2 .8-2s.2-1.6.2-3.2v-1.6c0-1.6-.2-3.2-.2-3.2zM9.96 14.5v-5l5.4 2.5-5.4 2.5z" />
@@ -122,16 +143,10 @@ export default async function Footer() {
               {bn ? "পূজার সামগ্রী" : "Puja Items"}
             </h3>
             <ul className="space-y-2.5">
-              {[
-                { label_bn: "প্রতিমা ও মূর্তি", label_en: "Idols & Statues" },
-                { label_bn: "ধূপ ও প্রদীপ",     label_en: "Incense & Lamps" },
-                { label_bn: "ফুল ও মালা",         label_en: "Flowers & Garlands" },
-                { label_bn: "পূজার পাত্র",        label_en: "Puja Utensils" },
-                { label_bn: "প্রসাদ সামগ্রী",     label_en: "Prasad Items" },
-              ].map((item, i) => (
-                <li key={i}>
-                  <Link href={`/${locale}/products`} className="text-sm text-gray-400 hover:text-amber-400 transition-colors">
-                    {bn ? item.label_bn : item.label_en}
+              {categories.map(cat => (
+                <li key={cat.slug}>
+                  <Link href={`/${locale}/products?category=${cat.slug}`} className="text-sm text-gray-400 hover:text-amber-400 transition-colors">
+                    {bn ? cat.name_bn : cat.name_en}
                   </Link>
                 </li>
               ))}

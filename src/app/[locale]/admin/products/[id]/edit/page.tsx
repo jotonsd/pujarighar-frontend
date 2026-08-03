@@ -8,6 +8,7 @@ import {
   useGetProductQuery,
   useUpdateProductMutation,
 } from "@/api/products/productsApi";
+import BadgePicker from "@/components/admin/products/BadgePicker";
 import ImageUpload from "@/components/ui/ImageUpload";
 import {
   FloatingInput,
@@ -17,8 +18,9 @@ import {
 } from "@/components/ui/forms";
 import PageHeader from "@/components/ui/PageHeader";
 import Spinner from "@/components/ui/Spinner";
+import { ProductBadge } from "@/lib/types";
 import { toast } from "@/store/toastStore";
-import { getErrorMessage } from "@/utils/apiError";
+import { getErrorMessage, getFieldErrors } from "@/utils/apiError";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -55,9 +57,11 @@ export default function EditProductPage({
     meta_description_en: "",
     focus_keyword: "",
     canonical_url: "",
+    badges: [] as ProductBadge[],
   });
 
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (product) {
@@ -77,11 +81,13 @@ export default function EditProductPage({
         meta_description_en: product.meta_description_en,
         focus_keyword:        product.focus_keyword,
         canonical_url:        product.canonical_url,
+        badges:               product.badges,
       });
     }
   }, [product]);
 
   const handleUpdate = async () => {
+    setFieldErrors({});
     try {
       await updateProduct({ id: params.id, ...form }).unwrap();
       if (pendingFiles.length > 0) {
@@ -91,6 +97,7 @@ export default function EditProductPage({
       router.push(`/${locale}/admin/products`);
     } catch (err: unknown) {
       toast.error(getErrorMessage(err, locale));
+      setFieldErrors(getFieldErrors(err));
     }
   };
 
@@ -112,12 +119,13 @@ export default function EditProductPage({
 
       <div className="card space-y-4">
         <div className="grid grid-cols-2 gap-3">
-          <FloatingInput label="নাম (বাংলা)"      value={form.name_bn} onChange={f("name_bn")} />
-          <FloatingInput label="Name (English)"    value={form.name_en} onChange={f("name_en")} />
+          <FloatingInput label="নাম (বাংলা)"      value={form.name_bn} onChange={f("name_bn")} error={fieldErrors.name_bn} />
+          <FloatingInput label="Name (English)"    value={form.name_en} onChange={f("name_en")} error={fieldErrors.name_en} />
           <FloatingSelect
             label={t("product.category")}
             value={form.category}
             onChange={val => setForm(p => ({ ...p, category: val }))}
+            error={fieldErrors.category}
           >
             {categories.map(c => (
               <option key={c.id} value={c.id}>
@@ -131,6 +139,7 @@ export default function EditProductPage({
             onChange={val => setForm(p => ({ ...p, brand: val }))}
             showClearButton={!!form.brand}
             onClear={() => setForm(p => ({ ...p, brand: "" }))}
+            error={fieldErrors.brand}
           >
             <option value="">{locale === "bn" ? "ব্র্যান্ড নির্বাচন করুন" : "Select brand"}</option>
             {brands.map(b => (
@@ -161,22 +170,28 @@ export default function EditProductPage({
           inactiveLabel={t("common.inactive")}
         />
 
+        <BadgePicker
+          value={form.badges}
+          onChange={badges => setForm(p => ({ ...p, badges }))}
+          locale={locale}
+        />
+
         <div className="pt-2 border-t border-gray-100">
           <h3 className="text-sm font-semibold text-gray-600 mb-3">
             {locale === "bn" ? "এসইও (ঐচ্ছিক)" : "SEO (optional)"}
           </h3>
           <div className="space-y-3">
             <div className="grid grid-cols-2 gap-3">
-              <FloatingInput label={locale === "bn" ? "এসইও শিরোনাম (বাংলা)" : "SEO Title (Bangla)"} value={form.seo_title_bn} onChange={f("seo_title_bn")} maxLength={70} />
-              <FloatingInput label={locale === "bn" ? "এসইও শিরোনাম (English)" : "SEO Title (English)"} value={form.seo_title_en} onChange={f("seo_title_en")} maxLength={70} />
+              <FloatingInput label={locale === "bn" ? "এসইও শিরোনাম (বাংলা)" : "SEO Title (Bangla)"} value={form.seo_title_bn} onChange={f("seo_title_bn")} maxLength={70} error={fieldErrors.seo_title_bn} />
+              <FloatingInput label={locale === "bn" ? "এসইও শিরোনাম (English)" : "SEO Title (English)"} value={form.seo_title_en} onChange={f("seo_title_en")} maxLength={70} error={fieldErrors.seo_title_en} />
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <FloatingTextarea label={locale === "bn" ? "মেটা বিবরণ (বাংলা)" : "Meta Description (Bangla)"} value={form.meta_description_bn} onChange={f("meta_description_bn")} rows={2} maxLength={170} />
-              <FloatingTextarea label={locale === "bn" ? "মেটা বিবরণ (English)" : "Meta Description (English)"} value={form.meta_description_en} onChange={f("meta_description_en")} rows={2} maxLength={170} />
+              <FloatingTextarea label={locale === "bn" ? "মেটা বিবরণ (বাংলা)" : "Meta Description (Bangla)"} value={form.meta_description_bn} onChange={f("meta_description_bn")} rows={2} maxLength={170} error={fieldErrors.meta_description_bn} />
+              <FloatingTextarea label={locale === "bn" ? "মেটা বিবরণ (English)" : "Meta Description (English)"} value={form.meta_description_en} onChange={f("meta_description_en")} rows={2} maxLength={170} error={fieldErrors.meta_description_en} />
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <FloatingInput label={locale === "bn" ? "ফোকাস কীওয়ার্ড" : "Focus Keyword"} value={form.focus_keyword} onChange={f("focus_keyword")} />
-              <FloatingInput label={locale === "bn" ? "ক্যানোনিক্যাল URL" : "Canonical URL"} value={form.canonical_url} onChange={f("canonical_url")} placeholder="https://pujarighar.com/products/..." />
+              <FloatingInput label={locale === "bn" ? "ফোকাস কীওয়ার্ড" : "Focus Keyword"} value={form.focus_keyword} onChange={f("focus_keyword")} maxLength={150} error={fieldErrors.focus_keyword} />
+              <FloatingInput label={locale === "bn" ? "ক্যানোনিক্যাল URL" : "Canonical URL"} value={form.canonical_url} onChange={f("canonical_url")} placeholder="https://pujarighar.com/products/..." maxLength={500} error={fieldErrors.canonical_url} />
             </div>
           </div>
         </div>

@@ -69,7 +69,7 @@ function ProviderCard({ provider, isBn, locale }: { provider: CourierProvider; i
           <span className="font-bold text-amber-700">
             {balanceLoading ? "..." : formatAmount(balance?.current_balance ?? 0, locale, 2)}
           </span>
-          <button onClick={() => refetchBalance()} className="ml-auto text-xs text-amber-600 hover:underline">
+          <button onClick={() => refetchBalance()} className="ml-auto text-xs text-amber-700 hover:underline">
             {isBn ? "রিফ্রেশ" : "Refresh"}
           </button>
         </div>
@@ -115,7 +115,7 @@ function ProviderCard({ provider, isBn, locale }: { provider: CourierProvider; i
           </div>
         </div>
       ) : (
-        <button onClick={() => setEditing(true)} className="text-sm text-amber-600 hover:underline">
+        <button onClick={() => setEditing(true)} className="text-sm text-amber-700 hover:underline">
           {isBn ? "কী পরিবর্তন করুন" : "Update keys"}
         </button>
       )}

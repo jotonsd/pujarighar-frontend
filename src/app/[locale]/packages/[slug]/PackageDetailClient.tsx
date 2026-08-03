@@ -134,7 +134,7 @@ export default function PackageDetailClient({ id, offerBanners }: { id: string; 
 
           {/* Price */}
           <div className="flex items-end gap-3">
-            <span className="text-3xl font-bold text-amber-600">
+            <span className="text-3xl font-bold text-amber-700">
               {formatAmount(finalPrice, locale, 0)}
             </span>
             {hasDiscount && (
@@ -203,7 +203,7 @@ export default function PackageDetailClient({ id, offerBanners }: { id: string; 
               </button>
               <button
                 onClick={() => router.back()}
-                className="flex-1 font-bold inline-flex items-center justify-center gap-1.5 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors"
+                className="flex-1 font-bold inline-flex items-center justify-center gap-1.5 bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded-lg transition-colors"
               >
                 <ArrowLeft className="w-4 h-4" />
                 {locale === "bn" ? "আরো কিনুন" : "Shop More"}

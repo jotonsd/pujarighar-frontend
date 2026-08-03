@@ -67,7 +67,7 @@ export default function OfferBannersClient({ banners }: { banners: Banner[] }) {
         {/* text content */}
         <div className="flex-1 min-w-0 z-10">
           {banner.badge_text && (
-            <span className="inline-block text-[11px] font-bold bg-amber-500 text-white px-2.5 py-0.5 rounded-full mb-1.5 tracking-wide uppercase">
+            <span className="inline-block text-[11px] font-bold bg-amber-600 text-white px-2.5 py-0.5 rounded-full mb-1.5 tracking-wide uppercase">
               {banner.badge_text.replace(/\d+/g, n => formatNumber(n, locale))}
             </span>
           )}
@@ -82,7 +82,7 @@ export default function OfferBannersClient({ banners }: { banners: Banner[] }) {
         {/* arrow hint */}
         {banner.link && (
           <span
-            className="shrink-0 z-10 flex items-center justify-center w-8 h-8 rounded-full bg-amber-500"
+            className="shrink-0 z-10 flex items-center justify-center w-8 h-8 rounded-full bg-amber-600"
             aria-hidden="true"
           >
             <svg

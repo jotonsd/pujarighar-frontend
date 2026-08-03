@@ -34,7 +34,7 @@ const FloatingTextarea = forwardRef<HTMLTextAreaElement, FloatingTextareaProps>(
             id={inputId}
             rows={rows}
             className={`block pb-2 pt-3 w-full text-sm text-gray-900 bg-transparent rounded-lg border border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-amber-600 peer resize-y ${
-              error ? 'border-amber-500 focus:border-amber-500' : ''
+              error ? 'border-red-500 focus:border-red-500' : ''
             } ${icon ? 'pl-10' : 'pl-2.5'} ${rightElement ? 'pr-10' : 'pr-2.5'} ${className}`}
             placeholder=" "
             onChange={handleChange}
@@ -44,11 +44,11 @@ const FloatingTextarea = forwardRef<HTMLTextAreaElement, FloatingTextareaProps>(
           <label
             htmlFor={inputId}
             className={`absolute text-sm duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 pointer-events-none
-            peer-focus:px-2 peer-focus:text-amber-600
+            peer-focus:px-2 peer-focus:text-amber-700
             peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-5
             peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4
             ${icon ? 'start-9 peer-placeholder-shown:start-9 peer-focus:start-2' : 'start-1'}
-            ${error ? 'text-amber-500' : 'text-gray-500'}`}
+            ${error ? 'text-red-500' : 'text-gray-500'}`}
           >
             {label}
           </label>
@@ -59,7 +59,7 @@ const FloatingTextarea = forwardRef<HTMLTextAreaElement, FloatingTextareaProps>(
             </div>
           )}
         </div>
-        {error && <p className="mt-1 text-xs text-amber-500">{error}</p>}
+        {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
       </div>
     )
   },

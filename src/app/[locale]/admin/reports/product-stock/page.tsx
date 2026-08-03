@@ -77,11 +77,11 @@ export default function ProductStockReportPage() {
           <table className="w-full text-sm">
             <thead className="bg-amber-50 border-b border-amber-200">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">{isBn ? "পণ্য" : "Product"}</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">{isBn ? "কেটাগরি" : "Category"}</th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-600 uppercase tracking-wider">{isBn ? "স্টক" : "Stock"}</th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-600 uppercase tracking-wider">{isBn ? "ক্রয় মূল্য" : "Cost Price"}</th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-600 uppercase tracking-wider">{isBn ? "স্টক মূল্য" : "Stock Value"}</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "পণ্য" : "Product"}</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "কেটাগরি" : "Category"}</th>
+                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "স্টক" : "Stock"}</th>
+                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "ক্রয় মূল্য" : "Cost Price"}</th>
+                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "স্টক মূল্য" : "Stock Value"}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -105,11 +105,11 @@ export default function ProductStockReportPage() {
                       </div>
                     </td>
                     <td className="px-4 py-3 text-xs text-gray-600">{isBn ? p.category_name_bn : p.category_name_en}</td>
-                    <td className={`px-4 py-3 text-right text-xs font-bold ${stock <= 0 ? "text-red-600" : stock <= 5 ? "text-amber-600" : "text-gray-700"}`}>
+                    <td className={`px-4 py-3 text-right text-xs font-bold ${stock <= 0 ? "text-red-700" : stock <= 5 ? "text-amber-700" : "text-gray-700"}`}>
                       {formatNumber(stock, locale)}
                     </td>
                     <td className="px-4 py-3 text-right text-xs text-gray-600">{formatAmount(p.cost_price, locale, 2)}</td>
-                    <td className="px-4 py-3 text-right text-xs font-bold text-amber-600">{formatAmount(value.toString(), locale, 2)}</td>
+                    <td className="px-4 py-3 text-right text-xs font-bold text-amber-700">{formatAmount(value.toString(), locale, 2)}</td>
                   </tr>
                 );
               })}

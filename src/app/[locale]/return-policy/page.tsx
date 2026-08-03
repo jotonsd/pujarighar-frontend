@@ -90,8 +90,8 @@ export default async function ReturnPolicyPage({ params }: Props) {
           </h2>
           <p>
             {isBn
-              ? "রিটার্ন সংক্রান্ত কোনো প্রশ্নের জন্য আমাদের সাথে যোগাযোগ করুন: support@pujarighar.com"
-              : "For any return-related questions, please contact us at support@pujarighar.com."}
+              ? "রিটার্ন সংক্রান্ত কোনো প্রশ্নের জন্য আমাদের সাথে যোগাযোগ করুন: pujarigharbd@gmail.com"
+              : "For any return-related questions, please contact us at pujarigharbd@gmail.com."}
           </p>
         </section>
       </div>

@@ -110,7 +110,7 @@ export default function OrderItems({ order }: Props) {
         )}
         <div className="flex justify-between font-bold">
           <span>{t("order.total")}</span>
-          <span className="text-amber-600">
+          <span className="text-amber-700">
             {formatAmount(order.grand_total, locale)}
           </span>
         </div>

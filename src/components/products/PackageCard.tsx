@@ -1,6 +1,7 @@
 "use client";
 
 import OfferBadge from "@/components/ui/OfferBadge";
+import ProductBadges from "@/components/products/ProductBadges";
 import { Product } from "@/lib/types";
 import { formatAmount, formatNumber, localName } from "@/utils/format";
 import Image from "next/image";
@@ -42,6 +43,7 @@ export default function PackageCard({ pkg, locale }: Props) {
       <div className="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-100 hover:shadow-md transition-shadow flex flex-col h-full">
         {/* Image */}
         <div className="h-36 md:h-56 bg-amber-50 relative overflow-hidden">
+          <ProductBadges badges={pkg.badges} locale={locale} />
           {pkg.images?.[0] ? (
             <Image
               src={pkg.images[0].image}
@@ -73,7 +75,7 @@ export default function PackageCard({ pkg, locale }: Props) {
           {/* Mobile: price stacked, button below — Desktop: price + button in same row */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
             <div className="flex items-baseline gap-1.5">
-              <span className="text-base font-bold text-amber-600">
+              <span className="text-base font-bold text-amber-700">
                 {formatAmount(finalPrice, locale, 0)}
               </span>
               {hasDiscount && (
@@ -82,7 +84,7 @@ export default function PackageCard({ pkg, locale }: Props) {
                 </span>
               )}
             </div>
-            <span className="hidden md:inline-flex items-center justify-center text-[10px] font-bold px-3 py-1.5 rounded bg-amber-500 text-white group-hover:bg-amber-600 transition-colors whitespace-nowrap shrink-0">
+            <span className="hidden md:inline-flex items-center justify-center text-[10px] font-bold px-3 py-1.5 rounded bg-amber-600 text-white group-hover:bg-amber-600 transition-colors whitespace-nowrap shrink-0">
               {locale === "bn" ? "বিস্তারিত" : "Details"}
             </span>
           </div>
@@ -90,7 +92,7 @@ export default function PackageCard({ pkg, locale }: Props) {
 
         {/* Details button — mobile only */}
         <div className="px-3 pb-3 md:hidden">
-          <span className="block w-full text-center text-[10px] font-bold py-1.5 rounded bg-amber-500 text-white group-hover:bg-amber-600 transition-colors">
+          <span className="block w-full text-center text-[10px] font-bold py-1.5 rounded bg-amber-600 text-white group-hover:bg-amber-600 transition-colors">
             {locale === "bn" ? "বিস্তারিত" : "Details"}
           </span>
         </div>

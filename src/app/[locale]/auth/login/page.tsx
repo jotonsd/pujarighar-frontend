@@ -213,7 +213,7 @@ function LoginForm() {
                 />
                 <Link
                   href={`/${locale}/auth/forgot-password`}
-                  className="text-sm text-amber-600 hover:text-amber-700 font-medium hover:underline"
+                  className="text-sm text-amber-700 hover:text-amber-700 font-medium hover:underline"
                 >
                   {isBn ? "পাসওয়ার্ড ভুলে গেছেন?" : "Forgot password?"}
                 </Link>
@@ -311,7 +311,7 @@ function LoginForm() {
             </span>
             <Link
               href={`/${locale}/auth/register`}
-              className="text-amber-600 hover:text-amber-700 font-semibold transition-colors hover:underline"
+              className="text-amber-700 hover:text-amber-700 font-semibold transition-colors hover:underline"
             >
               {isBn ? "রেজিস্ট্রেশন করুন" : "Register"}
             </Link>

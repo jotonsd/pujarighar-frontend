@@ -67,7 +67,7 @@ export default function DeliveryOrdersPage() {
     {
       header: locale === "bn" ? "মোট" : "Total",
       accessor: o => (
-        <span className="text-sm font-bold text-amber-600">
+        <span className="text-sm font-bold text-amber-700">
           {formatAmount(o.grand_total, locale, 0)}
         </span>
       ),
@@ -106,7 +106,7 @@ export default function DeliveryOrdersPage() {
             }}
             className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
               status === f.value
-                ? "bg-amber-500 text-white"
+                ? "bg-amber-600 text-white"
                 : "bg-white text-gray-600 border border-gray-200 hover:border-amber-300"
             }`}
           >
@@ -140,7 +140,7 @@ export default function DeliveryOrdersPage() {
             render: o => (
               <Link
                 href={`/${locale}/delivery/orders/${o.id}`}
-                className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-amber-200 bg-amber-50 text-amber-600 hover:bg-amber-100 transition-colors"
+                className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors"
                 title={locale === "bn" ? "দেখুন" : "View"}
               >
                 <Eye className="w-3.5 h-3.5" />

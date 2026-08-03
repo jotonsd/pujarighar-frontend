@@ -35,7 +35,7 @@ export default function PaymentsTab({ isBn }: { isBn: boolean }) {
         <thead className="bg-amber-50 border-b border-amber-200">
           <tr>
             {columns.map(col => (
-              <th key={col} className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider whitespace-nowrap">
+              <th key={col} className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider whitespace-nowrap">
                 {col.replace(/_/g, " ")}
               </th>
             ))}

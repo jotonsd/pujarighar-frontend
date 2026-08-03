@@ -19,7 +19,7 @@ const STAT_CARDS = [
   { key: "today_orders",   labelKey: "todayOrders",   icon: ShoppingBag,   bg: "bg-blue-600",    iconText: "text-blue-600" },
   { key: "today_revenue",  labelKey: "todayRevenue",  icon: Wallet,        bg: "bg-emerald-700",  iconText: "text-emerald-700", isCurrency: true },
   { key: "pending_orders", labelKey: "pendingOrders", icon: Clock,         bg: "bg-amber-700",    iconText: "text-amber-700" },
-  { key: "low_stock_count",labelKey: "lowStock",      icon: AlertTriangle, bg: "bg-red-600",      iconText: "text-red-600" },
+  { key: "low_stock_count",labelKey: "lowStock",      icon: AlertTriangle, bg: "bg-red-600",      iconText: "text-red-700" },
   { key: "total_customers",labelKey: "totalCustomers",icon: Users,         bg: "bg-purple-600",   iconText: "text-purple-600" },
   { key: "total_products", labelKey: "totalProducts", icon: Package,       bg: "bg-orange-700",   iconText: "text-orange-700" },
 ] as const;
@@ -147,7 +147,7 @@ export default function DashboardPage() {
         {/* This month profit */}
         <div className={`rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow flex items-start gap-3 ${profitVal >= 0 ? "bg-emerald-700" : "bg-red-600"}`}>
           <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 bg-white shadow-sm">
-            <Scale className={`w-5 h-5 ${profitVal >= 0 ? "text-emerald-700" : "text-red-600"}`} strokeWidth={2} />
+            <Scale className={`w-5 h-5 ${profitVal >= 0 ? "text-emerald-700" : "text-red-700"}`} strokeWidth={2} />
           </div>
           <div className="min-w-0 flex-1">
             <p className="text-xs text-white/80 mb-1">{isBn ? "এই মাসের নিট লাভ" : "This Month Net Profit"}</p>
@@ -173,7 +173,7 @@ export default function DashboardPage() {
         {/* Loan + partner outstanding */}
         <div className="bg-red-600 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow flex items-start gap-3">
           <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 bg-white shadow-sm">
-            <HandCoins className="w-5 h-5 text-red-600" strokeWidth={2} />
+            <HandCoins className="w-5 h-5 text-red-700" strokeWidth={2} />
           </div>
           <div className="min-w-0 flex-1">
             <p className="text-xs text-white/80 mb-1">{isBn ? "ঋণ + অংশীদার বাকি" : "Loan + Partner Due"}</p>

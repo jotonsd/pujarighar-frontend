@@ -64,7 +64,7 @@ export default function SalesSummaryPage() {
               {
                 label: locale === "bn" ? "মোট অর্ডার" : "Total Orders",
                 value: formatNumber(data.total_orders, locale),
-                color: "text-amber-600",
+                color: "text-amber-700",
               },
               {
                 label: locale === "bn" ? "গড় অর্ডার মূল্য" : "Avg Order Value",
@@ -120,13 +120,13 @@ export default function SalesSummaryPage() {
                 <table className="w-full text-sm">
                   <thead className="bg-amber-50 border-b border-amber-200">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600">
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700">
                         {locale === "bn" ? "সময়কাল" : "Period"}
                       </th>
-                      <th className="px-4 py-3 text-right text-xs font-semibold text-amber-600">
+                      <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700">
                         {locale === "bn" ? "অর্ডার" : "Orders"}
                       </th>
-                      <th className="px-4 py-3 text-right text-xs font-semibold text-amber-600">
+                      <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700">
                         {locale === "bn" ? "বিক্রয়" : "Revenue"}
                       </th>
                     </tr>
@@ -136,7 +136,7 @@ export default function SalesSummaryPage() {
                       <tr key={i} className="hover:bg-gray-50 transition-colors">
                         <td className="px-4 py-3 text-gray-700 text-xs">{formatPeriod(r.period)}</td>
                         <td className="px-4 py-3 text-right text-xs text-gray-600">{formatNumber(r.order_count, locale)}</td>
-                        <td className="px-4 py-3 text-right text-xs font-bold text-amber-600">{formatAmount(r.total_revenue, locale, 0)}</td>
+                        <td className="px-4 py-3 text-right text-xs font-bold text-amber-700">{formatAmount(r.total_revenue, locale, 0)}</td>
                       </tr>
                     ))}
                   </tbody>

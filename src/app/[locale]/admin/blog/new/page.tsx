@@ -7,7 +7,7 @@ import { FloatingInput, FloatingTextarea, ToggleSwitch } from "@/components/ui/f
 import TiptapEditor from "@/components/admin/blog/TiptapEditor";
 import PageHeader from "@/components/ui/PageHeader";
 import { toast } from "@/store/toastStore";
-import { getErrorMessage } from "@/utils/apiError";
+import { getErrorMessage, getFieldErrors } from "@/utils/apiError";
 import { useCreateBlogPostMutation } from "@/api/blog/blogApi";
 
 export default function NewBlogPostPage() {
@@ -31,6 +31,7 @@ export default function NewBlogPostPage() {
   });
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const [createBlogPost, { isLoading }] = useCreateBlogPostMutation();
 
@@ -44,6 +45,7 @@ export default function NewBlogPostPage() {
       toast.error(locale === "bn" ? "শিরোনাম আবশ্যিক" : "Title is required");
       return;
     }
+    setFieldErrors({});
     try {
       const fd = new FormData();
       Object.entries(form).forEach(([k, v]) => fd.append(k, String(v)));
@@ -53,6 +55,7 @@ export default function NewBlogPostPage() {
       router.push(`/${locale}/admin/blog`);
     } catch (err: unknown) {
       toast.error(getErrorMessage(err, locale));
+      setFieldErrors(getFieldErrors(err));
     }
   };
 
@@ -68,8 +71,8 @@ export default function NewBlogPostPage() {
 
       <div className="card space-y-4">
         <div className="grid grid-cols-2 gap-3">
-          <FloatingInput label="শিরোনাম (বাংলা) *" value={form.title_bn} onChange={f("title_bn")} />
-          <FloatingInput label="Title (English) *" value={form.title_en} onChange={f("title_en")} />
+          <FloatingInput label="শিরোনাম (বাংলা) *" value={form.title_bn} onChange={f("title_bn")} error={fieldErrors.title_bn} />
+          <FloatingInput label="Title (English) *" value={form.title_en} onChange={f("title_en")} error={fieldErrors.title_en} />
         </div>
 
         <div>
@@ -132,16 +135,16 @@ export default function NewBlogPostPage() {
           </h3>
           <div className="space-y-3">
             <div className="grid grid-cols-2 gap-3">
-              <FloatingInput label={locale === "bn" ? "এসইও শিরোনাম (বাংলা)" : "SEO Title (Bangla)"} value={form.seo_title_bn} onChange={f("seo_title_bn")} maxLength={70} />
-              <FloatingInput label={locale === "bn" ? "এসইও শিরোনাম (English)" : "SEO Title (English)"} value={form.seo_title_en} onChange={f("seo_title_en")} maxLength={70} />
+              <FloatingInput label={locale === "bn" ? "এসইও শিরোনাম (বাংলা)" : "SEO Title (Bangla)"} value={form.seo_title_bn} onChange={f("seo_title_bn")} maxLength={70} error={fieldErrors.seo_title_bn} />
+              <FloatingInput label={locale === "bn" ? "এসইও শিরোনাম (English)" : "SEO Title (English)"} value={form.seo_title_en} onChange={f("seo_title_en")} maxLength={70} error={fieldErrors.seo_title_en} />
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <FloatingTextarea label={locale === "bn" ? "মেটা বিবরণ (বাংলা)" : "Meta Description (Bangla)"} value={form.meta_description_bn} onChange={f("meta_description_bn")} rows={2} maxLength={170} />
-              <FloatingTextarea label={locale === "bn" ? "মেটা বিবরণ (English)" : "Meta Description (English)"} value={form.meta_description_en} onChange={f("meta_description_en")} rows={2} maxLength={170} />
+              <FloatingTextarea label={locale === "bn" ? "মেটা বিবরণ (বাংলা)" : "Meta Description (Bangla)"} value={form.meta_description_bn} onChange={f("meta_description_bn")} rows={2} maxLength={170} error={fieldErrors.meta_description_bn} />
+              <FloatingTextarea label={locale === "bn" ? "মেটা বিবরণ (English)" : "Meta Description (English)"} value={form.meta_description_en} onChange={f("meta_description_en")} rows={2} maxLength={170} error={fieldErrors.meta_description_en} />
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <FloatingInput label={locale === "bn" ? "ফোকাস কীওয়ার্ড" : "Focus Keyword"} value={form.focus_keyword} onChange={f("focus_keyword")} />
-              <FloatingInput label={locale === "bn" ? "ক্যানোনিক্যাল URL" : "Canonical URL"} value={form.canonical_url} onChange={f("canonical_url")} placeholder="https://pujarighar.com/blog/..." />
+              <FloatingInput label={locale === "bn" ? "ফোকাস কীওয়ার্ড" : "Focus Keyword"} value={form.focus_keyword} onChange={f("focus_keyword")} maxLength={150} error={fieldErrors.focus_keyword} />
+              <FloatingInput label={locale === "bn" ? "ক্যানোনিক্যাল URL" : "Canonical URL"} value={form.canonical_url} onChange={f("canonical_url")} placeholder="https://pujarighar.com/blog/..." maxLength={500} error={fieldErrors.canonical_url} />
             </div>
           </div>
         </div>

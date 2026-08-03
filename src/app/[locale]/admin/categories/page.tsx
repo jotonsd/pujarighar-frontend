@@ -72,12 +72,12 @@ export default function CategoriesPage() {
             <table className="w-full">
               <thead className="bg-amber-50 border-b border-amber-200">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">{locale === "bn" ? "ক্রম" : "Order"}</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">{locale === "bn" ? "নাম (বাংলা)" : "Name (BN)"}</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">{locale === "bn" ? "নাম (ইংরেজি)" : "Name (EN)"}</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">Slug</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-600 uppercase tracking-wider">Status</th>
-                  {isAdmin && <th className="px-4 py-3 text-right text-xs font-semibold text-amber-600 uppercase tracking-wider">Actions</th>}
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{locale === "bn" ? "ক্রম" : "Order"}</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{locale === "bn" ? "নাম (বাংলা)" : "Name (BN)"}</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{locale === "bn" ? "নাম (ইংরেজি)" : "Name (EN)"}</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">Slug</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">Status</th>
+                  {isAdmin && <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 uppercase tracking-wider">Actions</th>}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -100,7 +100,7 @@ export default function CategoriesPage() {
                             <button
                               onClick={() => editingId === cat.id ? setEditingId(null) : startEdit(cat)}
                               title={editingId === cat.id ? t("common.cancel") : t("common.edit")}
-                              className={`inline-flex items-center justify-center w-8 h-8 rounded-lg border transition-colors ${editingId === cat.id ? "border-gray-200 bg-gray-100 text-gray-500 hover:bg-gray-200" : "border-amber-200 bg-amber-50 text-amber-600 hover:bg-amber-100"}`}>
+                              className={`inline-flex items-center justify-center w-8 h-8 rounded-lg border transition-colors ${editingId === cat.id ? "border-gray-200 bg-gray-100 text-gray-500 hover:bg-gray-200" : "border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100"}`}>
                               {editingId === cat.id ? <X className="w-3.5 h-3.5" /> : <Pencil className="w-3.5 h-3.5" />}
                             </button>
                             <Link

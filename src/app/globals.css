@@ -8,19 +8,30 @@
   }
 }
 
+/* A sliding highlight band (`transform`) over a flat background, rather than
+   animating `background-position` directly — the latter forces a repaint on
+   every frame since it's not a compositable property, which Lighthouse flags
+   as a non-composited animation. `transform`/`opacity` are composited, so
+   this renders identically but off the main thread. */
 @keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
   100% {
-    background-position: 200% 0;
+    transform: translateX(100%);
   }
 }
 
 .shimmer {
-  background: linear-gradient(90deg, #f3f4f6 25%, #e9eaec 50%, #f3f4f6 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite linear;
+  position: relative;
+  overflow: hidden;
+  background: #f3f4f6;
+}
+
+.shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, #e9eaec, transparent);
+  animation: shimmer 1.5s infinite;
 }
 
 .scrollbar-hide {
@@ -66,7 +77,7 @@
 
 @layer components {
   .btn-primary {
-    @apply bg-amber-500 hover:bg-amber-600 text-white font-medium px-4 py-2 rounded-lg transition-colors;
+    @apply bg-amber-600 hover:bg-amber-600 text-white font-medium px-4 py-2 rounded-lg transition-colors;
   }
 
   .btn-secondary {

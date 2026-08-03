@@ -70,7 +70,7 @@ export default function ApplyDiscountModal({
           <div className="bg-gray-50 rounded-xl p-3 text-sm space-y-1">
             <div className="flex justify-between text-gray-500">
               <span>{isBn ? 'ছাড়' : 'Discount'}</span>
-              <span className="text-red-600">−৳{discountAmount.toLocaleString()}</span>
+              <span className="text-red-700">−৳{discountAmount.toLocaleString()}</span>
             </div>
             <div className="flex justify-between font-semibold text-gray-800">
               <span>{isBn ? 'নতুন সর্বমোট' : 'New Grand Total'}</span>
@@ -83,7 +83,7 @@ export default function ApplyDiscountModal({
           <button
             onClick={() => onConfirm(discountType, numValue)}
             disabled={loading || !isValid}
-            className="flex-1 bg-amber-600 hover:bg-amber-700 disabled:opacity-50 text-white font-semibold py-2.5 rounded-xl transition-colors text-sm"
+            className="flex-1 bg-amber-600 hover:bg-amber-600 disabled:opacity-50 text-white font-semibold py-2.5 rounded-xl transition-colors text-sm"
           >
             {loading ? (isBn ? 'প্রয়োগ হচ্ছে...' : 'Applying...') : (isBn ? 'ছাড় প্রয়োগ করুন' : 'Apply Discount')}
           </button>

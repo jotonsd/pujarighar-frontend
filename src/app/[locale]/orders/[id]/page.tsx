@@ -231,7 +231,7 @@ export default function OrderDetailPage({
               )}
               <div className="flex justify-between font-bold">
                 <span>{t("order.total")}</span>
-                <span className="text-amber-600">
+                <span className="text-amber-700">
                   {formatAmount(order.grand_total, locale)}
                 </span>
               </div>
@@ -312,7 +312,7 @@ export default function OrderDetailPage({
           <p className="text-xs text-gray-400 text-center mt-2">
             <a
               href={`/${locale}/orders/${order.id}/tracking`}
-              className="text-amber-600 hover:underline"
+              className="text-amber-700 hover:underline"
             >
               {locale === "bn"
                 ? "পাবলিক ট্র্যাকিং লিংক"

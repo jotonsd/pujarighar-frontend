@@ -86,7 +86,7 @@ export default function NotificationsPage() {
           unreadCount > 0 ? (
             <button
               onClick={() => markAll()}
-              className="text-sm text-amber-600 hover:text-amber-700 font-medium"
+              className="text-sm text-amber-700 hover:text-amber-700 font-medium"
             >
               {isBn ? "সব পড়া হয়েছে" : "Mark all read"}
             </button>
@@ -111,7 +111,7 @@ export default function NotificationsPage() {
                 {f.icon}
                 <span className="flex-1">{isBn ? f.bn : f.en}</span>
                 {!!f.count && (
-                  <span className="bg-red-100 text-red-600 text-xs font-semibold px-1.5 py-0.5 rounded-full">
+                  <span className="bg-red-100 text-red-700 text-xs font-semibold px-1.5 py-0.5 rounded-full">
                     {f.count}
                   </span>
                 )}
@@ -142,7 +142,7 @@ export default function NotificationsPage() {
                   >
                     <div className="flex items-start gap-2.5">
                       {!n.is_read && (
-                        <span className="mt-1.5 w-2 h-2 rounded-full bg-amber-500 shrink-0" />
+                        <span className="mt-1.5 w-2 h-2 rounded-full bg-amber-600 shrink-0" />
                       )}
                       <div className="flex-1 min-w-0" style={{ paddingLeft: n.is_read ? "10px" : "0" }}>
                         <p className="text-sm font-semibold text-gray-800 leading-snug">

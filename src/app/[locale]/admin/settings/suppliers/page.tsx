@@ -280,7 +280,7 @@ export default function SuppliersPage() {
       accessor: (s) => {
         const bal = parseFloat(s.total_balance || "0");
         return (
-          <span className={`font-bold ${bal > 0 ? "text-red-600" : "text-gray-400"}`}>
+          <span className={`font-bold ${bal > 0 ? "text-red-700" : "text-gray-400"}`}>
             {formatAmount(s.total_balance, locale, 0)}
           </span>
         );
@@ -310,7 +310,7 @@ export default function SuppliersPage() {
       label: isBn ? "সম্পাদনা" : "Edit",
       icon: <Pencil className="w-3.5 h-3.5" />,
       onClick: openEdit,
-      className: "inline-flex items-center justify-center w-8 h-8 rounded-lg border border-amber-200 bg-amber-50 text-amber-600 hover:bg-amber-100 transition-colors",
+      className: "inline-flex items-center justify-center w-8 h-8 rounded-lg border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors",
     },
   ];
 

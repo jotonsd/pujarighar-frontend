@@ -199,14 +199,14 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
           <h1 className="text-2xl font-bold text-gray-800 mb-2">{name}</h1>
           <div className="flex items-center gap-3 mb-4">
             {(product.brand_name_bn || product.brand_name_en) && (
-              <span className="text-xs font-semibold text-amber-600 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-full">
+              <span className="text-xs font-semibold text-amber-700 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-full">
                 {localName(product.brand_name_bn ?? '', product.brand_name_en ?? '', locale === 'bn')}
               </span>
             )}
             <p className="text-gray-500 text-sm">SKU: {product.sku}</p>
           </div>
           <div className="flex items-center gap-2 flex-wrap mb-4">
-            <span className="text-3xl font-bold text-amber-600">
+            <span className="text-3xl font-bold text-amber-700">
               {formatAmount(
                 product.active_discount_type
                   ? product.effective_price
@@ -220,7 +220,7 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
                 <span className="text-sm text-gray-500 line-through">
                   {formatAmount(product.unit_price, locale, 0)}
                 </span>
-                <span className="text-xs font-bold bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full">
+                <span className="text-xs font-bold bg-red-100 text-red-700 px-1.5 py-0.5 rounded-full">
                   {product.active_discount_type === "PERCENTAGE"
                     ? `${formatNumber(Number(product.active_discount_value), locale)}% ${locale === "bn" ? "ছাড়" : "OFF"}`
                     : `${formatAmount(Number(product.active_discount_value), locale, 0)} ${locale === "bn" ? "ছাড়" : "OFF"}`}
@@ -255,7 +255,7 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
               <button
                 onClick={handleAddToCart}
                 disabled={adding}
-                className="btn-secondary flex-1 min-w-[45%] md:min-w-0 font-bold"
+                className="btn-secondary bg-gray-200 hover:bg-gray-300 flex-1 min-w-[45%] md:min-w-0 font-bold"
               >
                 {adding ? t("common.loading") : t("product.addToCart")}
               </button>
@@ -268,7 +268,7 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
               </button>
               <button
                 onClick={() => router.back()}
-                className="flex-1 min-w-[45%] md:min-w-0 font-bold inline-flex items-center justify-center gap-1.5 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors"
+                className="flex-1 min-w-[45%] md:min-w-0 font-bold inline-flex items-center justify-center gap-1.5 bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded-lg transition-colors"
               >
                 <ArrowLeft className="w-4 h-4" />
                 {locale === "bn" ? "আরো কিনুন" : "Shop More"}
