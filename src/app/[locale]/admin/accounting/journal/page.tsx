@@ -357,6 +357,10 @@ export default function JournalPage() {
   const entries = data?.data ?? [];
   const totalPages = data?.meta?.total_pages ?? 1;
 
+  const totalDebitSum = entries.reduce((s, e) => s + (parseFloat(e.total_debit) || 0), 0);
+  const totalCreditSum = entries.reduce((s, e) => s + (parseFloat(e.total_credit) || 0), 0);
+  const allBalanced = Math.abs(totalDebitSum - totalCreditSum) < 0.01;
+
   return (
     <div>
       <PageHeader
@@ -435,11 +439,6 @@ export default function JournalPage() {
                             <Badge variant={badge.variant}>
                               {isBn ? badge.label_bn : badge.label_en}
                             </Badge>
-                            <Badge variant={entry.is_balanced ? "green" : "red"}>
-                              {entry.is_balanced
-                                ? (isBn ? "সুষম" : "Balanced")
-                                : (isBn ? "অসামঞ্জস্যপূর্ণ" : "Imbalanced")}
-                            </Badge>
                           </div>
                         )}
                       </td>
@@ -489,29 +488,46 @@ export default function JournalPage() {
             </tbody>
           </table>
 
-          {totalPages > 1 && (
-            <div className="px-4 py-3 border-t border-gray-100 flex items-center justify-between">
-              <span className="text-xs text-gray-500">
-                {isBn
-                  ? `পেজ ${page} / ${totalPages}`
-                  : `Page ${page} of ${totalPages}`}
-              </span>
-              <div className="flex gap-1">
-                <button
-                  onClick={() => setPage(p => Math.max(1, p - 1))}
-                  disabled={page <= 1}
-                  className="px-3 py-1.5 text-xs border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50"
-                >
-                  {isBn ? "পূর্ববর্তী" : "Prev"}
-                </button>
-                <button
-                  onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                  disabled={page >= totalPages}
-                  className="px-3 py-1.5 text-xs border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50"
-                >
-                  {isBn ? "পরবর্তী" : "Next"}
-                </button>
+          {entries.length > 0 && (
+            <div className="px-4 py-3 border-t border-gray-100 flex items-center justify-between flex-wrap gap-2">
+              <div className="flex items-center gap-3 flex-wrap">
+                <span className="text-xs text-gray-500">
+                  {isBn ? "মোট ডেবিট" : "Total Debit"}: <span className="font-semibold text-gray-700">{formatAmount(String(totalDebitSum.toFixed(2)), locale, 2)}</span>
+                  {"  "}·{"  "}
+                  {isBn ? "মোট ক্রেডিট" : "Total Credit"}: <span className="font-semibold text-gray-700">{formatAmount(String(totalCreditSum.toFixed(2)), locale, 2)}</span>
+                </span>
+                <Badge variant={allBalanced ? "green" : "red"}>
+                  {allBalanced
+                    ? (isBn ? "সুষম" : "Balanced")
+                    : (isBn ? "অসামঞ্জস্যপূর্ণ" : "Imbalanced")}
+                </Badge>
               </div>
+
+              {totalPages > 1 && (
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-gray-500">
+                    {isBn
+                      ? `পেজ ${page} / ${totalPages}`
+                      : `Page ${page} of ${totalPages}`}
+                  </span>
+                  <div className="flex gap-1">
+                    <button
+                      onClick={() => setPage(p => Math.max(1, p - 1))}
+                      disabled={page <= 1}
+                      className="px-3 py-1.5 text-xs border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50"
+                    >
+                      {isBn ? "পূর্ববর্তী" : "Prev"}
+                    </button>
+                    <button
+                      onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                      disabled={page >= totalPages}
+                      className="px-3 py-1.5 text-xs border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50"
+                    >
+                      {isBn ? "পরবর্তী" : "Next"}
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
