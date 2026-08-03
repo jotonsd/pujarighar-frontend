@@ -58,12 +58,26 @@ export default function BaynaBookingDetailPage({ params }: { params: { id: strin
 
   const handleSave = async () => {
     try {
-      await updateBooking({ id: params.id, status, admin_notes: adminNotes, event_date: eventDate }).unwrap();
-      setEditingDate(false);
+      await updateBooking({ id: params.id, status, admin_notes: adminNotes }).unwrap();
       toast.success(isBn ? "আপডেট হয়েছে" : "Updated");
     } catch (err: unknown) {
       toast.error(getErrorMessage(err, locale));
     }
+  };
+
+  const handleSaveDate = async () => {
+    try {
+      await updateBooking({ id: params.id, event_date: eventDate }).unwrap();
+      setEditingDate(false);
+      toast.success(isBn ? "তারিখ আপডেট হয়েছে" : "Date updated");
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, locale));
+    }
+  };
+
+  const handleCancelDateEdit = () => {
+    setEventDate(booking?.event_date ?? "");
+    setEditingDate(false);
   };
 
   if (isLoading || !booking) return <Spinner />;
@@ -105,16 +119,28 @@ export default function BaynaBookingDetailPage({ params }: { params: { id: strin
               <p className="text-gray-800">{booking.location}</p>
             </div>
             <div className="sm:col-span-2">
-              <p className="text-xs text-gray-400 mb-0.5">{isBn ? "অনুষ্ঠানের তারিখ" : "Event Date"}</p>
+              {!editingDate && (
+                <p className="text-xs text-gray-400 mb-0.5">{isBn ? "অনুষ্ঠানের তারিখ" : "Event Date"}</p>
+              )}
               {editingDate ? (
-                <FloatingDatePicker
-                  label={isBn ? "অনুষ্ঠানের তারিখ" : "Event Date"}
-                  value={eventDate}
-                  onChange={setEventDate}
-                />
+                <div className="space-y-2">
+                  <FloatingDatePicker
+                    label={isBn ? "অনুষ্ঠানের তারিখ" : "Event Date"}
+                    value={eventDate}
+                    onChange={setEventDate}
+                  />
+                  <div className="flex gap-2">
+                    <button onClick={handleSaveDate} disabled={saving} className="btn-primary text-xs px-3 py-1.5">
+                      {saving ? (isBn ? "সংরক্ষণ হচ্ছে..." : "Saving...") : (isBn ? "সংরক্ষণ করুন" : "Save")}
+                    </button>
+                    <button onClick={handleCancelDateEdit} className="btn-secondary text-xs px-3 py-1.5">
+                      {isBn ? "বাতিল" : "Cancel"}
+                    </button>
+                  </div>
+                </div>
               ) : (
                 <div className="flex items-center gap-2">
-                  <p className="text-gray-800 font-medium">{formatDate(eventDate, locale)}</p>
+                  <p className="text-gray-800 font-bold">{formatDate(eventDate, locale)}</p>
                   {canEdit && (
                     <button
                       onClick={() => setEditingDate(true)}
@@ -125,11 +151,6 @@ export default function BaynaBookingDetailPage({ params }: { params: { id: strin
                     </button>
                   )}
                 </div>
-              )}
-              {editingDate && (
-                <p className="text-xs text-gray-400 mt-1">
-                  {isBn ? "\"সংরক্ষণ করুন\" চাপলে নতুন তারিখ সংরক্ষিত হবে" : "Click \"Save\" below to store the new date"}
-                </p>
               )}
             </div>
             <div>
