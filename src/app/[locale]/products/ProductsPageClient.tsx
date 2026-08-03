@@ -453,7 +453,7 @@ export default function ProductsPageClient({
 
       <div className="flex gap-3">
         <aside className="hidden lg:block w-56 shrink-0">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 sticky top-20">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto overscroll-contain scrollbar-thin">
             {isLoading && allProducts.length === 0 ? <FilterPanelSkeleton /> : <FilterPanel />}
           </div>
         </aside>
