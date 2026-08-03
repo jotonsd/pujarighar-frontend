@@ -147,7 +147,7 @@ export default function PromoEmailsAdminPage() {
                 onClick={() => set("email_type", t)}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
                   form.email_type === t
-                    ? "bg-amber-500 text-white border-amber-500"
+                    ? "bg-amber-600 text-white border-amber-500"
                     : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50"
                 }`}
               >
@@ -282,7 +282,7 @@ export default function PromoEmailsAdminPage() {
             <div className="flex gap-3 pt-1">
               <button
                 onClick={() => { setResendTarget(viewItem); setViewItem(null); }}
-                className="flex-1 inline-flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2.5 rounded-xl transition-colors text-sm"
+                className="flex-1 inline-flex items-center justify-center gap-2 bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2.5 rounded-xl transition-colors text-sm"
               >
                 <RefreshCw className="w-4 h-4" />
                 {isBn ? "পুনরায় পাঠান" : "Resend"}

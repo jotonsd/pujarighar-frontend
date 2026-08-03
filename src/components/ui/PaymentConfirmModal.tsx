@@ -42,7 +42,7 @@ export default function PaymentConfirmModal({
           <button
             onClick={onConfirm}
             disabled={loading}
-            className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-2.5 rounded-xl transition-colors text-sm"
+            className="flex-1 bg-green-700 hover:bg-green-800 text-white font-semibold py-2.5 rounded-xl transition-colors text-sm"
           >
             {loading
               ? (isBn ? 'প্রক্রিয়া হচ্ছে...' : 'Processing...')

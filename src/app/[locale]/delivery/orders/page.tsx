@@ -106,7 +106,7 @@ export default function DeliveryOrdersPage() {
             }}
             className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
               status === f.value
-                ? "bg-amber-500 text-white"
+                ? "bg-amber-600 text-white"
                 : "bg-white text-gray-600 border border-gray-200 hover:border-amber-300"
             }`}
           >

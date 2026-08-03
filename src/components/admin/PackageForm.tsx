@@ -631,7 +631,7 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
                           toast.error("Failed to delete image");
                         }
                       }}
-                      className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-amber-500 text-white rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-amber-600 text-white rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                     >
                       ×
                     </button>
@@ -655,7 +655,7 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
                     setImageFile(null);
                     setImagePreview(null);
                   }}
-                  className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-amber-500 text-white rounded-full text-xs flex items-center justify-center"
+                  className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-amber-600 text-white rounded-full text-xs flex items-center justify-center"
                 >
                   ×
                 </button>

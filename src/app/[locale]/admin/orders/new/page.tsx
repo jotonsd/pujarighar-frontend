@@ -678,7 +678,7 @@ export default function POSPage() {
                       setSelectedAddressId(null);
                       setShowNewAddrForm(false);
                     }}
-                    className="text-[10px] bg-green-600 text-white px-2 py-1 rounded-lg ml-2 shrink-0 hover:bg-green-700"
+                    className="text-[10px] bg-green-700 text-white px-2 py-1 rounded-lg ml-2 shrink-0 hover:bg-green-700"
                   >
                     {locale === "bn" ? "নির্বাচন করুন" : "Select"}
                   </button>
@@ -744,7 +744,7 @@ export default function POSPage() {
                               type="button"
                               onClick={handleSaveEdit}
                               disabled={savingEdit || !editAddr.address_bn}
-                              className="flex-1 bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-white text-xs font-semibold py-2 rounded-lg transition-colors"
+                              className="flex-1 bg-amber-600 hover:bg-amber-700 disabled:opacity-50 text-white text-xs font-semibold py-2 rounded-lg transition-colors"
                             >
                               {savingEdit ? (locale === "bn" ? "সংরক্ষণ..." : "Saving...") : (locale === "bn" ? "আপডেট করুন" : "Update")}
                             </button>
@@ -838,7 +838,7 @@ export default function POSPage() {
                     type="button"
                     onClick={handleSaveNewAddress}
                     disabled={savingAddr || !newAddr.address_bn}
-                    className="w-full bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-white text-xs font-semibold py-2 rounded-lg transition-colors"
+                    className="w-full bg-amber-600 hover:bg-amber-700 disabled:opacity-50 text-white text-xs font-semibold py-2 rounded-lg transition-colors"
                   >
                     {savingAddr
                       ? (locale === "bn" ? "সংরক্ষণ..." : "Saving...")

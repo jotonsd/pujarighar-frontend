@@ -4,10 +4,10 @@ import { useToastStore, type ToastType } from '@/store/toastStore'
 import { clsx } from 'clsx'
 
 const styles: Record<ToastType, string> = {
-  success: 'bg-green-600 text-white',
+  success: 'bg-green-700 text-white',
   error:   'bg-red-600 text-white',
   info:    'bg-blue-600 text-white',
-  warning: 'bg-amber-500 text-white',
+  warning: 'bg-amber-600 text-white',
 }
 
 const icons: Record<ToastType, string> = {

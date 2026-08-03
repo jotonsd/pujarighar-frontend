@@ -110,9 +110,9 @@ export default function ContactTray() {
         onClick={() => setOpen(o => !o)}
         title={isBn ? "যোগাযোগ করুন" : "Contact us"}
         aria-label={isBn ? "যোগাযোগ করুন" : "Contact us"}
-        className="relative flex items-center justify-center w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-green-600 shadow-lg hover:scale-105 hover:bg-green-700 transition-transform pointer-events-auto"
+        className="relative flex items-center justify-center w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-green-700 shadow-lg hover:scale-105 hover:bg-green-700 transition-transform pointer-events-auto"
       >
-        {!open && <span className="absolute inset-0 rounded-full bg-green-600 animate-ping opacity-40" />}
+        {!open && <span className="absolute inset-0 rounded-full bg-green-700 animate-ping opacity-40" />}
         <span className="relative w-5 h-5 sm:w-6 sm:h-6 grid place-items-center">
           <X className={`absolute w-5 h-5 sm:w-6 sm:h-6 text-white transition-all duration-200 ${open ? "opacity-100 rotate-0 scale-100" : "opacity-0 rotate-45 scale-75"}`} />
           <SupportAgentIcon className={`absolute w-5 h-5 sm:w-6 sm:h-6 text-white transition-all duration-200 ${open ? "opacity-0 rotate-45 scale-75" : "opacity-100 rotate-0 scale-100"}`} />

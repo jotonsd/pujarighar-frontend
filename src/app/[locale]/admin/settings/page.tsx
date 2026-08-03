@@ -150,7 +150,7 @@ function InvoicePanel({ settings, isBn }: { settings: SiteSettings; isBn: boolea
             }`}
           >
             <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${selected ? "border-amber-500" : "border-gray-300"}`}>
-              {selected && <div className="w-2.5 h-2.5 rounded-full bg-amber-500" />}
+              {selected && <div className="w-2.5 h-2.5 rounded-full bg-amber-600" />}
             </div>
             <div className="flex-1">
               <p className={`font-semibold text-sm ${selected ? "text-amber-700" : "text-gray-800"}`}>{opt.label}</p>
@@ -239,7 +239,7 @@ function MailPanel({ settings, isBn }: { settings: SiteSettings; isBn: boolean }
       <label className="flex items-center gap-3 cursor-pointer select-none">
         <div
           onClick={() => setForm(p => ({ ...p, email_use_tls: !p.email_use_tls }))}
-          className={`w-10 h-5 rounded-full transition-colors relative ${form.email_use_tls ? "bg-amber-500" : "bg-gray-200"}`}
+          className={`w-10 h-5 rounded-full transition-colors relative ${form.email_use_tls ? "bg-amber-600" : "bg-gray-200"}`}
         >
           <span className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${form.email_use_tls ? "translate-x-5" : ""}`} />
         </div>

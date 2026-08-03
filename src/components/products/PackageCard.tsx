@@ -84,7 +84,7 @@ export default function PackageCard({ pkg, locale }: Props) {
                 </span>
               )}
             </div>
-            <span className="hidden md:inline-flex items-center justify-center text-[10px] font-bold px-3 py-1.5 rounded bg-amber-500 text-white group-hover:bg-amber-600 transition-colors whitespace-nowrap shrink-0">
+            <span className="hidden md:inline-flex items-center justify-center text-[10px] font-bold px-3 py-1.5 rounded bg-amber-600 text-white group-hover:bg-amber-600 transition-colors whitespace-nowrap shrink-0">
               {locale === "bn" ? "বিস্তারিত" : "Details"}
             </span>
           </div>
@@ -92,7 +92,7 @@ export default function PackageCard({ pkg, locale }: Props) {
 
         {/* Details button — mobile only */}
         <div className="px-3 pb-3 md:hidden">
-          <span className="block w-full text-center text-[10px] font-bold py-1.5 rounded bg-amber-500 text-white group-hover:bg-amber-600 transition-colors">
+          <span className="block w-full text-center text-[10px] font-bold py-1.5 rounded bg-amber-600 text-white group-hover:bg-amber-600 transition-colors">
             {locale === "bn" ? "বিস্তারিত" : "Details"}
           </span>
         </div>
