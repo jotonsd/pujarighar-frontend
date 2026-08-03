@@ -86,7 +86,7 @@ export default function OrderList() {
               className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-xs font-medium transition-colors ${showFilters || activeCount > 0 ? 'bg-amber-50 border-amber-400 text-amber-700' : 'bg-gray-50 border-gray-200 text-gray-600 hover:border-amber-300 hover:text-amber-700'}`}>
               <Filter className="w-3.5 h-3.5" />
               {locale === 'bn' ? 'ফিল্টার' : 'Filter'}
-              {activeCount > 0 && <span className="bg-amber-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center leading-none">{activeCount}</span>}
+              {activeCount > 0 && <span className="bg-amber-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center leading-none">{activeCount}</span>}
             </button>
           </div>
         } />

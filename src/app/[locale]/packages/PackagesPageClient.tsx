@@ -88,7 +88,7 @@ export default function PackagesPageClient({ offerBanners }: { offerBanners?: Re
             onClick={() => selectCategory("")}
             className={`shrink-0 px-4 py-1.5 rounded-full text-sm font-medium border transition-colors ${
               selectedCategory === ""
-                ? "bg-amber-500 text-white border-amber-500"
+                ? "bg-amber-600 text-white border-amber-500"
                 : "bg-white text-gray-600 border-gray-200 hover:border-amber-400 hover:text-amber-700"
             }`}
           >
@@ -100,7 +100,7 @@ export default function PackagesPageClient({ offerBanners }: { offerBanners?: Re
               onClick={() => selectCategory(cat.id)}
               className={`shrink-0 px-4 py-1.5 rounded-full text-sm font-medium border transition-colors ${
                 selectedCategory === cat.id
-                  ? "bg-amber-500 text-white border-amber-500"
+                  ? "bg-amber-600 text-white border-amber-500"
                   : "bg-white text-gray-600 border-gray-200 hover:border-amber-400 hover:text-amber-700"
               }`}
             >

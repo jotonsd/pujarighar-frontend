@@ -254,7 +254,7 @@ export default function ProductCard({ product, locale, priority = false }: Props
             disabled={!inStock || adding}
             className={`flex-1 h-6 rounded text-[10px] font-bold transition-colors ${
               inStock
-                ? "bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-white"
+                ? "bg-amber-600 hover:bg-amber-700 active:bg-amber-700 text-white"
                 : "bg-gray-100 text-gray-400 cursor-not-allowed"
             }`}
           >

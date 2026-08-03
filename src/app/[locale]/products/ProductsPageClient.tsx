@@ -94,7 +94,7 @@ function PriceRangeInputs({
       </div>
       <button
         onClick={apply}
-        className="w-full py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold transition-colors"
+        className="w-full py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold transition-colors"
       >
         {isBn ? "ফিল্টার করুন" : "Filter"}
       </button>
@@ -442,7 +442,7 @@ export default function ProductsPageClient({
     <div className="max-w-7xl mx-auto px-4 py-3">
       <button
         onClick={() => setSidebarOpen(true)}
-        className="fixed bottom-4 left-4 z-30 lg:hidden inline-flex items-center gap-2 px-4 py-3 rounded-full bg-green-600 shadow-lg text-sm font-medium text-white hover:bg-green-700 transition-colors"
+        className="fixed bottom-4 left-4 z-30 lg:hidden inline-flex items-center gap-2 px-4 py-3 rounded-full bg-green-700 shadow-lg text-sm font-medium text-white hover:bg-green-700 transition-colors"
       >
         <SlidersHorizontal className="w-4 h-4" />
         {locale === "bn" ? "ফিল্টার" : "Filters"}

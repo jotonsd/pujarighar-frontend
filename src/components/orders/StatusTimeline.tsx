@@ -42,7 +42,7 @@ export default function StatusTimeline({ logs, locale, deliveryInfo }: Props) {
         <div key={log.id} className="flex gap-3">
           {/* Line */}
           <div className="flex flex-col items-center">
-            <div className="w-3 h-3 bg-amber-500 rounded-full mt-1 shrink-0" />
+            <div className="w-3 h-3 bg-amber-600 rounded-full mt-1 shrink-0" />
             {i < logs.length - 1 && (
               <div className="w-0.5 bg-amber-200 flex-1 my-1" />
             )}

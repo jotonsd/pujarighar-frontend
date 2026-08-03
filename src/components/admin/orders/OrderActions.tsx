@@ -199,7 +199,7 @@ export default function OrderActions({ order, orderId }: Props) {
           <>
             <button
               disabled={loading}
-              className="btn-primary text-sm bg-green-600 hover:bg-green-700"
+              className="btn-primary text-sm bg-green-700 hover:bg-green-800"
               onClick={() => setShowPayModal(true)}
             >
               💵 {locale === 'bn' ? 'পেমেন্ট নিশ্চিত করুন' : 'Mark as Paid'}
@@ -328,7 +328,7 @@ export default function OrderActions({ order, orderId }: Props) {
                 description={locale === 'bn' ? 'পণ্যটি সফলভাবে গ্রাহকের কাছে পৌঁছে দেওয়া হয়েছে?' : 'Has the order been successfully delivered to the customer?'}
                 confirmLabel={locale === 'bn' ? 'হ্যাঁ, ডেলিভারি হয়েছে' : 'Yes, Delivered'}
                 cancelLabel={locale === 'bn' ? 'ফিরে যান' : 'Go Back'}
-                confirmClassName="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-2.5 rounded-xl transition-colors text-sm"
+                confirmClassName="flex-1 bg-green-700 hover:bg-green-800 text-white font-semibold py-2.5 rounded-xl transition-colors text-sm"
                 loading={delivering}
                 onCancel={() => setShowDeliverModal(false)}
                 onConfirm={async () => {
@@ -351,7 +351,7 @@ export default function OrderActions({ order, orderId }: Props) {
                 description={locale === 'bn' ? 'এই অর্ডারটি ফেরত হিসেবে চিহ্নিত হবে।' : 'This order will be marked as returned.'}
                 confirmLabel={locale === 'bn' ? 'হ্যাঁ, ফেরত দিন' : 'Yes, Return'}
                 cancelLabel={locale === 'bn' ? 'ফিরে যান' : 'Go Back'}
-                confirmClassName="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2.5 rounded-xl transition-colors text-sm"
+                confirmClassName="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2.5 rounded-xl transition-colors text-sm"
                 loading={returning}
                 onCancel={() => setShowReturnModal(false)}
                 onConfirm={async () => {

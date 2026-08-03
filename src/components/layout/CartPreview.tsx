@@ -87,7 +87,7 @@ export default function CartPreview({ locale }: { locale: string }) {
       >
         <ShoppingCart className="w-5 h-5" />
         {count > 0 && (
-          <span className="absolute -top-2 -right-2 bg-amber-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+          <span className="absolute -top-2 -right-2 bg-amber-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
             {count}
           </span>
         )}

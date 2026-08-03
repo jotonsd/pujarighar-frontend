@@ -268,7 +268,7 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
               </button>
               <button
                 onClick={() => router.back()}
-                className="flex-1 min-w-[45%] md:min-w-0 font-bold inline-flex items-center justify-center gap-1.5 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors"
+                className="flex-1 min-w-[45%] md:min-w-0 font-bold inline-flex items-center justify-center gap-1.5 bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded-lg transition-colors"
               >
                 <ArrowLeft className="w-4 h-4" />
                 {locale === "bn" ? "আরো কিনুন" : "Shop More"}

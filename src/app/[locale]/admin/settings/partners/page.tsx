@@ -333,7 +333,7 @@ function PaymentHistoryModal({
             {!showForm && (
               <button
                 onClick={openCreate}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500 text-white text-sm font-medium hover:bg-amber-600 transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-600 text-white text-sm font-medium hover:bg-amber-600 transition-colors"
               >
                 {isBn ? "+ মাস রেকর্ড" : "+ Record Month"}
               </button>

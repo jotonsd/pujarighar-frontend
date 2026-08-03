@@ -296,7 +296,7 @@ export default function ProfilePage() {
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="absolute bottom-0 right-0 w-6 h-6 rounded-full bg-amber-500 text-white flex items-center justify-center shadow"
+                    className="absolute bottom-0 right-0 w-6 h-6 rounded-full bg-amber-600 text-white flex items-center justify-center shadow"
                   >
                     <Camera className="w-3 h-3" />
                   </button>
@@ -460,7 +460,7 @@ export default function ProfilePage() {
                     onClick={() => handleLanguageChange(opt.code)}
                     className={`flex-1 py-2.5 rounded-lg text-sm font-medium border transition-colors ${
                       (me?.preferred_language ?? "bn") === opt.code
-                        ? "bg-amber-500 text-white border-amber-500"
+                        ? "bg-amber-600 text-white border-amber-500"
                         : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50"
                     }`}
                   >

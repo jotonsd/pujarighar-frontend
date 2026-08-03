@@ -142,7 +142,7 @@ export default function NotificationsPage() {
                   >
                     <div className="flex items-start gap-2.5">
                       {!n.is_read && (
-                        <span className="mt-1.5 w-2 h-2 rounded-full bg-amber-500 shrink-0" />
+                        <span className="mt-1.5 w-2 h-2 rounded-full bg-amber-600 shrink-0" />
                       )}
                       <div className="flex-1 min-w-0" style={{ paddingLeft: n.is_read ? "10px" : "0" }}>
                         <p className="text-sm font-semibold text-gray-800 leading-snug">
