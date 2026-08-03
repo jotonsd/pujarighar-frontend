@@ -38,6 +38,14 @@
     "xlsx": "^0.18.5",
     "zustand": "5.0.2"
   },
+  "browserslist": [
+    "chrome >= 91",
+    "edge >= 91",
+    "firefox >= 90",
+    "safari >= 14",
+    "ios_saf >= 14",
+    "not dead"
+  ],
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.20",
     "@types/js-cookie": "3.0.6",

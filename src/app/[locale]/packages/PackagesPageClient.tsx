@@ -5,6 +5,7 @@ import { useGetProductsQuery } from "@/api/products/productsApi";
 import PackageCard from "@/components/products/PackageCard";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Product } from "@/lib/types";
+import { Gift } from "lucide-react";
 import { useLocale } from "next-intl";
 import { ReactNode, useEffect, useRef, useState } from "react";
 
@@ -120,7 +121,7 @@ export default function PackagesPageClient({ offerBanners }: { offerBanners?: Re
         <>
           {allPackages.length === 0 && !isFetching ? (
             <div className="text-center py-20 text-gray-400">
-              <p className="text-4xl mb-3">🎁</p>
+              <Gift className="w-10 h-10 mx-auto mb-3 text-gray-300" />
               <p>{isBn ? "কোনো প্যাকেজ নেই" : "No packages available"}</p>
               {selectedCategory && (
                 <button
