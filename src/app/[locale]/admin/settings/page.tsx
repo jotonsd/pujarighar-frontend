@@ -235,7 +235,7 @@ function MailPanel({ settings, isBn }: { settings: SiteSettings; isBn: boolean }
           />
         </div>
       </div>
-      <FloatingInput label={isBn ? "ডিফল্ট প্রেরক ইমেইল" : "Default From Email"} value={form.email_default_from} onChange={f("email_default_from")} placeholder="noreply@pujarighar.com" />
+      <FloatingInput label={isBn ? "ডিফল্ট প্রেরক ইমেইল" : "Default From Email"} value={form.email_default_from} onChange={f("email_default_from")} placeholder="pujarigharbd@gmail.com" />
       <label className="flex items-center gap-3 cursor-pointer select-none">
         <div
           onClick={() => setForm(p => ({ ...p, email_use_tls: !p.email_use_tls }))}

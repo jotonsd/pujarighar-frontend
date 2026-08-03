@@ -127,6 +127,7 @@ export const baseApi = createApi({
     'CourierReturnRequests',
     'BlogPosts',
     'Roles',
+    'Bayna',
   ],
   endpoints: () => ({}),
 })
