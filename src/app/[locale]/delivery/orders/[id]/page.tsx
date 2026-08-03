@@ -136,7 +136,7 @@ const [showDeliverModal, setShowDeliverModal] = useState(false);
           description={locale === "bn" ? "এই অর্ডারটি ফেরত হিসেবে চিহ্নিত হবে।" : "This order will be marked as returned."}
           confirmLabel={locale === "bn" ? "হ্যাঁ, ফেরত দিন" : "Yes, Return"}
           cancelLabel={locale === "bn" ? "বাতিল" : "Cancel"}
-          confirmClassName="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2.5 rounded-xl transition-colors text-sm"
+          confirmClassName="flex-1 bg-amber-600 hover:bg-amber-600 text-white font-semibold py-2.5 rounded-xl transition-colors text-sm"
           loading={returning}
           onCancel={() => setShowReturnModal(false)}
           onConfirm={async () => {
