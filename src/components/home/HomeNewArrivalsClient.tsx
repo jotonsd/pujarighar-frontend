@@ -2,11 +2,11 @@
 
 import { Product } from "@/lib/types";
 import ProductCard from "@/components/products/ProductCard";
-import { Tag } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { useLocale } from "next-intl";
 import Link from "next/link";
 
-export default function HomeOffersClient({ products }: { products: Product[] }) {
+export default function HomeNewArrivalsClient({ products }: { products: Product[] }) {
   const locale = useLocale();
   // Only show in full rows of 6 — fewer than 6 isn't worth a section.
   const showCount = Math.floor(products.length / 6) * 6;
@@ -18,17 +18,14 @@ export default function HomeOffersClient({ products }: { products: Product[] }) 
     <section className="mb-8">
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-2">
-          <Tag className="w-6 h-6 text-amber-600" />
+          <Sparkles className="w-6 h-6 text-amber-600" />
           <h2 className="text-xl font-bold text-gray-800">
-            {locale === "bn" ? "অফার" : "Offers"}
+            {locale === "bn" ? "নতুন এসেছে" : "New Arrivals"}
           </h2>
-          <span className="text-xs font-semibold bg-red-100 text-red-700 px-2 py-0.5 rounded-full">
-            {locale === "bn" ? "ছাড়" : "Sale"}
-          </span>
         </div>
         <Link
-          href={`/${locale}/products?offers=true`}
-          aria-label={locale === "bn" ? "সব অফার দেখুন" : "View all offers"}
+          href={`/${locale}/products?ordering=newest`}
+          aria-label={locale === "bn" ? "সব নতুন পণ্য দেখুন" : "View all new arrivals"}
           className="text-sm text-amber-700 hover:underline font-medium"
         >
           {locale === "bn" ? "সব দেখুন →" : "View all →"}

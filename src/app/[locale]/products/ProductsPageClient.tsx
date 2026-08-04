@@ -178,6 +178,7 @@ export default function ProductsPageClient({
   const urlSearch = searchParams.get("search") ?? "";
   const urlCategory = searchParams.get("category") ?? "";
   const urlOffers = searchParams.get("offers") === "true";
+  const urlOrdering = searchParams.get("ordering") ?? "";
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState(urlSearch);
@@ -185,7 +186,9 @@ export default function ProductsPageClient({
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [priceMin, setPriceMin] = useState(0);
   const [priceMax, setPriceMax] = useState(PRICE_MAX);
-  const [sortOrder, setSortOrder] = useState<"" | "newest" | "price_asc" | "price_desc" | "discount_asc" | "discount_desc">("");
+  const [sortOrder, setSortOrder] = useState<"" | "newest" | "price_asc" | "price_desc" | "discount_asc" | "discount_desc">(
+    urlOrdering as "" | "newest" | "price_asc" | "price_desc" | "discount_asc" | "discount_desc",
+  );
   const [onlyOffers, setOnlyOffers] = useState(urlOffers);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [catOpen, setCatOpen] = useState(true);
@@ -210,10 +213,11 @@ export default function ProductsPageClient({
     setSearch(urlSearch);
     setCategories(urlCategory ? [urlCategory] : []);
     setOnlyOffers(urlOffers);
+    setSortOrder(urlOrdering as "" | "newest" | "price_asc" | "price_desc" | "discount_asc" | "discount_desc");
     setPage(1);
     setAllProducts([]);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [urlSearch, urlCategory, searchParams.get("offers")]);
+  }, [urlSearch, urlCategory, searchParams.get("offers"), urlOrdering]);
 
   const isPriceFiltered = priceMin > 0 || priceMax < PRICE_MAX;
   const hasFilter = !!(search || categories.length || selectedBrands.length || isPriceFiltered || sortOrder || onlyOffers);
