@@ -41,7 +41,12 @@ export default function HomeCategoryProductsClient({
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
             {products.map(product => (
-              <ProductCard key={product.id} product={product} locale={locale} />
+              <ProductCard
+                key={product.id}
+                product={product}
+                locale={locale}
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 17vw"
+              />
             ))}
           </div>
         </section>

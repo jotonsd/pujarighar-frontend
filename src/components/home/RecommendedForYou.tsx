@@ -27,7 +27,12 @@ export default function RecommendedForYou() {
         {isLoading
           ? Array.from({ length: 6 }).map((_, i) => <ProductCardSkeleton key={i} />)
           : products.map(product => (
-              <ProductCard key={product.id} product={product} locale={locale} />
+              <ProductCard
+                key={product.id}
+                product={product}
+                locale={locale}
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 17vw"
+              />
             ))}
       </div>
     </section>
