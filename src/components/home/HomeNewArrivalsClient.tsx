@@ -8,8 +8,11 @@ import Link from "next/link";
 
 export default function HomeNewArrivalsClient({ products }: { products: Product[] }) {
   const locale = useLocale();
+  // Only show in full rows of 6 — fewer than 6 isn't worth a section.
+  const showCount = Math.floor(products.length / 6) * 6;
+  const items = products.slice(0, showCount);
 
-  if (products.length === 0) return null;
+  if (showCount === 0) return null;
 
   return (
     <section className="mb-8">
@@ -29,7 +32,7 @@ export default function HomeNewArrivalsClient({ products }: { products: Product[
         </Link>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-        {products.map(product => (
+        {items.map(product => (
           <ProductCard key={product.id} product={product} locale={locale} />
         ))}
       </div>
