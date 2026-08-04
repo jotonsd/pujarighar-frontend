@@ -147,15 +147,17 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
                     >
                       ›
                     </button>
-                    <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5">
+                    <div className="absolute bottom-0 left-0 right-0 flex justify-center">
                       {images.map((_, i) => (
                         <button
                           key={i}
                           onClick={() => goTo(i)}
                           aria-label={locale === "bn" ? `ছবি ${i + 1} দেখুন` : `View image ${i + 1}`}
                           aria-current={i === imgIdx}
-                          className={`w-2 h-2 rounded-full transition-colors ${i === imgIdx ? "bg-white" : "bg-white/40"}`}
-                        />
+                          className="w-6 h-6 flex items-center justify-center shrink-0"
+                        >
+                          <span className={`w-2 h-2 rounded-full transition-colors ${i === imgIdx ? "bg-white" : "bg-white/40"}`} />
+                        </button>
                       ))}
                     </div>
                   </>

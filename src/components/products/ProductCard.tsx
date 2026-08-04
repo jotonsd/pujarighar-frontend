@@ -18,9 +18,15 @@ interface Props {
   product: Product;
   locale: string;
   priority?: boolean;
+  sizes?: string;
 }
 
-export default function ProductCard({ product, locale, priority = false }: Props) {
+export default function ProductCard({
+  product,
+  locale,
+  priority = false,
+  sizes = "(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw",
+}: Props) {
   const t = useTranslations();
   const [qty, setQty] = useState(1);
   const [localAdding, setLocalAdding] = useState(false);
@@ -147,7 +153,7 @@ export default function ProductCard({ product, locale, priority = false }: Props
                 }
                 fill
                 priority={priority}
-                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+                sizes={sizes}
                 className="object-cover transition-opacity duration-300"
               />
               {/* Prev / Next arrows */}
@@ -169,16 +175,18 @@ export default function ProductCard({ product, locale, priority = false }: Props
                   >
                     ›
                   </button>
-                  {/* Dots */}
-                  <div className="absolute bottom-1.5 left-0 right-0 flex justify-center gap-1">
+                  {/* Dots — 24x24 tap target with a small visual dot centered inside, per touch-target a11y guidance */}
+                  <div className="absolute bottom-0 left-0 right-0 flex justify-center">
                     {images.map((_, i) => (
                       <button
                         key={i}
                         onClick={e => goTo(e, i)}
                         aria-label={locale === "bn" ? `ছবি ${i + 1} দেখুন` : `View image ${i + 1}`}
                         aria-current={i === imgIdx}
-                        className={`w-1.5 h-1.5 rounded-full transition-colors ${i === imgIdx ? "bg-white" : "bg-white/40"}`}
-                      />
+                        className="w-6 h-6 flex items-center justify-center shrink-0"
+                      >
+                        <span className={`w-1.5 h-1.5 rounded-full transition-colors ${i === imgIdx ? "bg-white" : "bg-white/40"}`} />
+                      </button>
                     ))}
                   </div>
                 </>
