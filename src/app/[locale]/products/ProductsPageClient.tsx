@@ -8,8 +8,8 @@ import { BADGE_STYLE } from "@/components/products/ProductBadges";
 import { Checkbox, FloatingInput } from "@/components/ui/forms";
 import { FilterPanelSkeleton, ProductCardSkeleton } from "@/components/ui/skeletons";
 import { Brand, Category, Product } from "@/lib/types";
-import { ChevronDown, SlidersHorizontal, X } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+import { ChevronDown, PackageSearch, SlidersHorizontal, X } from "lucide-react";
+import { useLocale } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { ReactNode, useEffect, useRef, useState } from "react";
 
@@ -173,7 +173,6 @@ export default function ProductsPageClient({
   initialBrands = [],
   offerBanners,
 }: Props) {
-  const t = useTranslations();
   const locale = useLocale();
   const searchParams = useSearchParams();
   const urlSearch = searchParams.get("search") ?? "";
@@ -576,8 +575,8 @@ export default function ProductsPageClient({
 
               {!allProducts.length && !isFetching && (
                 <div className="text-center py-16 text-gray-400">
-                  <p className="text-4xl mb-4">🔍</p>
-                  <p>{t("common.noData")}</p>
+                  <PackageSearch className="w-10 h-10 mx-auto mb-4 text-gray-300" />
+                  <p>{locale === "bn" ? "কোনো পণ্য পাওয়া যায়নি" : "No products found"}</p>
                   {hasFilter && (
                     <button
                       onClick={resetFilters}
