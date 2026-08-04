@@ -24,7 +24,7 @@ export default function HomeNewArrivalsClient({ products }: { products: Product[
           </h2>
         </div>
         <Link
-          href={`/${locale}/products?ordering=newest`}
+          href={`/${locale}/products?badges=new,flash_sale,trendy`}
           aria-label={locale === "bn" ? "সব নতুন পণ্য দেখুন" : "View all new arrivals"}
           className="text-sm text-amber-700 hover:underline font-medium"
         >

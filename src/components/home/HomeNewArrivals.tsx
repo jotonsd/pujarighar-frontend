@@ -6,7 +6,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8020";
 async function getNewArrivals(): Promise<Product[]> {
   try {
     const res = await fetch(
-      `${API_URL}/api/products/?is_package=false&ordering=newest&page_size=12`,
+      `${API_URL}/api/products/?is_package=false&badges=new,flash_sale,trendy&page_size=12`,
       { next: { revalidate: 300 } },
     );
     if (!res.ok) return [];
