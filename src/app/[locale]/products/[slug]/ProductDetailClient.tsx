@@ -105,6 +105,7 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
   const desc =
     locale === "bn" ? product.description_bn : product.description_en;
   const inStock = Number(product.stock_on_hand) > 0;
+  const maxStock = Math.max(1, Number(product.stock_on_hand));
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-3">
@@ -126,7 +127,7 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
                   }
                   fill
                   priority
-                  sizes="(max-width: 768px) 100vw, 50vw"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 610px"
                   className="object-cover transition-opacity duration-300"
                 />
                 {hasMany && (
@@ -248,8 +249,9 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
                   {formatNumber(qty, locale)}
                 </span>
                 <button
-                  onClick={() => setQty(qty + 1)}
-                  className="px-3 py-2 hover:bg-gray-50"
+                  onClick={() => setQty(Math.min(maxStock, qty + 1))}
+                  disabled={qty >= maxStock}
+                  className="px-3 py-2 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent"
                 >
                   +
                 </button>
