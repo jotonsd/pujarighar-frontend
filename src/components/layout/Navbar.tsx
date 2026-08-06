@@ -471,6 +471,12 @@ function MobileMenu({
             <span className="relative inline-flex rounded-full h-2 w-2 bg-red-600" />
           </span>
         )}
+        {href === "/products?offers=true" && (
+          <span className="relative inline-flex w-2 h-2">
+            <span className="absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75 animate-ping" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-green-600" />
+          </span>
+        )}
       </Link>
     );
   };
@@ -901,12 +907,18 @@ export default function Navbar() {
                       : "text-gray-600 hover:text-amber-700 hover:bg-gray-50"
                   }`}
                 >
-                  <NavIcon name={item.icon} />
+                  <NavIcon name={item.icon} className="w-4 h-4" />
                   {locale === "bn" ? item.label_bn : item.label_en}
                   {item.href === "/bayna" && (
                     <span className="relative inline-flex w-2 h-2 ml-0.5">
                       <span className="absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75 animate-ping" />
                       <span className="relative inline-flex rounded-full h-2 w-2 bg-red-600" />
+                    </span>
+                  )}
+                  {item.href === "/products?offers=true" && (
+                    <span className="relative inline-flex w-2 h-2 ml-0.5">
+                      <span className="absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75 animate-ping" />
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-green-600" />
                     </span>
                   )}
                 </Link>
