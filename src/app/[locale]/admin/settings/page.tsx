@@ -10,17 +10,18 @@ import ImageUpload from "@/components/ui/ImageUpload";
 import PageHeader from "@/components/ui/PageHeader";
 import { FloatingInput, FloatingTextarea } from "@/components/ui/forms";
 import { toast } from "@/store/toastStore";
-import { Building2, FileText, Mail } from "lucide-react";
+import { Building2, FileText, Gift, Mail } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useEffect, useState } from "react";
 
 // ── Menu config ────────────────────────────────────────────────────────────────
-type SectionId = "general" | "invoice" | "mail";
+type SectionId = "general" | "invoice" | "mail" | "referral";
 
 const MENU: { id: SectionId; icon: React.ReactNode; label_bn: string; label_en: string }[] = [
-  { id: "general", icon: <Building2 className="w-4 h-4" />, label_bn: "সাধারণ তথ্য",  label_en: "General Info" },
-  { id: "invoice", icon: <FileText  className="w-4 h-4" />, label_bn: "চালান প্রিন্ট", label_en: "Invoice Print" },
-  { id: "mail",    icon: <Mail      className="w-4 h-4" />, label_bn: "মেইল কনফিগ",    label_en: "Mail Config" },
+  { id: "general",  icon: <Building2 className="w-4 h-4" />, label_bn: "সাধারণ তথ্য",   label_en: "General Info" },
+  { id: "invoice",  icon: <FileText  className="w-4 h-4" />, label_bn: "চালান প্রিন্ট",  label_en: "Invoice Print" },
+  { id: "mail",     icon: <Mail      className="w-4 h-4" />, label_bn: "মেইল কনফিগ",     label_en: "Mail Config" },
+  { id: "referral", icon: <Gift      className="w-4 h-4" />, label_bn: "রেফারেল বোনাস",  label_en: "Referral Bonus" },
 ];
 
 // ── Page-size options ──────────────────────────────────────────────────────────
@@ -252,6 +253,47 @@ function MailPanel({ settings, isBn }: { settings: SiteSettings; isBn: boolean }
   );
 }
 
+// ── Referral panel ─────────────────────────────────────────────────────────────
+function ReferralPanel({ settings, isBn }: { settings: SiteSettings; isBn: boolean }) {
+  const [amount, setAmount] = useState(settings.referral_bonus_amount ?? "8.00");
+
+  useEffect(() => {
+    setAmount(settings.referral_bonus_amount ?? "8.00");
+  }, [settings]);
+
+  const [update, { isLoading }] = useUpdateSiteSettingsMutation();
+
+  const handleSave = async () => {
+    try {
+      await update({ referral_bonus_amount: amount }).unwrap();
+      toast.success(isBn ? "সংরক্ষিত হয়েছে" : "Saved");
+    } catch {
+      toast.error(isBn ? "ব্যর্থ হয়েছে" : "Failed to save");
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <FloatingInput
+        label={isBn ? "বোনাসের পরিমাণ (৳)" : "Bonus Amount (৳)"}
+        type="number"
+        min="0"
+        step="0.01"
+        value={amount}
+        onChange={e => setAmount(e.target.value)}
+      />
+      <p className="text-xs text-gray-400">
+        {isBn
+          ? "রেফারেল কোড দিয়ে সাইন আপ করা গ্রাহকের প্রথম অর্ডার সম্পন্ন হলে রেফারার এই পরিমাণ ক্যাশব্যাক পাবেন।"
+          : "The referrer earns this amount as cashback once the referred customer's first order is completed."}
+      </p>
+      <button onClick={handleSave} disabled={isLoading || !amount} className="btn-primary">
+        {isLoading ? (isBn ? "সংরক্ষণ হচ্ছে..." : "Saving...") : (isBn ? "সংরক্ষণ করুন" : "Save Changes")}
+      </button>
+    </div>
+  );
+}
+
 // ── Main page ──────────────────────────────────────────────────────────────────
 export default function SettingsPage() {
   const locale = useLocale();
@@ -302,9 +344,10 @@ export default function SettingsPage() {
             </div>
           ) : settings ? (
             <>
-              {active === "general" && <GeneralPanel settings={settings} isBn={isBn} />}
-              {active === "invoice" && <InvoicePanel settings={settings} isBn={isBn} />}
-              {active === "mail"    && <MailPanel    settings={settings} isBn={isBn} />}
+              {active === "general"  && <GeneralPanel  settings={settings} isBn={isBn} />}
+              {active === "invoice"  && <InvoicePanel  settings={settings} isBn={isBn} />}
+              {active === "mail"     && <MailPanel     settings={settings} isBn={isBn} />}
+              {active === "referral" && <ReferralPanel settings={settings} isBn={isBn} />}
             </>
           ) : null}
         </div>
