@@ -18,6 +18,7 @@ export interface SiteSettings {
   has_email_host_password?:  boolean
   email_use_tls?:             boolean
   email_default_from?:        string
+  referral_bonus_amount?:     string
 }
 
 // email_host_password is write-only — sent on update, never read back (see has_email_host_password)
