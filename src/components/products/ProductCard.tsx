@@ -144,18 +144,23 @@ export default function ProductCard({
           <ProductBadges badges={product.badges} locale={locale} />
           {images.length > 0 ? (
             <>
-              <Image
-                src={images[imgIdx].image}
-                alt={
-                  locale === "bn"
-                    ? images[imgIdx].alt_bn
-                    : images[imgIdx].alt_en
-                }
-                fill
-                priority={priority}
-                sizes={sizes}
-                className="object-cover transition-opacity duration-300"
-              />
+              <div
+                className="flex h-full transition-transform duration-300 ease-out"
+                style={{ transform: `translateX(-${imgIdx * 100}%)` }}
+              >
+                {images.map((img, i) => (
+                  <div key={img.id} className="relative w-full h-full shrink-0">
+                    <Image
+                      src={img.image}
+                      alt={locale === "bn" ? img.alt_bn : img.alt_en}
+                      fill
+                      priority={priority && i === 0}
+                      sizes={sizes}
+                      className="object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
               {/* Prev / Next arrows */}
               {hasMany && (
                 <>
