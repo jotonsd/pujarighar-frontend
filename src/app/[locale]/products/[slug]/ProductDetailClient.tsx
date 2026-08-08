@@ -118,18 +118,23 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
           <div className="aspect-square bg-gray-100 rounded-xl overflow-hidden relative group">
             {images.length > 0 ? (
               <>
-                <Image
-                  src={images[imgIdx].image}
-                  alt={
-                    locale === "bn"
-                      ? images[imgIdx].alt_bn
-                      : images[imgIdx].alt_en
-                  }
-                  fill
-                  priority
-                  sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 610px"
-                  className="object-cover transition-opacity duration-300"
-                />
+                <div
+                  className="flex h-full transition-transform duration-300 ease-out"
+                  style={{ transform: `translateX(-${imgIdx * 100}%)` }}
+                >
+                  {images.map((img, i) => (
+                    <div key={img.id} className="relative w-full h-full shrink-0">
+                      <Image
+                        src={img.image}
+                        alt={locale === "bn" ? img.alt_bn : img.alt_en}
+                        fill
+                        priority={i === 0}
+                        sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 610px"
+                        className="object-cover"
+                      />
+                    </div>
+                  ))}
+                </div>
                 {hasMany && (
                   <>
                     <button
