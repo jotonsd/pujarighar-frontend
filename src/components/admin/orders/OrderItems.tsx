@@ -7,6 +7,7 @@ import { getErrorMessage } from "@/utils/apiError";
 import { formatAmount, formatNumber, localName } from "@/utils/format";
 import { Check, Pencil, Trash2, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import Image from "next/image";
 import { Fragment, useState } from "react";
 import DeleteItemConfirmModal from "./DeleteItemConfirmModal";
 
@@ -76,12 +77,29 @@ export default function OrderItems({ order }: Props) {
                   <tr className="border-b border-gray-50 last:border-0 align-top">
                     <td className="py-2 px-1 text-gray-400">{idx + 1}</td>
                     <td className="py-2 px-1 text-gray-700">
-                      {item.is_package && (
-                        <span className="inline-block text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full font-medium mb-1">
-                          🎁 {locale === "bn" ? "প্যাকেজ" : "Package"}
-                        </span>
-                      )}
-                      <div>{localName(item.product_name_bn, item.product_name_en, locale === "bn")}</div>
+                      <div className="flex items-start gap-2">
+                        {item.product_image ? (
+                          <Image
+                            src={item.product_image}
+                            alt=""
+                            width={40}
+                            height={40}
+                            className="w-10 h-10 rounded-lg object-cover border border-gray-100 shrink-0"
+                          />
+                        ) : (
+                          <div className="w-10 h-10 rounded-lg border border-gray-100 bg-gray-50 flex items-center justify-center text-gray-300 text-xs shrink-0">
+                            —
+                          </div>
+                        )}
+                        <div>
+                          {item.is_package && (
+                            <span className="inline-block text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full font-medium mb-1">
+                              🎁 {locale === "bn" ? "প্যাকেজ" : "Package"}
+                            </span>
+                          )}
+                          <div>{localName(item.product_name_bn, item.product_name_en, locale === "bn")}</div>
+                        </div>
+                      </div>
                     </td>
                     <td className="py-2 px-1 text-center">
                       {editingId === item.id ? (
