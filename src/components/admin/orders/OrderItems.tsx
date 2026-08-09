@@ -1,11 +1,11 @@
 "use client";
 
-import { useUpdateOrderItemQuantityMutation } from "@/api/orders/ordersApi";
+import { useDeleteOrderItemMutation, useUpdateOrderItemQuantityMutation } from "@/api/orders/ordersApi";
 import { SalesOrder } from "@/lib/types";
 import { toast } from "@/store/toastStore";
 import { getErrorMessage } from "@/utils/apiError";
 import { formatAmount, formatNumber, localName } from "@/utils/format";
-import { Check, Pencil, X } from "lucide-react";
+import { Check, Pencil, Trash2, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 
@@ -21,6 +21,8 @@ export default function OrderItems({ order }: Props) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editQty, setEditQty] = useState("");
   const [updateQuantity, { isLoading: saving }] = useUpdateOrderItemQuantityMutation();
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [deleteItem, { isLoading: deleting }] = useDeleteOrderItemMutation();
 
   const startEdit = (itemId: string, currentQty: string) => {
     setEditingId(itemId);
@@ -34,6 +36,16 @@ export default function OrderItems({ order }: Props) {
       await updateQuantity({ id: order.id, item_id: itemId, quantity: qty }).unwrap();
       setEditingId(null);
       toast.success(locale === "bn" ? "পরিমাণ পরিবর্তন হয়েছে" : "Quantity updated");
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, locale));
+    }
+  };
+
+  const confirmDelete = async (itemId: string) => {
+    try {
+      await deleteItem({ id: order.id, item_id: itemId }).unwrap();
+      setDeletingId(null);
+      toast.success(locale === "bn" ? "পণ্য মুছে ফেলা হয়েছে" : "Item removed");
     } catch (err: unknown) {
       toast.error(getErrorMessage(err, locale));
     }
@@ -57,7 +69,26 @@ export default function OrderItems({ order }: Props) {
                   item.product_name_en,
                   locale === "bn",
                 )}
-                {editingId === item.id ? (
+                {deletingId === item.id ? (
+                  <span className="inline-flex items-center gap-1.5 ml-1">
+                    <span className="text-xs text-red-600">
+                      {locale === "bn" ? "মুছে ফেলবেন?" : "Remove?"}
+                    </span>
+                    <button
+                      onClick={() => confirmDelete(item.id)}
+                      disabled={deleting}
+                      className="text-red-600 hover:text-red-700 disabled:opacity-40"
+                    >
+                      <Check className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      onClick={() => setDeletingId(null)}
+                      className="text-gray-400 hover:text-gray-600"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </span>
+                ) : editingId === item.id ? (
                   <span className="inline-flex items-center gap-1 ml-1">
                     <input
                       type="number"
@@ -85,13 +116,24 @@ export default function OrderItems({ order }: Props) {
                   <span className="text-gray-400 ml-1 font-bold inline-flex items-center gap-1">
                     ×{formatNumber(Math.round(parseFloat(item.quantity)), locale)}
                     {canEditQty && (
-                      <button
-                        onClick={() => startEdit(item.id, item.quantity)}
-                        className="text-gray-300 hover:text-amber-700"
-                        title={locale === "bn" ? "পরিমাণ সম্পাদনা করুন" : "Edit quantity"}
-                      >
-                        <Pencil className="w-3 h-3" />
-                      </button>
+                      <>
+                        <button
+                          onClick={() => startEdit(item.id, item.quantity)}
+                          className="text-gray-300 hover:text-amber-700"
+                          title={locale === "bn" ? "পরিমাণ সম্পাদনা করুন" : "Edit quantity"}
+                        >
+                          <Pencil className="w-3 h-3" />
+                        </button>
+                        {order.items.length > 1 && (
+                          <button
+                            onClick={() => setDeletingId(item.id)}
+                            className="text-gray-300 hover:text-red-600"
+                            title={locale === "bn" ? "পণ্য মুছুন" : "Remove item"}
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </button>
+                        )}
+                      </>
                     )}
                   </span>
                 )}
@@ -151,7 +193,7 @@ export default function OrderItems({ order }: Props) {
         ))}
         <hr className="my-2" />
         <div className="flex justify-between text-sm text-gray-500">
-          <span>{locale === "bn" ? "সাবটোটাল" : "Subtotal"}</span>
+          <span>{locale === "bn" ? "পণ্য মূল্য" : "Product Total"}</span>
           <span className="font-bold">
             {formatAmount(
               String(parseFloat(order.subtotal) + parseFloat(order.discount_amount || "0")),
@@ -161,10 +203,14 @@ export default function OrderItems({ order }: Props) {
         </div>
         {parseFloat(order.discount_amount) > 0 && (
           <div className="flex justify-between text-sm text-green-600">
-            <span>{locale === "bn" ? "ডিসকাউন্ট" : "Discount"}</span>
+            <span>{locale === "bn" ? "ছাড়" : "Discount"}</span>
             <span className="font-bold">− {formatAmount(order.discount_amount, locale)}</span>
           </div>
         )}
+        <div className="flex justify-between text-sm text-gray-500">
+          <span>{locale === "bn" ? "সাবটোটাল" : "Subtotal"}</span>
+          <span className="font-bold">{formatAmount(order.subtotal, locale)}</span>
+        </div>
         {parseFloat(order.delivery_charge) > 0 && (
           <div className="flex justify-between text-sm text-gray-500">
             <span>{locale === "bn" ? "ডেলিভারি চার্জ" : "Delivery Charge"}</span>
