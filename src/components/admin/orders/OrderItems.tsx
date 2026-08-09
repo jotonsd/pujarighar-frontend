@@ -99,15 +99,22 @@ export default function OrderItems({ order }: Props) {
               <span className="text-right shrink-0">
                 {item.original_unit_price && parseFloat(item.original_unit_price) > parseFloat(item.unit_price) ? (
                   <>
+                    <span className="block text-xs text-gray-400">
+                      <span className="line-through">{formatAmount(item.original_unit_price, locale)}</span>{" "}
+                      <span className="text-gray-600">{formatAmount(item.unit_price, locale)}</span>
+                    </span>
                     <span className="block font-bold text-gray-800">
-                      {formatAmount(String(parseFloat(item.original_unit_price) * parseFloat(item.quantity)), locale)}
+                      {formatAmount(item.line_total, locale)}
                     </span>
                     <span className="block text-xs text-green-600 font-bold">
                       − {formatAmount(String((parseFloat(item.original_unit_price) - parseFloat(item.unit_price)) * parseFloat(item.quantity)), locale)} {locale === "bn" ? "ছাড়" : "off"}
                     </span>
                   </>
                 ) : (
-                  <span className="font-bold">{formatAmount(item.line_total, locale)}</span>
+                  <>
+                    <span className="block text-xs text-gray-400">{formatAmount(item.unit_price, locale)}</span>
+                    <span className="font-bold">{formatAmount(item.line_total, locale)}</span>
+                  </>
                 )}
               </span>
             </div>
