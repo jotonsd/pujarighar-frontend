@@ -8,6 +8,7 @@ import { formatAmount, formatNumber, localName } from "@/utils/format";
 import { Check, Pencil, Trash2, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { Fragment, useState } from "react";
+import DeleteItemConfirmModal from "./DeleteItemConfirmModal";
 
 interface Props {
   order: SalesOrder;
@@ -83,17 +84,7 @@ export default function OrderItems({ order }: Props) {
                       <div>{localName(item.product_name_bn, item.product_name_en, locale === "bn")}</div>
                     </td>
                     <td className="py-2 px-1 text-center">
-                      {deletingId === item.id ? (
-                        <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
-                          <span className="text-xs text-red-600">{locale === "bn" ? "মুছবেন?" : "Remove?"}</span>
-                          <button onClick={() => confirmDelete(item.id)} disabled={deleting} className="text-red-600 hover:text-red-700 disabled:opacity-40">
-                            <Check className="w-3.5 h-3.5" />
-                          </button>
-                          <button onClick={() => setDeletingId(null)} className="text-gray-400 hover:text-gray-600">
-                            <X className="w-3.5 h-3.5" />
-                          </button>
-                        </span>
-                      ) : editingId === item.id ? (
+                      {editingId === item.id ? (
                         <span className="inline-flex items-center gap-1">
                           <input
                             type="number"
@@ -129,7 +120,7 @@ export default function OrderItems({ order }: Props) {
                     <td className="py-2 px-1 text-right font-bold text-gray-800">
                       {formatAmount(item.line_total, locale)}
                     </td>
-                    {canEditQty && editingId !== item.id && deletingId !== item.id && (
+                    {canEditQty && editingId !== item.id && (
                       <td className="py-2 px-1">
                         <div className="flex items-center gap-1.5 justify-end">
                           <button
@@ -151,7 +142,7 @@ export default function OrderItems({ order }: Props) {
                         </div>
                       </td>
                     )}
-                    {canEditQty && (editingId === item.id || deletingId === item.id) && <td />}
+                    {canEditQty && editingId === item.id && <td />}
                   </tr>
                   {item.is_package && item.package_items?.length > 0 && (
                     <tr className="border-b border-gray-50 last:border-0">
@@ -221,6 +212,20 @@ export default function OrderItems({ order }: Props) {
           </span>
         </div>
       </div>
+
+      {deletingId && (
+        <DeleteItemConfirmModal
+          locale={locale}
+          productName={localName(
+            order.items.find(i => i.id === deletingId)?.product_name_bn ?? "",
+            order.items.find(i => i.id === deletingId)?.product_name_en ?? "",
+            locale === "bn",
+          )}
+          loading={deleting}
+          onCancel={() => setDeletingId(null)}
+          onConfirm={() => confirmDelete(deletingId)}
+        />
+      )}
     </div>
   );
 }
