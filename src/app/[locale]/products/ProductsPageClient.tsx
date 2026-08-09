@@ -285,7 +285,7 @@ export default function ProductsPageClient({
   }, [data]);
 
   // A sentinel placed right after the product grid, observed via
-  // IntersectionObserver — triggers the next page once it's within 400px of
+  // IntersectionObserver — triggers the next page once it's within 300px of
   // the viewport. Unlike measuring against document.scrollHeight, this is
   // anchored to the grid's own position, so a tall footer below it can never
   // delay the trigger (the old scrollHeight-based check counted the footer's
@@ -301,11 +301,15 @@ export default function ProductsPageClient({
           setPage(prev => prev + 1);
         }
       },
-      { rootMargin: "400px 0px" },
+      { rootMargin: "300px 0px" },
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, []);
+  // isLoading dep: if the skeleton branch (no sentinel in the DOM yet) is
+  // showing on first mount — e.g. a filtered URL with no seeded results —
+  // this effect's first run finds sentinelRef.current still null and never
+  // gets a second chance to attach once the real grid mounts.
+  }, [isLoading]);
 
   const FilterPanel = () => (
     <div className="space-y-6">
