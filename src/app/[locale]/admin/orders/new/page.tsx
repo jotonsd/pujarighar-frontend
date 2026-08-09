@@ -471,7 +471,7 @@ export default function POSPage() {
             {locale === "bn" ? "অর্ডার আইটেম" : "Order Items"}
             {cart.length > 0 && (
               <span className="ml-2 text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full">
-                {cart.length}
+                {cart.reduce((sum, l) => sum + l.quantity, 0)}
               </span>
             )}
           </h2>
