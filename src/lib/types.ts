@@ -440,6 +440,7 @@ export interface SalesOrderItem {
   product: string
   product_name_bn: string
   product_name_en: string
+  product_image: string | null
   original_unit_price: string | null
   unit_price: string
   quantity: string
