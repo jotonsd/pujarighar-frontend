@@ -175,7 +175,11 @@ export default function POSPage() {
   }, [productsData]);
 
   // Sentinel right after the grid — loads the next page once it's within
-  // 400px of the viewport, same pattern as the storefront products page.
+  // 300px of the viewport. Depends on isLoading (not []) because the sentinel
+  // only exists once the skeleton branch is swapped out for the real grid —
+  // on first mount isLoading is true and the ref is still null, so the
+  // observer must be (re-)attached once that flips to false, or it never
+  // gets created at all.
   useEffect(() => {
     const el = sentinelRef.current;
     if (!el) return;
@@ -185,11 +189,11 @@ export default function POSPage() {
           setPage(prev => prev + 1);
         }
       },
-      { rootMargin: "400px 0px" },
+      { rootMargin: "300px 0px" },
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, []);
+  }, [isLoading]);
 
   const products = allProducts;
 
