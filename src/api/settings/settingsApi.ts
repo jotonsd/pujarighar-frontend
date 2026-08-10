@@ -19,10 +19,12 @@ export interface SiteSettings {
   email_use_tls?:             boolean
   email_default_from?:        string
   referral_bonus_amount?:     string
+  has_telegram_bot_token?:    boolean
+  telegram_chat_id?:          string
 }
 
-// email_host_password is write-only — sent on update, never read back (see has_email_host_password)
-export type SiteSettingsUpdate = Partial<SiteSettings> & { email_host_password?: string }
+// email_host_password / telegram_bot_token are write-only — sent on update, never read back
+export type SiteSettingsUpdate = Partial<SiteSettings> & { email_host_password?: string; telegram_bot_token?: string }
 
 export const settingsApi = baseApi.injectEndpoints({
   endpoints: build => ({
