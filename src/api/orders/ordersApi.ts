@@ -103,6 +103,18 @@ export const ordersApi = baseApi.injectEndpoints({
       invalidatesTags: (_r, _e, { id }) => ['Orders', { type: 'Order', id }],
     }),
 
+    updateOrderItemQuantity: build.mutation<SalesOrder, { id: string; item_id: string; quantity: number }>({
+      query: ({ id, item_id, quantity }) => ({ url: `/api/orders/${id}/items/${item_id}/update/`, method: 'PATCH', body: { quantity } }),
+      transformResponse: (res: { data: SalesOrder }) => res.data,
+      invalidatesTags: (_r, _e, { id }) => ['Orders', { type: 'Order', id }],
+    }),
+
+    deleteOrderItem: build.mutation<SalesOrder, { id: string; item_id: string }>({
+      query: ({ id, item_id }) => ({ url: `/api/orders/${id}/items/${item_id}/delete/`, method: 'DELETE' }),
+      transformResponse: (res: { data: SalesOrder }) => res.data,
+      invalidatesTags: (_r, _e, { id }) => ['Orders', { type: 'Order', id }],
+    }),
+
     trackByOrderNumber: build.query<OrderTracking, { order_number: string; phone: string }>({
       query: ({ order_number, phone }) =>
         `/api/orders/track/?order_number=${encodeURIComponent(order_number)}&phone=${encodeURIComponent(phone)}`,
@@ -144,6 +156,8 @@ export const {
   useMarkCodPaidMutation,
   useApplyDiscountMutation,
   useUpdateShippingMutation,
+  useUpdateOrderItemQuantityMutation,
+  useDeleteOrderItemMutation,
   usePosCreateOrderMutation,
   useTrackByOrderNumberQuery,
 } = ordersApi

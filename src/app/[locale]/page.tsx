@@ -1,6 +1,6 @@
 import HeroSlider from "@/components/home/HeroSlider";
 import HomeCategoryProducts from "@/components/home/HomeCategoryProducts";
-import HomeOffers from "@/components/home/HomeOffers";
+import HomeNewArrivals from "@/components/home/HomeNewArrivals";
 import HomePackages from "@/components/home/HomePackages";
 import RecommendedForYou from "@/components/home/RecommendedForYou";
 import OfferBanners from "@/components/products/OfferBanners";
@@ -101,8 +101,8 @@ export default async function HomePage({ params }: Props) {
       {/* Packages */}
       <HomePackages />
 
-      {/* Offers — discounted products */}
-      <HomeOffers />
+      {/* New Arrivals — products tagged 'new' */}
+      <HomeNewArrivals />
 
       {/* Offer Banners */}
       <OfferBanners />

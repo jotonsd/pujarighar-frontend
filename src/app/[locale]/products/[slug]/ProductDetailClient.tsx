@@ -105,6 +105,7 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
   const desc =
     locale === "bn" ? product.description_bn : product.description_en;
   const inStock = Number(product.stock_on_hand) > 0;
+  const maxStock = Math.max(1, Number(product.stock_on_hand));
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-3">
@@ -117,18 +118,23 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
           <div className="aspect-square bg-gray-100 rounded-xl overflow-hidden relative group">
             {images.length > 0 ? (
               <>
-                <Image
-                  src={images[imgIdx].image}
-                  alt={
-                    locale === "bn"
-                      ? images[imgIdx].alt_bn
-                      : images[imgIdx].alt_en
-                  }
-                  fill
-                  priority
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  className="object-cover transition-opacity duration-300"
-                />
+                <div
+                  className="flex h-full transition-transform duration-300 ease-out"
+                  style={{ transform: `translateX(-${imgIdx * 100}%)` }}
+                >
+                  {images.map((img, i) => (
+                    <div key={img.id} className="relative w-full h-full shrink-0">
+                      <Image
+                        src={img.image}
+                        alt={locale === "bn" ? img.alt_bn : img.alt_en}
+                        fill
+                        priority={i === 0}
+                        sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 610px"
+                        className="object-cover"
+                      />
+                    </div>
+                  ))}
+                </div>
                 {hasMany && (
                   <>
                     <button
@@ -147,15 +153,17 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
                     >
                       ›
                     </button>
-                    <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5">
+                    <div className="absolute bottom-0 left-0 right-0 flex justify-center">
                       {images.map((_, i) => (
                         <button
                           key={i}
                           onClick={() => goTo(i)}
                           aria-label={locale === "bn" ? `ছবি ${i + 1} দেখুন` : `View image ${i + 1}`}
                           aria-current={i === imgIdx}
-                          className={`w-2 h-2 rounded-full transition-colors ${i === imgIdx ? "bg-white" : "bg-white/40"}`}
-                        />
+                          className="w-6 h-6 flex items-center justify-center shrink-0"
+                        >
+                          <span className={`w-2 h-2 rounded-full transition-colors ${i === imgIdx ? "bg-white" : "bg-white/40"}`} />
+                        </button>
                       ))}
                     </div>
                   </>
@@ -246,8 +254,9 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
                   {formatNumber(qty, locale)}
                 </span>
                 <button
-                  onClick={() => setQty(qty + 1)}
-                  className="px-3 py-2 hover:bg-gray-50"
+                  onClick={() => setQty(Math.min(maxStock, qty + 1))}
+                  disabled={qty >= maxStock}
+                  className="px-3 py-2 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent"
                 >
                   +
                 </button>

@@ -4,11 +4,12 @@ import { useGetBrandsQuery } from "@/api/brands/brandsApi";
 import { useGetCategoriesQuery } from "@/api/categories/categoriesApi";
 import { useGetProductsQuery } from "@/api/products/productsApi";
 import ProductCard from "@/components/products/ProductCard";
+import { BADGE_STYLE } from "@/components/products/ProductBadges";
 import { Checkbox, FloatingInput } from "@/components/ui/forms";
 import { FilterPanelSkeleton, ProductCardSkeleton } from "@/components/ui/skeletons";
 import { Brand, Category, Product } from "@/lib/types";
-import { ChevronDown, SlidersHorizontal, X } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+import { ChevronDown, PackageSearch, SlidersHorizontal, X } from "lucide-react";
+import { useLocale } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { ReactNode, useEffect, useRef, useState } from "react";
 
@@ -172,20 +173,24 @@ export default function ProductsPageClient({
   initialBrands = [],
   offerBanners,
 }: Props) {
-  const t = useTranslations();
   const locale = useLocale();
   const searchParams = useSearchParams();
   const urlSearch = searchParams.get("search") ?? "";
   const urlCategory = searchParams.get("category") ?? "";
   const urlOffers = searchParams.get("offers") === "true";
+  const urlOrdering = searchParams.get("ordering") ?? "";
+  const urlBadges = searchParams.get("badges") ?? "";
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState(urlSearch);
   const [categories, setCategories] = useState<string[]>(urlCategory ? [urlCategory] : []);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+  const [selectedBadges, setSelectedBadges] = useState<string[]>(urlBadges ? urlBadges.split(",") : []);
   const [priceMin, setPriceMin] = useState(0);
   const [priceMax, setPriceMax] = useState(PRICE_MAX);
-  const [sortOrder, setSortOrder] = useState<"" | "newest" | "price_asc" | "price_desc" | "discount_asc" | "discount_desc">("");
+  const [sortOrder, setSortOrder] = useState<"" | "newest" | "price_asc" | "price_desc" | "discount_asc" | "discount_desc">(
+    urlOrdering as "" | "newest" | "price_asc" | "price_desc" | "discount_asc" | "discount_desc",
+  );
   const [onlyOffers, setOnlyOffers] = useState(urlOffers);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [catOpen, setCatOpen] = useState(true);
@@ -194,9 +199,10 @@ export default function ProductsPageClient({
   // avoids the skeleton flash and makes the first image LCP-discoverable.
   const [allProducts, setAllProducts] = useState<Product[]>(initialProducts);
 
-  // Refs so scroll handler always reads latest values without re-registering
+  // Refs so the observer callback always reads latest values without re-registering
   const isFetchingRef = useRef(false);
   const hasMoreRef = useRef(false);
+  const sentinelRef = useRef<HTMLDivElement>(null);
 
   // Skip the first run — the server already fetched page 1 matching these
   // exact URL params, so resetting here would wipe the seeded products.
@@ -209,13 +215,15 @@ export default function ProductsPageClient({
     setSearch(urlSearch);
     setCategories(urlCategory ? [urlCategory] : []);
     setOnlyOffers(urlOffers);
+    setSortOrder(urlOrdering as "" | "newest" | "price_asc" | "price_desc" | "discount_asc" | "discount_desc");
+    setSelectedBadges(urlBadges ? urlBadges.split(",") : []);
     setPage(1);
     setAllProducts([]);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [urlSearch, urlCategory, searchParams.get("offers")]);
+  }, [urlSearch, urlCategory, searchParams.get("offers"), urlOrdering, urlBadges]);
 
   const isPriceFiltered = priceMin > 0 || priceMax < PRICE_MAX;
-  const hasFilter = !!(search || categories.length || selectedBrands.length || isPriceFiltered || sortOrder || onlyOffers);
+  const hasFilter = !!(search || categories.length || selectedBrands.length || isPriceFiltered || sortOrder || onlyOffers || selectedBadges.length);
 
   const resetFilters = () => {
     setSearch("");
@@ -225,6 +233,7 @@ export default function ProductsPageClient({
     setPriceMax(PRICE_MAX);
     setSortOrder("");
     setOnlyOffers(false);
+    setSelectedBadges([]);
     setPage(1);
     setAllProducts([]);
   };
@@ -232,6 +241,14 @@ export default function ProductsPageClient({
   const toggleCategory = (id: string) => {
     setCategories(prev =>
       prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id],
+    );
+    setPage(1);
+    setAllProducts([]);
+  };
+
+  const toggleBadge = (code: string) => {
+    setSelectedBadges(prev =>
+      prev.includes(code) ? prev.filter(b => b !== code) : [...prev, code],
     );
     setPage(1);
     setAllProducts([]);
@@ -247,6 +264,7 @@ export default function ProductsPageClient({
     max_price: priceMax < PRICE_MAX ? String(priceMax) : undefined,
     ordering: sortOrder || undefined,
     has_discount: onlyOffers || undefined,
+    badges: selectedBadges.length ? selectedBadges.join(",") : undefined,
   });
 
   const { data: allCategories = initialCategories } = useGetCategoriesQuery();
@@ -266,19 +284,32 @@ export default function ProductsPageClient({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
-  // Window scroll — registered once, never fires on mount
+  // A sentinel placed right after the product grid, observed via
+  // IntersectionObserver — triggers the next page once it's within 300px of
+  // the viewport. Unlike measuring against document.scrollHeight, this is
+  // anchored to the grid's own position, so a tall footer below it can never
+  // delay the trigger (the old scrollHeight-based check counted the footer's
+  // height as part of "the bottom," so on mobile — where the footer stacks
+  // much taller — the page had to scroll well past the grid, into the
+  // footer, before the next page loaded).
   useEffect(() => {
-    const onScroll = () => {
-      const nearBottom =
-        window.innerHeight + window.scrollY >=
-        document.documentElement.scrollHeight - 300;
-      if (nearBottom && !isFetchingRef.current && hasMoreRef.current) {
-        setPage(prev => prev + 1);
-      }
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !isFetchingRef.current && hasMoreRef.current) {
+          setPage(prev => prev + 1);
+        }
+      },
+      { rootMargin: "300px 0px" },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  // isLoading dep: if the skeleton branch (no sentinel in the DOM yet) is
+  // showing on first mount — e.g. a filtered URL with no seeded results —
+  // this effect's first run finds sentinelRef.current still null and never
+  // gets a second chance to attach once the real grid mounts.
+  }, [isLoading]);
 
   const FilterPanel = () => (
     <div className="space-y-6">
@@ -304,6 +335,29 @@ export default function ProductsPageClient({
           variant="red"
           bold
         />
+      </div>
+      <div>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+          {locale === "bn" ? "ট্যাগ" : "Tags"}
+        </p>
+        <div className="space-y-0.5">
+          {(["new", "flash_sale", "trendy"] as const).map(code => (
+            <Checkbox
+              key={code}
+              checked={selectedBadges.includes(code)}
+              onChange={() => toggleBadge(code)}
+              label={locale === "bn" ? BADGE_STYLE[code].bn : BADGE_STYLE[code].en}
+            />
+          ))}
+        </div>
+        {selectedBadges.length > 0 && (
+          <button
+            onClick={() => { setSelectedBadges([]); setPage(1); setAllProducts([]); }}
+            className="mt-2 text-xs text-amber-700 hover:underline"
+          >
+            {locale === "bn" ? "বাতিল করুন" : "Clear"}
+          </button>
+        )}
       </div>
       <div>
         <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
@@ -521,10 +575,12 @@ export default function ProductsPageClient({
                 }
               </div>
 
+              <div ref={sentinelRef} className="h-1" />
+
               {!allProducts.length && !isFetching && (
                 <div className="text-center py-16 text-gray-400">
-                  <p className="text-4xl mb-4">🔍</p>
-                  <p>{t("common.noData")}</p>
+                  <PackageSearch className="w-10 h-10 mx-auto mb-4 text-gray-300" />
+                  <p>{locale === "bn" ? "কোনো পণ্য পাওয়া যায়নি" : "No products found"}</p>
                   {hasFilter && (
                     <button
                       onClick={resetFilters}

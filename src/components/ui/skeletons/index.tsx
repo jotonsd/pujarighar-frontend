@@ -219,7 +219,7 @@ export function DeliveryOrderDetailSkeleton() {
 
 export function POSProductSkeleton({ count = 25 }: { count?: number }) {
   return (
-    <div className="overflow-y-auto flex-1 grid grid-cols-5 gap-3 content-start">
+    <div className="lg:overflow-y-auto lg:flex-1 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 content-start mt-3">
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={i}

@@ -18,9 +18,15 @@ interface Props {
   product: Product;
   locale: string;
   priority?: boolean;
+  sizes?: string;
 }
 
-export default function ProductCard({ product, locale, priority = false }: Props) {
+export default function ProductCard({
+  product,
+  locale,
+  priority = false,
+  sizes = "(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw",
+}: Props) {
   const t = useTranslations();
   const [qty, setQty] = useState(1);
   const [localAdding, setLocalAdding] = useState(false);
@@ -138,18 +144,23 @@ export default function ProductCard({ product, locale, priority = false }: Props
           <ProductBadges badges={product.badges} locale={locale} />
           {images.length > 0 ? (
             <>
-              <Image
-                src={images[imgIdx].image}
-                alt={
-                  locale === "bn"
-                    ? images[imgIdx].alt_bn
-                    : images[imgIdx].alt_en
-                }
-                fill
-                priority={priority}
-                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
-                className="object-cover transition-opacity duration-300"
-              />
+              <div
+                className="flex h-full transition-transform duration-300 ease-out"
+                style={{ transform: `translateX(-${imgIdx * 100}%)` }}
+              >
+                {images.map((img, i) => (
+                  <div key={img.id} className="relative w-full h-full shrink-0">
+                    <Image
+                      src={img.image}
+                      alt={locale === "bn" ? img.alt_bn : img.alt_en}
+                      fill
+                      priority={priority && i === 0}
+                      sizes={sizes}
+                      className="object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
               {/* Prev / Next arrows */}
               {hasMany && (
                 <>
@@ -169,16 +180,18 @@ export default function ProductCard({ product, locale, priority = false }: Props
                   >
                     ›
                   </button>
-                  {/* Dots */}
-                  <div className="absolute bottom-1.5 left-0 right-0 flex justify-center gap-1">
+                  {/* Dots — 24x24 tap target with a small visual dot centered inside, per touch-target a11y guidance */}
+                  <div className="absolute bottom-0 left-0 right-0 flex justify-center">
                     {images.map((_, i) => (
                       <button
                         key={i}
                         onClick={e => goTo(e, i)}
                         aria-label={locale === "bn" ? `ছবি ${i + 1} দেখুন` : `View image ${i + 1}`}
                         aria-current={i === imgIdx}
-                        className={`w-1.5 h-1.5 rounded-full transition-colors ${i === imgIdx ? "bg-white" : "bg-white/40"}`}
-                      />
+                        className="w-6 h-6 flex items-center justify-center shrink-0"
+                      >
+                        <span className={`w-1.5 h-1.5 rounded-full transition-colors ${i === imgIdx ? "bg-white" : "bg-white/40"}`} />
+                      </button>
                     ))}
                   </div>
                 </>

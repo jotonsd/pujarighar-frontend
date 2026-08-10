@@ -30,6 +30,7 @@ const GUEST_MENU: NavItem[] = [
   { type: "link", href: "/",         icon: "home",         label_bn: "হোম",           label_en: "Home" },
   { type: "link", href: "/products", icon: "store",        label_bn: "পণ্য",           label_en: "Products" },
   { type: "link", href: "/packages", icon: "gift",         label_bn: "প্যাকেজ",        label_en: "Packages" },
+  { type: "link", href: "/products?offers=true", icon: "tag", label_bn: "অফার",       label_en: "Offers" },
   { type: "link", href: "/bayna",    icon: "calendar",     label_bn: "বায়না",          label_en: "Bayna" },
   { type: "link", href: "/blog",     icon: "file-text",    label_bn: "ব্লগ",           label_en: "Blog" },
   { type: "link", href: "/track",    icon: "truck",        label_bn: "অর্ডার ট্র্যাক", label_en: "Track Order" },
@@ -470,6 +471,12 @@ function MobileMenu({
             <span className="relative inline-flex rounded-full h-2 w-2 bg-red-600" />
           </span>
         )}
+        {href === "/products?offers=true" && (
+          <span className="relative inline-flex w-2 h-2">
+            <span className="absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75 animate-ping" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-green-600" />
+          </span>
+        )}
       </Link>
     );
   };
@@ -900,12 +907,18 @@ export default function Navbar() {
                       : "text-gray-600 hover:text-amber-700 hover:bg-gray-50"
                   }`}
                 >
-                  <NavIcon name={item.icon} />
+                  <NavIcon name={item.icon} className="w-4 h-4" />
                   {locale === "bn" ? item.label_bn : item.label_en}
                   {item.href === "/bayna" && (
                     <span className="relative inline-flex w-2 h-2 ml-0.5">
                       <span className="absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75 animate-ping" />
                       <span className="relative inline-flex rounded-full h-2 w-2 bg-red-600" />
+                    </span>
+                  )}
+                  {item.href === "/products?offers=true" && (
+                    <span className="relative inline-flex w-2 h-2 ml-0.5">
+                      <span className="absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75 animate-ping" />
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-green-600" />
                     </span>
                   )}
                 </Link>

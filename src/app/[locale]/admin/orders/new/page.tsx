@@ -139,8 +139,11 @@ export default function POSPage() {
   const [search, setSearch] = useState("");
   const [catFilter, setCatFilter] = useState("");
   const [brandFilter, setBrandFilter] = useState("");
+  const [page, setPage] = useState(1);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
 
-  const { data: productsData, isLoading } = useGetProductsQuery({
+  const { data: productsData, isLoading, isFetching } = useGetProductsQuery({
+    page,
     search,
     category: catFilter || undefined,
     brand: brandFilter || undefined,
@@ -150,7 +153,49 @@ export default function POSPage() {
   const { data: categories = [] } = useGetCategoriesQuery();
   const { data: brands = [] } = useGetBrandsQuery();
 
-  const products = productsData?.data ?? [];
+  const totalPages = productsData?.pagination?.total_pages ?? 1;
+  const hasMore = page < totalPages;
+  const isFetchingRef = useRef(false);
+  const hasMoreRef = useRef(false);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  isFetchingRef.current = isFetching;
+  hasMoreRef.current = hasMore;
+
+  // Reset to page 1 whenever a filter changes
+  useEffect(() => {
+    setPage(1);
+    setAllProducts([]);
+  }, [search, catFilter, brandFilter, tab]);
+
+  // Accumulate products — reset on page 1, append on subsequent pages
+  useEffect(() => {
+    if (!productsData?.data) return;
+    setAllProducts(prev => (page === 1 ? productsData.data : [...prev, ...productsData.data]));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [productsData]);
+
+  // Sentinel right after the grid — loads the next page once it's within
+  // 300px of the viewport. Depends on isLoading (not []) because the sentinel
+  // only exists once the skeleton branch is swapped out for the real grid —
+  // on first mount isLoading is true and the ref is still null, so the
+  // observer must be (re-)attached once that flips to false, or it never
+  // gets created at all.
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !isFetchingRef.current && hasMoreRef.current) {
+          setPage(prev => prev + 1);
+        }
+      },
+      { rootMargin: "300px 0px" },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [isLoading]);
+
+  const products = allProducts;
 
   // ── Cart ──────────────────────────────────────────────────────────────────
   const [cart, setCart] = useState<CartLine[]>([]);
@@ -437,7 +482,7 @@ export default function POSPage() {
           </div>
         </div>
 
-        {isLoading ? (
+        {isLoading && page === 1 ? (
           <POSProductSkeleton count={25} />
         ) : (
           <div className="lg:overflow-y-auto lg:flex-1 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 content-start mt-3">
@@ -453,13 +498,23 @@ export default function POSPage() {
                 onClick={() => addToCart(product)}
               />
             ))}
-            {products.length === 0 && !isLoading && (
+            {isFetching && products.length > 0 &&
+              Array.from({ length: 5 }).map((_, i) => (
+                <div key={`sk-${i}`} className="rounded-xl border border-gray-100 bg-white p-2 space-y-2">
+                  <div className="aspect-square w-full rounded-lg bg-gray-100 animate-pulse" />
+                  <div className="h-2.5 w-full rounded bg-gray-100 animate-pulse" />
+                  <div className="h-2.5 w-3/4 rounded bg-gray-100 animate-pulse" />
+                </div>
+              ))
+            }
+            {products.length === 0 && !isFetching && (
               <p className="col-span-full text-center text-gray-400 py-12">
                 {locale === "bn"
                   ? "কোনো পণ্য পাওয়া যায়নি"
                   : "No products found"}
               </p>
             )}
+            <div ref={sentinelRef} className="col-span-full h-1" />
           </div>
         )}
       </div>
@@ -471,7 +526,7 @@ export default function POSPage() {
             {locale === "bn" ? "অর্ডার আইটেম" : "Order Items"}
             {cart.length > 0 && (
               <span className="ml-2 text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full">
-                {cart.length}
+                {cart.reduce((sum, l) => sum + l.quantity, 0)}
               </span>
             )}
           </h2>
