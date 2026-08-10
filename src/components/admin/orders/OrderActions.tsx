@@ -14,6 +14,7 @@ import {
   useMarkCodPaidMutation,
   usePackOrderMutation,
   useReturnOrderMutation,
+  useWaiveDeliveryChargeMutation,
 } from '@/api/orders/ordersApi'
 import { useGetDeliveryPersonsQuery } from '@/api/users/usersApi'
 import {
@@ -107,6 +108,7 @@ export default function OrderActions({ order, orderId }: Props) {
   const [showDiscountModal, setShowDiscountModal] = useState(false)
   const [showDeliverModal, setShowDeliverModal] = useState(false)
   const [showReturnModal, setShowReturnModal]   = useState(false)
+  const [showWaiveDeliveryModal, setShowWaiveDeliveryModal] = useState(false)
   const [deliveryMethod, setDeliveryMethod] = useState<'internal' | 'courier'>('internal')
   const [courierProviderId, setCourierProviderId] = useState('')
   const [courierWeight, setCourierWeight] = useState('')
@@ -118,6 +120,7 @@ export default function OrderActions({ order, orderId }: Props) {
   const [cancel, { isLoading: cancelling }]       = useCancelOrderMutation()
   const [markPaid, { isLoading: markingPaid }]    = useMarkCodPaidMutation()
   const [applyDiscount, { isLoading: discounting }] = useApplyDiscountMutation()
+  const [waiveDelivery, { isLoading: waivingDelivery }] = useWaiveDeliveryChargeMutation()
   const [dispatch, { isLoading: dispatching }]    = useDispatchOrderMutation()
   const [deliver, { isLoading: delivering }]      = useDeliverOrderMutation()
   const [returnOrd, { isLoading: returning }]     = useReturnOrderMutation()
@@ -128,12 +131,13 @@ export default function OrderActions({ order, orderId }: Props) {
   const [refreshCourierStatus, { isLoading: refreshingCourier }] = useRefreshCourierStatusMutation()
 
   const loading = confirming || packing || assigning || cancelling || markingPaid || discounting
-    || dispatching || delivering || returning || sendingToCourier
+    || dispatching || delivering || returning || sendingToCourier || waivingDelivery
 
   const hasPayAction = order.payment_method === 'COD' && order.payment_status === 'UNPAID' && !['CANCELLED', 'RETURNED'].includes(order.status)
   const hasStatusAction = ['PENDING', 'CONFIRMED', 'PACKED'].includes(order.status)
   const hasCancelAction = !['ASSIGNED', 'ON_THE_WAY', 'DELIVERED', 'RETURNED', 'CANCELLED'].includes(order.status)
   const hasDiscountAction = ['PENDING', 'CONFIRMED'].includes(order.status) && order.payment_status === 'UNPAID'
+  const hasWaiveDeliveryAction = hasDiscountAction && Number(order.delivery_charge) > 0
   // Admin can drive the order through every status regardless of whether a delivery
   // person is attached yet — the backend already allows this (admin bypasses the
   // "must be the assigned delivery person" ownership check entirely). Excluded once
@@ -381,6 +385,27 @@ export default function OrderActions({ order, orderId }: Props) {
                     locale === 'bn' ? 'ছাড় প্রয়োগ হয়েছে' : 'Discount applied',
                   )
                   setShowDiscountModal(false)
+                }}
+              />
+            )}
+          </>
+        )}
+        {hasWaiveDeliveryAction && (
+          <>
+            <button disabled={loading} className="btn-secondary text-sm" onClick={() => setShowWaiveDeliveryModal(true)}>
+              🚚 {locale === 'bn' ? 'ডেলিভারি চার্জ মওকুফ করুন' : 'Waive Delivery Charge'}
+            </button>
+            {showWaiveDeliveryModal && (
+              <ConfirmModal
+                title={locale === 'bn' ? 'ডেলিভারি চার্জ মওকুফ করবেন?' : 'Waive the delivery charge?'}
+                description={locale === 'bn' ? 'এই অর্ডারের ডেলিভারি ফ্রি করা হবে। এটি পূর্বাবস্থায় ফেরানো যাবে না।' : 'Delivery on this order will be made free. This cannot be undone.'}
+                confirmLabel={locale === 'bn' ? 'হ্যাঁ, মওকুফ করুন' : 'Yes, Waive It'}
+                cancelLabel={locale === 'bn' ? 'ফিরে যান' : 'Go Back'}
+                loading={waivingDelivery}
+                onCancel={() => setShowWaiveDeliveryModal(false)}
+                onConfirm={async () => {
+                  await doAction(() => waiveDelivery({ id: orderId }).unwrap(), locale === 'bn' ? 'ডেলিভারি চার্জ মওকুফ হয়েছে' : 'Delivery charge waived')
+                  setShowWaiveDeliveryModal(false)
                 }}
               />
             )}
