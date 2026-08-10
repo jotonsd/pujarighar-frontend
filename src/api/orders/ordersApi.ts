@@ -97,6 +97,12 @@ export const ordersApi = baseApi.injectEndpoints({
       invalidatesTags: (_r, _e, { id }) => ['Orders', { type: 'Order', id }, { type: 'OrderLogs', id }],
     }),
 
+    waiveDeliveryCharge: build.mutation<SalesOrder, { id: string }>({
+      query: ({ id }) => ({ url: `/api/orders/${id}/waive-delivery/`, method: 'POST' }),
+      transformResponse: (res: { data: SalesOrder }) => res.data,
+      invalidatesTags: (_r, _e, { id }) => ['Orders', { type: 'Order', id }],
+    }),
+
     updateShipping: build.mutation<SalesOrder, { id: string; shipping_name_bn?: string; shipping_name_en?: string; shipping_phone?: string; shipping_address_bn?: string; shipping_address_en?: string; shipping_district?: string; shipping_thana?: string; shipping_post_code?: string }>({
       query: ({ id, ...body }) => ({ url: `/api/orders/${id}/update-shipping/`, method: 'PATCH', body }),
       transformResponse: (res: { data: SalesOrder }) => res.data,
@@ -155,6 +161,7 @@ export const {
   useCancelOrderMutation,
   useMarkCodPaidMutation,
   useApplyDiscountMutation,
+  useWaiveDeliveryChargeMutation,
   useUpdateShippingMutation,
   useUpdateOrderItemQuantityMutation,
   useDeleteOrderItemMutation,
