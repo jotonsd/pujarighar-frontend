@@ -230,9 +230,19 @@ export default function PackageDetailClient({ id, offerBanners }: { id: string; 
                 key={item.id}
                 className="flex items-center gap-3 bg-white border border-gray-100 rounded-xl px-4 py-3 shadow-sm"
               >
-                <div className="w-9 h-9 rounded-lg bg-amber-50 flex items-center justify-center text-lg shrink-0">
-                  🪔
-                </div>
+                {item.component_image ? (
+                  <Image
+                    src={item.component_image}
+                    alt=""
+                    width={36}
+                    height={36}
+                    className="w-9 h-9 rounded-lg object-cover border border-gray-100 shrink-0"
+                  />
+                ) : (
+                  <div className="w-9 h-9 rounded-lg bg-amber-50 flex items-center justify-center text-lg shrink-0">
+                    🪔
+                  </div>
+                )}
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-gray-800 truncate">
                     {locale === "bn"

@@ -167,6 +167,7 @@ export interface PackageItem {
   component_name_bn: string
   component_name_en: string
   component_sku: string
+  component_image: string | null
   quantity: string
   unit_price: string
 }
