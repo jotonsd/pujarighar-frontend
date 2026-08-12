@@ -78,6 +78,7 @@ export default function AdminOrderDetailPage({
                   }
                 : null
             }
+            courierTrackingUrl={order.courier_consignment?.tracking_url}
           />
         </div>
       </div>

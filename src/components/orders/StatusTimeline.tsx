@@ -1,26 +1,11 @@
 import { DeliveryInfo, StatusLogEntry } from "@/lib/types";
+import { ExternalLink } from "lucide-react";
 
 interface Props {
   logs: StatusLogEntry[];
   locale: string;
   deliveryInfo?: DeliveryInfo | null;
-}
-
-const STATUS_LABELS: Record<string, { bn: string; en: string }> = {
-  PENDING: { bn: "পেন্ডিং", en: "Pending" },
-  CONFIRMED: { bn: "নিশ্চিত", en: "Confirmed" },
-  PACKED: { bn: "প্যাক হয়েছে", en: "Packed" },
-  ASSIGNED: { bn: "ডেলিভারিম্যান নির্ধারিত", en: "Assigned" },
-  ON_THE_WAY: { bn: "পথে আছে", en: "On the Way" },
-  DELIVERED: { bn: "ডেলিভারি হয়েছে", en: "Delivered" },
-  RETURNED: { bn: "ফেরত", en: "Returned" },
-  CANCELLED: { bn: "বাতিল", en: "Cancelled" },
-};
-
-function statusLabel(status: string, isBn: boolean): string {
-  const entry = STATUS_LABELS[status];
-  if (!entry) return status;
-  return isBn ? entry.bn : entry.en;
+  courierTrackingUrl?: string | null;
 }
 
 function fmt(iso: string, locale: string) {
@@ -33,7 +18,7 @@ function fmt(iso: string, locale: string) {
   });
 }
 
-export default function StatusTimeline({ logs, locale, deliveryInfo }: Props) {
+export default function StatusTimeline({ logs, locale, deliveryInfo, courierTrackingUrl }: Props) {
   const isBn = locale === "bn";
 
   return (
@@ -51,11 +36,27 @@ export default function StatusTimeline({ logs, locale, deliveryInfo }: Props) {
           {/* Content */}
           <div className="pb-4">
             <p className="font-medium text-gray-800 text-sm">
-              {statusLabel(log.to_status, isBn)}
+              {isBn ? log.to_status_label : log.to_status_label_en}
             </p>
 
-            {/* Delivery person — before the timestamp */}
-            {log.to_status === "ASSIGNED" && deliveryInfo && (
+            {/* Courier tracking link — shown once, on the ASSIGNED entry */}
+            {log.to_status === "ASSIGNED" && courierTrackingUrl && (
+              <a
+                href={courierTrackingUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 mt-1 text-xs text-amber-700 hover:underline"
+              >
+                {isBn ? "কুরিয়ারে ট্র্যাক করুন" : "Track on courier site"}
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            )}
+
+            {/* Delivery person — before the timestamp. Courier-fulfilled orders
+                still get a DeliveryAssignment row (just with no person on
+                it), so deliveryInfo alone isn't enough to know there's an
+                actual person to show — check for a name/phone too. */}
+            {log.to_status === "ASSIGNED" && deliveryInfo && (deliveryInfo.name_bn || deliveryInfo.name_en || deliveryInfo.phone) && (
               <div className="flex items-center gap-2 mt-1">
                 {deliveryInfo.avatar ? (
                   // eslint-disable-next-line @next/next/no-img-element
