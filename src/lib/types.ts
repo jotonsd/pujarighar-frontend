@@ -518,9 +518,12 @@ export interface CourierProvider {
   name: string
   base_url: string
   is_active: boolean
+  store_id?: string
   has_api_key: boolean
   has_secret_key: boolean
   has_webhook_secret: boolean
+  has_username: boolean
+  has_password: boolean
   webhook_secret?: string // present only right after creation
 }
 
@@ -544,6 +547,7 @@ export interface CourierConsignment {
   status: string
   cod_amount: string
   delivery_charge: string
+  weight: string | null
   tracking_message: string
   created_at: string
   updated_at: string

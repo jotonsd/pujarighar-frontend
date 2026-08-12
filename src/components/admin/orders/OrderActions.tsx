@@ -112,6 +112,7 @@ export default function OrderActions({ order, orderId }: Props) {
   const [deliveryMethod, setDeliveryMethod] = useState<'internal' | 'courier'>('internal')
   const [courierProviderId, setCourierProviderId] = useState('')
   const [courierWeight, setCourierWeight] = useState('')
+  const [courierNote, setCourierNote] = useState('')
 
   const { data: deliveryPersons = [] } = useGetDeliveryPersonsQuery()
   const [confirmOrder, { isLoading: confirming }] = useConfirmOrderMutation()
@@ -278,7 +279,16 @@ export default function OrderActions({ order, orderId }: Props) {
                   value={courierWeight}
                   onChange={e => setCourierWeight(e.target.value)}
                   placeholder={locale === 'bn' ? 'ওজন (কেজি)' : 'Weight (kg)'}
+                  autoComplete="off"
                   className="w-32 px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-amber-500"
+                />
+                <input
+                  type="text"
+                  value={courierNote}
+                  onChange={e => setCourierNote(e.target.value)}
+                  placeholder={locale === 'bn' ? 'বিশেষ নির্দেশনা (ঐচ্ছিক)' : 'Special instruction (optional)'}
+                  autoComplete="off"
+                  className="flex-1 min-w-[180px] px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-amber-500"
                 />
                 <button disabled={loading} className="btn-primary text-sm whitespace-nowrap"
                   onClick={() => doAction(
@@ -286,6 +296,7 @@ export default function OrderActions({ order, orderId }: Props) {
                       orderId,
                       provider_id: courierProviderId ? Number(courierProviderId) : activeProviders[0].id,
                       weight: courierWeight ? Number(courierWeight) : undefined,
+                      note: courierNote || undefined,
                     }).unwrap(),
                     locale === 'bn' ? 'কুরিয়ারে পাঠানো হয়েছে' : 'Sent to courier',
                   )}>

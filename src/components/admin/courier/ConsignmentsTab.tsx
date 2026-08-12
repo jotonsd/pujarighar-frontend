@@ -3,6 +3,7 @@
 import {
   useCreateCourierReturnRequestMutation,
   useGetCourierConsignmentsQuery,
+  useGetCourierProvidersQuery,
   useRefreshCourierStatusMutation,
 } from "@/api/courier/courierApi";
 import TableSkeleton from "@/components/ui/skeletons";
@@ -13,11 +14,18 @@ import { useState } from "react";
 
 export default function ConsignmentsTab({ locale, isBn }: { locale: string; isBn: boolean }) {
   const [page, setPage] = useState(1);
-  const { data, isLoading } = useGetCourierConsignmentsQuery({ page });
+  const [providerCode, setProviderCode] = useState("");
+  const { data: providers = [] } = useGetCourierProvidersQuery();
+  const { data, isLoading } = useGetCourierConsignmentsQuery({ page, provider_code: providerCode || undefined });
   const [refresh, { isLoading: refreshing }] = useRefreshCourierStatusMutation();
   const [createReturn, { isLoading: requestingReturn }] = useCreateCourierReturnRequestMutation();
   const [returnTargetId, setReturnTargetId] = useState<string | null>(null);
   const [reason, setReason] = useState("");
+
+  const selectProvider = (code: string) => {
+    setProviderCode(code);
+    setPage(1);
+  };
 
   const rows = data?.data ?? [];
 
@@ -45,11 +53,43 @@ export default function ConsignmentsTab({ locale, isBn }: { locale: string; isBn
     }
   };
 
-  if (isLoading) return <TableSkeleton columns={7} rows={8} />;
-  if (rows.length === 0) return <p className="text-sm text-gray-400">{isBn ? "কোনো কনসাইনমেন্ট নেই" : "No consignments yet"}</p>;
+  const tabs = (
+    <div className="flex items-center gap-1.5 flex-wrap">
+      <button
+        onClick={() => selectProvider("")}
+        className={`px-3 py-1.5 text-xs rounded-full border transition-colors ${providerCode === "" ? "bg-amber-600 text-white border-amber-600" : "border-gray-200 text-gray-600 hover:bg-gray-50"}`}
+      >
+        {isBn ? "সব" : "All"}
+      </button>
+      {providers.map(p => (
+        <button
+          key={p.id}
+          onClick={() => selectProvider(p.code)}
+          className={`px-3 py-1.5 text-xs rounded-full border transition-colors ${providerCode === p.code ? "bg-amber-600 text-white border-amber-600" : "border-gray-200 text-gray-600 hover:bg-gray-50"}`}
+        >
+          {p.name}
+        </button>
+      ))}
+    </div>
+  );
+
+  if (isLoading) return (
+    <div className="space-y-3">
+      {tabs}
+      <TableSkeleton columns={8} rows={8} />
+    </div>
+  );
+  if (rows.length === 0) return (
+    <div className="space-y-3">
+      {tabs}
+      <p className="text-sm text-gray-400">{isBn ? "কোনো কনসাইনমেন্ট নেই" : "No consignments yet"}</p>
+    </div>
+  );
 
   return (
-    <div className="card p-0 overflow-hidden overflow-x-auto">
+    <div className="space-y-3">
+      {tabs}
+      <div className="card p-0 overflow-hidden overflow-x-auto">
       <table className="w-full text-sm">
         <thead className="bg-amber-50 border-b border-amber-200">
           <tr>
@@ -58,6 +98,7 @@ export default function ConsignmentsTab({ locale, isBn }: { locale: string; isBn
             <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "ট্র্যাকিং কোড" : "Tracking Code"}</th>
             <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "স্ট্যাটাস" : "Status"}</th>
             <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "সিওডি" : "COD"}</th>
+            <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "ওজন" : "Weight"}</th>
             <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "সর্বশেষ" : "Last Update"}</th>
             <th className="px-4 py-3"></th>
           </tr>
@@ -76,6 +117,7 @@ export default function ConsignmentsTab({ locale, isBn }: { locale: string; isBn
                 <span className="badge bg-gray-100 text-gray-700">{c.status || "—"}</span>
               </td>
               <td className="px-4 py-3 text-right text-gray-700">৳{c.cod_amount}</td>
+              <td className="px-4 py-3 text-right text-gray-700">{c.weight ? `${c.weight} kg` : "—"}</td>
               <td className="px-4 py-3 text-xs text-gray-500 whitespace-nowrap">{formatDate(c.updated_at)}</td>
               <td className="px-4 py-3">
                 <div className="flex items-center justify-end gap-1.5">
@@ -120,6 +162,7 @@ export default function ConsignmentsTab({ locale, isBn }: { locale: string; isBn
           </button>
         </div>
       )}
+      </div>
 
       {returnTargetId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
