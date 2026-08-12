@@ -8,7 +8,7 @@ import {
 } from "@/api/courier/courierApi";
 import TableSkeleton from "@/components/ui/skeletons";
 import { toast } from "@/store/toastStore";
-import { RefreshCw, Undo2 } from "lucide-react";
+import { ExternalLink, RefreshCw, Undo2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -17,7 +17,8 @@ export default function ConsignmentsTab({ locale, isBn }: { locale: string; isBn
   const [providerCode, setProviderCode] = useState("");
   const { data: providers = [] } = useGetCourierProvidersQuery();
   const { data, isLoading } = useGetCourierConsignmentsQuery({ page, provider_code: providerCode || undefined });
-  const [refresh, { isLoading: refreshing }] = useRefreshCourierStatusMutation();
+  const [refresh] = useRefreshCourierStatusMutation();
+  const [refreshingId, setRefreshingId] = useState<string | null>(null);
   const [createReturn, { isLoading: requestingReturn }] = useCreateCourierReturnRequestMutation();
   const [returnTargetId, setReturnTargetId] = useState<string | null>(null);
   const [reason, setReason] = useState("");
@@ -33,11 +34,14 @@ export default function ConsignmentsTab({ locale, isBn }: { locale: string; isBn
     new Date(iso).toLocaleDateString(isBn ? "bn-BD" : "en-US", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
 
   const handleRefresh = async (orderId: string) => {
+    setRefreshingId(orderId);
     try {
       await refresh(orderId).unwrap();
       toast.success(isBn ? "স্ট্যাটাস আপডেট হয়েছে" : "Status refreshed");
     } catch {
       toast.error(isBn ? "ব্যর্থ হয়েছে" : "Failed to refresh");
+    } finally {
+      setRefreshingId(null);
     }
   };
 
@@ -121,13 +125,28 @@ export default function ConsignmentsTab({ locale, isBn }: { locale: string; isBn
               <td className="px-4 py-3 text-xs text-gray-500 whitespace-nowrap">{formatDate(c.updated_at)}</td>
               <td className="px-4 py-3">
                 <div className="flex items-center justify-end gap-1.5">
+                  {c.tracking_url && (
+                    <div className="relative group">
+                      <a
+                        href={c.tracking_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-100 transition-colors"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
+                      <span className="pointer-events-none absolute right-0 bottom-full mb-1.5 hidden group-hover:block whitespace-nowrap rounded-md bg-gray-800 px-2 py-1 text-[11px] text-white z-10">
+                        {isBn ? "কুরিয়ারে ট্র্যাক করুন" : "Track on courier site"}
+                      </span>
+                    </div>
+                  )}
                   <div className="relative group">
                     <button
                       onClick={() => handleRefresh(c.order_id)}
-                      disabled={refreshing}
+                      disabled={refreshingId === c.order_id}
                       className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-100 transition-colors disabled:opacity-50"
                     >
-                      <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? "animate-spin" : ""}`} />
+                      <RefreshCw className={`w-3.5 h-3.5 ${refreshingId === c.order_id ? "animate-spin" : ""}`} />
                     </button>
                     <span className="pointer-events-none absolute right-0 bottom-full mb-1.5 hidden group-hover:block whitespace-nowrap rounded-md bg-gray-800 px-2 py-1 text-[11px] text-white z-10">
                       {isBn ? "রিফ্রেশ" : "Refresh"}

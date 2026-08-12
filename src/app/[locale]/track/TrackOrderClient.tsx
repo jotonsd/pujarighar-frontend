@@ -190,6 +190,7 @@ export default function TrackOrderClient({ offerBanners }: { offerBanners?: Reac
                 logs={order.timeline}
                 locale={locale}
                 deliveryInfo={order.delivery_info}
+                courierTrackingUrl={order.courier_tracking_url}
               />
             </div>
           )}

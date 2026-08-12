@@ -424,6 +424,7 @@ export interface OrderTracking {
   grand_total: string
   created_at: string
   delivery_info: DeliveryInfo | null
+  courier_tracking_url: string | null
   timeline: StatusLogEntry[]
 }
 
@@ -455,6 +456,7 @@ export interface StatusLogEntry {
   from_status: string
   to_status: string
   to_status_label: string
+  to_status_label_en: string
   changed_by: string
   changed_by_email: string
   changed_at: string
@@ -549,6 +551,7 @@ export interface CourierConsignment {
   delivery_charge: string
   weight: string | null
   tracking_message: string
+  tracking_url: string | null
   created_at: string
   updated_at: string
   events: CourierTrackingEvent[]

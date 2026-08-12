@@ -26,7 +26,7 @@ import CancelConfirmModal from './CancelConfirmModal'
 import ApplyDiscountModal from './ApplyDiscountModal'
 import PaymentConfirmModal from '@/components/ui/PaymentConfirmModal'
 import ConfirmModal from '@/components/ui/ConfirmModal'
-import { ChevronDown, CheckCircle2, Undo2, RefreshCw, Truck } from 'lucide-react'
+import { ChevronDown, CheckCircle2, Undo2, RefreshCw, Truck, ExternalLink } from 'lucide-react'
 
 interface Props {
   order: SalesOrder
@@ -195,6 +195,17 @@ export default function OrderActions({ order, orderId }: Props) {
           </div>
           {order.courier_consignment.tracking_message && (
             <p className="text-xs text-gray-500">{order.courier_consignment.tracking_message}</p>
+          )}
+          {order.courier_consignment.tracking_url && (
+            <a
+              href={order.courier_consignment.tracking_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-xs text-amber-700 hover:underline"
+            >
+              {locale === 'bn' ? 'কুরিয়ারে ট্র্যাক করুন' : 'Track on courier site'}
+              <ExternalLink className="w-3 h-3" />
+            </a>
           )}
         </div>
       )}
