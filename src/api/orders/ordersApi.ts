@@ -3,6 +3,17 @@ import { SalesOrder, StatusLogEntry, ApiMeta, OrderTracking } from '@/lib/types'
 
 interface OrderListResponse { data: SalesOrder[]; pagination: ApiMeta }
 
+export interface RecentShipping {
+  name_bn: string
+  name_en: string
+  phone: string
+  address_bn: string
+  address_en: string
+  district: string
+  thana: string
+  post_code: string
+}
+
 export const ordersApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
 
@@ -97,6 +108,11 @@ export const ordersApi = baseApi.injectEndpoints({
       invalidatesTags: (_r, _e, { id }) => ['Orders', { type: 'Order', id }, { type: 'OrderLogs', id }],
     }),
 
+    lookupRecentOrderByPhone: build.query<RecentShipping, string>({
+      query: (phone) => `/api/orders/lookup-by-phone/?phone=${encodeURIComponent(phone)}`,
+      transformResponse: (res: { data: RecentShipping }) => res.data,
+    }),
+
     waiveDeliveryCharge: build.mutation<SalesOrder, { id: string }>({
       query: ({ id }) => ({ url: `/api/orders/${id}/waive-delivery/`, method: 'POST' }),
       transformResponse: (res: { data: SalesOrder }) => res.data,
@@ -162,6 +178,7 @@ export const {
   useMarkCodPaidMutation,
   useApplyDiscountMutation,
   useWaiveDeliveryChargeMutation,
+  useLookupRecentOrderByPhoneQuery,
   useUpdateShippingMutation,
   useUpdateOrderItemQuantityMutation,
   useDeleteOrderItemMutation,
