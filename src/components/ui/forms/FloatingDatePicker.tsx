@@ -249,6 +249,13 @@ const FloatingDatePicker = forwardRef<HTMLDivElement, FloatingDatePickerProps>(
             placeholder=" "
             maxLength={showTimePicker ? 16 : 10}
             disabled={disabled}
+            autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="off"
+            spellCheck={false}
+            data-lpignore="true"
+            data-1p-ignore
+            name={`${inputId}-no-autofill`}
             className={`block px-2.5 pb-2 pt-3 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-0 focus:border-amber-600 peer cursor-pointer ${
               error ? 'border-red-500' : ''
             } ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}

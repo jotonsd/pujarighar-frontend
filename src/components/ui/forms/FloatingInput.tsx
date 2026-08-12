@@ -41,7 +41,7 @@ function rawToFormattedCursor(formatted: string, rawPos: number): number {
 }
 
 const FloatingInput = forwardRef<HTMLInputElement, FloatingInputProps>(
-  ({ label, error, uppercase = false, className = '', onChange, icon, rightElement, type, value, placeholder, id, ...props }, ref) => {
+  ({ label, error, uppercase = false, className = '', onChange, icon, rightElement, type, value, placeholder, id, autoComplete = 'off', ...props }, ref) => {
     const isNumber = type === 'number'
     const internalRef = useRef<HTMLInputElement>(null)
     const pendingCursor = useRef<number | null>(null)
@@ -109,6 +109,11 @@ const FloatingInput = forwardRef<HTMLInputElement, FloatingInputProps>(
             } ${icon ? 'pl-10' : 'pl-2.5'} ${rightElement ? 'pr-10' : 'pr-2.5'} ${className}`}
             placeholder={placeholder ?? ' '}
             onChange={handleChange}
+            autoComplete={autoComplete}
+            autoCorrect="off"
+            spellCheck={false}
+            data-lpignore="true"
+            data-1p-ignore
             {...props}
           />
 

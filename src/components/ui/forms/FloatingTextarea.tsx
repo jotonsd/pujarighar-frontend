@@ -11,7 +11,7 @@ interface FloatingTextareaProps extends TextareaHTMLAttributes<HTMLTextAreaEleme
 }
 
 const FloatingTextarea = forwardRef<HTMLTextAreaElement, FloatingTextareaProps>(
-  ({ label, error, uppercase = false, className = '', onChange, icon, rightElement, rows = 3, id, ...props }, ref) => {
+  ({ label, error, uppercase = false, className = '', onChange, icon, rightElement, rows = 3, id, autoComplete = 'off', ...props }, ref) => {
     const generatedId = useId()
     const inputId = id ?? generatedId
 
@@ -38,6 +38,7 @@ const FloatingTextarea = forwardRef<HTMLTextAreaElement, FloatingTextareaProps>(
             } ${icon ? 'pl-10' : 'pl-2.5'} ${rightElement ? 'pr-10' : 'pr-2.5'} ${className}`}
             placeholder=" "
             onChange={handleChange}
+            autoComplete={autoComplete}
             {...props}
           />
 
