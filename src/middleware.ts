@@ -13,6 +13,11 @@ const ADMIN_PATHS       = ['/admin']
 const DELIVERY_PATHS    = ['/delivery']
 const PROTECTED_PATHS   = ['/profile', '/orders', '/notifications']
 const MAINTENANCE_PATHS = ['/maintenance', '/auth/login']
+// /orders/<id>/tracking is deliberately public — no-login order tracking
+// links shared via SMS/WhatsApp/email land here, and the backend endpoint
+// behind it (get_order_tracking) is AllowAny. Everything else under
+// /orders (the list, /orders/<id> detail) still requires login.
+const PUBLIC_ORDER_PATH = /^\/orders\/[^/]+\/tracking\/?$/
 
 // Cached in-process (single Node server) so we don't hit the backend on every request.
 const MAINTENANCE_CACHE_TTL_MS = 10_000
@@ -103,7 +108,11 @@ export async function middleware(request: NextRequest) {
   // would otherwise trap a user who genuinely needs to log in again.
 
   // Protect customer routes
-  if (PROTECTED_PATHS.some((p) => pathWithoutLocale.startsWith(p)) && !isLoggedIn) {
+  if (
+    PROTECTED_PATHS.some((p) => pathWithoutLocale.startsWith(p)) &&
+    !PUBLIC_ORDER_PATH.test(pathWithoutLocale) &&
+    !isLoggedIn
+  ) {
     return NextResponse.redirect(new URL(`/${locale}/auth/login`, request.url))
   }
 
