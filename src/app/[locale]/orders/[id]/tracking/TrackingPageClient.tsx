@@ -23,7 +23,7 @@ export default function TrackingPageClient({ id, offerBanners }: { id: string; o
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-3">
-      <div className="mb-4">
+      <div className="max-w-2xl mx-auto mb-4">
         {offerBanners}
       </div>
       <div className="card max-w-2xl mx-auto space-y-5">
@@ -50,12 +50,19 @@ export default function TrackingPageClient({ id, offerBanners }: { id: string; o
         {/* Customer */}
         <div className="border-t border-gray-100 pt-4 space-y-0.5">
           <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">
-            {isBn ? "গ্রাহকের তথ্য" : "Customer"}
+            {isBn ? "ডেলিভারি তথ্য" : "Delivery Info"}
           </p>
           <p className="text-sm font-medium text-gray-700">
             {localName(order.shipping_name_bn, order.shipping_name_en, isBn)}
           </p>
           <p className="text-sm text-gray-500">{order.shipping_phone}</p>
+          <p className="text-sm text-gray-500">{order.shipping_address_bn}</p>
+          {order.shipping_district && (
+            <p className="text-sm text-gray-400">
+              {order.shipping_district}
+              {order.shipping_thana ? `, ${order.shipping_thana}` : ""}
+            </p>
+          )}
         </div>
 
         {/* Timeline — delivery info shown inline on ASSIGNED entry */}
@@ -68,7 +75,6 @@ export default function TrackingPageClient({ id, offerBanners }: { id: string; o
               logs={order.timeline}
               locale={locale}
               deliveryInfo={order.delivery_info}
-              courierTrackingUrl={order.courier_tracking_url}
             />
           </div>
         )}
