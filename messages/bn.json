@@ -134,7 +134,7 @@
     "orders": "অর্ডার",
     "accounting": "হিসাব",
     "categories": "কেটাগরি",
-    "todayOrders": "আজকের অর্ডার",
+    "weekOrders": "এই সপ্তাহের অর্ডার",
     "todayRevenue": "আজকের আয়",
     "pendingOrders": "পেন্ডিং অর্ডার",
     "lowStock": "কম স্টক",
