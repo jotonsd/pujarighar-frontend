@@ -134,7 +134,7 @@
     "orders": "Orders",
     "accounting": "Accounting",
     "categories": "Categories",
-    "todayOrders": "Today's Orders",
+    "weekOrders": "This Week's Orders",
     "todayRevenue": "Today's Revenue",
     "pendingOrders": "Pending Orders",
     "lowStock": "Low Stock",
