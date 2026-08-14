@@ -17,7 +17,7 @@ import {
 // ─── Stat card definitions ────────────────────────────────────────────────────
 const STAT_CARDS = [
   { key: "week_orders",    labelKey: "weekOrders",    icon: ShoppingBag,   bg: "bg-blue-600",    iconText: "text-blue-600" },
-  { key: "today_revenue",  labelKey: "todayRevenue",  icon: Wallet,        bg: "bg-emerald-700",  iconText: "text-emerald-700", isCurrency: true },
+  { key: "week_revenue",   labelKey: "weekRevenue",   icon: Wallet,        bg: "bg-emerald-700",  iconText: "text-emerald-700", isCurrency: true },
   { key: "pending_orders", labelKey: "pendingOrders", icon: Clock,         bg: "bg-amber-700",    iconText: "text-amber-700" },
   { key: "low_stock_count",labelKey: "lowStock",      icon: AlertTriangle, bg: "bg-red-600",      iconText: "text-red-700" },
   { key: "total_customers",labelKey: "totalCustomers",icon: Users,         bg: "bg-purple-600",   iconText: "text-purple-600" },
