@@ -20,7 +20,7 @@ export interface TopProduct {
 export interface DashboardSummary {
   // existing
   week_orders: number
-  today_revenue: string
+  week_revenue: string
   pending_orders: number
   low_stock_count: number
   total_customers: number
