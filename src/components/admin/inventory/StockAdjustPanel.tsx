@@ -353,14 +353,20 @@ export default function StockAdjustPanel({ product }: Props) {
                         )}
                       </span>
                     </div>
-                    {m.unit_cost && Number(m.unit_cost) > 0 && (m.movement_type === "PURCHASE" || m.movement_type === "SUPPLIER_RETURN") && (
-                      <div className="flex justify-between text-xs text-gray-400 mt-0.5">
-                        <span>{isBn ? "ক্রয় মূল্য" : "Cost"}: {formatAmount(m.unit_cost, locale, 2)}</span>
-                        <span>{isBn ? "মোট" : "Total"}: {formatAmount(
-                          (parseFloat(m.unit_cost) * Math.abs(parseFloat(m.quantity))).toString(), locale, 2,
-                        )}</span>
-                      </div>
-                    )}
+                    <div className="flex justify-between text-xs text-gray-400 mt-0.5">
+                      <span>
+                        {new Date(m.created_at).toLocaleDateString(isBn ? "bn-BD" : "en-US", { day: "numeric", month: "short", year: "numeric" })}
+                      </span>
+                      {m.unit_cost && Number(m.unit_cost) > 0 && (m.movement_type === "PURCHASE" || m.movement_type === "SUPPLIER_RETURN") && (
+                        <span>
+                          {isBn ? "ক্রয় মূল্য" : "Cost"}: {formatAmount(m.unit_cost, locale, 2)}
+                          {" · "}
+                          {isBn ? "মোট" : "Total"}: {formatAmount(
+                            (parseFloat(m.unit_cost) * Math.abs(parseFloat(m.quantity))).toString(), locale, 2,
+                          )}
+                        </span>
+                      )}
+                    </div>
                   </>
                 )}
               </div>

@@ -10,6 +10,7 @@ import PageHeader from "@/components/ui/PageHeader";
 import type { Column } from "@/components/ui/ReusableTable";
 import { ReusableTable } from "@/components/ui/ReusableTable";
 import { useLocale, useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 interface LedgerLine {
@@ -24,7 +25,10 @@ interface LedgerLine {
 export default function LedgerPage() {
   const t = useTranslations("accounting");
   const locale = useLocale();
-  const [accountId, setAccountId] = useState("");
+  const searchParams = useSearchParams();
+  // Deep-link support — e.g. the dashboard's Cash on Hand card links here
+  // with ?account=<id> pre-selected, skipping the manual picker step.
+  const [accountId, setAccountId] = useState(searchParams.get("account") ?? "");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
 

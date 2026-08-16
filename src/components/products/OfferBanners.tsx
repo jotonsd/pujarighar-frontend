@@ -6,7 +6,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8020";
 async function getBanners(): Promise<Banner[]> {
   try {
     const res = await fetch(`${API_URL}/api/banners/`, {
-      next: { revalidate: 300 },
+      cache: "no-store",
     });
     if (!res.ok) return [];
     const json = await res.json();
