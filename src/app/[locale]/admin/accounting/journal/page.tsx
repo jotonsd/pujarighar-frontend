@@ -365,13 +365,20 @@ export default function JournalPage() {
 
   const { data, isLoading } = useGetJournalEntriesQuery({ page, from, to });
   const entries = data?.data ?? [];
-  const totalPages = data?.meta?.total_pages ?? 1;
+  const totalPages = data?.pagination?.total_pages ?? 1;
 
   const updateFrom = (v: string) => { setFrom(v); setPage(1); };
   const updateTo = (v: string) => { setTo(v); setPage(1); };
 
-  const totalDebitSum = entries.reduce((s, e) => s + (parseFloat(e.total_debit) || 0), 0);
-  const totalCreditSum = entries.reduce((s, e) => s + (parseFloat(e.total_credit) || 0), 0);
+  // Server-computed across the FULL filtered date range (not just this
+  // page) — falls back to summing the visible page only if, for some
+  // reason, the backend didn't send totals (e.g. an older cached response).
+  const totalDebitSum = data?.pagination?.total_debit != null
+    ? parseFloat(data.pagination.total_debit)
+    : entries.reduce((s, e) => s + (parseFloat(e.total_debit) || 0), 0);
+  const totalCreditSum = data?.pagination?.total_credit != null
+    ? parseFloat(data.pagination.total_credit)
+    : entries.reduce((s, e) => s + (parseFloat(e.total_credit) || 0), 0);
   const allBalanced = Math.abs(totalDebitSum - totalCreditSum) < 0.01;
 
   return (
