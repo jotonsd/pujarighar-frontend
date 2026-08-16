@@ -1,7 +1,7 @@
 import { baseApi } from '@/api/baseApi'
 import { Account, JournalEntry, ApiMeta } from '@/lib/types'
 
-interface JournalListResponse { data: JournalEntry[]; meta: ApiMeta }
+interface JournalListResponse { data: JournalEntry[]; pagination: ApiMeta & { total_debit?: string; total_credit?: string } }
 
 export interface ManualJournalLine {
   account_code: string
