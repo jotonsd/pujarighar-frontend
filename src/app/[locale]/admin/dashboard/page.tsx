@@ -5,13 +5,14 @@ import PageHeader from "@/components/ui/PageHeader";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { formatAmount, formatNumber } from "@/utils/format";
 import { useLocale, useTranslations } from "next-intl";
+import Link from "next/link";
 import {
   CartesianGrid, Legend, Line, LineChart,
   ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from "recharts";
 import {
   TrendingUp, TrendingDown, Minus, ShoppingBag, Wallet, Clock,
-  AlertTriangle, Users, Package, Scale, Truck, HandCoins,
+  AlertTriangle, Users, Package, Scale, Truck, HandCoins, Landmark,
 } from "lucide-react";
 
 // ─── Stat card definitions ────────────────────────────────────────────────────
@@ -58,8 +59,8 @@ export default function DashboardPage() {
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
         {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-20 rounded-2xl" />)}
       </div>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-24 rounded-2xl" />)}
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+        {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-24 rounded-2xl" />)}
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
         <Skeleton className="lg:col-span-2 h-80 rounded-2xl" />
@@ -126,7 +127,22 @@ export default function DashboardPage() {
       </div>
 
       {/* ── Row 2: Financial health ──────────────────────────────────────── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+        {/* Cash on hand */}
+        <Link
+          href={data?.cash_account_id ? `/${locale}/admin/accounting/ledger?account=${data.cash_account_id}` : `/${locale}/admin/accounting/ledger`}
+          className="bg-cyan-700 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow flex items-start gap-3"
+        >
+          <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 bg-white shadow-sm">
+            <Landmark className="w-5 h-5 text-cyan-700" strokeWidth={2} />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-xs text-white/80 mb-1">{isBn ? "বর্তমান ক্যাশ" : "Cash on Hand"}</p>
+            <p className="text-xl font-bold text-white leading-tight">{formatAmount(data?.cash_on_hand ?? "0", locale, 0)}</p>
+            <p className="text-xs text-white/70 mt-1">{isBn ? "ক্যাশ বই দেখুন" : "View cash book"}</p>
+          </div>
+        </Link>
+
         {/* This month revenue */}
         <div className="bg-teal-700 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow flex items-start gap-3">
           <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 bg-white shadow-sm">

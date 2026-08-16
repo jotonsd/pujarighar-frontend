@@ -35,6 +35,8 @@ export interface DashboardSummary {
   supplier_outstanding: string
   loan_outstanding: string
   partner_outstanding: string
+  cash_on_hand: string
+  cash_account_id: string | null
   out_of_stock_count: number
   recent_orders: RecentOrder[]
   top_products: TopProduct[]
