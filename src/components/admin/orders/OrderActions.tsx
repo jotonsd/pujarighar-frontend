@@ -113,6 +113,7 @@ export default function OrderActions({ order, orderId }: Props) {
   const [courierProviderId, setCourierProviderId] = useState('')
   const [courierWeight, setCourierWeight] = useState('')
   const [courierNote, setCourierNote] = useState('')
+  const [internalWeight, setInternalWeight] = useState('')
 
   const { data: deliveryPersons = [] } = useGetDeliveryPersonsQuery()
   const [confirmOrder, { isLoading: confirming }] = useConfirmOrderMutation()
@@ -315,16 +316,32 @@ export default function OrderActions({ order, orderId }: Props) {
                 </button>
               </div>
             ) : (
-              <div className="flex gap-2 items-center">
+              <div className="flex gap-2 items-center flex-wrap">
                 <DeliveryPersonDropdown
                   persons={deliveryPersons}
                   value={deliveryPersonId}
                   onChange={setDeliveryPersonId}
                   label={locale === 'bn' ? 'ডেলিভারিম্যান বেছে নিন (ঐচ্ছিক)' : 'Select delivery person (optional)'}
                 />
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  inputMode="decimal"
+                  value={internalWeight}
+                  onChange={e => setInternalWeight(e.target.value)}
+                  placeholder={locale === 'bn' ? 'ওজন (কেজি, ঐচ্ছিক)' : 'Weight (kg, optional)'}
+                  title={locale === 'bn' ? 'দিলে ডেলিভারি চার্জ ওজন অনুযায়ী পুনর্গণনা হবে' : 'If given, delivery charge is recalculated for this weight'}
+                  autoComplete="off"
+                  className="w-40 px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-amber-500"
+                />
                 <button disabled={loading} className="btn-primary text-sm whitespace-nowrap"
                   onClick={() => doAction(
-                    () => assign({ id: orderId, delivery_person_id: deliveryPersonId || null }).unwrap(),
+                    () => assign({
+                      id: orderId,
+                      delivery_person_id: deliveryPersonId || null,
+                      weight: internalWeight ? Number(internalWeight) : undefined,
+                    }).unwrap(),
                     locale === 'bn' ? 'নির্ধারিত হয়েছে' : 'Assigned',
                   )}>
                   {t('order.assignDelivery')}
