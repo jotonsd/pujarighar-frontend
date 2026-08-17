@@ -39,6 +39,19 @@
   -ms-overflow-style: none;
 }
 
+/* Small, fast jitter on the order-progress-bar delivery vehicle — reads as
+   engine vibration rather than a jump, since it's a couple of px and quick. */
+@keyframes vehicle-jitter {
+  0%, 100% { transform: translate(-50%, 0) rotate(0deg); }
+  25%      { transform: translate(-50%, -1px) rotate(-1deg); }
+  50%      { transform: translate(-50%, 0.5px) rotate(0.5deg); }
+  75%      { transform: translate(-50%, -0.5px) rotate(-0.5deg); }
+}
+
+.animate-vehicle-jitter {
+  animation: vehicle-jitter 0.35s ease-in-out infinite;
+}
+
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
