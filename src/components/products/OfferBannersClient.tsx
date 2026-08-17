@@ -26,7 +26,7 @@ export default function OfferBannersClient({ banners }: { banners: Banner[] }) {
 
     if (banner.image) {
       return (
-        <div className="w-full rounded-2xl overflow-hidden shadow-sm">
+        <div className="w-full rounded-md sm:rounded-2xl overflow-hidden shadow-sm">
           {/* Natural aspect ratio — no fixed height, so nothing gets
               cropped (object-cover) or letterboxed (object-contain) no
               matter what shape the admin uploaded. */}
@@ -106,7 +106,7 @@ export default function OfferBannersClient({ banners }: { banners: Banner[] }) {
   return (
     <div className="mb-3">
       {/* slide track */}
-      <div className="overflow-hidden rounded-2xl">
+      <div className="overflow-hidden rounded-md sm:rounded-2xl">
         <div
           className="flex items-start transition-transform duration-500 ease-in-out"
           style={{ transform: `translateX(-${current * 100}%)` }}
