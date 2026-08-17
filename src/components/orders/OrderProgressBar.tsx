@@ -27,17 +27,20 @@ export default function OrderProgressBar({ status, locale }: { status: OrderStat
   // Steps through 0, 1, 2, ... activeIndex in sequence (rather than jumping
   // straight to the final position), pausing briefly at each completed
   // stage — replays from the start on every mount, i.e. every page load.
+  // Gated on the car image actually being loaded first, so the animation
+  // never starts against an image that's still popping in mid-move.
+  const [imageReady, setImageReady] = useState(false);
   const [visibleIndex, setVisibleIndex] = useState(0);
   useEffect(() => {
     setVisibleIndex(0);
-    if (activeIndex <= 0) return;
+    if (!imageReady || activeIndex <= 0) return;
     const timers: ReturnType<typeof setTimeout>[] = [];
     for (let step = 1; step <= activeIndex; step++) {
-      const delay = 400 + (step - 1) * (MOVE_MS + PAUSE_MS);
+      const delay = 250 + (step - 1) * (MOVE_MS + PAUSE_MS);
       timers.push(setTimeout(() => setVisibleIndex(step), delay));
     }
     return () => timers.forEach(clearTimeout);
-  }, [activeIndex]);
+  }, [activeIndex, imageReady]);
 
   // Cancelled/returned don't fit a linear progress model — the existing
   // status badge already communicates those, so just skip the bar.
@@ -50,7 +53,7 @@ export default function OrderProgressBar({ status, locale }: { status: OrderStat
       <div className="relative px-4">
         {/* Delivery vehicle marker, floating above the bar at the current stage */}
         <div
-          className="absolute -top-8 ease-in-out"
+          className="absolute -top-8 -translate-x-1/2 ease-in-out"
           style={{ left: `${pct}%`, transitionProperty: "left", transitionDuration: `${MOVE_MS}ms` }}
         >
           <div className="animate-vehicle-jitter">
@@ -59,6 +62,8 @@ export default function OrderProgressBar({ status, locale }: { status: OrderStat
               alt=""
               width={44}
               height={44}
+              priority
+              onLoad={() => setImageReady(true)}
               className="object-contain drop-shadow-md"
             />
           </div>
