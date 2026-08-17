@@ -8,6 +8,7 @@ import InvoiceModal from "@/components/admin/orders/InvoiceModal";
 import OrderActions from "@/components/admin/orders/OrderActions";
 import OrderItems from "@/components/admin/orders/OrderItems";
 import OrderShipping from "@/components/admin/orders/OrderShipping";
+import OrderProgressBar from "@/components/orders/OrderProgressBar";
 import OrderStatusBadge from "@/components/orders/OrderStatusBadge";
 import StatusTimeline from "@/components/orders/StatusTimeline";
 import PageHeader from "@/components/ui/PageHeader";
@@ -74,6 +75,7 @@ export default function AdminOrderDetailPage({
           <h2 className="font-semibold text-gray-700 mb-4">
             {locale === "bn" ? "ট্র্যাকিং" : "Tracking"}
           </h2>
+          <OrderProgressBar status={order.status} locale={locale} />
           <StatusTimeline
             logs={logs}
             locale={locale}
