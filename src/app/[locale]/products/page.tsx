@@ -72,11 +72,27 @@ async function getInitialProducts(searchParams: Props["searchParams"]): Promise<
 }> {
   const search = typeof searchParams.search === "string" ? searchParams.search : "";
   const category = typeof searchParams.category === "string" ? searchParams.category : "";
+  const brand = typeof searchParams.brand === "string" ? searchParams.brand : "";
+  const minPrice = typeof searchParams.min_price === "string" ? searchParams.min_price : "";
+  const maxPrice = typeof searchParams.max_price === "string" ? searchParams.max_price : "";
+  const ordering = typeof searchParams.ordering === "string" ? searchParams.ordering : "";
+  const badges = typeof searchParams.badges === "string" ? searchParams.badges : "";
   const offers = searchParams.offers === "true";
 
+  // Every filter the client can apply must be reflected here too — otherwise
+  // the server seeds page 1 of the UNFILTERED list while the client goes on
+  // to fetch the actually-filtered page 1, and the mismatch (wrong seeded
+  // total_pages driving "hasMore" before the real data arrives) causes the
+  // infinite-scroll sentinel to advance past page 1 before it's even loaded,
+  // permanently orphaning the real results.
   const p = new URLSearchParams({ page: "1", is_package: "false" });
   if (search) p.set("search", search);
   if (category) p.set("category", category);
+  if (brand) p.set("brand", brand);
+  if (minPrice) p.set("min_price", minPrice);
+  if (maxPrice) p.set("max_price", maxPrice);
+  if (ordering) p.set("ordering", ordering);
+  if (badges) p.set("badges", badges);
   if (offers) p.set("has_discount", "true");
 
   try {
