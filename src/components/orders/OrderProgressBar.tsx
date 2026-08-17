@@ -32,14 +32,23 @@ export default function OrderProgressBar({ status, locale }: { status: OrderStat
   // never starts against an image that's still popping in mid-move.
   const [imageReady, setImageReady] = useState(false);
   const [visibleIndex, setVisibleIndex] = useState(0);
+  // Tracks whether the car has actually finished sliding into its final spot
+  // — visibleIndex flips the instant a step's timer fires, which is when the
+  // CSS `left` transition *starts*, not when it visually finishes. Without
+  // this, the success badge would pop in while the car is still mid-slide
+  // from "In Transit" into the Delivered position.
+  const [settled, setSettled] = useState(false);
   useEffect(() => {
     setVisibleIndex(0);
+    setSettled(false);
     if (!imageReady || activeIndex <= 0) return;
     const timers: ReturnType<typeof setTimeout>[] = [];
     for (let step = 1; step <= activeIndex; step++) {
       const delay = 250 + (step - 1) * (MOVE_MS + PAUSE_MS);
       timers.push(setTimeout(() => setVisibleIndex(step), delay));
     }
+    const lastDelay = 250 + (activeIndex - 1) * (MOVE_MS + PAUSE_MS);
+    timers.push(setTimeout(() => setSettled(true), lastDelay + MOVE_MS));
     return () => timers.forEach(clearTimeout);
   }, [activeIndex, imageReady]);
 
@@ -48,10 +57,9 @@ export default function OrderProgressBar({ status, locale }: { status: OrderStat
   if (status === "CANCELLED" || status === "RETURNED") return null;
 
   const pct = (visibleIndex / (STAGES.length - 1)) * 100;
-  // Only once the stepping animation has actually arrived at the end — not
-  // the instant the order is marked delivered, so it doesn't jump ahead of
-  // its own travel animation.
-  const arrived = status === "DELIVERED" && visibleIndex === STAGES.length - 1;
+  // Only once the car has visually settled at the end — not the instant the
+  // order is marked delivered, and not while it's still sliding there.
+  const arrived = status === "DELIVERED" && visibleIndex === STAGES.length - 1 && settled;
 
   return (
     <div className="pt-10 pb-1">
@@ -71,7 +79,11 @@ export default function OrderProgressBar({ status, locale }: { status: OrderStat
             transitionDuration: `${MOVE_MS}ms`,
           }}
         >
-          <div className="relative">
+          {/* Wrapper is a bit larger than the car image itself, so the
+              success badge can sit just outside the car's own footprint —
+              overlapping it (as when the badge sat flush on the image's
+              corner) visually ate into the car and made it look smaller. */}
+          <div className="relative w-16 h-16 flex items-center justify-center">
             <div className={arrived ? "" : "animate-vehicle-jitter"}>
               <Image
                 src="/assets/logo/delivery-car.png"
@@ -84,7 +96,7 @@ export default function OrderProgressBar({ status, locale }: { status: OrderStat
               />
             </div>
             {arrived && (
-              <CheckCircle2 className="absolute -bottom-1 -right-1 w-5 h-5 text-white bg-green-600 rounded-full ring-2 ring-white" />
+              <CheckCircle2 className="absolute top-0 right-0 w-5 h-5 text-white bg-green-600 rounded-full ring-2 ring-white" />
             )}
           </div>
         </div>
