@@ -1,5 +1,8 @@
+"use client";
+
 import { OrderStatus } from "@/lib/types";
-import { Truck } from "lucide-react";
+import Image from "next/image";
+import { useEffect, useState } from "react";
 
 const STAGES: { statuses: OrderStatus[]; label_bn: string; label_en: string }[] = [
   { statuses: ["PENDING", "CONFIRMED"], label_bn: "গৃহীত", label_en: "Accepted" },
@@ -12,31 +15,46 @@ const STAGES: { statuses: OrderStatus[]; label_bn: string; label_en: string }[] 
 export default function OrderProgressBar({ status, locale }: { status: OrderStatus; locale: string }) {
   const isBn = locale === "bn";
 
+  const found = STAGES.findIndex(s => s.statuses.includes(status));
+  const activeIndex = found === -1 ? 0 : found;
+  const targetPct = (activeIndex / (STAGES.length - 1)) * 100;
+
+  // Starts at 0 and animates up to the real position on first paint — reads
+  // as the delivery "traveling" from the start of the journey to wherever
+  // it actually is now, rather than just appearing already there.
+  const [pct, setPct] = useState(0);
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setPct(targetPct));
+    return () => cancelAnimationFrame(id);
+  }, [targetPct]);
+
   // Cancelled/returned don't fit a linear progress model — the existing
   // status badge already communicates those, so just skip the bar.
   if (status === "CANCELLED" || status === "RETURNED") return null;
 
-  const found = STAGES.findIndex(s => s.statuses.includes(status));
-  const activeIndex = found === -1 ? 0 : found;
-  const pct = (activeIndex / (STAGES.length - 1)) * 100;
-
   return (
-    <div className="pt-8 pb-1">
+    <div className="pt-9 pb-1">
       <div className="relative px-4">
-        {/* Truck marker, floating above the bar at the current stage */}
+        {/* Delivery vehicle marker, floating above the bar at the current stage */}
         <div
-          className="absolute -top-3 -translate-x-1/2 transition-all duration-500 ease-out"
+          className="absolute -top-8 transition-[left] duration-1000 ease-out"
           style={{ left: `${pct}%` }}
         >
-          <div className="w-8 h-8 rounded-full bg-amber-600 text-white flex items-center justify-center shadow-md ring-4 ring-white">
-            <Truck className="w-4 h-4" />
+          <div className="animate-vehicle-jitter">
+            <Image
+              src="/assets/logo/delivery-car.png"
+              alt=""
+              width={44}
+              height={44}
+              className="object-contain drop-shadow-md"
+            />
           </div>
         </div>
 
         {/* Track */}
         <div className="h-1.5 rounded-full bg-gray-100 overflow-hidden">
           <div
-            className="h-full rounded-full bg-gradient-to-r from-amber-400 to-amber-600 transition-all duration-500 ease-out"
+            className="h-full rounded-full bg-gradient-to-r from-amber-400 to-amber-600 transition-all duration-1000 ease-out"
             style={{ width: `${pct}%` }}
           />
         </div>
