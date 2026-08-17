@@ -10,7 +10,7 @@ import { FilterPanelSkeleton, ProductCardSkeleton } from "@/components/ui/skelet
 import { Brand, Category, Product } from "@/lib/types";
 import { ChevronDown, PackageSearch, SlidersHorizontal, X } from "lucide-react";
 import { useLocale } from "next-intl";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { ReactNode, useEffect, useRef, useState } from "react";
 
 const PRICE_MAX = 5000;
@@ -174,7 +174,6 @@ export default function ProductsPageClient({
   offerBanners,
 }: Props) {
   const locale = useLocale();
-  const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const urlSearch = searchParams.get("search") ?? "";
@@ -210,11 +209,11 @@ export default function ProductsPageClient({
   const allProductsLenRef = useRef(0);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
-  // Tracks the querystring WE last wrote via router.replace (below) — lets
-  // the inbound sync skip reacting to our own writes (which would otherwise
-  // immediately bounce back into a redundant, flicker-causing state reset),
-  // while still reacting to genuine external URL changes (browser back/
-  // forward, an incoming link with different filters already in it).
+  // Tracks the querystring WE last wrote (below) — lets the inbound sync
+  // skip reacting to our own writes (which would otherwise immediately
+  // bounce back into a redundant, flicker-causing state reset), while still
+  // reacting to genuine external URL changes (browser back/forward, an
+  // incoming link with different filters already in it).
   const lastSelfWrittenQs = useRef<string | null>(null);
 
   // Skip the first run — the server already fetched page 1 matching these
@@ -242,6 +241,15 @@ export default function ProductsPageClient({
   // Outbound: reflect the current filter state into the URL so it's
   // bookmarkable/shareable/refresh-safe — skips its own first run since the
   // state was already seeded from the URL at that point (nothing changed).
+  //
+  // Deliberately NOT router.replace(): this page reads searchParams
+  // server-side (dynamic = "force-dynamic"), so a router-driven URL change
+  // makes Next re-run the Server Component and re-render the page tree on
+  // every single filter click — fighting with the client-side RTK Query
+  // fetch/pagination state that's already handling the filter change on its
+  // own, and breaking the very pagination this was meant to go alongside.
+  // A raw History API write updates the address bar (shareable, and
+  // restorable on a real page reload) without triggering any of that.
   const isFirstOutboundSync = useRef(true);
   useEffect(() => {
     const params = new URLSearchParams();
@@ -260,9 +268,8 @@ export default function ProductsPageClient({
       lastSelfWrittenQs.current = qs;
       return;
     }
-    if (qs === searchParams.toString()) return;
     lastSelfWrittenQs.current = qs;
-    router.replace(`${pathname}${qs ? `?${qs}` : ""}`, { scroll: false });
+    window.history.replaceState(null, "", `${pathname}${qs ? `?${qs}` : ""}`);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search, categories, selectedBrands, selectedBadges, priceMin, priceMax, sortOrder, onlyOffers]);
 
