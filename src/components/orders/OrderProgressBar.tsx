@@ -60,7 +60,16 @@ export default function OrderProgressBar({ status, locale }: { status: OrderStat
             Stays put once delivered — gets a success badge, not a fade-out. */}
         <div
           className="absolute -top-10 -translate-x-1/2 ease-in-out"
-          style={{ left: `${pct}%`, transitionProperty: "left", transitionDuration: `${MOVE_MS}ms` }}
+          style={{
+            // Clamped in px, not left as a bare percentage — at pct=100 a bare
+            // `left: 100%` + translateX(-50%) pushes half the 56px-wide marker
+            // past the container's right edge, so any ancestor with
+            // overflow-x clipping (common for preventing horizontal scroll)
+            // cuts the vehicle off right at the Delivered stage.
+            left: `clamp(28px, ${pct}%, calc(100% - 28px))`,
+            transitionProperty: "left",
+            transitionDuration: `${MOVE_MS}ms`,
+          }}
         >
           <div className="relative">
             <div className={arrived ? "" : "animate-vehicle-jitter"}>
