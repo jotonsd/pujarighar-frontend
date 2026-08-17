@@ -27,13 +27,16 @@ export default function OfferBannersClient({ banners }: { banners: Banner[] }) {
 
     if (banner.image) {
       return (
-        <div className="w-full h-28 rounded-2xl overflow-hidden shadow-sm relative">
+        <div
+          className="w-full h-28 rounded-2xl overflow-hidden shadow-sm relative"
+          style={{ backgroundColor: banner.bg_color ?? "#fef2f2" }}
+        >
           <Image
             src={banner.image}
             alt={title}
             fill
             sizes="100vw"
-            className="object-cover"
+            className="object-contain"
           />
         </div>
       );
