@@ -58,6 +58,26 @@
   transform-origin: 22% 68%;
 }
 
+/* Small gray streaks flowing straight backward at tire level off the
+   delivery car while it's moving — fade in, stream left, widen, fade out. */
+@keyframes air-trail {
+  0% {
+    opacity: 0;
+    transform: translateX(0) scaleX(0.6);
+  }
+  40% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-16px) scaleX(1.4);
+  }
+}
+
+.animate-air-trail {
+  animation: air-trail 0.9s ease-out infinite;
+}
+
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }

@@ -84,6 +84,16 @@ export default function OrderProgressBar({ status, locale }: { status: OrderStat
               overlapping it (as when the badge sat flush on the image's
               corner) visually ate into the car and made it look smaller. */}
           <div className="relative w-16 h-16 flex items-center justify-center">
+            {/* Gray air streaks flowing horizontally backward off the middle
+                of the back — only while actually moving, not once settled
+                at Delivered. */}
+            {!arrived && (
+              <div className="absolute top-1/2 translate-y-1 left-1 flex items-center gap-1 pointer-events-none">
+                <span className="block w-2.5 h-1 rounded-full bg-gray-400/80 blur-[1.5px] animate-air-trail" style={{ animationDelay: "0ms" }} />
+                <span className="block w-2 h-1 rounded-full bg-gray-400/70 blur-[1.5px] animate-air-trail" style={{ animationDelay: "250ms" }} />
+                <span className="block w-1.5 h-0.5 rounded-full bg-gray-400/60 blur-[1.5px] animate-air-trail" style={{ animationDelay: "500ms" }} />
+              </div>
+            )}
             <div className={arrived ? "" : "animate-vehicle-jitter"}>
               <Image
                 src="/assets/logo/delivery-car.png"
