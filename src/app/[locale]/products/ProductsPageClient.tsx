@@ -344,6 +344,19 @@ export default function ProductsPageClient({
   // height as part of "the bottom," so on mobile — where the footer stacks
   // much taller — the page had to scroll well past the grid, into the
   // footer, before the next page loaded).
+  //
+  // Runs once (empty deps) — the sentinel div is now rendered unconditionally
+  // (see below, outside the skeleton/content ternary) so it's a permanently
+  // stable DOM node for the observer's whole lifetime. It used to live only
+  // inside the "real content" branch and re-attach on every `isLoading`
+  // flip; but a filter change always passes through a render frame where the
+  // grid is empty AND still loading (the skeleton branch), which unmounted
+  // this element — and the observer never got a reliable second chance to
+  // reattach, permanently killing infinite scroll for the rest of the
+  // session after the very first filter click. That was the actual
+  // "pagination breaks after any filter" bug, confirmed by reproducing it
+  // locally: filtering correctly swapped in page 1, but scrolling afterward
+  // fired zero further requests.
   useEffect(() => {
     const el = sentinelRef.current;
     if (!el) return;
@@ -352,12 +365,9 @@ export default function ProductsPageClient({
         // allProductsLenRef guard: right when a filter changes, there's a
         // render frame where the grid has just been cleared but `hasMore`
         // still reflects the PREVIOUS (stale) filter's total_pages — without
-        // this, the now-empty sentinel sits in view and fires immediately,
+        // this, the sentinel could fire immediately off that stale flag,
         // advancing to page 2 before the new filter's page 1 has even
-        // loaded. That page-1 response then gets orphaned (a new RTK Query
-        // subscription for page 2 never sees it), and further scrolling
-        // never requests anything else — the exact "pagination stops
-        // working after filtering" symptom.
+        // loaded.
         if (entry.isIntersecting && !isFetchingRef.current && hasMoreRef.current && allProductsLenRef.current > 0) {
           setPage(prev => prev + 1);
         }
@@ -366,11 +376,7 @@ export default function ProductsPageClient({
     );
     observer.observe(el);
     return () => observer.disconnect();
-  // isLoading dep: if the skeleton branch (no sentinel in the DOM yet) is
-  // showing on first mount — e.g. a filtered URL with no seeded results —
-  // this effect's first run finds sentinelRef.current still null and never
-  // gets a second chance to attach once the real grid mounts.
-  }, [isLoading]);
+  }, []);
 
   const FilterPanel = () => (
     <div className="space-y-6">
@@ -636,8 +642,6 @@ export default function ProductsPageClient({
                 }
               </div>
 
-              <div ref={sentinelRef} className="h-1" />
-
               {!allProducts.length && !isFetching && (
                 <div className="text-center py-16 text-gray-400">
                   <PackageSearch className="w-10 h-10 mx-auto mb-4 text-gray-300" />
@@ -655,6 +659,9 @@ export default function ProductsPageClient({
 
             </>
           )}
+          {/* Always mounted — see the effect above for why this can never be
+              conditionally rendered. */}
+          <div ref={sentinelRef} className="h-1" />
         </div>
       </div>
     </div>
