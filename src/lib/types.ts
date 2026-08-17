@@ -167,6 +167,7 @@ export interface PackageItem {
   component_name_bn: string
   component_name_en: string
   component_sku: string
+  component_image: string | null
   quantity: string
   unit_price: string
 }
@@ -423,6 +424,7 @@ export interface OrderTracking {
   grand_total: string
   created_at: string
   delivery_info: DeliveryInfo | null
+  courier_tracking_url: string | null
   timeline: StatusLogEntry[]
 }
 
@@ -454,6 +456,7 @@ export interface StatusLogEntry {
   from_status: string
   to_status: string
   to_status_label: string
+  to_status_label_en: string
   changed_by: string
   changed_by_email: string
   changed_at: string
@@ -517,9 +520,12 @@ export interface CourierProvider {
   name: string
   base_url: string
   is_active: boolean
+  store_id?: string
   has_api_key: boolean
   has_secret_key: boolean
   has_webhook_secret: boolean
+  has_username: boolean
+  has_password: boolean
   webhook_secret?: string // present only right after creation
 }
 
@@ -543,7 +549,9 @@ export interface CourierConsignment {
   status: string
   cod_amount: string
   delivery_charge: string
+  weight: string | null
   tracking_message: string
+  tracking_url: string | null
   created_at: string
   updated_at: string
   events: CourierTrackingEvent[]

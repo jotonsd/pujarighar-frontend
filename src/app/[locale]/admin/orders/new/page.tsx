@@ -4,7 +4,7 @@ import { useLookupUserByPhoneQuery } from "@/api/auth/authApi";
 import { useGetBrandsQuery } from "@/api/brands/brandsApi";
 import { useGetCategoriesQuery } from "@/api/categories/categoriesApi";
 import { useGetDeliveryChargesQuery } from "@/api/deliveryCharges/deliveryChargesApi";
-import { usePosCreateOrderMutation } from "@/api/orders/ordersApi";
+import { useLookupRecentOrderByPhoneQuery, usePosCreateOrderMutation } from "@/api/orders/ordersApi";
 import { useGetProductsQuery } from "@/api/products/productsApi";
 import { useAdminGetUserAddressesQuery, useAdminCreateUserAddressMutation, useAdminUpdateUserAddressMutation } from "@/api/users/usersApi";
 import {
@@ -270,6 +270,14 @@ export default function POSPage() {
   const [savingAddr, setSavingAddr]           = useState(false);
 
   const { data: foundUser } = useLookupUserByPhoneQuery(phoneQuery, { skip: phoneQuery.length < 11 });
+  // Fallback for repeat GUEST customers — lookupUserByPhone only finds people
+  // with an actual registered account; most walk-in/phone POS orders are
+  // guest checkouts with no User row, so this searches past orders' shipping
+  // snapshot directly instead. Only runs once we know there's no registered user.
+  const { data: recentGuestShipping } = useLookupRecentOrderByPhoneQuery(phoneQuery, {
+    skip: phoneQuery.length < 11 || !!foundUser,
+  });
+  const [guestAutofillApplied, setGuestAutofillApplied] = useState(false);
   const { data: userAddresses = [] } = useAdminGetUserAddressesQuery(selectedUserId ?? "", { skip: !selectedUserId });
   const [createUserAddress] = useAdminCreateUserAddressMutation();
   const [updateUserAddress] = useAdminUpdateUserAddressMutation();
@@ -708,6 +716,7 @@ export default function POSPage() {
                 const v = e.target.value;
                 setCustomer(c => ({ ...c, phone: v }));
                 setPhoneQuery(v.length >= 11 ? v : "");
+                setGuestAutofillApplied(false);
                 if (v.length < 11) { setSelectedUserId(null); setSelectedAddressId(null); }
               }}
               placeholder="01XXXXXXXXX"
@@ -743,6 +752,35 @@ export default function POSPage() {
                     {locale === "bn" ? "✓ নির্বাচিত" : "✓ Selected"}
                   </span>
                 )}
+              </div>
+            )}
+            {!foundUser && recentGuestShipping && customer.phone.length >= 11 && !guestAutofillApplied && (
+              <div className="mt-1.5 flex items-center justify-between bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold text-amber-800 truncate">
+                    {locale === "bn" ? "এই নম্বরে আগের অর্ডার পাওয়া গেছে" : "Found a previous order for this number"}
+                  </p>
+                  <p className="text-[10px] text-amber-600 truncate">
+                    {recentGuestShipping.name_bn || recentGuestShipping.name_en}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCustomer(c => ({
+                      ...c,
+                      name_bn:    recentGuestShipping.name_bn || recentGuestShipping.name_en || c.name_bn,
+                      address_bn: recentGuestShipping.address_bn || recentGuestShipping.address_en || c.address_bn,
+                      district:   recentGuestShipping.district || c.district,
+                      thana:      recentGuestShipping.thana || c.thana,
+                      post_code:  recentGuestShipping.post_code || c.post_code,
+                    }));
+                    setGuestAutofillApplied(true);
+                  }}
+                  className="text-[10px] bg-amber-600 text-white px-2 py-1 rounded-lg ml-2 shrink-0 hover:bg-amber-700"
+                >
+                  {locale === "bn" ? "অটোফিল" : "Autofill"}
+                </button>
               </div>
             )}
           </div>

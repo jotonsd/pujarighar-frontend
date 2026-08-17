@@ -10,18 +10,19 @@ import ImageUpload from "@/components/ui/ImageUpload";
 import PageHeader from "@/components/ui/PageHeader";
 import { FloatingInput, FloatingTextarea } from "@/components/ui/forms";
 import { toast } from "@/store/toastStore";
-import { Building2, FileText, Gift, Mail } from "lucide-react";
+import { Building2, FileText, Gift, Mail, Send } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useEffect, useState } from "react";
 
 // ── Menu config ────────────────────────────────────────────────────────────────
-type SectionId = "general" | "invoice" | "mail" | "referral";
+type SectionId = "general" | "invoice" | "mail" | "referral" | "telegram";
 
 const MENU: { id: SectionId; icon: React.ReactNode; label_bn: string; label_en: string }[] = [
   { id: "general",  icon: <Building2 className="w-4 h-4" />, label_bn: "সাধারণ তথ্য",   label_en: "General Info" },
   { id: "invoice",  icon: <FileText  className="w-4 h-4" />, label_bn: "চালান প্রিন্ট",  label_en: "Invoice Print" },
   { id: "mail",     icon: <Mail      className="w-4 h-4" />, label_bn: "মেইল কনফিগ",     label_en: "Mail Config" },
   { id: "referral", icon: <Gift      className="w-4 h-4" />, label_bn: "রেফারেল বোনাস",  label_en: "Referral Bonus" },
+  { id: "telegram", icon: <Send      className="w-4 h-4" />, label_bn: "টেলিগ্রাম",      label_en: "Telegram" },
 ];
 
 // ── Page-size options ──────────────────────────────────────────────────────────
@@ -294,6 +295,85 @@ function ReferralPanel({ settings, isBn }: { settings: SiteSettings; isBn: boole
   );
 }
 
+// ── Telegram panel ─────────────────────────────────────────────────────────────
+function TelegramPanel({ settings, isBn }: { settings: SiteSettings; isBn: boolean }) {
+  const [form, setForm] = useState({
+    telegram_bot_token: "",
+    telegram_chat_id:   settings.telegram_chat_id ?? "",
+  });
+
+  useEffect(() => {
+    setForm({
+      telegram_bot_token: "",
+      telegram_chat_id:   settings.telegram_chat_id ?? "",
+    });
+  }, [settings]);
+
+  const [update, { isLoading }] = useUpdateSiteSettingsMutation();
+
+  const f = (key: keyof typeof form) =>
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      setForm(p => ({ ...p, [key]: e.target.value }));
+
+  const handleSave = async () => {
+    try {
+      await update({
+        ...(form.telegram_bot_token ? { telegram_bot_token: form.telegram_bot_token } : {}),
+        telegram_chat_id: form.telegram_chat_id,
+      }).unwrap();
+      toast.success(isBn ? "সংরক্ষিত হয়েছে" : "Saved");
+    } catch {
+      toast.error(isBn ? "ব্যর্থ হয়েছে" : "Failed to save");
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="bg-amber-50 border border-amber-100 rounded-xl p-3 text-xs text-gray-600 space-y-1.5 leading-relaxed">
+        <p className="font-semibold text-amber-700">
+          {isBn ? "সেটআপ করবেন যেভাবে" : "How to set this up"}
+        </p>
+        <p>
+          {isBn
+            ? "১. টেলিগ্রামে @BotFather কে মেসেজ দিন, /newbot লিখুন এবং নির্দেশনা অনুসরণ করুন — এতে একটি বট টোকেন পাবেন।"
+            : "1. Message @BotFather on Telegram, send /newbot, and follow the prompts — you'll get a bot token."}
+        </p>
+        <p>
+          {isBn
+            ? "২. আপনার অ্যাডমিন গ্রুপে বটটিকে যোগ করুন।"
+            : "2. Add that bot to your admin Telegram group."}
+        </p>
+        <p>
+          {isBn
+            ? "৩. গ্রুপে একটি মেসেজ পাঠান, তারপর ব্রাউজারে খুলুন: api.telegram.org/bot<টোকেন>/getUpdates — সেখানে \"chat\":{\"id\": ...} খুঁজে সেই সংখ্যাটি (গ্রুপের জন্য মাইনাস চিহ্নসহ) নিচে বসান।"
+            : "3. Send any message in the group, then open api.telegram.org/bot<TOKEN>/getUpdates in a browser — find \"chat\":{\"id\": ...} and enter that number (negative, for groups) below."}
+        </p>
+      </div>
+      <FloatingInput
+        label={isBn ? "বট টোকেন" : "Bot Token"}
+        type="password"
+        value={form.telegram_bot_token}
+        onChange={f("telegram_bot_token")}
+        placeholder={settings.has_telegram_bot_token ? (isBn ? "সংরক্ষিত আছে — পরিবর্তন করতে নতুনটি লিখুন" : "Already saved — enter a new one to change") : "123456789:AAExample-BotToken"}
+      />
+      <FloatingInput
+        label={isBn ? "গ্রুপ চ্যাট আইডি" : "Group Chat ID"}
+        value={form.telegram_chat_id}
+        onChange={f("telegram_chat_id")}
+        placeholder="-1001234567890"
+      />
+      <p className="text-xs text-gray-400">
+        {isBn
+          ? "কনফিগার করা থাকলে, নতুন অর্ডার, বাতিল ও ডেলিভারি হওয়া অর্ডারের নোটিফিকেশন ইমেইলের পাশাপাশি এই গ্রুপেও পাঠানো হবে।"
+          : "Once configured, new-order, cancelled, and delivered notifications will be sent to this group alongside the existing admin emails."}
+      </p>
+      <button onClick={handleSave} disabled={isLoading || !form.telegram_chat_id} className="btn-primary">
+        {isLoading ? (isBn ? "সংরক্ষণ হচ্ছে..." : "Saving...") : (isBn ? "সংরক্ষণ করুন" : "Save Changes")}
+      </button>
+    </div>
+  );
+}
+
 // ── Main page ──────────────────────────────────────────────────────────────────
 export default function SettingsPage() {
   const locale = useLocale();
@@ -348,6 +428,7 @@ export default function SettingsPage() {
               {active === "invoice"  && <InvoicePanel  settings={settings} isBn={isBn} />}
               {active === "mail"     && <MailPanel     settings={settings} isBn={isBn} />}
               {active === "referral" && <ReferralPanel settings={settings} isBn={isBn} />}
+              {active === "telegram" && <TelegramPanel settings={settings} isBn={isBn} />}
             </>
           ) : null}
         </div>

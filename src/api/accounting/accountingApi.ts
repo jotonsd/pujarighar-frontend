@@ -1,7 +1,7 @@
 import { baseApi } from '@/api/baseApi'
 import { Account, JournalEntry, ApiMeta } from '@/lib/types'
 
-interface JournalListResponse { data: JournalEntry[]; meta: ApiMeta }
+interface JournalListResponse { data: JournalEntry[]; pagination: ApiMeta & { total_debit?: string; total_credit?: string } }
 
 export interface ManualJournalLine {
   account_code: string
@@ -61,8 +61,13 @@ export const accountingApi = baseApi.injectEndpoints({
       invalidatesTags: ['Accounts'],
     }),
 
-    getJournalEntries: build.query<JournalListResponse, { page?: number }>({
-      query: ({ page = 1 } = {}) => `/api/accounting/journal-entries/?page=${page}`,
+    getJournalEntries: build.query<JournalListResponse, { page?: number; from?: string; to?: string }>({
+      query: ({ page = 1, from = '', to = '' } = {}) => {
+        const p = new URLSearchParams({ page: String(page) })
+        if (from) p.set('from', from)
+        if (to)   p.set('to', to)
+        return `/api/accounting/journal-entries/?${p}`
+      },
       providesTags: ['JournalEntries'],
     }),
 

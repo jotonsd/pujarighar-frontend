@@ -248,6 +248,11 @@ const FloatingSelect = forwardRef<HTMLDivElement, FloatingSelectProps>(
                   className="flex-1 outline-none bg-transparent text-sm"
                   onClick={e => e.stopPropagation()}
                   onKeyDown={e => { if (e.key === 'Tab' || e.key === 'Escape') closeDropdown() }}
+                  autoComplete="off"
+                  autoCorrect="off"
+                  spellCheck={false}
+                  data-lpignore="true"
+                  data-1p-ignore
                 />
               </div>
             ) : (

@@ -10,7 +10,7 @@ import { FilterPanelSkeleton, ProductCardSkeleton } from "@/components/ui/skelet
 import { Brand, Category, Product } from "@/lib/types";
 import { ChevronDown, PackageSearch, SlidersHorizontal, X } from "lucide-react";
 import { useLocale } from "next-intl";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ReactNode, useEffect, useRef, useState } from "react";
 
 const PRICE_MAX = 5000;
@@ -174,20 +174,25 @@ export default function ProductsPageClient({
   offerBanners,
 }: Props) {
   const locale = useLocale();
+  const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const urlSearch = searchParams.get("search") ?? "";
   const urlCategory = searchParams.get("category") ?? "";
+  const urlBrand = searchParams.get("brand") ?? "";
   const urlOffers = searchParams.get("offers") === "true";
   const urlOrdering = searchParams.get("ordering") ?? "";
   const urlBadges = searchParams.get("badges") ?? "";
+  const urlMinPrice = Number(searchParams.get("min_price") ?? 0) || 0;
+  const urlMaxPrice = Number(searchParams.get("max_price") ?? PRICE_MAX) || PRICE_MAX;
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState(urlSearch);
-  const [categories, setCategories] = useState<string[]>(urlCategory ? [urlCategory] : []);
-  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+  const [categories, setCategories] = useState<string[]>(urlCategory ? urlCategory.split(",") : []);
+  const [selectedBrands, setSelectedBrands] = useState<string[]>(urlBrand ? urlBrand.split(",") : []);
   const [selectedBadges, setSelectedBadges] = useState<string[]>(urlBadges ? urlBadges.split(",") : []);
-  const [priceMin, setPriceMin] = useState(0);
-  const [priceMax, setPriceMax] = useState(PRICE_MAX);
+  const [priceMin, setPriceMin] = useState(urlMinPrice);
+  const [priceMax, setPriceMax] = useState(urlMaxPrice);
   const [sortOrder, setSortOrder] = useState<"" | "newest" | "price_asc" | "price_desc" | "discount_asc" | "discount_desc">(
     urlOrdering as "" | "newest" | "price_asc" | "price_desc" | "discount_asc" | "discount_desc",
   );
@@ -202,7 +207,15 @@ export default function ProductsPageClient({
   // Refs so the observer callback always reads latest values without re-registering
   const isFetchingRef = useRef(false);
   const hasMoreRef = useRef(false);
+  const allProductsLenRef = useRef(0);
   const sentinelRef = useRef<HTMLDivElement>(null);
+
+  // Tracks the querystring WE last wrote via router.replace (below) — lets
+  // the inbound sync skip reacting to our own writes (which would otherwise
+  // immediately bounce back into a redundant, flicker-causing state reset),
+  // while still reacting to genuine external URL changes (browser back/
+  // forward, an incoming link with different filters already in it).
+  const lastSelfWrittenQs = useRef<string | null>(null);
 
   // Skip the first run — the server already fetched page 1 matching these
   // exact URL params, so resetting here would wipe the seeded products.
@@ -212,15 +225,46 @@ export default function ProductsPageClient({
       isFirstUrlSync.current = false;
       return;
     }
+    if (searchParams.toString() === lastSelfWrittenQs.current) return;
     setSearch(urlSearch);
-    setCategories(urlCategory ? [urlCategory] : []);
+    setCategories(urlCategory ? urlCategory.split(",") : []);
+    setSelectedBrands(urlBrand ? urlBrand.split(",") : []);
     setOnlyOffers(urlOffers);
     setSortOrder(urlOrdering as "" | "newest" | "price_asc" | "price_desc" | "discount_asc" | "discount_desc");
     setSelectedBadges(urlBadges ? urlBadges.split(",") : []);
+    setPriceMin(urlMinPrice);
+    setPriceMax(urlMaxPrice);
     setPage(1);
     setAllProducts([]);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [urlSearch, urlCategory, searchParams.get("offers"), urlOrdering, urlBadges]);
+  }, [urlSearch, urlCategory, urlBrand, searchParams.get("offers"), urlOrdering, urlBadges, urlMinPrice, urlMaxPrice]);
+
+  // Outbound: reflect the current filter state into the URL so it's
+  // bookmarkable/shareable/refresh-safe — skips its own first run since the
+  // state was already seeded from the URL at that point (nothing changed).
+  const isFirstOutboundSync = useRef(true);
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (search) params.set("search", search);
+    if (categories.length) params.set("category", categories.join(","));
+    if (selectedBrands.length) params.set("brand", selectedBrands.join(","));
+    if (selectedBadges.length) params.set("badges", selectedBadges.join(","));
+    if (priceMin > 0) params.set("min_price", String(priceMin));
+    if (priceMax < PRICE_MAX) params.set("max_price", String(priceMax));
+    if (sortOrder) params.set("ordering", sortOrder);
+    if (onlyOffers) params.set("offers", "true");
+    const qs = params.toString();
+
+    if (isFirstOutboundSync.current) {
+      isFirstOutboundSync.current = false;
+      lastSelfWrittenQs.current = qs;
+      return;
+    }
+    if (qs === searchParams.toString()) return;
+    lastSelfWrittenQs.current = qs;
+    router.replace(`${pathname}${qs ? `?${qs}` : ""}`, { scroll: false });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search, categories, selectedBrands, selectedBadges, priceMin, priceMax, sortOrder, onlyOffers]);
 
   const isPriceFiltered = priceMin > 0 || priceMax < PRICE_MAX;
   const hasFilter = !!(search || categories.length || selectedBrands.length || isPriceFiltered || sortOrder || onlyOffers || selectedBadges.length);
@@ -276,6 +320,7 @@ export default function ProductsPageClient({
   // Keep refs in sync every render
   isFetchingRef.current = isFetching;
   hasMoreRef.current = hasMore;
+  allProductsLenRef.current = allProducts.length;
 
   // Accumulate products — reset on page 1, append on subsequent pages
   useEffect(() => {
@@ -297,7 +342,16 @@ export default function ProductsPageClient({
     if (!el) return;
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && !isFetchingRef.current && hasMoreRef.current) {
+        // allProductsLenRef guard: right when a filter changes, there's a
+        // render frame where the grid has just been cleared but `hasMore`
+        // still reflects the PREVIOUS (stale) filter's total_pages — without
+        // this, the now-empty sentinel sits in view and fires immediately,
+        // advancing to page 2 before the new filter's page 1 has even
+        // loaded. That page-1 response then gets orphaned (a new RTK Query
+        // subscription for page 2 never sees it), and further scrolling
+        // never requests anything else — the exact "pagination stops
+        // working after filtering" symptom.
+        if (entry.isIntersecting && !isFetchingRef.current && hasMoreRef.current && allProductsLenRef.current > 0) {
           setPage(prev => prev + 1);
         }
       },

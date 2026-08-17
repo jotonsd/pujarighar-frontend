@@ -3,11 +3,14 @@
 import { useState } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
 import Badge from '@/components/ui/Badge'
-import { FloatingInput } from '@/components/ui/forms'
+import Pagination from '@/components/ui/Pagination'
+import { FloatingInput, FloatingSelect } from '@/components/ui/forms'
 import TableSkeleton from '@/components/ui/skeletons'
 import { Product } from '@/lib/types'
 import { formatNumber } from '@/utils/format'
 import { useGetProductsQuery } from '@/api/products/productsApi'
+import { useGetCategoriesQuery } from '@/api/categories/categoriesApi'
+import { useGetBrandsQuery } from '@/api/brands/brandsApi'
 
 interface Props {
   selected: Product | null
@@ -18,15 +21,49 @@ export default function ProductSelector({ selected, onSelect }: Props) {
   const t      = useTranslations()
   const locale = useLocale()
   const [search, setSearch] = useState('')
-  const { data: products, isLoading } = useGetProductsQuery({ page_size: 100 })
+  const [category, setCategory] = useState('')
+  const [brand, setBrand] = useState('')
+  const [page, setPage] = useState(1)
+
+  const { data: products, isLoading } = useGetProductsQuery({ page, page_size: 20, search, category: category || undefined, brand: brand || undefined })
+  const { data: categories = [] } = useGetCategoriesQuery()
+  const { data: brands = [] } = useGetBrandsQuery()
+
+  const resetToFirstPage = () => setPage(1)
 
   return (
     <div className="card p-0 overflow-hidden flex flex-col max-h-[70vh]">
-      <div className="px-4 pt-4 pb-3 border-b border-gray-100 shrink-0">
+      <div className="px-4 pt-4 pb-3 border-b border-gray-100 shrink-0 space-y-2">
         <FloatingInput
           label={locale === 'bn' ? 'পণ্য খুঁজুন (নাম বা SKU)' : 'Search product (name or SKU)'}
-          value={search} onChange={e => setSearch(e.target.value)}
+          value={search} onChange={e => { setSearch(e.target.value); resetToFirstPage() }}
         />
+        <div className="grid grid-cols-2 gap-2">
+          <FloatingSelect
+            label={locale === 'bn' ? 'কেটাগরি' : 'Category'}
+            value={category}
+            onChange={val => { setCategory(val); resetToFirstPage() }}
+            showClearButton={!!category}
+            onClear={() => { setCategory(''); resetToFirstPage() }}
+          >
+            <option value="">{locale === 'bn' ? 'সব কেটাগরি' : 'All categories'}</option>
+            {categories.map(c => (
+              <option key={c.id} value={c.id}>{locale === 'bn' ? c.name_bn : c.name_en}</option>
+            ))}
+          </FloatingSelect>
+          <FloatingSelect
+            label={locale === 'bn' ? 'ব্র্যান্ড' : 'Brand'}
+            value={brand}
+            onChange={val => { setBrand(val); resetToFirstPage() }}
+            showClearButton={!!brand}
+            onClear={() => { setBrand(''); resetToFirstPage() }}
+          >
+            <option value="">{locale === 'bn' ? 'সব ব্র্যান্ড' : 'All brands'}</option>
+            {brands.map(b => (
+              <option key={b.id} value={b.id}>{locale === 'bn' ? b.name_bn : b.name_en}</option>
+            ))}
+          </FloatingSelect>
+        </div>
       </div>
       <div className="overflow-y-auto flex-1">
         {isLoading ? (
@@ -41,10 +78,7 @@ export default function ProductSelector({ selected, onSelect }: Props) {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {products?.data?.filter(p => {
-                const q = search.toLowerCase()
-                return !q || p.name_bn.toLowerCase().includes(q) || p.name_en.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q)
-              }).map(p => (
+              {products?.data?.map(p => (
                 <tr key={p.id} onClick={() => onSelect(p)}
                   className={`cursor-pointer transition-colors ${selected?.id === p.id ? 'bg-amber-50' : 'hover:bg-gray-50'}`}>
                   <td className="px-4 py-3 text-sm text-gray-800">
@@ -66,10 +100,22 @@ export default function ProductSelector({ selected, onSelect }: Props) {
                   </td>
                 </tr>
               ))}
+              {products?.data?.length === 0 && (
+                <tr>
+                  <td colSpan={3} className="px-4 py-8 text-center text-gray-400 text-sm">
+                    {locale === 'bn' ? 'কোনো পণ্য পাওয়া যায়নি' : 'No products found'}
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         )}
       </div>
+      {products && (products.pagination.total_pages ?? 1) > 1 && (
+        <div className="shrink-0 border-t border-gray-100 py-2 overflow-x-auto">
+          <Pagination page={page} totalPages={products.pagination.total_pages ?? 1} onPageChange={setPage} />
+        </div>
+      )}
     </div>
   )
 }

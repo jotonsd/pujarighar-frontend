@@ -3,6 +3,17 @@ import { SalesOrder, StatusLogEntry, ApiMeta, OrderTracking } from '@/lib/types'
 
 interface OrderListResponse { data: SalesOrder[]; pagination: ApiMeta }
 
+export interface RecentShipping {
+  name_bn: string
+  name_en: string
+  phone: string
+  address_bn: string
+  address_en: string
+  district: string
+  thana: string
+  post_code: string
+}
+
 export const ordersApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
 
@@ -51,11 +62,11 @@ export const ordersApi = baseApi.injectEndpoints({
       invalidatesTags: (_r, _e, id) => ['Orders', { type: 'Order', id }, { type: 'OrderLogs', id }],
     }),
 
-    assignDelivery: build.mutation<SalesOrder, { id: string; delivery_person_id: string | null }>({
-      query: ({ id, delivery_person_id }) => ({
+    assignDelivery: build.mutation<SalesOrder, { id: string; delivery_person_id: string | null; weight?: number }>({
+      query: ({ id, delivery_person_id, weight }) => ({
         url: `/api/orders/${id}/assign-delivery/`,
         method: 'POST',
-        body: { delivery_person_id: delivery_person_id || null },
+        body: { delivery_person_id: delivery_person_id || null, ...(weight && { weight }) },
       }),
       transformResponse: (res: { data: SalesOrder }) => res.data,
       invalidatesTags: (_r, _e, { id }) => ['Orders', { type: 'Order', id }, { type: 'OrderLogs', id }],
@@ -95,6 +106,11 @@ export const ordersApi = baseApi.injectEndpoints({
       query: ({ id, ...body }) => ({ url: `/api/orders/${id}/apply-discount/`, method: 'POST', body }),
       transformResponse: (res: { data: SalesOrder }) => res.data,
       invalidatesTags: (_r, _e, { id }) => ['Orders', { type: 'Order', id }, { type: 'OrderLogs', id }],
+    }),
+
+    lookupRecentOrderByPhone: build.query<RecentShipping, string>({
+      query: (phone) => `/api/orders/lookup-by-phone/?phone=${encodeURIComponent(phone)}`,
+      transformResponse: (res: { data: RecentShipping }) => res.data,
     }),
 
     waiveDeliveryCharge: build.mutation<SalesOrder, { id: string }>({
@@ -162,6 +178,7 @@ export const {
   useMarkCodPaidMutation,
   useApplyDiscountMutation,
   useWaiveDeliveryChargeMutation,
+  useLookupRecentOrderByPhoneQuery,
   useUpdateShippingMutation,
   useUpdateOrderItemQuantityMutation,
   useDeleteOrderItemMutation,

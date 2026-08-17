@@ -26,7 +26,7 @@ import CancelConfirmModal from './CancelConfirmModal'
 import ApplyDiscountModal from './ApplyDiscountModal'
 import PaymentConfirmModal from '@/components/ui/PaymentConfirmModal'
 import ConfirmModal from '@/components/ui/ConfirmModal'
-import { ChevronDown, CheckCircle2, Undo2, RefreshCw, Truck } from 'lucide-react'
+import { ChevronDown, CheckCircle2, Undo2, RefreshCw, Truck, ExternalLink } from 'lucide-react'
 
 interface Props {
   order: SalesOrder
@@ -112,6 +112,8 @@ export default function OrderActions({ order, orderId }: Props) {
   const [deliveryMethod, setDeliveryMethod] = useState<'internal' | 'courier'>('internal')
   const [courierProviderId, setCourierProviderId] = useState('')
   const [courierWeight, setCourierWeight] = useState('')
+  const [courierNote, setCourierNote] = useState('')
+  const [internalWeight, setInternalWeight] = useState('')
 
   const { data: deliveryPersons = [] } = useGetDeliveryPersonsQuery()
   const [confirmOrder, { isLoading: confirming }] = useConfirmOrderMutation()
@@ -195,10 +197,21 @@ export default function OrderActions({ order, orderId }: Props) {
           {order.courier_consignment.tracking_message && (
             <p className="text-xs text-gray-500">{order.courier_consignment.tracking_message}</p>
           )}
+          {order.courier_consignment.tracking_url && (
+            <a
+              href={order.courier_consignment.tracking_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-xs text-amber-700 hover:underline"
+            >
+              {locale === 'bn' ? 'কুরিয়ারে ট্র্যাক করুন' : 'Track on courier site'}
+              <ExternalLink className="w-3 h-3" />
+            </a>
+          )}
         </div>
       )}
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap items-start gap-2">
         {order.payment_method === 'COD' && order.payment_status === 'UNPAID' && !['CANCELLED', 'RETURNED'].includes(order.status) && (
           <>
             <button
@@ -278,7 +291,16 @@ export default function OrderActions({ order, orderId }: Props) {
                   value={courierWeight}
                   onChange={e => setCourierWeight(e.target.value)}
                   placeholder={locale === 'bn' ? 'ওজন (কেজি)' : 'Weight (kg)'}
+                  autoComplete="off"
                   className="w-32 px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-amber-500"
+                />
+                <input
+                  type="text"
+                  value={courierNote}
+                  onChange={e => setCourierNote(e.target.value)}
+                  placeholder={locale === 'bn' ? 'বিশেষ নির্দেশনা (ঐচ্ছিক)' : 'Special instruction (optional)'}
+                  autoComplete="off"
+                  className="flex-1 min-w-[180px] px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-amber-500"
                 />
                 <button disabled={loading} className="btn-primary text-sm whitespace-nowrap"
                   onClick={() => doAction(
@@ -286,6 +308,7 @@ export default function OrderActions({ order, orderId }: Props) {
                       orderId,
                       provider_id: courierProviderId ? Number(courierProviderId) : activeProviders[0].id,
                       weight: courierWeight ? Number(courierWeight) : undefined,
+                      note: courierNote || undefined,
                     }).unwrap(),
                     locale === 'bn' ? 'কুরিয়ারে পাঠানো হয়েছে' : 'Sent to courier',
                   )}>
@@ -293,16 +316,32 @@ export default function OrderActions({ order, orderId }: Props) {
                 </button>
               </div>
             ) : (
-              <div className="flex gap-2 items-center">
+              <div className="flex gap-2 items-center flex-wrap">
                 <DeliveryPersonDropdown
                   persons={deliveryPersons}
                   value={deliveryPersonId}
                   onChange={setDeliveryPersonId}
                   label={locale === 'bn' ? 'ডেলিভারিম্যান বেছে নিন (ঐচ্ছিক)' : 'Select delivery person (optional)'}
                 />
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  inputMode="decimal"
+                  value={internalWeight}
+                  onChange={e => setInternalWeight(e.target.value)}
+                  placeholder={locale === 'bn' ? 'ওজন (কেজি, ঐচ্ছিক)' : 'Weight (kg, optional)'}
+                  title={locale === 'bn' ? 'দিলে ডেলিভারি চার্জ ওজন অনুযায়ী পুনর্গণনা হবে' : 'If given, delivery charge is recalculated for this weight'}
+                  autoComplete="off"
+                  className="w-40 px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-amber-500"
+                />
                 <button disabled={loading} className="btn-primary text-sm whitespace-nowrap"
                   onClick={() => doAction(
-                    () => assign({ id: orderId, delivery_person_id: deliveryPersonId || null }).unwrap(),
+                    () => assign({
+                      id: orderId,
+                      delivery_person_id: deliveryPersonId || null,
+                      weight: internalWeight ? Number(internalWeight) : undefined,
+                    }).unwrap(),
                     locale === 'bn' ? 'নির্ধারিত হয়েছে' : 'Assigned',
                   )}>
                   {t('order.assignDelivery')}

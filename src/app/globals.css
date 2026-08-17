@@ -26,7 +26,7 @@
 }
 
 .shimmer::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   transform: translateX(-100%);
@@ -37,6 +37,45 @@
 .scrollbar-hide {
   scrollbar-width: none;
   -ms-overflow-style: none;
+}
+
+/* Very subtle, slow idle sway on the order-progress-bar delivery vehicle —
+   pivoting near the rear (transform-origin below) means a tiny rotation
+   moves the front noticeably while the back stays put, like the front end
+   dipping on its suspension, rather than the whole body shifting. */
+@keyframes vehicle-jitter {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(0.4deg);
+  }
+}
+
+.animate-vehicle-jitter {
+  animation: vehicle-jitter 0.35s ease-in-out infinite;
+  transform-origin: 22% 68%;
+}
+
+/* Small gray streaks flowing straight backward at tire level off the
+   delivery car while it's moving — fade in, stream left, widen, fade out. */
+@keyframes air-trail {
+  0% {
+    opacity: 0;
+    transform: translateX(0) scaleX(0.6);
+  }
+  40% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-16px) scaleX(1.4);
+  }
+}
+
+.animate-air-trail {
+  animation: air-trail 0.9s ease-out infinite;
 }
 
 .scrollbar-hide::-webkit-scrollbar {

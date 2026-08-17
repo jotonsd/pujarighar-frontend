@@ -13,13 +13,13 @@ export const courierApi = baseApi.injectEndpoints({
       providesTags: ['CourierProviders'],
     }),
 
-    createCourierProvider: build.mutation<CourierProvider, Partial<CourierProvider> & { api_key?: string; secret_key?: string }>({
+    createCourierProvider: build.mutation<CourierProvider, Partial<CourierProvider> & { api_key?: string; secret_key?: string; username?: string; password?: string }>({
       query: body => ({ url: '/api/courier/providers/', method: 'POST', body }),
       transformResponse: (res: { data: CourierProvider }) => res.data,
       invalidatesTags: ['CourierProviders'],
     }),
 
-    updateCourierProvider: build.mutation<CourierProvider, { id: number } & Partial<CourierProvider> & { api_key?: string; secret_key?: string }>({
+    updateCourierProvider: build.mutation<CourierProvider, { id: number } & Partial<CourierProvider> & { api_key?: string; secret_key?: string; username?: string; password?: string }>({
       query: ({ id, ...body }) => ({ url: `/api/courier/providers/${id}/update/`, method: 'PATCH', body }),
       transformResponse: (res: { data: CourierProvider }) => res.data,
       invalidatesTags: ['CourierProviders'],
@@ -30,10 +30,11 @@ export const courierApi = baseApi.injectEndpoints({
       transformResponse: (res: { data: { current_balance: number } }) => res.data,
     }),
 
-    getCourierConsignments: build.query<ConsignmentListResponse, { page?: number; status?: string } | void>({
-      query: ({ page = 1, status = '' } = {}) => {
+    getCourierConsignments: build.query<ConsignmentListResponse, { page?: number; status?: string; provider_code?: string } | void>({
+      query: ({ page = 1, status = '', provider_code = '' } = {}) => {
         const p = new URLSearchParams({ page: String(page) })
         if (status) p.set('status', status)
+        if (provider_code) p.set('provider_code', provider_code)
         return `/api/courier/consignments/?${p}`
       },
       providesTags: ['CourierConsignments'],
@@ -45,11 +46,11 @@ export const courierApi = baseApi.injectEndpoints({
       providesTags: ['CourierConsignments'],
     }),
 
-    sendOrderToCourier: build.mutation<CourierConsignment, { orderId: string; provider_id: number; weight?: number }>({
-      query: ({ orderId, provider_id, weight }) => ({
+    sendOrderToCourier: build.mutation<CourierConsignment, { orderId: string; provider_id: number; weight?: number; note?: string }>({
+      query: ({ orderId, provider_id, weight, note }) => ({
         url: `/api/orders/${orderId}/courier/send/`,
         method: 'POST',
-        body: { provider_id, ...(weight ? { weight } : {}) },
+        body: { provider_id, ...(weight ? { weight } : {}), ...(note ? { note } : {}) },
       }),
       transformResponse: (res: { data: CourierConsignment }) => res.data,
       invalidatesTags: ['CourierConsignments', 'Order', 'Orders'],

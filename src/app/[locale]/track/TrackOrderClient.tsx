@@ -1,23 +1,35 @@
 "use client";
 
 import { useTrackByOrderNumberQuery } from "@/api/orders/ordersApi";
+import OrderProgressBar from "@/components/orders/OrderProgressBar";
 import OrderStatusBadge from "@/components/orders/OrderStatusBadge";
 import StatusTimeline from "@/components/orders/StatusTimeline";
 import { FloatingInput } from "@/components/ui/forms";
-import Spinner from "@/components/ui/Spinner";
+import { TrackingSkeleton } from "@/components/ui/skeletons";
 import { formatAmount, localName } from "@/utils/format";
 import { useLocale } from "next-intl";
+import { useSearchParams } from "next/navigation";
 import { ReactNode, useState } from "react";
 
 export default function TrackOrderClient({ offerBanners }: { offerBanners?: ReactNode }) {
   const locale = useLocale();
+  const searchParams = useSearchParams();
+  const prefillOrderNumber = searchParams.get("order_number") ?? "";
+  const prefillPhone = searchParams.get("phone") ?? "";
 
-  const [orderNumber, setOrderNumber] = useState("");
-  const [phone, setPhone] = useState("");
+  // A shared tracking link (e.g. /track?order_number=X&phone=Y from the
+  // order-success screen or an SMS) should show the result immediately —
+  // not dump the visitor back on an empty search form they have to refill.
+  const [orderNumber, setOrderNumber] = useState(prefillOrderNumber);
+  const [phone, setPhone] = useState(prefillPhone);
   const [query, setQuery] = useState<{
     order_number: string;
     phone: string;
-  } | null>(null);
+  } | null>(
+    prefillOrderNumber && prefillPhone
+      ? { order_number: prefillOrderNumber.trim().toUpperCase(), phone: prefillPhone.trim() }
+      : null,
+  );
 
   const {
     data: order,
@@ -89,7 +101,7 @@ export default function TrackOrderClient({ offerBanners }: { offerBanners?: Reac
       </div>
 
       {/* Loading */}
-      {isLoading && <Spinner />}
+      {isLoading && <TrackingSkeleton />}
 
       {/* Not found */}
       {!isLoading && isError && query && (
@@ -131,6 +143,8 @@ export default function TrackOrderClient({ offerBanners }: { offerBanners?: Reac
             </div>
             <OrderStatusBadge status={order.status} locale={locale} />
           </div>
+
+          <OrderProgressBar status={order.status} locale={locale} />
 
           {/* Shipping info */}
           <div className="border-t border-gray-100 pt-4 space-y-1">
@@ -190,6 +204,7 @@ export default function TrackOrderClient({ offerBanners }: { offerBanners?: Reac
                 logs={order.timeline}
                 locale={locale}
                 deliveryInfo={order.delivery_info}
+                courierTrackingUrl={order.courier_tracking_url}
               />
             </div>
           )}

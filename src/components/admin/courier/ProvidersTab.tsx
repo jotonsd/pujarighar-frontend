@@ -6,7 +6,7 @@ import {
   useGetCourierProvidersQuery,
   useUpdateCourierProviderMutation,
 } from "@/api/courier/courierApi";
-import { FloatingInput } from "@/components/ui/forms";
+import { FloatingInput, FloatingSelect } from "@/components/ui/forms";
 import ToggleSwitch from "@/components/ui/forms/ToggleSwitch";
 import { CourierProvider } from "@/lib/types";
 import { toast } from "@/store/toastStore";
@@ -16,12 +16,25 @@ import { useState } from "react";
 const API_ORIGIN = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 const WEBHOOK_URL = `${API_ORIGIN}/api/courier/webhooks/steadfast/`;
 
+// Provider-type presets — driving the "Add Provider" defaults and which
+// credential fields each one actually needs (Steadfast: static API key/
+// secret; Pathao: OAuth client id/secret + merchant login + store id).
+const PROVIDER_TYPES = {
+  STEADFAST: { name: "Steadfast Courier", base_url: "https://portal.packzy.com/api/v1" },
+  PATHAO:    { name: "Pathao Courier",    base_url: "https://api-hermes.pathao.com" },
+} as const;
+type ProviderCode = keyof typeof PROVIDER_TYPES;
+
 function ProviderCard({ provider, isBn, locale }: { provider: CourierProvider; isBn: boolean; locale: string }) {
+  const isPathao = provider.code === "PATHAO";
   const [editing, setEditing] = useState(false);
   const [apiKey, setApiKey] = useState("");
   const [secretKey, setSecretKey] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [storeId, setStoreId] = useState(provider.store_id ?? "");
   const [update, { isLoading }] = useUpdateCourierProviderMutation();
-  const { data: balance, refetch: refetchBalance, isFetching: balanceLoading } = useGetCourierProviderBalanceQuery(provider.id, { skip: !provider.is_active });
+  const { data: balance, refetch: refetchBalance, isFetching: balanceLoading } = useGetCourierProviderBalanceQuery(provider.id, { skip: !provider.is_active || isPathao });
 
   const handleToggleActive = async () => {
     try {
@@ -38,10 +51,15 @@ function ProviderCard({ provider, isBn, locale }: { provider: CourierProvider; i
         id: provider.id,
         ...(apiKey ? { api_key: apiKey } : {}),
         ...(secretKey ? { secret_key: secretKey } : {}),
+        ...(isPathao && username ? { username } : {}),
+        ...(isPathao && password ? { password } : {}),
+        ...(isPathao ? { store_id: storeId } : {}),
       }).unwrap();
       toast.success(isBn ? "সংরক্ষণ হয়েছে" : "Saved");
       setApiKey("");
       setSecretKey("");
+      setUsername("");
+      setPassword("");
       setEditing(false);
     } catch {
       toast.error(isBn ? "ব্যর্থ হয়েছে" : "Failed to save");
@@ -63,7 +81,7 @@ function ProviderCard({ provider, isBn, locale }: { provider: CourierProvider; i
         />
       </div>
 
-      {provider.is_active && (
+      {provider.is_active && !isPathao && (
         <div className="flex items-center gap-2 text-sm bg-amber-50 rounded-lg px-3 py-2">
           <span className="text-gray-600">{isBn ? "বর্তমান ব্যালেন্স:" : "Current balance:"}</span>
           <span className="font-bold text-amber-700">
@@ -75,10 +93,18 @@ function ProviderCard({ provider, isBn, locale }: { provider: CourierProvider; i
         </div>
       )}
 
-      <div className="flex items-center gap-4 text-xs text-gray-500">
-        <span>{isBn ? "API কী: " : "API key: "}{provider.has_api_key ? "✓" : "—"}</span>
-        <span>{isBn ? "সিক্রেট কী: " : "Secret key: "}{provider.has_secret_key ? "✓" : "—"}</span>
-        <span>{isBn ? "ওয়েবহুক: " : "Webhook: "}{provider.has_webhook_secret ? "✓" : "—"}</span>
+      <div className="flex items-center gap-4 text-xs text-gray-500 flex-wrap">
+        <span>{isBn ? (isPathao ? "ক্লায়েন্ট আইডি: " : "API কী: ") : (isPathao ? "Client ID: " : "API key: ")}{provider.has_api_key ? "✓" : "—"}</span>
+        <span>{isBn ? (isPathao ? "ক্লায়েন্ট সিক্রেট: " : "সিক্রেট কী: ") : (isPathao ? "Client secret: " : "Secret key: ")}{provider.has_secret_key ? "✓" : "—"}</span>
+        {isPathao ? (
+          <>
+            <span>{isBn ? "ইউজারনেম: " : "Username: "}{provider.has_username ? "✓" : "—"}</span>
+            <span>{isBn ? "পাসওয়ার্ড: " : "Password: "}{provider.has_password ? "✓" : "—"}</span>
+            <span>{isBn ? "স্টোর আইডি: " : "Store ID: "}{provider.store_id || "—"}</span>
+          </>
+        ) : (
+          <span>{isBn ? "ওয়েবহুক: " : "Webhook: "}{provider.has_webhook_secret ? "✓" : "—"}</span>
+        )}
       </div>
 
       {provider.webhook_secret && (
@@ -91,20 +117,49 @@ function ProviderCard({ provider, isBn, locale }: { provider: CourierProvider; i
         </div>
       )}
 
+      {isPathao && (
+        <p className="text-xs text-gray-400">
+          {isBn
+            ? "পাথাও পুশ আপডেট (ওয়েবহুক) সমর্থন করে না — অর্ডারের কুরিয়ার প্যানেল থেকে ম্যানুয়ালি রিফ্রেশ করে সর্বশেষ স্ট্যাটাস আনতে হবে।"
+            : "Pathao has no push webhook — refresh an order's courier status manually from its detail page to pull the latest update."}
+        </p>
+      )}
+
       {editing ? (
         <div className="space-y-3 pt-2 border-t border-gray-100">
           <FloatingInput
-            label={isBn ? "API কী (নতুন হলে দিন)" : "API Key (enter to change)"}
+            label={isPathao ? (isBn ? "ক্লায়েন্ট আইডি (নতুন হলে দিন)" : "Client ID (enter to change)") : (isBn ? "API কী (নতুন হলে দিন)" : "API Key (enter to change)")}
             type="password"
             value={apiKey}
             onChange={e => setApiKey(e.target.value)}
           />
           <FloatingInput
-            label={isBn ? "সিক্রেট কী (নতুন হলে দিন)" : "Secret Key (enter to change)"}
+            label={isPathao ? (isBn ? "ক্লায়েন্ট সিক্রেট (নতুন হলে দিন)" : "Client Secret (enter to change)") : (isBn ? "সিক্রেট কী (নতুন হলে দিন)" : "Secret Key (enter to change)")}
             type="password"
             value={secretKey}
             onChange={e => setSecretKey(e.target.value)}
           />
+          {isPathao && (
+            <>
+              <FloatingInput
+                label={isBn ? "ইউজারনেম (Pathao লগইন ইমেইল)" : "Username (Pathao login email)"}
+                value={username}
+                onChange={e => setUsername(e.target.value)}
+              />
+              <FloatingInput
+                label={isBn ? "পাসওয়ার্ড (নতুন হলে দিন)" : "Password (enter to change)"}
+                type="password"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+              />
+              <FloatingInput
+                label={isBn ? "স্টোর আইডি" : "Store ID"}
+                value={storeId}
+                onChange={e => setStoreId(e.target.value)}
+                placeholder={isBn ? "Pathao মার্চেন্ট প্যানেল থেকে নিন" : "From Pathao's merchant panel"}
+              />
+            </>
+          )}
           <div className="flex gap-2">
             <button onClick={handleSaveKeys} disabled={isLoading} className="btn-primary flex-1">
               {isBn ? "সংরক্ষণ করুন" : "Save"}
@@ -116,7 +171,7 @@ function ProviderCard({ provider, isBn, locale }: { provider: CourierProvider; i
         </div>
       ) : (
         <button onClick={() => setEditing(true)} className="text-sm text-amber-700 hover:underline">
-          {isBn ? "কী পরিবর্তন করুন" : "Update keys"}
+          {isBn ? "কী পরিবর্তন করুন" : "Update credentials"}
         </button>
       )}
     </div>
@@ -128,18 +183,42 @@ export default function ProvidersTab({ locale, isBn }: { locale: string; isBn: b
   const [create, { isLoading: creating }] = useCreateCourierProviderMutation();
 
   const [showNew, setShowNew] = useState(false);
-  const [form, setForm] = useState({ name: "Steadfast Courier", base_url: "https://portal.packzy.com/api/v1", api_key: "", secret_key: "" });
+  const [providerType, setProviderType] = useState<ProviderCode>("STEADFAST");
+  const [form, setForm] = useState<{ name: string; base_url: string; api_key: string; secret_key: string; username: string; password: string; store_id: string }>({
+    name: PROVIDER_TYPES.STEADFAST.name,
+    base_url: PROVIDER_TYPES.STEADFAST.base_url,
+    api_key: "", secret_key: "", username: "", password: "", store_id: "",
+  });
+  const isPathao = providerType === "PATHAO";
+
+  const handleTypeChange = (type: ProviderCode) => {
+    setProviderType(type);
+    setForm(f => ({ ...f, name: PROVIDER_TYPES[type].name, base_url: PROVIDER_TYPES[type].base_url }));
+  };
 
   const handleCreate = async () => {
     if (!form.api_key || !form.secret_key) {
-      toast.error(isBn ? "API কী ও সিক্রেট কী আবশ্যক" : "API key and secret key are required");
+      toast.error(isBn ? "ক্লায়েন্ট/API কী ও সিক্রেট আবশ্যক" : "Client/API key and secret are required");
+      return;
+    }
+    if (isPathao && (!form.username || !form.password || !form.store_id)) {
+      toast.error(isBn ? "ইউজারনেম, পাসওয়ার্ড ও স্টোর আইডি আবশ্যক" : "Username, password, and store ID are required for Pathao");
       return;
     }
     try {
-      await create({ code: "STEADFAST", name: form.name, base_url: form.base_url, api_key: form.api_key, secret_key: form.secret_key, is_active: true }).unwrap();
+      await create({
+        code: providerType,
+        name: form.name,
+        base_url: form.base_url,
+        api_key: form.api_key,
+        secret_key: form.secret_key,
+        is_active: true,
+        ...(isPathao ? { username: form.username, password: form.password, store_id: form.store_id } : {}),
+      }).unwrap();
       toast.success(isBn ? "প্রোভাইডার যোগ হয়েছে" : "Provider added");
       setShowNew(false);
-      setForm({ name: "Steadfast Courier", base_url: "https://portal.packzy.com/api/v1", api_key: "", secret_key: "" });
+      setForm({ name: PROVIDER_TYPES.STEADFAST.name, base_url: PROVIDER_TYPES.STEADFAST.base_url, api_key: "", secret_key: "", username: "", password: "", store_id: "" });
+      setProviderType("STEADFAST");
     } catch {
       toast.error(isBn ? "ব্যর্থ হয়েছে" : "Failed to add provider");
     }
@@ -155,11 +234,40 @@ export default function ProvidersTab({ locale, isBn }: { locale: string; isBn: b
 
       {showNew && (
         <div className="card space-y-3 max-w-xl">
-          <h3 className="font-bold text-gray-800">{isBn ? "নতুন প্রোভাইডার (Steadfast)" : "New Provider (Steadfast)"}</h3>
+          <h3 className="font-bold text-gray-800">{isBn ? "নতুন প্রোভাইডার" : "New Provider"}</h3>
+          <FloatingSelect
+            label={isBn ? "কুরিয়ার" : "Courier"}
+            value={providerType}
+            onChange={val => handleTypeChange(val as ProviderCode)}
+          >
+            <option value="STEADFAST">Steadfast</option>
+            <option value="PATHAO">Pathao</option>
+          </FloatingSelect>
           <FloatingInput label={isBn ? "নাম" : "Name"} value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
           <FloatingInput label={isBn ? "বেস URL" : "Base URL"} value={form.base_url} onChange={e => setForm(f => ({ ...f, base_url: e.target.value }))} />
-          <FloatingInput label="API Key" type="password" value={form.api_key} onChange={e => setForm(f => ({ ...f, api_key: e.target.value }))} />
-          <FloatingInput label="Secret Key" type="password" value={form.secret_key} onChange={e => setForm(f => ({ ...f, secret_key: e.target.value }))} />
+          <FloatingInput label={isPathao ? "Client ID" : "API Key"} type="password" value={form.api_key} onChange={e => setForm(f => ({ ...f, api_key: e.target.value }))} />
+          <FloatingInput label={isPathao ? "Client Secret" : "Secret Key"} type="password" value={form.secret_key} onChange={e => setForm(f => ({ ...f, secret_key: e.target.value }))} />
+          {isPathao && (
+            <>
+              <FloatingInput
+                label={isBn ? "ইউজারনেম (Pathao লগইন ইমেইল)" : "Username (Pathao login email)"}
+                value={form.username}
+                onChange={e => setForm(f => ({ ...f, username: e.target.value }))}
+              />
+              <FloatingInput
+                label={isBn ? "পাসওয়ার্ড" : "Password"}
+                type="password"
+                value={form.password}
+                onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
+              />
+              <FloatingInput
+                label={isBn ? "স্টোর আইডি" : "Store ID"}
+                value={form.store_id}
+                onChange={e => setForm(f => ({ ...f, store_id: e.target.value }))}
+                placeholder={isBn ? "Pathao মার্চেন্ট প্যানেল থেকে নিন" : "From Pathao's merchant panel"}
+              />
+            </>
+          )}
           <div className="flex gap-2">
             <button onClick={handleCreate} disabled={creating} className="btn-primary flex-1">
               {isBn ? "যোগ করুন" : "Add"}

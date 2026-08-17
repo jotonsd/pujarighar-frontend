@@ -6,7 +6,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8020";
 async function getHeroSlides(): Promise<HeroSlide[]> {
   try {
     const res = await fetch(`${API_URL}/api/hero-slides/`, {
-      next: { revalidate: 300 },
+      cache: "no-store",
     });
     if (!res.ok) return [];
     const json = await res.json();

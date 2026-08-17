@@ -515,6 +515,9 @@ function MobileMenu({
                 onChange={e => setQ(e.target.value)}
                 placeholder={t("common.search")}
                 className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-300 bg-gray-50"
+                autoComplete="off"
+                autoCorrect="off"
+                spellCheck={false}
               />
               <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                 <circle cx="11" cy="11" r="8" />
@@ -973,6 +976,9 @@ export default function Navbar() {
                     onChange={e => setQuery(e.target.value)}
                     placeholder={t("common.search")}
                     className="w-full pl-9 pr-9 py-1.5 text-sm border-2 border-gray-200 rounded-lg shadow-lg focus:outline-none focus:border-amber-400 bg-white"
+                    autoComplete="off"
+                    autoCorrect="off"
+                    spellCheck={false}
                   />
                   <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                     <circle cx="11" cy="11" r="8" />

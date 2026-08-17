@@ -19,8 +19,8 @@ export interface TopProduct {
 
 export interface DashboardSummary {
   // existing
-  today_orders: number
-  today_revenue: string
+  week_orders: number
+  week_revenue: string
   pending_orders: number
   low_stock_count: number
   total_customers: number
@@ -35,6 +35,8 @@ export interface DashboardSummary {
   supplier_outstanding: string
   loan_outstanding: string
   partner_outstanding: string
+  cash_on_hand: string
+  cash_account_id: string | null
   out_of_stock_count: number
   recent_orders: RecentOrder[]
   top_products: TopProduct[]

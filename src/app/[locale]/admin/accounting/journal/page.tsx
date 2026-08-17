@@ -7,7 +7,7 @@ import {
   useGetJournalEntriesQuery,
 } from "@/api/accounting/accountingApi";
 import Badge from "@/components/ui/Badge";
-import { FloatingInput, FloatingSelect } from "@/components/ui/forms";
+import { FloatingDatePicker, FloatingInput, FloatingSelect } from "@/components/ui/forms";
 import PageHeader from "@/components/ui/PageHeader";
 import TableSkeleton from "@/components/ui/skeletons";
 import { toast } from "@/store/toastStore";
@@ -346,19 +346,39 @@ const REF_BADGE: Record<
   },
 };
 
+const monthStart = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-01`;
+};
+const today = () => new Date().toISOString().slice(0, 10);
+
 export default function JournalPage() {
   const t = useTranslations("accounting");
   const locale = useLocale();
   const isBn = locale === "bn";
   const [page, setPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
+  // Defaults to this month — otherwise the list silently only shows the
+  // first page of ALL-time entries, oldest pages easily hiding recent ones.
+  const [from, setFrom] = useState(monthStart());
+  const [to, setTo] = useState(today());
 
-  const { data, isLoading } = useGetJournalEntriesQuery({ page });
+  const { data, isLoading } = useGetJournalEntriesQuery({ page, from, to });
   const entries = data?.data ?? [];
-  const totalPages = data?.meta?.total_pages ?? 1;
+  const totalPages = data?.pagination?.total_pages ?? 1;
 
-  const totalDebitSum = entries.reduce((s, e) => s + (parseFloat(e.total_debit) || 0), 0);
-  const totalCreditSum = entries.reduce((s, e) => s + (parseFloat(e.total_credit) || 0), 0);
+  const updateFrom = (v: string) => { setFrom(v); setPage(1); };
+  const updateTo = (v: string) => { setTo(v); setPage(1); };
+
+  // Server-computed across the FULL filtered date range (not just this
+  // page) — falls back to summing the visible page only if, for some
+  // reason, the backend didn't send totals (e.g. an older cached response).
+  const totalDebitSum = data?.pagination?.total_debit != null
+    ? parseFloat(data.pagination.total_debit)
+    : entries.reduce((s, e) => s + (parseFloat(e.total_debit) || 0), 0);
+  const totalCreditSum = data?.pagination?.total_credit != null
+    ? parseFloat(data.pagination.total_credit)
+    : entries.reduce((s, e) => s + (parseFloat(e.total_credit) || 0), 0);
   const allBalanced = Math.abs(totalDebitSum - totalCreditSum) < 0.01;
 
   return (
@@ -373,6 +393,25 @@ export default function JournalPage() {
         addLabel={isBn ? "নতুন এন্ট্রি" : "New Entry"}
         onAdd={() => setShowForm(true)}
       />
+
+      <div className="flex gap-3 mb-4 flex-wrap items-end">
+        <div className="w-56">
+          <FloatingDatePicker
+            label={isBn ? "শুরু তারিখ" : "From"}
+            value={from}
+            onChange={updateFrom}
+            clearable
+          />
+        </div>
+        <div className="w-56">
+          <FloatingDatePicker
+            label={isBn ? "শেষ তারিখ" : "To"}
+            value={to}
+            onChange={updateTo}
+            clearable
+          />
+        </div>
+      </div>
 
       {isLoading ? (
         <TableSkeleton columns={7} rows={8} />
