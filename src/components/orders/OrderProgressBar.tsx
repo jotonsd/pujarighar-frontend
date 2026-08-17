@@ -1,6 +1,7 @@
 "use client";
 
 import { OrderStatus } from "@/lib/types";
+import { CheckCircle2 } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
@@ -47,25 +48,35 @@ export default function OrderProgressBar({ status, locale }: { status: OrderStat
   if (status === "CANCELLED" || status === "RETURNED") return null;
 
   const pct = (visibleIndex / (STAGES.length - 1)) * 100;
+  // Only once the stepping animation has actually arrived at the end — not
+  // the instant the order is marked delivered, so it doesn't jump ahead of
+  // its own travel animation.
+  const arrived = status === "DELIVERED" && visibleIndex === STAGES.length - 1;
 
   return (
-    <div className="pt-9 pb-1">
-      <div className="relative px-4">
-        {/* Delivery vehicle marker, floating above the bar at the current stage */}
+    <div className="pt-10 pb-1">
+      <div className="relative px-6">
+        {/* Delivery vehicle marker, floating above the bar at the current stage.
+            Stays put once delivered — gets a success badge, not a fade-out. */}
         <div
-          className="absolute -top-8 -translate-x-1/2 ease-in-out"
+          className="absolute -top-10 -translate-x-1/2 ease-in-out"
           style={{ left: `${pct}%`, transitionProperty: "left", transitionDuration: `${MOVE_MS}ms` }}
         >
-          <div className="animate-vehicle-jitter">
-            <Image
-              src="/assets/logo/delivery-car.png"
-              alt=""
-              width={44}
-              height={44}
-              priority
-              onLoad={() => setImageReady(true)}
-              className="object-contain drop-shadow-md"
-            />
+          <div className="relative">
+            <div className={arrived ? "" : "animate-vehicle-jitter"}>
+              <Image
+                src="/assets/logo/delivery-car.png"
+                alt=""
+                width={56}
+                height={56}
+                priority
+                onLoad={() => setImageReady(true)}
+                className="object-contain drop-shadow-md"
+              />
+            </div>
+            {arrived && (
+              <CheckCircle2 className="absolute -bottom-1 -right-1 w-5 h-5 text-white bg-green-600 rounded-full ring-2 ring-white" />
+            )}
           </div>
         </div>
 

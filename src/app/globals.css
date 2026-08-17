@@ -54,7 +54,7 @@
 }
 
 .animate-vehicle-jitter {
-  animation: vehicle-jitter 0.8s ease-in-out infinite;
+  animation: vehicle-jitter 0.35s ease-in-out infinite;
   transform-origin: 22% 68%;
 }
 
