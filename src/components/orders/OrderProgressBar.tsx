@@ -67,14 +67,14 @@ export default function OrderProgressBar({ status, locale }: { status: OrderStat
         {/* Delivery vehicle marker, floating above the bar at the current stage.
             Stays put once delivered — gets a success badge, not a fade-out. */}
         <div
-          className="absolute -top-10 -translate-x-1/2 ease-in-out"
+          className="absolute -top-12 -translate-x-1/2 ease-in-out"
           style={{
             // Clamped in px, not left as a bare percentage — at pct=100 a bare
-            // `left: 100%` + translateX(-50%) pushes half the 56px-wide marker
+            // `left: 100%` + translateX(-50%) pushes half the 64px-wide marker
             // past the container's right edge, so any ancestor with
             // overflow-x clipping (common for preventing horizontal scroll)
             // cuts the vehicle off right at the Delivered stage.
-            left: `clamp(28px, ${pct}%, calc(100% - 28px))`,
+            left: `clamp(32px, ${pct}%, calc(100% - 32px))`,
             transitionProperty: "left",
             transitionDuration: `${MOVE_MS}ms`,
           }}
@@ -83,24 +83,26 @@ export default function OrderProgressBar({ status, locale }: { status: OrderStat
               success badge can sit just outside the car's own footprint —
               overlapping it (as when the badge sat flush on the image's
               corner) visually ate into the car and made it look smaller. */}
-          <div className="relative w-16 h-16 flex items-center justify-center">
+          <div className="relative w-[72px] h-[72px] flex items-center justify-center">
             {/* Gray air streaks flowing horizontally backward off the middle
-                of the back — only while actually moving, not once settled
-                at Delivered. */}
-            {!arrived && (
+                of the back — only while actually moving. Not once settled
+                at Delivered, and not while still parked at the very first
+                (Accepted) stage, since nothing's moving yet there either. */}
+            {!arrived && visibleIndex > 0 && (
               <div className="absolute top-1/2 translate-y-1 left-1 flex items-center gap-1 pointer-events-none">
                 <span className="block w-2.5 h-1 rounded-full bg-gray-400/80 blur-[1.5px] animate-air-trail" style={{ animationDelay: "0ms" }} />
                 <span className="block w-2 h-1 rounded-full bg-gray-400/70 blur-[1.5px] animate-air-trail" style={{ animationDelay: "250ms" }} />
                 <span className="block w-1.5 h-0.5 rounded-full bg-gray-400/60 blur-[1.5px] animate-air-trail" style={{ animationDelay: "500ms" }} />
               </div>
             )}
-            <div className={arrived ? "" : "animate-vehicle-jitter"}>
+            <div className={arrived || visibleIndex === 0 ? "" : "animate-vehicle-jitter"}>
               <Image
                 src="/assets/logo/delivery-car.png"
                 alt=""
-                width={56}
-                height={56}
+                width={64}
+                height={64}
                 priority
+                quality={100}
                 onLoad={() => setImageReady(true)}
                 className="object-contain drop-shadow-md"
               />
