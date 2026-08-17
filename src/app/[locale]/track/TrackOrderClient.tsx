@@ -5,7 +5,7 @@ import OrderProgressBar from "@/components/orders/OrderProgressBar";
 import OrderStatusBadge from "@/components/orders/OrderStatusBadge";
 import StatusTimeline from "@/components/orders/StatusTimeline";
 import { FloatingInput } from "@/components/ui/forms";
-import Spinner from "@/components/ui/Spinner";
+import { TrackingSkeleton } from "@/components/ui/skeletons";
 import { formatAmount, localName } from "@/utils/format";
 import { useLocale } from "next-intl";
 import { useSearchParams } from "next/navigation";
@@ -101,7 +101,7 @@ export default function TrackOrderClient({ offerBanners }: { offerBanners?: Reac
       </div>
 
       {/* Loading */}
-      {isLoading && <Spinner />}
+      {isLoading && <TrackingSkeleton />}
 
       {/* Not found */}
       {!isLoading && isError && query && (

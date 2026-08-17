@@ -4,7 +4,7 @@ import { useGetOrderTrackingQuery } from "@/api/orders/ordersApi";
 import OrderProgressBar from "@/components/orders/OrderProgressBar";
 import OrderStatusBadge from "@/components/orders/OrderStatusBadge";
 import StatusTimeline from "@/components/orders/StatusTimeline";
-import Spinner from "@/components/ui/Spinner";
+import { TrackingSkeleton } from "@/components/ui/skeletons";
 import { localName } from "@/utils/format";
 import { useLocale } from "next-intl";
 import { ReactNode } from "react";
@@ -14,7 +14,15 @@ export default function TrackingPageClient({ id, offerBanners }: { id: string; o
   const isBn = locale === "bn";
   const { data: order, isLoading } = useGetOrderTrackingQuery(id);
 
-  if (isLoading) return <Spinner />;
+  if (isLoading)
+    return (
+      <div className="max-w-7xl mx-auto px-4 py-3">
+        <div className="max-w-2xl mx-auto mb-4">{offerBanners}</div>
+        <div className="max-w-2xl mx-auto">
+          <TrackingSkeleton />
+        </div>
+      </div>
+    );
   if (!order)
     return (
       <p className="text-center py-16 text-gray-400">
