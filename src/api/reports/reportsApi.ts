@@ -39,16 +39,17 @@ export interface LedgerReport {
   total_amount: string
 }
 
-type ReportParams = { supplier_id?: string; product_id?: string; from?: string; to?: string }
+type ReportParams = { supplier_id?: string; product_id?: string; from?: string; to?: string; payment_method?: string }
 type LedgerReportParams = { account_id?: string; from?: string; to?: string }
 
 function buildReportQuery(base: string) {
-  return ({ supplier_id = '', product_id = '', from = '', to = '' }: ReportParams = {}) => {
+  return ({ supplier_id = '', product_id = '', from = '', to = '', payment_method = '' }: ReportParams = {}) => {
     const p = new URLSearchParams()
-    if (supplier_id) p.set('supplier_id', supplier_id)
-    if (product_id)  p.set('product_id', product_id)
-    if (from)        p.set('from', from)
-    if (to)          p.set('to', to)
+    if (supplier_id)    p.set('supplier_id', supplier_id)
+    if (product_id)     p.set('product_id', product_id)
+    if (from)            p.set('from', from)
+    if (to)              p.set('to', to)
+    if (payment_method) p.set('payment_method', payment_method)
     return `${base}?${p}`
   }
 }
