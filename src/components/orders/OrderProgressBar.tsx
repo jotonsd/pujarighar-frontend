@@ -2,6 +2,7 @@
 
 import { OrderStatus } from "@/lib/types";
 import { CheckCircle2 } from "lucide-react";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 
 const STAGES: { statuses: OrderStatus[]; label_bn: string; label_en: string }[] = [
@@ -59,18 +60,25 @@ export default function OrderProgressBar({ status, locale }: { status: OrderStat
             Stays put once delivered — gets a success badge, not a fade-out. */}
         <div
           className="absolute -top-10 -translate-x-1/2 ease-in-out"
-          style={{ left: `${pct}%`, transitionProperty: "left", transitionDuration: `${MOVE_MS}ms` }}
+          style={{
+            // Clamped in px, not left as a bare percentage — at pct=100 a bare
+            // `left: 100%` + translateX(-50%) pushes half the 56px-wide marker
+            // past the container's right edge, so any ancestor with
+            // overflow-x clipping (common for preventing horizontal scroll)
+            // cuts the vehicle off right at the Delivered stage.
+            left: `clamp(28px, ${pct}%, calc(100% - 28px))`,
+            transitionProperty: "left",
+            transitionDuration: `${MOVE_MS}ms`,
+          }}
         >
           <div className="relative">
             <div className={arrived ? "" : "animate-vehicle-jitter"}>
-              {/* Plain <img>, not next/image — this asset is a large source
-                  PNG and next's optimizer can silently fail to serve it in
-                  some deployments, leaving just the badge with no vehicle. */}
-              <img
+              <Image
                 src="/assets/logo/delivery-car.png"
                 alt=""
                 width={56}
                 height={56}
+                priority
                 onLoad={() => setImageReady(true)}
                 className="object-contain drop-shadow-md"
               />
