@@ -26,7 +26,7 @@
 }
 
 .shimmer::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   transform: translateX(-100%);
@@ -44,12 +44,17 @@
    moves the front noticeably while the back stays put, like the front end
    dipping on its suspension, rather than the whole body shifting. */
 @keyframes vehicle-jitter {
-  0%, 100% { transform: rotate(0deg); }
-  50%      { transform: rotate(0.4deg); }
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(0.4deg);
+  }
 }
 
 .animate-vehicle-jitter {
-  animation: vehicle-jitter 1.8s ease-in-out infinite;
+  animation: vehicle-jitter 0.8s ease-in-out infinite;
   transform-origin: 22% 68%;
 }
 
