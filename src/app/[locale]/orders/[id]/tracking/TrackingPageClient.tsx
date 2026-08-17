@@ -75,6 +75,7 @@ export default function TrackingPageClient({ id, offerBanners }: { id: string; o
               logs={order.timeline}
               locale={locale}
               deliveryInfo={order.delivery_info}
+              courierTrackingUrl={order.courier_tracking_url}
             />
           </div>
         )}
