@@ -1,6 +1,7 @@
 "use client";
 
 import { useTrackByOrderNumberQuery } from "@/api/orders/ordersApi";
+import OrderProgressBar from "@/components/orders/OrderProgressBar";
 import OrderStatusBadge from "@/components/orders/OrderStatusBadge";
 import StatusTimeline from "@/components/orders/StatusTimeline";
 import { FloatingInput } from "@/components/ui/forms";
@@ -142,6 +143,8 @@ export default function TrackOrderClient({ offerBanners }: { offerBanners?: Reac
             </div>
             <OrderStatusBadge status={order.status} locale={locale} />
           </div>
+
+          <OrderProgressBar status={order.status} locale={locale} />
 
           {/* Shipping info */}
           <div className="border-t border-gray-100 pt-4 space-y-1">

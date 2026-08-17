@@ -1,6 +1,7 @@
 "use client";
 
 import { useGetOrderTrackingQuery } from "@/api/orders/ordersApi";
+import OrderProgressBar from "@/components/orders/OrderProgressBar";
 import OrderStatusBadge from "@/components/orders/OrderStatusBadge";
 import StatusTimeline from "@/components/orders/StatusTimeline";
 import Spinner from "@/components/ui/Spinner";
@@ -46,6 +47,8 @@ export default function TrackingPageClient({ id, offerBanners }: { id: string; o
           </div>
           <OrderStatusBadge status={order.status} locale={locale} />
         </div>
+
+        <OrderProgressBar status={order.status} locale={locale} />
 
         {/* Customer */}
         <div className="border-t border-gray-100 pt-4 space-y-0.5">
