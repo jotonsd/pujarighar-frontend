@@ -2,7 +2,6 @@
 
 import { OrderStatus } from "@/lib/types";
 import { CheckCircle2 } from "lucide-react";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 
 const STAGES: { statuses: OrderStatus[]; label_bn: string; label_en: string }[] = [
@@ -64,12 +63,14 @@ export default function OrderProgressBar({ status, locale }: { status: OrderStat
         >
           <div className="relative">
             <div className={arrived ? "" : "animate-vehicle-jitter"}>
-              <Image
+              {/* Plain <img>, not next/image — this asset is a large source
+                  PNG and next's optimizer can silently fail to serve it in
+                  some deployments, leaving just the badge with no vehicle. */}
+              <img
                 src="/assets/logo/delivery-car.png"
                 alt=""
                 width={56}
                 height={56}
-                priority
                 onLoad={() => setImageReady(true)}
                 className="object-contain drop-shadow-md"
               />
