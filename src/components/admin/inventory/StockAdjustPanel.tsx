@@ -2,7 +2,7 @@
 
 import { useAdjustStockMutation, useGetStockQuery, useUpdateStockMovementMutation } from "@/api/stock/stockApi";
 import { useGetSuppliersQuery } from "@/api/suppliers/suppliersApi";
-import { FloatingInput, FloatingSelect } from "@/components/ui/forms";
+import { FloatingDatePicker, FloatingInput, FloatingSelect } from "@/components/ui/forms";
 import { Product, StockMovement } from "@/lib/types";
 import { toast } from "@/store/toastStore";
 import { getErrorMessage } from "@/utils/apiError";
@@ -11,7 +11,16 @@ import { Pencil } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 
-const EMPTY_FORM = {
+// Local calendar date as YYYY-MM-DD — not toISOString().slice(0,10), which is
+// UTC-based and rolls back to "yesterday" for several hours every night in
+// Bangladesh time (UTC+6).
+const toLocalDateStr = (d: Date) => {
+  const offsetMs = d.getTimezoneOffset() * 60000;
+  return new Date(d.getTime() - offsetMs).toISOString().slice(0, 10);
+};
+const todayStr = () => toLocalDateStr(new Date());
+
+const getEmptyForm = () => ({
   movement_type: "PURCHASE",
   quantity: "",
   unit_cost: "",
@@ -19,8 +28,9 @@ const EMPTY_FORM = {
   supplier_id: "",
   supplier_name: "",
   payment_method: "CASH" as "CASH" | "CREDIT",
+  date: todayStr(),
   note_bn: "",
-};
+});
 
 interface Props {
   product: Product;
@@ -30,7 +40,7 @@ export default function StockAdjustPanel({ product }: Props) {
   const t = useLocale();
   const locale = t;
   const translations = useTranslations();
-  const [adjForm, setAdjForm] = useState(EMPTY_FORM);
+  const [adjForm, setAdjForm] = useState(getEmptyForm);
 
   const { data: stockData } = useGetStockQuery(product.id);
   const { data: suppliers = [] } = useGetSuppliersQuery();
@@ -38,7 +48,7 @@ export default function StockAdjustPanel({ product }: Props) {
   const [updateMovement, { isLoading: savingEdit }] = useUpdateStockMovementMutation();
 
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editForm, setEditForm] = useState({ quantity: "", unit_cost: "", unit_price: "", payment_method: "CASH" as "CASH" | "CREDIT" });
+  const [editForm, setEditForm] = useState({ quantity: "", unit_cost: "", unit_price: "", payment_method: "CASH" as "CASH" | "CREDIT", date: todayStr() });
 
   const isBn = locale === "bn";
   const isPurchase = adjForm.movement_type === "PURCHASE";
@@ -52,6 +62,7 @@ export default function StockAdjustPanel({ product }: Props) {
       unit_cost: m.unit_cost,
       unit_price: m.movement_type === "PURCHASE" ? (product.unit_price ?? "") : "",
       payment_method: m.payment_method,
+      date: toLocalDateStr(new Date(m.created_at)),
     });
   };
 
@@ -62,6 +73,7 @@ export default function StockAdjustPanel({ product }: Props) {
         movementId,
         quantity: Number(editForm.quantity),
         payment_method: editForm.payment_method,
+        date: editForm.date,
         ...(editForm.unit_cost && { unit_cost: Number(editForm.unit_cost) }),
         ...(movementType === "PURCHASE" && editForm.unit_price && { unit_price: Number(editForm.unit_price) }),
       }).unwrap();
@@ -83,6 +95,7 @@ export default function StockAdjustPanel({ product }: Props) {
           unit_cost: Number(adjForm.unit_cost),
           ...(isPurchase && adjForm.unit_price && { unit_price: Number(adjForm.unit_price) }),
           payment_method: adjForm.payment_method,
+          date: adjForm.date,
           ...(adjForm.supplier_id
             ? { supplier_id: adjForm.supplier_id }
             : adjForm.supplier_name
@@ -91,7 +104,7 @@ export default function StockAdjustPanel({ product }: Props) {
         }),
         note_bn: adjForm.note_bn,
       }).unwrap();
-      setAdjForm(EMPTY_FORM);
+      setAdjForm(getEmptyForm());
       toast.success(isBn ? "স্টক আপডেট হয়েছে" : "Stock updated");
     } catch {
       toast.error(isBn ? "আপডেট ব্যর্থ" : "Failed");
@@ -187,6 +200,14 @@ export default function StockAdjustPanel({ product }: Props) {
                     : isSupplierReturn ? "Deducted from Payable" : "Credit (Payable)"}
                 </option>
               </FloatingSelect>
+
+              {/* Actual purchase date — often entered a day or more late */}
+              <FloatingDatePicker
+                label={isPurchase ? (isBn ? "ক্রয়ের তারিখ" : "Purchase Date") : (isBn ? "ফেরতের তারিখ" : "Return Date")}
+                value={adjForm.date}
+                onChange={val => setAdjForm(p => ({ ...p, date: val }))}
+                maxDate={new Date()}
+              />
 
               {/* Supplier — pick from list or type freeform */}
               <FloatingSelect
@@ -304,6 +325,12 @@ export default function StockAdjustPanel({ product }: Props) {
                           onChange={e => setEditForm(p => ({ ...p, unit_price: e.target.value }))}
                         />
                       )}
+                      <FloatingDatePicker
+                        label={isBn ? "তারিখ" : "Date"}
+                        value={editForm.date}
+                        onChange={val => setEditForm(p => ({ ...p, date: val }))}
+                        maxDate={new Date()}
+                      />
                     </div>
                     <div className="flex gap-2">
                       <button
