@@ -3,7 +3,6 @@
 import { Banner } from "@/api/banners/bannersApi";
 import { formatNumber } from "@/utils/format";
 import { useLocale } from "next-intl";
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -27,17 +26,12 @@ export default function OfferBannersClient({ banners }: { banners: Banner[] }) {
 
     if (banner.image) {
       return (
-        <div
-          className="w-full h-28 rounded-2xl overflow-hidden shadow-sm relative"
-          style={{ backgroundColor: banner.bg_color ?? "#fef2f2" }}
-        >
-          <Image
-            src={banner.image}
-            alt={title}
-            fill
-            sizes="100vw"
-            className="object-contain"
-          />
+        <div className="w-full rounded-2xl overflow-hidden shadow-sm">
+          {/* Natural aspect ratio — no fixed height, so nothing gets
+              cropped (object-cover) or letterboxed (object-contain) no
+              matter what shape the admin uploaded. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={banner.image} alt={title} className="w-full h-auto block" />
         </div>
       );
     }
@@ -114,7 +108,7 @@ export default function OfferBannersClient({ banners }: { banners: Banner[] }) {
       {/* slide track */}
       <div className="overflow-hidden rounded-2xl">
         <div
-          className="flex transition-transform duration-500 ease-in-out"
+          className="flex items-start transition-transform duration-500 ease-in-out"
           style={{ transform: `translateX(-${current * 100}%)` }}
         >
           {banners.map(banner =>
