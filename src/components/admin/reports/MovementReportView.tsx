@@ -16,7 +16,7 @@ interface Props {
   descriptionBn: string;
   descriptionEn: string;
   useReportQuery: (
-    args: { supplier_id?: string; product_id?: string; from?: string; to?: string } | void,
+    args: { supplier_id?: string; product_id?: string; from?: string; to?: string; payment_method?: string } | void,
   ) => { data?: PurchaseReport; isLoading: boolean };
 }
 
@@ -26,6 +26,7 @@ export default function MovementReportView({ titleBn, titleEn, descriptionBn, de
 
   const [supplierId, setSupplierId] = useState("");
   const [productId, setProductId] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
 
@@ -36,6 +37,7 @@ export default function MovementReportView({ titleBn, titleEn, descriptionBn, de
   const { data, isLoading } = useReportQuery({
     supplier_id: supplierId || undefined,
     product_id: productId || undefined,
+    payment_method: paymentMethod || undefined,
     from: from || undefined,
     to: to || undefined,
   });
@@ -54,7 +56,7 @@ export default function MovementReportView({ titleBn, titleEn, descriptionBn, de
       <PageHeader title={isBn ? titleBn : titleEn} description={isBn ? descriptionBn : descriptionEn} />
 
       {/* Filters */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4">
         <FloatingSelect
           label={isBn ? "সরবরাহকারী" : "Supplier"}
           value={supplierId}
@@ -70,6 +72,17 @@ export default function MovementReportView({ titleBn, titleEn, descriptionBn, de
           showClearButton={!!productId}
           onClear={() => setProductId("")}
           options={products.map(p => ({ value: p.id, label: isBn ? p.name_bn : p.name_en, image: p.images?.[0]?.image ?? null }))}
+        />
+        <FloatingSelect
+          label={isBn ? "পেমেন্ট পদ্ধতি" : "Payment Method"}
+          value={paymentMethod}
+          onChange={setPaymentMethod}
+          showClearButton={!!paymentMethod}
+          onClear={() => setPaymentMethod("")}
+          options={[
+            { value: "CASH", label: isBn ? "নগদ" : "Cash" },
+            { value: "CREDIT", label: isBn ? "বাকিতে" : "Credit" },
+          ]}
         />
         <div className="grid grid-cols-2 gap-3">
           <FloatingDatePicker label={isBn ? "শুরু তারিখ" : "From"} value={from} onChange={setFrom} clearable />
