@@ -1,13 +1,14 @@
 "use client";
 
 import { useGetCategoriesQuery } from "@/api/categories/categoriesApi";
-import { useGetProductsQuery } from "@/api/products/productsApi";
+import { useLazyGetProductsQuery } from "@/api/products/productsApi";
 import { FloatingSelect } from "@/components/ui/forms";
 import PageHeader from "@/components/ui/PageHeader";
 import TableSkeleton from "@/components/ui/skeletons";
+import { Product } from "@/lib/types";
 import { formatAmount, formatNumber } from "@/utils/format";
 import { useLocale } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function ProductStockReportPage() {
   const locale = useLocale();
@@ -15,14 +16,44 @@ export default function ProductStockReportPage() {
 
   const [categoryId, setCategoryId] = useState("");
   const [productId, setProductId]   = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("");
   const [onlyLowStock, setOnlyLowStock] = useState(false);
 
   const { data: categories = [] } = useGetCategoriesQuery();
-  const { data: productsRes, isLoading } = useGetProductsQuery({
-    page_size: 500,
-    category: categoryId || undefined,
-  });
-  const allProducts = productsRes?.data ?? [];
+
+  // The backend caps page_size at 100 regardless of what's requested — this
+  // report has no pagination UI of its own (it's meant to show everything
+  // at once), so once the catalog passes 100 products a single request
+  // silently truncates it. Fetching every page here instead.
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [trigger] = useLazyGetProductsQuery();
+
+  useEffect(() => {
+    let cancelled = false;
+    setIsLoading(true);
+    (async () => {
+      const collected: Product[] = [];
+      let page = 1;
+      let totalPages = 1;
+      do {
+        const res = await trigger({
+          page, page_size: 100,
+          category: categoryId || undefined,
+          payment_method: paymentMethod || undefined,
+        }).unwrap();
+        if (cancelled) return;
+        collected.push(...res.data);
+        totalPages = res.pagination?.total_pages ?? 1;
+        page += 1;
+      } while (page <= totalPages);
+      if (!cancelled) {
+        setAllProducts(collected);
+        setIsLoading(false);
+      }
+    })();
+    return () => { cancelled = true };
+  }, [categoryId, paymentMethod, trigger]);
 
   const rows = allProducts
     .filter(p => !productId || p.id === productId)
@@ -40,7 +71,7 @@ export default function ProductStockReportPage() {
       />
 
       {/* Filters */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4">
         <FloatingSelect
           label={isBn ? "কেটাগরি" : "Category"}
           value={categoryId}
@@ -56,6 +87,17 @@ export default function ProductStockReportPage() {
           showClearButton={!!productId}
           onClear={() => setProductId("")}
           options={allProducts.map(p => ({ value: p.id, label: isBn ? p.name_bn : p.name_en, image: p.images?.[0]?.image ?? null }))}
+        />
+        <FloatingSelect
+          label={isBn ? "ক্রয়ের ধরন" : "Purchased With"}
+          value={paymentMethod}
+          onChange={setPaymentMethod}
+          showClearButton={!!paymentMethod}
+          onClear={() => setPaymentMethod("")}
+          options={[
+            { value: "CASH", label: isBn ? "নগদ স্টক" : "Cash stock" },
+            { value: "CREDIT", label: isBn ? "বাকি স্টক" : "Credit stock" },
+          ]}
         />
         <label className="flex items-center gap-2 text-sm text-gray-600 px-1">
           <input

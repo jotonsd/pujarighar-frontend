@@ -136,6 +136,7 @@ interface PackageItem {
 
 export const {
   useGetProductsQuery,
+  useLazyGetProductsQuery,
   useGetProductQuery,
   useGetProductBySlugQuery,
   useCreateProductMutation,
