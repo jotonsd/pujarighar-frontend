@@ -144,8 +144,14 @@ export default function OrderActions({ order, orderId }: Props) {
   // person is attached yet — the backend already allows this (admin bypasses the
   // "must be the assigned delivery person" ownership check entirely). Excluded once
   // a courier consignment exists — that order is already being handled externally.
-  const hasAssignPersonOnly = order.status === 'ASSIGNED' && !order.delivery?.delivery_person && !order.courier_consignment
-  const hasDeliveryChoice = order.status === 'PACKED' || hasAssignPersonOnly
+  const hasAssignedPerson = !!order.delivery?.delivery_person
+  const hasAssignPersonOnly = order.status === 'ASSIGNED' && !hasAssignedPerson && !order.courier_consignment
+  // A delivery person can already be attached even while still PACKED (e.g.
+  // assigned ahead of packing) — the raw "pick a person" form used to show
+  // regardless, which looked broken (blank inputs next to an order that
+  // already has someone assigned). Only show it when there's genuinely
+  // nobody assigned yet.
+  const hasDeliveryChoice = (order.status === 'PACKED' && !hasAssignedPerson) || hasAssignPersonOnly
   const hasDispatchAction = order.status === 'ASSIGNED'
   const hasDeliverAction = order.status === 'ON_THE_WAY'
   const hasReturnAction = order.status === 'DELIVERED'
@@ -170,6 +176,24 @@ export default function OrderActions({ order, orderId }: Props) {
   return (
     <div className="card space-y-3">
       <h2 className="font-semibold text-gray-700">{locale === 'bn' ? 'অ্যাকশন' : 'Actions'}</h2>
+
+      {hasAssignedPerson && (
+        <div className="bg-gray-50 rounded-xl p-3 text-sm flex items-center gap-2.5">
+          <Avatar
+            src={order.delivery?.delivery_person_avatar ?? null}
+            name={order.delivery?.delivery_person_name_bn || order.delivery?.delivery_person_name_en || order.delivery?.delivery_person_email || '?'}
+          />
+          <div className="min-w-0">
+            <p className="font-medium text-gray-700 truncate">
+              {locale === 'bn' ? 'ডেলিভারিম্যান নির্ধারিত: ' : 'Assigned to: '}
+              {order.delivery?.delivery_person_name_bn || order.delivery?.delivery_person_name_en || order.delivery?.delivery_person_email}
+            </p>
+            {order.delivery?.delivery_person_phone && (
+              <p className="text-xs text-gray-500">{order.delivery.delivery_person_phone}</p>
+            )}
+          </div>
+        </div>
+      )}
 
       {order.courier_consignment && (
         <div className="bg-gray-50 rounded-xl p-3 text-sm space-y-1.5">
