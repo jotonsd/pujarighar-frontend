@@ -74,7 +74,7 @@ export default function TrackOrderClient({ offerBanners }: { offerBanners?: Reac
               required
               value={orderNumber}
               onChange={e => setOrderNumber(e.target.value)}
-              placeholder="PG-20260603-0001"
+              placeholder="ORD-48392017"
             />
             <FloatingInput
               label={isBn ? "ফোন নম্বর *" : "Phone Number *"}
