@@ -4,12 +4,12 @@ import Providers from "@/components/layout/Providers";
 import SiteChrome from "@/components/layout/SiteChrome";
 import { locales } from "@/lib/i18n";
 import { getOrganizationSchema } from "@/lib/structuredData";
-import { GoogleAnalytics } from "@next/third-parties/google";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { Poppins, Hind_Siliguri } from "next/font/google";
 import { notFound } from "next/navigation";
+import Script from "next/script";
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 const API_ORIGIN = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8020";
@@ -97,7 +97,24 @@ export default async function LocaleLayout({
             </SiteChrome>
           </Providers>
         </NextIntlClientProvider>
-        {GA_ID && <GoogleAnalytics gaId={GA_ID} />}
+        {/* strategy="lazyOnload" (not @next/third-parties's GoogleAnalytics,
+            which loads "afterInteractive") — defers GTM's own ~160KB bundle
+            and its main-thread work until the browser is idle, well past
+            the initial render, since analytics isn't part of what the user
+            is here to see. */}
+        {GA_ID && (
+          <>
+            <Script strategy="lazyOnload" src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} />
+            <Script id="ga-init" strategy="lazyOnload">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${GA_ID}');
+              `}
+            </Script>
+          </>
+        )}
       </body>
     </html>
   );
