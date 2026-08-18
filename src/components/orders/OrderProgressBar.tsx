@@ -3,11 +3,7 @@
 import { OrderStatus } from "@/lib/types";
 import { CheckCircle2 } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
-
-// Half the marker wrapper's width (72px) — how close its center may get to
-// either edge of the track before clamping, so it never overflows.
-const MARKER_HALF_PX = 36;
+import { useEffect, useState } from "react";
 
 const STAGES: { statuses: OrderStatus[]; label_bn: string; label_en: string }[] = [
   { statuses: ["PENDING", "CONFIRMED"], label_bn: "গৃহীত", label_en: "Accepted" },
@@ -56,22 +52,6 @@ export default function OrderProgressBar({ status, locale }: { status: OrderStat
     return () => timers.forEach(clearTimeout);
   }, [activeIndex, imageReady]);
 
-  // The marker's horizontal position is animated via `transform: translateX`
-  // (in px) rather than the `left` property — animating `left` forces a
-  // layout recalculation on every frame (a "non-composited animation," which
-  // Lighthouse flags), while `transform` runs entirely on the compositor.
-  // That means converting the clamped-percentage position into actual
-  // pixels here, which needs the track's real rendered width.
-  const trackRef = useRef<HTMLDivElement>(null);
-  const [trackWidth, setTrackWidth] = useState(0);
-  useEffect(() => {
-    const el = trackRef.current;
-    if (!el) return;
-    const observer = new ResizeObserver(([entry]) => setTrackWidth(entry.contentRect.width));
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
   // Cancelled/returned don't fit a linear progress model — the existing
   // status badge already communicates those, so just skip the bar.
   if (status === "CANCELLED" || status === "RETURNED") return null;
@@ -81,30 +61,21 @@ export default function OrderProgressBar({ status, locale }: { status: OrderStat
   // order is marked delivered, and not while it's still sliding there.
   const arrived = status === "DELIVERED" && visibleIndex === STAGES.length - 1 && settled;
 
-  // Same clamped position as before (never closer than MARKER_HALF_PX to
-  // either edge, so the marker can't overflow past the track), just
-  // computed in real pixels now instead of a CSS-only percentage/clamp().
-  const rawX = (pct / 100) * trackWidth;
-  const clampedX = trackWidth > 0
-    ? Math.min(Math.max(rawX, MARKER_HALF_PX), trackWidth - MARKER_HALF_PX)
-    : 0;
-
   return (
     <div className="pt-10 pb-1">
-      <div className="relative px-6" ref={trackRef}>
+      <div className="relative px-6">
         {/* Delivery vehicle marker, floating above the bar at the current stage.
             Stays put once delivered — gets a success badge, not a fade-out. */}
         <div
-          className="absolute -top-12 left-0 ease-in-out"
+          className="absolute -top-12 -translate-x-1/2 ease-in-out"
           style={{
-            // translateX in px (not `left`) so this runs on the compositor
-            // instead of triggering layout on every animation frame — the
-            // second translateX(-50%) centers the marker on that point,
-            // same as the old `-translate-x-1/2` Tailwind class did (can't
-            // mix that class with an inline `transform` — inline style wins
-            // outright and would silently drop the class's own transform).
-            transform: `translateX(${clampedX}px) translateX(-50%)`,
-            transitionProperty: "transform",
+            // Clamped in px, not left as a bare percentage — at pct=100 a bare
+            // `left: 100%` + translateX(-50%) pushes half the 64px-wide marker
+            // past the container's right edge, so any ancestor with
+            // overflow-x clipping (common for preventing horizontal scroll)
+            // cuts the vehicle off right at the Delivered stage.
+            left: `clamp(32px, ${pct}%, calc(100% - 32px))`,
+            transitionProperty: "left",
             transitionDuration: `${MOVE_MS}ms`,
           }}
         >
@@ -144,12 +115,9 @@ export default function OrderProgressBar({ status, locale }: { status: OrderStat
 
         {/* Track */}
         <div className="h-1.5 rounded-full bg-gray-100 overflow-hidden">
-          {/* Always full width, scaled down via transform instead of an
-              animated `width` — same compositor-vs-layout reasoning as the
-              marker above. */}
           <div
-            className="h-full w-full rounded-full bg-gradient-to-r from-amber-400 to-amber-600 ease-in-out origin-left"
-            style={{ transform: `scaleX(${pct / 100})`, transitionProperty: "transform", transitionDuration: `${MOVE_MS}ms` }}
+            className="h-full rounded-full bg-gradient-to-r from-amber-400 to-amber-600 ease-in-out"
+            style={{ width: `${pct}%`, transitionProperty: "width", transitionDuration: `${MOVE_MS}ms` }}
           />
         </div>
       </div>
