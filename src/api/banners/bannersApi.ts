@@ -8,6 +8,8 @@ export interface Banner {
   subtitle_en: string
   badge_text: string
   image: string | null
+  image_width: number | null
+  image_height: number | null
   bg_color: string
   link: string
   order: number

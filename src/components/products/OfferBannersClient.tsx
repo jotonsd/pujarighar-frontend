@@ -29,9 +29,18 @@ export default function OfferBannersClient({ banners }: { banners: Banner[] }) {
         <div className="w-full rounded-md sm:rounded-2xl overflow-hidden shadow-sm">
           {/* Natural aspect ratio — no fixed height, so nothing gets
               cropped (object-cover) or letterboxed (object-contain) no
-              matter what shape the admin uploaded. */}
+              matter what shape the admin uploaded. Real width/height
+              attributes (not just CSS) let the browser reserve the correct
+              box before the image loads, instead of shifting layout in
+              after — omitting them is what Lighthouse flags as a CLS risk. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={banner.image} alt={title} className="w-full h-auto block" />
+          <img
+            src={banner.image}
+            alt={title}
+            width={banner.image_width ?? undefined}
+            height={banner.image_height ?? undefined}
+            className="w-full h-auto block"
+          />
         </div>
       );
     }
