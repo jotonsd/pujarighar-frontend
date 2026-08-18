@@ -326,7 +326,7 @@ export default function OrderActions({ order, orderId }: Props) {
                   autoComplete="off"
                   className="flex-1 min-w-[180px] px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-amber-500"
                 />
-                <button disabled={loading} className="btn-primary text-sm whitespace-nowrap"
+                <button disabled={loading} className="btn-primary text-sm whitespace-nowrap !py-2.5 !rounded-xl"
                   onClick={() => doAction(
                     () => sendToCourier({
                       orderId,
@@ -359,7 +359,7 @@ export default function OrderActions({ order, orderId }: Props) {
                   autoComplete="off"
                   className="w-40 px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-amber-500"
                 />
-                <button disabled={loading} className="btn-primary text-sm whitespace-nowrap"
+                <button disabled={loading} className="btn-primary text-sm whitespace-nowrap !py-2.5 !rounded-xl"
                   onClick={() => doAction(
                     () => assign({
                       id: orderId,
