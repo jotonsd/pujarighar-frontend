@@ -23,9 +23,20 @@ export default function ProductSelector({ selected, onSelect }: Props) {
   const [search, setSearch] = useState('')
   const [category, setCategory] = useState('')
   const [brand, setBrand] = useState('')
+  const [paymentMethod, setPaymentMethod] = useState('')
   const [page, setPage] = useState(1)
 
-  const { data: products, isLoading } = useGetProductsQuery({ page, page_size: 20, search, category: category || undefined, brand: brand || undefined })
+  // 100 is the backend's hard cap per page (see paginate_queryset) — high
+  // enough that the current catalog fits on one page, so this list (a picker
+  // meant to cover everything stock-manageable, not a paged browse view)
+  // doesn't hide products behind pagination clicks unless the catalog
+  // genuinely grows past 100, in which case Pagination below still kicks in.
+  const { data: products, isLoading } = useGetProductsQuery({
+    page, page_size: 100, search,
+    category: category || undefined,
+    brand: brand || undefined,
+    payment_method: paymentMethod || undefined,
+  })
   const { data: categories = [] } = useGetCategoriesQuery()
   const { data: brands = [] } = useGetBrandsQuery()
 
@@ -64,6 +75,17 @@ export default function ProductSelector({ selected, onSelect }: Props) {
             ))}
           </FloatingSelect>
         </div>
+        <FloatingSelect
+          label={locale === 'bn' ? 'ক্রয়ের ধরন' : 'Purchased With'}
+          value={paymentMethod}
+          onChange={val => { setPaymentMethod(val); resetToFirstPage() }}
+          showClearButton={!!paymentMethod}
+          onClear={() => { setPaymentMethod(''); resetToFirstPage() }}
+        >
+          <option value="">{locale === 'bn' ? 'নগদ ও বাকি উভয়' : 'Both cash and credit'}</option>
+          <option value="CASH">{locale === 'bn' ? 'নগদ স্টক' : 'Cash stock'}</option>
+          <option value="CREDIT">{locale === 'bn' ? 'বাকি স্টক' : 'Credit stock'}</option>
+        </FloatingSelect>
       </div>
       <div className="overflow-y-auto flex-1">
         {isLoading ? (
