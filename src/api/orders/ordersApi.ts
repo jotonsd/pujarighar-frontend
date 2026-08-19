@@ -125,6 +125,12 @@ export const ordersApi = baseApi.injectEndpoints({
       invalidatesTags: (_r, _e, { id }) => ['Orders', { type: 'Order', id }],
     }),
 
+    addOrderItem: build.mutation<SalesOrder, { id: string; product_id: string; quantity: number }>({
+      query: ({ id, product_id, quantity }) => ({ url: `/api/orders/${id}/items/add/`, method: 'POST', body: { product_id, quantity } }),
+      transformResponse: (res: { data: SalesOrder }) => res.data,
+      invalidatesTags: (_r, _e, { id }) => ['Orders', { type: 'Order', id }],
+    }),
+
     updateOrderItemQuantity: build.mutation<SalesOrder, { id: string; item_id: string; quantity: number }>({
       query: ({ id, item_id, quantity }) => ({ url: `/api/orders/${id}/items/${item_id}/update/`, method: 'PATCH', body: { quantity } }),
       transformResponse: (res: { data: SalesOrder }) => res.data,
@@ -180,6 +186,7 @@ export const {
   useWaiveDeliveryChargeMutation,
   useLookupRecentOrderByPhoneQuery,
   useUpdateShippingMutation,
+  useAddOrderItemMutation,
   useUpdateOrderItemQuantityMutation,
   useDeleteOrderItemMutation,
   usePosCreateOrderMutation,

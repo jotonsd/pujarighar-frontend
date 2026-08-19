@@ -1,15 +1,122 @@
 "use client";
 
-import { useDeleteOrderItemMutation, useUpdateOrderItemQuantityMutation } from "@/api/orders/ordersApi";
-import { SalesOrder } from "@/lib/types";
+import { useAddOrderItemMutation, useDeleteOrderItemMutation, useUpdateOrderItemQuantityMutation } from "@/api/orders/ordersApi";
+import { useGetProductsQuery } from "@/api/products/productsApi";
+import { Product, SalesOrder } from "@/lib/types";
 import { toast } from "@/store/toastStore";
 import { getErrorMessage } from "@/utils/apiError";
 import { formatAmount, formatNumber, localName } from "@/utils/format";
-import { Check, Pencil, Trash2, X } from "lucide-react";
+import { Check, Pencil, Plus, Search, Trash2, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import { Fragment, useState } from "react";
 import DeleteItemConfirmModal from "./DeleteItemConfirmModal";
+
+function AddProductPicker({ orderId, locale }: { orderId: string; locale: string }) {
+  const isBn = locale === "bn";
+  const [query, setQuery] = useState("");
+  const [open, setOpen] = useState(false);
+  const [selected, setSelected] = useState<Product | null>(null);
+  const [qty, setQty] = useState("1");
+  const [addItem, { isLoading: adding }] = useAddOrderItemMutation();
+
+  const { data: results, isFetching } = useGetProductsQuery(
+    { search: query, page_size: 8 },
+    { skip: query.trim().length < 2 },
+  );
+
+  const handleAdd = async () => {
+    if (!selected || !qty || Number(qty) <= 0) return;
+    try {
+      await addItem({ id: orderId, product_id: selected.id, quantity: Number(qty) }).unwrap();
+      toast.success(isBn ? "পণ্য যোগ হয়েছে" : "Product added");
+      setSelected(null);
+      setQuery("");
+      setQty("1");
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, locale));
+    }
+  };
+
+  return (
+    <div className="mt-3 pt-3 border-t border-dashed border-gray-200">
+      {!selected ? (
+        <div className="relative">
+          <div className="relative">
+            <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+            <input
+              type="text"
+              value={query}
+              onChange={e => { setQuery(e.target.value); setOpen(true); }}
+              onFocus={() => setOpen(true)}
+              onBlur={() => setTimeout(() => setOpen(false), 150)}
+              placeholder={isBn ? "পণ্য খুঁজুন যোগ করতে..." : "Search product to add..."}
+              className="w-full pl-8 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-amber-500"
+            />
+          </div>
+          {open && query.trim().length >= 2 && (
+            <div className="absolute z-20 mt-1 w-full bg-white rounded-xl border border-gray-200 shadow-lg max-h-56 overflow-y-auto">
+              {isFetching ? (
+                <div className="px-3 py-3 text-sm text-gray-400 text-center">{isBn ? "খুঁজছি..." : "Searching..."}</div>
+              ) : results?.data?.length ? (
+                results.data.map(p => (
+                  <button
+                    key={p.id}
+                    type="button"
+                    onMouseDown={e => e.preventDefault()}
+                    onClick={() => { setSelected(p); setOpen(false); setQuery(""); }}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-amber-50 text-left transition-colors"
+                  >
+                    {p.images?.[0]?.image ? (
+                      <Image src={p.images[0].image} alt="" width={32} height={32} className="w-8 h-8 rounded-md object-cover border border-gray-100 shrink-0" />
+                    ) : (
+                      <div className="w-8 h-8 rounded-md border border-gray-100 bg-gray-50 flex items-center justify-center text-gray-300 text-xs shrink-0">—</div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="truncate text-gray-800">{localName(p.name_bn, p.name_en, isBn)}</div>
+                      <div className="text-xs text-gray-400 font-mono">{p.sku}</div>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <div className="text-xs font-bold text-amber-700">{formatAmount(p.effective_price, locale)}</div>
+                      <div className="text-[11px] text-gray-400">{isBn ? "স্টক" : "Stock"}: {formatNumber(parseFloat(p.stock_on_hand), locale)}</div>
+                    </div>
+                  </button>
+                ))
+              ) : (
+                <div className="px-3 py-3 text-sm text-gray-400 text-center">{isBn ? "কোনো পণ্য পাওয়া যায়নি" : "No products found"}</div>
+              )}
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="flex items-center gap-2 flex-1 min-w-[160px] px-3 py-2 bg-amber-50 rounded-lg text-sm">
+            <span className="truncate">{localName(selected.name_bn, selected.name_en, isBn)}</span>
+            <button type="button" onClick={() => setSelected(null)} className="ml-auto text-gray-400 hover:text-gray-600 shrink-0">
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </span>
+          <input
+            type="number"
+            min="1"
+            value={qty}
+            onChange={e => setQty(e.target.value)}
+            className="w-20 px-2 py-2 text-sm border border-gray-200 rounded-lg text-center focus:outline-none focus:border-amber-500"
+          />
+          <button
+            type="button"
+            disabled={adding || !qty || Number(qty) <= 0}
+            onClick={handleAdd}
+            className="btn-primary text-xs whitespace-nowrap inline-flex items-center gap-1 disabled:opacity-50"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            {adding ? (isBn ? "যোগ হচ্ছে..." : "Adding...") : (isBn ? "যোগ করুন" : "Add")}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
 
 interface Props {
   order: SalesOrder;
@@ -189,6 +296,8 @@ export default function OrderItems({ order }: Props) {
           </tbody>
         </table>
       </div>
+
+      {canEditQty && <AddProductPicker orderId={order.id} locale={locale} />}
 
       <div className="space-y-1.5">
         <hr className="my-2" />
