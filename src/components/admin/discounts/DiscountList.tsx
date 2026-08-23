@@ -2,6 +2,7 @@
 
 import {
   Discount,
+  useBulkDeleteDiscountMutation,
   useDeleteDiscountMutation,
   useGetDiscountsQuery,
   useToggleDiscountMutation,
@@ -171,6 +172,7 @@ export default function DiscountList() {
   const discounts = data?.data ?? [];
   const [toggle] = useToggleDiscountMutation();
   const [remove] = useDeleteDiscountMutation();
+  const [bulkRemove] = useBulkDeleteDiscountMutation();
 
   const [editTarget, setEditTarget] = useState<Discount | null>(null);
 
@@ -188,6 +190,15 @@ export default function DiscountList() {
       toast.success(isBn ? "মুছে ফেলা হয়েছে" : "Deleted");
     } catch {
       toast.error("Failed");
+    }
+  };
+
+  const handleBulkDelete = async (ids: (string | number)[]) => {
+    try {
+      const { deleted } = await bulkRemove(ids as string[]).unwrap();
+      toast.success(isBn ? `${deleted}টি ডিসকাউন্ট মুছে ফেলা হয়েছে` : `${deleted} discount(s) deleted`);
+    } catch {
+      toast.error(isBn ? "ব্যর্থ হয়েছে" : "Failed");
     }
   };
 
@@ -314,6 +325,8 @@ export default function DiscountList() {
         keyExtractor={d => d.id}
         isLoading={isLoading}
         quickActions={quickActions}
+        enableSelection
+        onBulkDelete={handleBulkDelete}
         emptyMessage={isBn ? "কোনো ডিসকাউন্ট নেই" : "No discounts yet"}
         exportFilename="discounts"
         totalPages={data?.pagination?.total_pages ?? 1}

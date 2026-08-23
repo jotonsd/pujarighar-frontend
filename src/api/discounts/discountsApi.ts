@@ -60,6 +60,12 @@ export const discountsApi = baseApi.injectEndpoints({
       invalidatesTags: ['Discounts', 'Products'],
     }),
 
+    bulkDeleteDiscount: build.mutation<{ deleted: number }, string[]>({
+      query: (ids) => ({ url: '/api/discounts/bulk-delete/', method: 'POST', body: { ids } }),
+      transformResponse: (res: { data: { deleted: number } }) => res.data,
+      invalidatesTags: ['Discounts', 'Products'],
+    }),
+
   }),
   overrideExisting: false,
 })
@@ -68,6 +74,7 @@ export const {
   useGetDiscountsQuery,
   useCreateDiscountMutation,
   useBulkCreateDiscountMutation,
+  useBulkDeleteDiscountMutation,
   useUpdateDiscountMutation,
   useToggleDiscountMutation,
   useDeleteDiscountMutation,
