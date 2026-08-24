@@ -128,6 +128,8 @@ export const baseApi = createApi({
     'BlogPosts',
     'Roles',
     'Bayna',
+    'SmsSettings',
+    'SmsLogs',
   ],
   endpoints: () => ({}),
 })

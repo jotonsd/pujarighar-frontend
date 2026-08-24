@@ -39,8 +39,31 @@ export interface LedgerReport {
   total_amount: string
 }
 
+export interface SalesReportRow {
+  id: string
+  date: string
+  order_number: string
+  customer_name: string
+  phone: string
+  payment_method: string
+  payment_status: string
+  status: string
+  items_count: number
+  subtotal: string
+  discount_amount: string
+  delivery_charge: string
+  grand_total: string
+}
+
+export interface SalesReport {
+  rows: SalesReportRow[]
+  total_orders: number
+  total_amount: string
+}
+
 type ReportParams = { supplier_id?: string; product_id?: string; from?: string; to?: string; payment_method?: string }
 type LedgerReportParams = { account_id?: string; from?: string; to?: string }
+type SalesReportParams = { from?: string; to?: string; status?: string; payment_status?: string; payment_method?: string }
 
 function buildReportQuery(base: string) {
   return ({ supplier_id = '', product_id = '', from = '', to = '', payment_method = '' }: ReportParams = {}) => {
@@ -64,8 +87,25 @@ function buildLedgerReportQuery(base: string) {
   }
 }
 
+function buildSalesReportQuery(base: string) {
+  return ({ from = '', to = '', status = '', payment_status = '', payment_method = '' }: SalesReportParams = {}) => {
+    const p = new URLSearchParams()
+    if (from)           p.set('from', from)
+    if (to)             p.set('to', to)
+    if (status)         p.set('status', status)
+    if (payment_status) p.set('payment_status', payment_status)
+    if (payment_method) p.set('payment_method', payment_method)
+    return `${base}?${p}`
+  }
+}
+
 export const reportsApi = baseApi.injectEndpoints({
   endpoints: build => ({
+    getSalesReport: build.query<SalesReport, SalesReportParams | void>({
+      query: buildSalesReportQuery('/api/reports/sales/'),
+      transformResponse: (res: { data: SalesReport }) => res.data,
+      providesTags: ['Orders'],
+    }),
     getPurchaseReport: build.query<PurchaseReport, ReportParams | void>({
       query: buildReportQuery('/api/reports/purchases/'),
       transformResponse: (res: { data: PurchaseReport }) => res.data,
@@ -90,6 +130,7 @@ export const reportsApi = baseApi.injectEndpoints({
 })
 
 export const {
+  useGetSalesReportQuery,
   useGetPurchaseReportQuery,
   useGetSupplierReturnReportQuery,
   useGetIncomeReportQuery,
