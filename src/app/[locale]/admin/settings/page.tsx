@@ -10,18 +10,19 @@ import ImageUpload from "@/components/ui/ImageUpload";
 import PageHeader from "@/components/ui/PageHeader";
 import { FloatingInput, FloatingTextarea } from "@/components/ui/forms";
 import { toast } from "@/store/toastStore";
-import { Building2, FileText, Gift, Mail, Send } from "lucide-react";
+import { Building2, FileText, Gift, Mail, Send, Sparkles } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useEffect, useState } from "react";
 
 // ── Menu config ────────────────────────────────────────────────────────────────
-type SectionId = "general" | "invoice" | "mail" | "referral" | "telegram";
+type SectionId = "general" | "invoice" | "mail" | "referral" | "first_order" | "telegram";
 
 const MENU: { id: SectionId; icon: React.ReactNode; label_bn: string; label_en: string }[] = [
   { id: "general",  icon: <Building2 className="w-4 h-4" />, label_bn: "সাধারণ তথ্য",   label_en: "General Info" },
   { id: "invoice",  icon: <FileText  className="w-4 h-4" />, label_bn: "চালান প্রিন্ট",  label_en: "Invoice Print" },
   { id: "mail",     icon: <Mail      className="w-4 h-4" />, label_bn: "মেইল কনফিগ",     label_en: "Mail Config" },
   { id: "referral", icon: <Gift      className="w-4 h-4" />, label_bn: "রেফারেল বোনাস",  label_en: "Referral Bonus" },
+  { id: "first_order", icon: <Sparkles className="w-4 h-4" />, label_bn: "প্রথম অর্ডার ছাড়", label_en: "First Order Discount" },
   { id: "telegram", icon: <Send      className="w-4 h-4" />, label_bn: "টেলিগ্রাম",      label_en: "Telegram" },
 ];
 
@@ -295,6 +296,48 @@ function ReferralPanel({ settings, isBn }: { settings: SiteSettings; isBn: boole
   );
 }
 
+// ── First order discount panel ──────────────────────────────────────────────────
+function FirstOrderDiscountPanel({ settings, isBn }: { settings: SiteSettings; isBn: boolean }) {
+  const [percent, setPercent] = useState(settings.first_order_discount_percent ?? "20.00");
+
+  useEffect(() => {
+    setPercent(settings.first_order_discount_percent ?? "20.00");
+  }, [settings]);
+
+  const [update, { isLoading }] = useUpdateSiteSettingsMutation();
+
+  const handleSave = async () => {
+    try {
+      await update({ first_order_discount_percent: percent }).unwrap();
+      toast.success(isBn ? "সংরক্ষিত হয়েছে" : "Saved");
+    } catch {
+      toast.error(isBn ? "ব্যর্থ হয়েছে" : "Failed to save");
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <FloatingInput
+        label={isBn ? "ছাড়ের হার (%)" : "Discount (%)"}
+        type="number"
+        min="0"
+        max="100"
+        step="0.01"
+        value={percent}
+        onChange={e => setPercent(e.target.value)}
+      />
+      <p className="text-xs text-gray-400">
+        {isBn
+          ? "একজন নিবন্ধিত গ্রাহক নিজে সাইট থেকে চেকআউট করে প্রথমবার অর্ডার দিলে সাবটোটালের ওপর স্বয়ংক্রিয়ভাবে এই হারে ছাড় প্রয়োগ হবে। ০ দিলে এই সুবিধা বন্ধ থাকবে। গেস্ট বা POS অর্ডারে প্রযোজ্য নয়।"
+          : "Automatically applied to the subtotal when a registered customer checks out their own cart for the very first time. Set to 0 to disable. Doesn't apply to guest or POS orders."}
+      </p>
+      <button onClick={handleSave} disabled={isLoading || !percent} className="btn-primary">
+        {isLoading ? (isBn ? "সংরক্ষণ হচ্ছে..." : "Saving...") : (isBn ? "সংরক্ষণ করুন" : "Save Changes")}
+      </button>
+    </div>
+  );
+}
+
 // ── Telegram panel ─────────────────────────────────────────────────────────────
 function TelegramPanel({ settings, isBn }: { settings: SiteSettings; isBn: boolean }) {
   const [form, setForm] = useState({
@@ -428,6 +471,7 @@ export default function SettingsPage() {
               {active === "invoice"  && <InvoicePanel  settings={settings} isBn={isBn} />}
               {active === "mail"     && <MailPanel     settings={settings} isBn={isBn} />}
               {active === "referral" && <ReferralPanel settings={settings} isBn={isBn} />}
+              {active === "first_order" && <FirstOrderDiscountPanel settings={settings} isBn={isBn} />}
               {active === "telegram" && <TelegramPanel settings={settings} isBn={isBn} />}
             </>
           ) : null}

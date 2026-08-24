@@ -19,6 +19,7 @@ export interface SiteSettings {
   email_use_tls?:             boolean
   email_default_from?:        string
   referral_bonus_amount?:     string
+  first_order_discount_percent?: string
   has_telegram_bot_token?:    boolean
   telegram_chat_id?:          string
 }
