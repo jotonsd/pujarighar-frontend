@@ -25,11 +25,21 @@ export interface SmsStats {
   failed:  number
 }
 
+export interface SmsRecipient {
+  phone:         string
+  name_bn:       string
+  name_en:       string
+  order_count:   number
+  last_order_at: string | null
+}
+
 interface ApiMetaLike { page: number; page_size: number; total: number; total_pages: number }
 interface SmsLogListResponse { data: SmsLogRow[]; pagination: ApiMetaLike }
+interface SmsRecipientListResponse { data: SmsRecipient[]; pagination: ApiMetaLike }
 
 type SmsLogParams = { page?: number; status?: string; phone?: string; from?: string; to?: string }
 type SmsStatsParams = { from?: string; to?: string }
+type SmsRecipientParams = { page?: number; search?: string }
 
 export const smsApi = baseApi.injectEndpoints({
   endpoints: build => ({
@@ -64,6 +74,18 @@ export const smsApi = baseApi.injectEndpoints({
       transformResponse: (res: { data: SmsStats }) => res.data,
       providesTags: ['SmsLogs'],
     }),
+    getSmsRecipients: build.query<SmsRecipientListResponse, SmsRecipientParams | void>({
+      query: ({ page = 1, search = '' }: SmsRecipientParams = {}) => {
+        const p = new URLSearchParams({ page: String(page) })
+        if (search) p.set('search', search)
+        return `/api/sms/recipients/?${p}`
+      },
+    }),
+    sendBulkSms: build.mutation<{ recipient_count: number }, { phones: string[]; message: string }>({
+      query: body => ({ url: '/api/sms/bulk-send/', method: 'POST', body }),
+      transformResponse: (res: { data: { recipient_count: number } }) => res.data,
+      invalidatesTags: ['SmsLogs'],
+    }),
   }),
 })
 
@@ -72,4 +94,6 @@ export const {
   useUpdateSmsSettingsMutation,
   useGetSmsLogsQuery,
   useGetSmsStatsQuery,
+  useGetSmsRecipientsQuery,
+  useSendBulkSmsMutation,
 } = smsApi

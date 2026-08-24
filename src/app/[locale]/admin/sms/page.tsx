@@ -1,5 +1,6 @@
 "use client";
 
+import BulkSendTab from "@/components/admin/sms/BulkSendTab";
 import LogsTab from "@/components/admin/sms/LogsTab";
 import OverviewTab from "@/components/admin/sms/OverviewTab";
 import SettingsTab from "@/components/admin/sms/SettingsTab";
@@ -7,7 +8,7 @@ import PageHeader from "@/components/ui/PageHeader";
 import { useLocale } from "next-intl";
 import { useState } from "react";
 
-type Tab = "overview" | "logs" | "settings";
+type Tab = "overview" | "send" | "logs" | "settings";
 
 export default function SmsDashboardPage() {
   const locale = useLocale();
@@ -16,6 +17,7 @@ export default function SmsDashboardPage() {
 
   const tabs: { id: Tab; label_bn: string; label_en: string }[] = [
     { id: "overview", label_bn: "সারসংক্ষেপ", label_en: "Overview" },
+    { id: "send", label_bn: "বাল্ক এসএমএস", label_en: "Bulk Send" },
     { id: "logs", label_bn: "লগ", label_en: "Logs" },
     { id: "settings", label_bn: "সেটিং", label_en: "Settings" },
   ];
@@ -44,6 +46,7 @@ export default function SmsDashboardPage() {
       </div>
 
       {tab === "overview" && <OverviewTab isBn={isBn} />}
+      {tab === "send" && <BulkSendTab isBn={isBn} />}
       {tab === "logs" && <LogsTab isBn={isBn} />}
       {tab === "settings" && <SettingsTab isBn={isBn} />}
     </div>
