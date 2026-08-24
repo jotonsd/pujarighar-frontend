@@ -39,14 +39,20 @@ export default function RegisterPage() {
     const e: Record<string, string> = {};
     if (!form.full_name_bn.trim())
       e.full_name_bn = isBn ? "নাম (বাংলা) আবশ্যক" : "Bangla name is required";
-    if (!form.email.trim())
-      e.email = isBn ? "ইমেইল আবশ্যক" : "Email is required";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
-      e.email = isBn ? "সঠিক ইমেইল লিখুন" : "Enter a valid email address";
-    if (!form.phone.trim())
-      e.phone = isBn ? "ফোন নম্বর আবশ্যক" : "Phone number is required";
-    else if (!/^01[3-9]\d{8}$/.test(form.phone))
-      e.phone = isBn ? "সঠিক বাংলাদেশি নম্বর লিখুন (01XXXXXXXXX)" : "Enter a valid BD number (01XXXXXXXXX)";
+
+    const hasEmail = form.email.trim().length > 0;
+    const hasPhone = form.phone.trim().length > 0;
+    if (!hasEmail && !hasPhone) {
+      const msg = isBn ? "ইমেইল অথবা ফোন নম্বর আবশ্যক" : "Email or phone number is required";
+      e.email = msg;
+      e.phone = msg;
+    } else {
+      if (hasEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
+        e.email = isBn ? "সঠিক ইমেইল লিখুন" : "Enter a valid email address";
+      if (hasPhone && !/^01[3-9]\d{8}$/.test(form.phone))
+        e.phone = isBn ? "সঠিক বাংলাদেশি নম্বর লিখুন (01XXXXXXXXX)" : "Enter a valid BD number (01XXXXXXXXX)";
+    }
+
     if (!form.password)
       e.password = isBn ? "পাসওয়ার্ড আবশ্যক" : "Password is required";
     else if (form.password.length < 8)
@@ -181,10 +187,14 @@ export default function RegisterPage() {
               />
             </div>
 
+            <p className="text-xs text-gray-400 -mb-1">
+              {isBn ? "ইমেইল অথবা ফোন নম্বর — যেকোনো একটি দিন" : "Email or phone number — provide at least one"}
+            </p>
+
             <FloatingInput
               label={t("auth.email")}
               type="email"
-             
+
               value={form.email}
               onChange={f("email")}
               error={fieldErrors.email}
@@ -192,7 +202,7 @@ export default function RegisterPage() {
 
             <FloatingInput
               label={t("auth.phone")}
-             
+
               value={form.phone}
               onChange={f("phone")}
               placeholder="01XXXXXXXXX"
