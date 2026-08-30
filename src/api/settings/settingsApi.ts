@@ -22,10 +22,12 @@ export interface SiteSettings {
   first_order_discount_percent?: string
   has_telegram_bot_token?:    boolean
   telegram_chat_id?:          string
+  has_gemini_api_key?:        boolean
+  gemini_model?:              string
 }
 
-// email_host_password / telegram_bot_token are write-only — sent on update, never read back
-export type SiteSettingsUpdate = Partial<SiteSettings> & { email_host_password?: string; telegram_bot_token?: string }
+// email_host_password / telegram_bot_token / gemini_api_key are write-only — sent on update, never read back
+export type SiteSettingsUpdate = Partial<SiteSettings> & { email_host_password?: string; telegram_bot_token?: string; gemini_api_key?: string }
 
 export const settingsApi = baseApi.injectEndpoints({
   endpoints: build => ({

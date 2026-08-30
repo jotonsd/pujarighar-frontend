@@ -2,7 +2,8 @@
 
 import { usePathname } from "next/navigation";
 import Toaster from "@/components/ui/Toaster";
-import ContactTray from "@/components/layout/ContactTray";
+import SupportLauncherButton from "@/components/support/SupportLauncherButton";
+import SupportChatWidget from "@/components/support/SupportChatWidget";
 
 export default function SiteChrome({
   navbar,
@@ -21,7 +22,8 @@ export default function SiteChrome({
       <>
         {children}
         <Toaster />
-        <ContactTray />
+        <SupportLauncherButton />
+        <SupportChatWidget />
       </>
     );
   }
@@ -32,7 +34,8 @@ export default function SiteChrome({
       <main className="flex-1">{children}</main>
       {footer}
       <Toaster />
-      <ContactTray />
+      <SupportLauncherButton />
+      <SupportChatWidget />
     </div>
   );
 }
