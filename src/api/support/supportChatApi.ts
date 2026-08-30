@@ -8,6 +8,7 @@ export interface SupportChatTurn {
 interface SupportChatRequest {
   message: string
   history: SupportChatTurn[]
+  pending_order?: PendingOrder | null
 }
 
 export interface SupportChatProduct {
@@ -22,6 +23,7 @@ export interface SupportChatProduct {
 }
 
 export interface PendingOrderItem {
+  product_id: string
   name_bn: string
   name_en: string
   quantity: number
