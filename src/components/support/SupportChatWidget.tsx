@@ -2,6 +2,7 @@
 
 import { useGetSiteSettingsQuery } from "@/api/settings/settingsApi";
 import {
+  PendingOrder,
   SupportChatProduct,
   SupportChatTurn,
   useSendSupportChatMutation,
@@ -13,7 +14,7 @@ import {
   toWhatsAppNumber,
 } from "@/utils/contact";
 import { formatAmount, localName } from "@/utils/format";
-import { Mail, Minus, Phone, Send, User, X } from "lucide-react";
+import { CheckCircle2, Mail, Minus, Phone, Send, User, X } from "lucide-react";
 import { useLocale } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
@@ -36,6 +37,7 @@ interface Message extends SupportChatTurn {
   id: string;
   isError?: boolean;
   products?: SupportChatProduct[];
+  pendingOrder?: PendingOrder | null;
 }
 
 function ProductResultCard({
@@ -88,6 +90,88 @@ function ProductResultCard({
     </Link>
   ) : (
     card
+  );
+}
+
+function OrderPreviewCard({
+  order,
+  isBn,
+  locale,
+  onConfirm,
+  confirming,
+  interactive,
+}: {
+  order: PendingOrder;
+  isBn: boolean;
+  locale: string;
+  onConfirm: () => void;
+  confirming: boolean;
+  interactive: boolean;
+}) {
+  return (
+    <div className="border-t border-amber-100">
+      <div className="divide-y divide-gray-50">
+        {order.items.map((item, i) => (
+          <div key={i} className="flex items-center gap-2.5 p-2">
+            {item.image_url ? (
+              <Image
+                src={item.image_url}
+                alt=""
+                width={40}
+                height={40}
+                className="w-10 h-10 rounded-lg object-cover border border-gray-100 shrink-0"
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-lg border border-gray-100 bg-gray-50 shrink-0" />
+            )}
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-medium text-gray-800 truncate">
+                {localName(item.name_bn, item.name_en, isBn)}
+              </p>
+              <p className="text-[11px] text-gray-400">
+                {item.quantity} × {formatAmount(item.unit_price, locale, 2)}
+                {!item.in_stock && (
+                  <span className="text-red-500 ml-1">{isBn ? "স্টক নেই" : "out of stock"}</span>
+                )}
+              </p>
+            </div>
+            <span className="text-xs font-bold text-amber-700 shrink-0">
+              {formatAmount(item.line_total, locale, 2)}
+            </span>
+          </div>
+        ))}
+      </div>
+      <div className="px-3 py-2 bg-amber-50 text-xs text-gray-600 space-y-1">
+        <div className="flex justify-between">
+          <span>{isBn ? "সাবটোটাল" : "Subtotal"}</span>
+          <span>{formatAmount(order.subtotal, locale, 2)}</span>
+        </div>
+        <div className="flex justify-between">
+          <span>{isBn ? "ডেলিভারি চার্জ" : "Delivery charge"}</span>
+          <span>{formatAmount(order.delivery_charge, locale, 2)}</span>
+        </div>
+        <div className="flex justify-between font-bold text-amber-700 text-sm pt-1 border-t border-amber-100">
+          <span>{isBn ? "সর্বমোট" : "Grand total"}</span>
+          <span>{formatAmount(order.grand_total, locale, 2)}</span>
+        </div>
+        <p className="text-[11px] text-gray-400 pt-0.5">
+          {isBn ? "পেমেন্ট: ক্যাশ অন ডেলিভারি" : "Payment: Cash on Delivery"}
+        </p>
+      </div>
+      {interactive && (
+        <button
+          type="button"
+          onClick={onConfirm}
+          disabled={confirming}
+          className="w-full flex items-center justify-center gap-1.5 py-2.5 bg-amber-600 text-white text-sm font-semibold hover:bg-amber-700 transition-colors disabled:opacity-60"
+        >
+          <CheckCircle2 className="w-4 h-4" />
+          {confirming
+            ? (isBn ? "পাঠানো হচ্ছে..." : "Sending...")
+            : (isBn ? "অর্ডার কনফার্ম করুন" : "Confirm Order")}
+        </button>
+      )}
+    </div>
   );
 }
 
@@ -240,8 +324,7 @@ export default function SupportChatWidget() {
 
   if (isAdmin || !isOpen) return null;
 
-  const handleSend = async () => {
-    const text = input.trim();
+  const sendMessage = async (text: string) => {
     if (!text || isLoading) return;
     const userMsg: Message = { id: `${Date.now()}-u`, role: "user", text };
     const history = messages.map(({ role, text }) => ({ role, text }));
@@ -256,6 +339,7 @@ export default function SupportChatWidget() {
           role: "model",
           text: res.reply,
           products: res.products,
+          pendingOrder: res.pending_order,
         },
       ]);
     } catch {
@@ -272,6 +356,10 @@ export default function SupportChatWidget() {
       ]);
     }
   };
+
+  const handleSend = () => sendMessage(input.trim());
+  const handleConfirmOrder = () =>
+    sendMessage(isBn ? "হ্যাঁ, অর্ডারটি কনফার্ম করুন।" : "Yes, please confirm the order.");
 
   const contactIcons = (compact?: boolean) => (
     <div
@@ -424,6 +512,16 @@ export default function SupportChatWidget() {
                         />
                       ))}
                     </div>
+                  )}
+                  {m.pendingOrder && (
+                    <OrderPreviewCard
+                      order={m.pendingOrder}
+                      isBn={isBn}
+                      locale={locale}
+                      onConfirm={handleConfirmOrder}
+                      confirming={isLoading}
+                      interactive={m.id === messages[messages.length - 1]?.id}
+                    />
                   )}
                 </>
               )}
