@@ -24,6 +24,7 @@ export interface SiteSettings {
   telegram_chat_id?:          string
   has_gemini_api_key?:        boolean
   gemini_model?:              string
+  ai_ordering_enabled?:       boolean
 }
 
 // email_host_password / telegram_bot_token / gemini_api_key are write-only — sent on update, never read back
