@@ -58,6 +58,7 @@ interface SupportChatResult {
   products: SupportChatProduct[]
   pending_order: PendingOrder | null
   candidates: DisambiguationCandidate[]
+  order_updated: boolean
 }
 
 export const supportChatApi = baseApi.injectEndpoints({

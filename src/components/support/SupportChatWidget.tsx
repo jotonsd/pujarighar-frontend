@@ -40,6 +40,7 @@ interface Message extends SupportChatTurn {
   products?: SupportChatProduct[];
   pendingOrder?: PendingOrder | null;
   candidates?: DisambiguationCandidate[];
+  orderUpdated?: boolean;
 }
 
 function ProductResultCard({
@@ -400,19 +401,15 @@ export default function SupportChatWidget() {
 
   if (isAdmin || !isOpen) return null;
 
-  // The order-in-progress and any pending disambiguation always live on the
-  // most recent model reply — derived here once so both sendMessage (to echo
-  // back to the API) and the persistent order panel below (to render it
-  // exactly once, not duplicated under every later unrelated reply) agree
-  // on the same "current" state.
-  const lastModelMsg = [...messages].reverse().find(m => m.role === "model");
-  const pendingOrder = lastModelMsg?.pendingOrder ?? null;
-  const hasPendingCandidates = !!lastModelMsg?.candidates?.length;
-
   const sendMessage = async (text: string) => {
     if (!text || isLoading) return;
     const userMsg: Message = { id: `${Date.now()}-u`, role: "user", text };
     const history = messages.map(({ role, text }) => ({ role, text }));
+    // Echo back the last order preview the customer actually saw — the
+    // backend trusts this (real product IDs) over re-guessing which exact
+    // product the model's own later, vaguer wording refers to.
+    const lastModelMsg = [...messages].reverse().find(m => m.role === "model");
+    const pendingOrder = lastModelMsg?.pendingOrder ?? null;
     setMessages(prev => [...prev, userMsg]);
     setInput("");
     try {
@@ -426,6 +423,7 @@ export default function SupportChatWidget() {
           products: res.products,
           pendingOrder: res.pending_order,
           candidates: res.candidates,
+          orderUpdated: res.order_updated,
         },
       ]);
     } catch {
@@ -566,7 +564,15 @@ export default function SupportChatWidget() {
               : "Ask anything about products, prices, discounts, delivery charges, referrals, cashback, how to reach us — or place an order directly."}
           </div>
         )}
-        {messages.map(m => (
+        {messages.map(m => {
+          // pendingOrder is echoed unchanged on every later reply so the
+          // backend can keep trusting it (for create_order etc.), but that
+          // doesn't mean the card should be redrawn under every unrelated
+          // message too — orderUpdated is true only on turns where an order
+          // tool (propose_order / add_order_item / remove_order_item /
+          // show_order_summary) actually ran.
+          const showPendingOrder = !!m.orderUpdated && !!m.pendingOrder;
+          return (
           <div
             key={m.id}
             className={`flex items-start gap-2 ${m.role === "user" ? "flex-row-reverse" : ""}`}
@@ -601,6 +607,16 @@ export default function SupportChatWidget() {
                       ))}
                     </div>
                   )}
+                  {showPendingOrder && m.pendingOrder && !m.candidates?.length && (
+                    <OrderPreviewCard
+                      order={m.pendingOrder}
+                      isBn={isBn}
+                      locale={locale}
+                      onConfirm={handleConfirmOrder}
+                      confirming={isLoading}
+                      interactive={m.id === messages[messages.length - 1]?.id}
+                    />
+                  )}
                   {!!m.candidates?.length && (
                     <CandidateSelector
                       candidates={m.candidates}
@@ -615,7 +631,8 @@ export default function SupportChatWidget() {
               )}
             </div>
           </div>
-        ))}
+          );
+        })}
         {isLoading && (
           <div className="flex items-start gap-2">
             <BrahmanAvatar size={28} />
@@ -636,23 +653,6 @@ export default function SupportChatWidget() {
           </div>
         )}
       </div>
-
-      {pendingOrder && !hasPendingCandidates && (
-        // Rendered ONCE here, outside the message list — not per-message —
-        // so it stays available to confirm no matter how many unrelated
-        // questions the customer asks afterward, instead of repeating the
-        // whole order card underneath every later reply.
-        <div className="max-h-64 overflow-y-auto shrink-0">
-          <OrderPreviewCard
-            order={pendingOrder}
-            isBn={isBn}
-            locale={locale}
-            onConfirm={handleConfirmOrder}
-            confirming={isLoading}
-            interactive
-          />
-        </div>
-      )}
 
       <div className="flex items-end gap-2 p-3 border-t border-gray-100 shrink-0">
         <textarea
