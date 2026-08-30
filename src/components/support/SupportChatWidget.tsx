@@ -70,11 +70,11 @@ function ProductResultCard({
         </p>
         <div className="flex items-center gap-1.5 mt-0.5">
           <span className="text-xs font-bold text-amber-700">
-            {formatAmount(product.price, locale, 2)}
+            {formatAmount(product.price, locale)}
           </span>
           {product.original_price && (
             <span className="text-[10px] text-gray-400 line-through">
-              {formatAmount(product.original_price, locale, 2)}
+              {formatAmount(product.original_price, locale)}
             </span>
           )}
           {!product.in_stock && (
@@ -145,14 +145,14 @@ function OrderPreviewCard({
                 {localName(item.name_bn, item.name_en, isBn)}
               </p>
               <p className="text-[11px] text-gray-400">
-                {item.quantity} × {formatAmount(item.unit_price, locale, 2)}
+                {item.quantity} × {formatAmount(item.unit_price, locale)}
                 {!item.in_stock && (
                   <span className="text-red-500 ml-1">{isBn ? "স্টক নেই" : "out of stock"}</span>
                 )}
               </p>
             </div>
             <span className="text-xs font-bold text-amber-700 shrink-0">
-              {formatAmount(item.line_total, locale, 2)}
+              {formatAmount(item.line_total, locale)}
             </span>
           </div>
         ))}
@@ -160,15 +160,15 @@ function OrderPreviewCard({
       <div className="px-3 py-2 bg-amber-50 text-xs text-gray-600 space-y-1">
         <div className="flex justify-between">
           <span>{isBn ? "সাবটোটাল" : "Subtotal"}</span>
-          <span>{formatAmount(order.subtotal, locale, 2)}</span>
+          <span>{formatAmount(order.subtotal, locale)}</span>
         </div>
         <div className="flex justify-between">
           <span>{isBn ? "ডেলিভারি চার্জ" : "Delivery charge"}</span>
-          <span>{formatAmount(order.delivery_charge, locale, 2)}</span>
+          <span>{formatAmount(order.delivery_charge, locale)}</span>
         </div>
         <div className="flex justify-between font-bold text-amber-700 text-sm pt-1 border-t border-amber-100">
           <span>{isBn ? "সর্বমোট" : "Grand total"}</span>
-          <span>{formatAmount(order.grand_total, locale, 2)}</span>
+          <span>{formatAmount(order.grand_total, locale)}</span>
         </div>
         <p className="text-[11px] text-gray-400 pt-0.5">
           {isBn ? "পেমেন্ট: ক্যাশ অন ডেলিভারি" : "Payment: Cash on Delivery"}
@@ -232,7 +232,7 @@ function CandidateSelector({
               {localName(c.name_bn, c.name_en, isBn)}
             </p>
             <p className="text-[11px] text-amber-700 font-bold">
-              {formatAmount(c.price, locale, 2)}
+              {formatAmount(c.price, locale)}
             </p>
           </div>
         </button>
