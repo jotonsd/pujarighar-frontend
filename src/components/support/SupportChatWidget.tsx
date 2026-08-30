@@ -40,6 +40,7 @@ interface Message extends SupportChatTurn {
   products?: SupportChatProduct[];
   pendingOrder?: PendingOrder | null;
   candidates?: DisambiguationCandidate[];
+  orderUpdated?: boolean;
 }
 
 function ProductResultCard({
@@ -422,6 +423,7 @@ export default function SupportChatWidget() {
           products: res.products,
           pendingOrder: res.pending_order,
           candidates: res.candidates,
+          orderUpdated: res.order_updated,
         },
       ]);
     } catch {
@@ -562,7 +564,15 @@ export default function SupportChatWidget() {
               : "Ask anything about products, prices, discounts, delivery charges, referrals, cashback, how to reach us — or place an order directly."}
           </div>
         )}
-        {messages.map(m => (
+        {messages.map(m => {
+          // pendingOrder is echoed unchanged on every later reply so the
+          // backend can keep trusting it (for create_order etc.), but that
+          // doesn't mean the card should be redrawn under every unrelated
+          // message too — orderUpdated is true only on turns where an order
+          // tool (propose_order / add_order_item / remove_order_item /
+          // show_order_summary) actually ran.
+          const showPendingOrder = !!m.orderUpdated && !!m.pendingOrder;
+          return (
           <div
             key={m.id}
             className={`flex items-start gap-2 ${m.role === "user" ? "flex-row-reverse" : ""}`}
@@ -597,7 +607,7 @@ export default function SupportChatWidget() {
                       ))}
                     </div>
                   )}
-                  {m.pendingOrder && !m.candidates?.length && (
+                  {showPendingOrder && m.pendingOrder && !m.candidates?.length && (
                     <OrderPreviewCard
                       order={m.pendingOrder}
                       isBn={isBn}
@@ -621,7 +631,8 @@ export default function SupportChatWidget() {
               )}
             </div>
           </div>
-        ))}
+          );
+        })}
         {isLoading && (
           <div className="flex items-start gap-2">
             <BrahmanAvatar size={28} />
