@@ -423,18 +423,20 @@ function AISupportPanel({ settings, isBn }: { settings: SiteSettings; isBn: bool
   const [form, setForm] = useState({
     gemini_api_key: "",
     gemini_model:   settings.gemini_model ?? "gemini-3.6-flash",
+    ai_ordering_enabled: settings.ai_ordering_enabled ?? false,
   });
 
   useEffect(() => {
     setForm({
       gemini_api_key: "",
       gemini_model:   settings.gemini_model ?? "gemini-3.6-flash",
+      ai_ordering_enabled: settings.ai_ordering_enabled ?? false,
     });
   }, [settings]);
 
   const [update, { isLoading }] = useUpdateSiteSettingsMutation();
 
-  const f = (key: keyof typeof form) =>
+  const f = (key: "gemini_api_key" | "gemini_model") =>
     (e: React.ChangeEvent<HTMLInputElement>) =>
       setForm(p => ({ ...p, [key]: e.target.value }));
 
@@ -443,6 +445,7 @@ function AISupportPanel({ settings, isBn }: { settings: SiteSettings; isBn: bool
       await update({
         ...(form.gemini_api_key ? { gemini_api_key: form.gemini_api_key } : {}),
         gemini_model: form.gemini_model,
+        ai_ordering_enabled: form.ai_ordering_enabled,
       }).unwrap();
       toast.success(isBn ? "সংরক্ষিত হয়েছে" : "Saved");
     } catch {
@@ -485,6 +488,26 @@ function AISupportPanel({ settings, isBn }: { settings: SiteSettings; isBn: bool
           ? "মডেলের নাম পরিবর্তনযোগ্য রাখা হয়েছে যাতে Google নতুন ফ্রি-টিয়ার মডেল প্রকাশ করলে কোড পরিবর্তন ছাড়াই আপডেট করা যায়।"
           : "The model name is kept editable so it can be updated without a code change whenever Google releases a newer free-tier model."}
       </p>
+
+      <div className="border-t border-gray-100 pt-4">
+        <label className="flex items-start gap-3 cursor-pointer select-none">
+          <div
+            onClick={() => setForm(p => ({ ...p, ai_ordering_enabled: !p.ai_ordering_enabled }))}
+            className={`mt-0.5 w-10 h-5 rounded-full transition-colors relative shrink-0 ${form.ai_ordering_enabled ? "bg-amber-600" : "bg-gray-200"}`}
+          >
+            <span className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${form.ai_ordering_enabled ? "translate-x-5" : ""}`} />
+          </div>
+          <div>
+            <span className="text-sm font-medium text-gray-700">{isBn ? "চ্যাট থেকে অর্ডার করার সুবিধা" : "Allow ordering through chat"}</span>
+            <p className="text-xs text-gray-400 mt-0.5">
+              {isBn
+                ? "চালু থাকলে, গ্রাহকরা চ্যাট করেই বাস্তব অর্ডার (ক্যাশ অন ডেলিভারি) দিতে পারবেন — একাধিক পণ্যও একসাথে। স্টক তৎক্ষণাৎ কমে যাবে ও অন্যান্য অর্ডারের মতো পেন্ডিং অবস্থায় থাকবে, স্টাফের অনুমোদনের অপেক্ষায়। বাই ডিফল্ট বন্ধ থাকে।"
+                : "When on, customers can place real Cash-on-Delivery orders — including multiple products at once — directly in chat. Stock deducts immediately and the order lands as PENDING, awaiting staff confirmation like any other order. Off by default."}
+            </p>
+          </div>
+        </label>
+      </div>
+
       <button onClick={handleSave} disabled={isLoading || !form.gemini_model} className="btn-primary">
         {isLoading ? (isBn ? "সংরক্ষণ হচ্ছে..." : "Saving...") : (isBn ? "সংরক্ষণ করুন" : "Save Changes")}
       </button>
