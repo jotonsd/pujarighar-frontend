@@ -597,7 +597,7 @@ export default function SupportChatWidget() {
                       ))}
                     </div>
                   )}
-                  {m.pendingOrder && (
+                  {m.pendingOrder && !m.candidates?.length && (
                     <OrderPreviewCard
                       order={m.pendingOrder}
                       isBn={isBn}
