@@ -251,8 +251,8 @@ export default function SupportChatWidget() {
         {messages.length === 0 && (
           <div className="text-center text-sm text-gray-400 mt-6 px-4">
             {isBn
-              ? "পণ্য, দাম, ছাড়, ডেলিভারি চার্জ, রেফারেল, ক্যাশব্যাক অথবা যোগাযোগের তথ্য নিয়ে যেকোনো প্রশ্ন করুন।"
-              : "Ask anything about products, prices, discounts, delivery charges, referrals, cashback, or how to reach us."}
+              ? "পণ্য, দাম, ছাড়, ডেলিভারি চার্জ, রেফারেল, ক্যাশব্যাক, যোগাযোগের তথ্য অথবা সরাসরি অর্ডার করতে যেকোনো প্রশ্ন করুন।"
+              : "Ask anything about products, prices, discounts, delivery charges, referrals, cashback, how to reach us — or place an order directly."}
           </div>
         )}
         {messages.map(m => (
