@@ -21,9 +21,28 @@ export interface SupportChatProduct {
   image_url: string | null
 }
 
+export interface PendingOrderItem {
+  name_bn: string
+  name_en: string
+  quantity: number
+  unit_price: string
+  line_total: string
+  in_stock: boolean
+  image_url: string | null
+}
+
+export interface PendingOrder {
+  items: PendingOrderItem[]
+  subtotal: string
+  delivery_charge: string
+  grand_total: string
+  payment_method: string
+}
+
 interface SupportChatResult {
   reply: string
   products: SupportChatProduct[]
+  pending_order: PendingOrder | null
 }
 
 export const supportChatApi = baseApi.injectEndpoints({
