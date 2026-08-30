@@ -10,12 +10,12 @@ import ImageUpload from "@/components/ui/ImageUpload";
 import PageHeader from "@/components/ui/PageHeader";
 import { FloatingInput, FloatingTextarea } from "@/components/ui/forms";
 import { toast } from "@/store/toastStore";
-import { Building2, FileText, Gift, Mail, Send, Sparkles } from "lucide-react";
+import { Bot, Building2, FileText, Gift, Mail, Send, Sparkles } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useEffect, useState } from "react";
 
 // ── Menu config ────────────────────────────────────────────────────────────────
-type SectionId = "general" | "invoice" | "mail" | "referral" | "first_order" | "telegram";
+type SectionId = "general" | "invoice" | "mail" | "referral" | "first_order" | "telegram" | "ai_support";
 
 const MENU: { id: SectionId; icon: React.ReactNode; label_bn: string; label_en: string }[] = [
   { id: "general",  icon: <Building2 className="w-4 h-4" />, label_bn: "সাধারণ তথ্য",   label_en: "General Info" },
@@ -24,6 +24,7 @@ const MENU: { id: SectionId; icon: React.ReactNode; label_bn: string; label_en: 
   { id: "referral", icon: <Gift      className="w-4 h-4" />, label_bn: "রেফারেল বোনাস",  label_en: "Referral Bonus" },
   { id: "first_order", icon: <Sparkles className="w-4 h-4" />, label_bn: "প্রথম অর্ডার ছাড়", label_en: "First Order Discount" },
   { id: "telegram", icon: <Send      className="w-4 h-4" />, label_bn: "টেলিগ্রাম",      label_en: "Telegram" },
+  { id: "ai_support", icon: <Bot     className="w-4 h-4" />, label_bn: "এআই সহায়তা",     label_en: "AI Support" },
 ];
 
 // ── Page-size options ──────────────────────────────────────────────────────────
@@ -417,6 +418,80 @@ function TelegramPanel({ settings, isBn }: { settings: SiteSettings; isBn: boole
   );
 }
 
+// ── AI Support panel ─────────────────────────────────────────────────────────────
+function AISupportPanel({ settings, isBn }: { settings: SiteSettings; isBn: boolean }) {
+  const [form, setForm] = useState({
+    gemini_api_key: "",
+    gemini_model:   settings.gemini_model ?? "gemini-3.6-flash",
+  });
+
+  useEffect(() => {
+    setForm({
+      gemini_api_key: "",
+      gemini_model:   settings.gemini_model ?? "gemini-3.6-flash",
+    });
+  }, [settings]);
+
+  const [update, { isLoading }] = useUpdateSiteSettingsMutation();
+
+  const f = (key: keyof typeof form) =>
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      setForm(p => ({ ...p, [key]: e.target.value }));
+
+  const handleSave = async () => {
+    try {
+      await update({
+        ...(form.gemini_api_key ? { gemini_api_key: form.gemini_api_key } : {}),
+        gemini_model: form.gemini_model,
+      }).unwrap();
+      toast.success(isBn ? "সংরক্ষিত হয়েছে" : "Saved");
+    } catch {
+      toast.error(isBn ? "ব্যর্থ হয়েছে" : "Failed to save");
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="bg-amber-50 border border-amber-100 rounded-xl p-3 text-xs text-gray-600 space-y-1.5 leading-relaxed">
+        <p className="font-semibold text-amber-700">
+          {isBn ? "সেটআপ করবেন যেভাবে" : "How to set this up"}
+        </p>
+        <p>
+          {isBn
+            ? "১. aistudio.google.com এ যান, লগইন করুন এবং একটি বিনামূল্যের API কী তৈরি করুন।"
+            : "1. Go to aistudio.google.com, sign in, and create a free API key."}
+        </p>
+        <p>
+          {isBn
+            ? "২. কী-টি এখানে বসিয়ে সংরক্ষণ করুন। কনফিগার করা থাকলে, স্টোরফ্রন্টে গ্রাহকরা পণ্য, মূল্য, ছাড়, ডেলিভারি চার্জ, রেফারেল ও ক্যাশব্যাক সম্পর্কে একটি চ্যাট সহায়ক থেকে সাহায্য নিতে পারবেন।"
+            : "2. Paste the key here and save. Once configured, customers get a chat assistant on the storefront that can answer questions about products, prices, discounts, delivery charges, referrals, and cashback — using your live data."}
+        </p>
+      </div>
+      <FloatingInput
+        label={isBn ? "Gemini এপিআই কী" : "Gemini API Key"}
+        type="password"
+        value={form.gemini_api_key}
+        onChange={f("gemini_api_key")}
+        placeholder={settings.has_gemini_api_key ? (isBn ? "সংরক্ষিত আছে — পরিবর্তন করতে নতুনটি লিখুন" : "Already saved — enter a new one to change") : "AIzaSy..."}
+      />
+      <FloatingInput
+        label={isBn ? "মডেল নাম" : "Model Name"}
+        value={form.gemini_model}
+        onChange={f("gemini_model")}
+        placeholder="gemini-3.6-flash"
+      />
+      <p className="text-xs text-gray-400">
+        {isBn
+          ? "মডেলের নাম পরিবর্তনযোগ্য রাখা হয়েছে যাতে Google নতুন ফ্রি-টিয়ার মডেল প্রকাশ করলে কোড পরিবর্তন ছাড়াই আপডেট করা যায়।"
+          : "The model name is kept editable so it can be updated without a code change whenever Google releases a newer free-tier model."}
+      </p>
+      <button onClick={handleSave} disabled={isLoading || !form.gemini_model} className="btn-primary">
+        {isLoading ? (isBn ? "সংরক্ষণ হচ্ছে..." : "Saving...") : (isBn ? "সংরক্ষণ করুন" : "Save Changes")}
+      </button>
+    </div>
+  );
+}
+
 // ── Main page ──────────────────────────────────────────────────────────────────
 export default function SettingsPage() {
   const locale = useLocale();
@@ -473,6 +548,7 @@ export default function SettingsPage() {
               {active === "referral" && <ReferralPanel settings={settings} isBn={isBn} />}
               {active === "first_order" && <FirstOrderDiscountPanel settings={settings} isBn={isBn} />}
               {active === "telegram" && <TelegramPanel settings={settings} isBn={isBn} />}
+              {active === "ai_support" && <AISupportPanel settings={settings} isBn={isBn} />}
             </>
           ) : null}
         </div>
