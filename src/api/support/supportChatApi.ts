@@ -45,10 +45,19 @@ export interface PendingOrder {
   district: string | null
 }
 
+export interface DisambiguationCandidate {
+  product_id: string
+  name_bn: string
+  name_en: string
+  price: string
+  image_url: string | null
+}
+
 interface SupportChatResult {
   reply: string
   products: SupportChatProduct[]
   pending_order: PendingOrder | null
+  candidates: DisambiguationCandidate[]
 }
 
 export const supportChatApi = baseApi.injectEndpoints({
