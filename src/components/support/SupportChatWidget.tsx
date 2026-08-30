@@ -15,7 +15,7 @@ import {
   toWhatsAppNumber,
 } from "@/utils/contact";
 import { formatAmount, localName } from "@/utils/format";
-import { CheckCircle2, Mail, Minus, Phone, Send, User, X } from "lucide-react";
+import { CheckCircle2, Mail, Minus, Phone, Send, Sparkles, User, X } from "lucide-react";
 import { useLocale } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
@@ -527,8 +527,9 @@ export default function SupportChatWidget() {
       <div className="flex items-center justify-between px-4 py-3 bg-amber-600 text-white shrink-0">
         <div className="flex items-center gap-2">
           <BrahmanAvatar size={24} />
-          <span className="font-semibold text-sm">
+          <span className="font-semibold text-sm flex items-center gap-1">
             {isBn ? "ব্রাহ্মণ AI" : "Brahman AI"}
+            <Sparkles className="w-3.5 h-3.5 text-amber-200" strokeWidth={2} />
           </span>
         </div>
         <div className="flex items-center gap-3">
