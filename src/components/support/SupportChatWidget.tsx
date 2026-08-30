@@ -2,6 +2,7 @@
 
 import { useGetSiteSettingsQuery } from "@/api/settings/settingsApi";
 import {
+  DisambiguationCandidate,
   PendingOrder,
   SupportChatProduct,
   SupportChatTurn,
@@ -38,6 +39,7 @@ interface Message extends SupportChatTurn {
   isError?: boolean;
   products?: SupportChatProduct[];
   pendingOrder?: PendingOrder | null;
+  candidates?: DisambiguationCandidate[];
 }
 
 function ProductResultCard({
@@ -185,6 +187,56 @@ function OrderPreviewCard({
             : (isBn ? "অর্ডার কনফার্ম করুন" : "Confirm Order")}
         </button>
       )}
+    </div>
+  );
+}
+
+function CandidateSelector({
+  candidates,
+  isBn,
+  locale,
+  onSelect,
+  selecting,
+  interactive,
+}: {
+  candidates: DisambiguationCandidate[];
+  isBn: boolean;
+  locale: string;
+  onSelect: (candidate: DisambiguationCandidate) => void;
+  selecting: boolean;
+  interactive: boolean;
+}) {
+  return (
+    <div className="border-t border-amber-100 divide-y divide-gray-50">
+      {candidates.map(c => (
+        <button
+          key={c.product_id}
+          type="button"
+          onClick={() => interactive && onSelect(c)}
+          disabled={!interactive || selecting}
+          className="w-full flex items-center gap-2.5 p-2 text-left hover:bg-amber-50 transition-colors disabled:hover:bg-transparent disabled:opacity-60"
+        >
+          {c.image_url ? (
+            <Image
+              src={c.image_url}
+              alt=""
+              width={40}
+              height={40}
+              className="w-10 h-10 rounded-lg object-cover border border-gray-100 shrink-0"
+            />
+          ) : (
+            <div className="w-10 h-10 rounded-lg border border-gray-100 bg-gray-50 shrink-0" />
+          )}
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-medium text-gray-800 truncate">
+              {localName(c.name_bn, c.name_en, isBn)}
+            </p>
+            <p className="text-[11px] text-amber-700 font-bold">
+              {formatAmount(c.price, locale, 2)}
+            </p>
+          </div>
+        </button>
+      ))}
     </div>
   );
 }
@@ -369,6 +421,7 @@ export default function SupportChatWidget() {
           text: res.reply,
           products: res.products,
           pendingOrder: res.pending_order,
+          candidates: res.candidates,
         },
       ]);
     } catch {
@@ -389,6 +442,8 @@ export default function SupportChatWidget() {
   const handleSend = () => sendMessage(input.trim());
   const handleConfirmOrder = () =>
     sendMessage(isBn ? "হ্যাঁ, অর্ডারটি কনফার্ম করুন।" : "Yes, please confirm the order.");
+  const handleSelectCandidate = (candidate: DisambiguationCandidate) =>
+    sendMessage(localName(candidate.name_bn, candidate.name_en, isBn));
 
   const contactIcons = (compact?: boolean) => (
     <div
@@ -549,6 +604,16 @@ export default function SupportChatWidget() {
                       locale={locale}
                       onConfirm={handleConfirmOrder}
                       confirming={isLoading}
+                      interactive={m.id === messages[messages.length - 1]?.id}
+                    />
+                  )}
+                  {!!m.candidates?.length && (
+                    <CandidateSelector
+                      candidates={m.candidates}
+                      isBn={isBn}
+                      locale={locale}
+                      onSelect={handleSelectCandidate}
+                      selecting={isLoading}
                       interactive={m.id === messages[messages.length - 1]?.id}
                     />
                   )}
