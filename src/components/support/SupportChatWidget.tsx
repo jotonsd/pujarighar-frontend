@@ -1,12 +1,14 @@
 "use client";
 
 import { useGetSiteSettingsQuery } from "@/api/settings/settingsApi";
-import { SupportChatTurn, useSendSupportChatMutation } from "@/api/support/supportChatApi";
+import { SupportChatProduct, SupportChatTurn, useSendSupportChatMutation } from "@/api/support/supportChatApi";
 import { useSupportChatStore } from "@/store/supportChatStore";
 import { DEFAULT_EMAIL, FACEBOOK_PAGE_ID, toWhatsAppNumber } from "@/utils/contact";
-import { Mail, Phone, Send, User, X } from "lucide-react";
+import { formatAmount, localName } from "@/utils/format";
+import { Mail, Minus, Phone, Send, User, X } from "lucide-react";
 import { useLocale } from "next-intl";
 import Image from "next/image";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
@@ -25,6 +27,34 @@ function BrahmanAvatar({ size = 28 }: { size?: number }) {
 interface Message extends SupportChatTurn {
   id: string;
   isError?: boolean;
+  products?: SupportChatProduct[];
+}
+
+function ProductResultCard({ product, isBn, locale }: { product: SupportChatProduct; isBn: boolean; locale: string }) {
+  const card = (
+    <div className="flex items-center gap-2.5 p-2 hover:bg-amber-50 transition-colors">
+      {product.image_url ? (
+        <Image src={product.image_url} alt="" width={40} height={40} className="w-10 h-10 rounded-lg object-cover border border-gray-100 shrink-0" />
+      ) : (
+        <div className="w-10 h-10 rounded-lg border border-gray-100 bg-gray-50 shrink-0" />
+      )}
+      <div className="flex-1 min-w-0">
+        <p className="text-xs font-medium text-gray-800 truncate">{localName(product.name_bn, product.name_en, isBn)}</p>
+        <div className="flex items-center gap-1.5 mt-0.5">
+          <span className="text-xs font-bold text-amber-700">{formatAmount(product.price, locale, 2)}</span>
+          {product.original_price && (
+            <span className="text-[10px] text-gray-400 line-through">{formatAmount(product.original_price, locale, 2)}</span>
+          )}
+          {!product.in_stock && (
+            <span className="text-[10px] text-red-500">{isBn ? "স্টক নেই" : "Out of stock"}</span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+  return product.url ? (
+    <Link href={`/${locale}${product.url}`} target="_blank" className="block">{card}</Link>
+  ) : card;
 }
 
 function QuickLink({ href, label, bg, compact, children }: { href: string; label: string; bg: string; compact?: boolean; children: React.ReactNode }) {
@@ -73,6 +103,19 @@ function FormattedMessage({ text }: { text: string }) {
   );
 }
 
+const CHAT_STORAGE_KEY = "brahman-ai-chat-history";
+const MAX_STORED_MESSAGES = 50;
+
+function loadStoredMessages(): Message[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(CHAT_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
 export default function SupportChatWidget() {
   const pathname = usePathname();
   const locale = useLocale();
@@ -80,7 +123,13 @@ export default function SupportChatWidget() {
   const isOpen = useSupportChatStore(s => s.isOpen);
   const close = useSupportChatStore(s => s.close);
 
-  const [messages, setMessages] = useState<Message[]>([]);
+  // Lazy initializer (not a mount effect) — runs synchronously on first
+  // render, so `messages` is already correct before the save-effect below
+  // ever runs. Loading via a separate useEffect instead caused a race: the
+  // save-effect would fire on mount with the still-empty initial state
+  // (before the load-effect's setMessages had re-rendered in), immediately
+  // overwriting the stored history with [].
+  const [messages, setMessages] = useState<Message[]>(loadStoredMessages);
   const [input, setInput] = useState("");
   const [sendChat, { isLoading }] = useSendSupportChatMutation();
   const listRef = useRef<HTMLDivElement>(null);
@@ -90,6 +139,26 @@ export default function SupportChatWidget() {
   const email = siteSettings?.contact_email || DEFAULT_EMAIL;
 
   const isAdmin = pathname?.split("/")[2] === "admin";
+
+  const handleClose = () => {
+    setMessages([]);
+    try {
+      localStorage.removeItem(CHAT_STORAGE_KEY);
+    } catch {
+      // private-browsing / storage unavailable — nothing to clean up
+    }
+    close();
+  };
+
+  // Per-browser persistence only (localStorage) — reloading the page keeps
+  // the visible conversation instead of silently wiping it.
+  useEffect(() => {
+    try {
+      localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(messages.slice(-MAX_STORED_MESSAGES)));
+    } catch {
+      // private-browsing / storage-full — conversation still works for this session
+    }
+  }, [messages]);
 
   useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
@@ -106,7 +175,7 @@ export default function SupportChatWidget() {
     setInput("");
     try {
       const res = await sendChat({ message: text, history }).unwrap();
-      setMessages(prev => [...prev, { id: `${Date.now()}-m`, role: "model", text: res.reply }]);
+      setMessages(prev => [...prev, { id: `${Date.now()}-m`, role: "model", text: res.reply, products: res.products }]);
     } catch {
       setMessages(prev => [...prev, {
         id: `${Date.now()}-m`,
@@ -156,9 +225,14 @@ export default function SupportChatWidget() {
           <BrahmanAvatar size={24} />
           <span className="font-semibold text-sm">{isBn ? "ব্রাহ্মণ এআই" : "Brahman AI"}</span>
         </div>
-        <button onClick={close} aria-label={isBn ? "বন্ধ করুন" : "Close"} className="hover:opacity-80">
-          <X className="w-5 h-5" />
-        </button>
+        <div className="flex items-center gap-3">
+          <button onClick={close} title={isBn ? "মিনিমাইজ করুন" : "Minimize"} aria-label={isBn ? "মিনিমাইজ করুন" : "Minimize"} className="hover:opacity-80">
+            <Minus className="w-5 h-5" />
+          </button>
+          <button onClick={handleClose} title={isBn ? "বন্ধ করুন (চ্যাট মুছে যাবে)" : "Close (clears chat)"} aria-label={isBn ? "বন্ধ করুন" : "Close"} className="hover:opacity-80">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
       </div>
 
       {contactIcons()}
@@ -180,17 +254,30 @@ export default function SupportChatWidget() {
             ) : (
               <BrahmanAvatar size={28} />
             )}
-            <div className={`max-w-[75%] rounded-2xl px-3 py-2 text-sm ${m.role === "user" ? "bg-amber-600 text-white whitespace-pre-wrap" : "bg-white text-gray-800 border border-gray-100"}`}>
-              {m.role === "user" ? m.text : <FormattedMessage text={m.text} />}
-              {m.isError && contactIcons(true)}
+            <div className={`max-w-[75%] rounded-2xl text-sm overflow-hidden ${m.role === "user" ? "bg-amber-600 text-white whitespace-pre-wrap px-3 py-2" : "bg-white text-gray-800 border border-gray-100"}`}>
+              {m.role === "user" ? m.text : (
+                <>
+                  <div className="px-3 py-2">
+                    <FormattedMessage text={m.text} />
+                    {m.isError && contactIcons(true)}
+                  </div>
+                  {!!m.products?.length && (
+                    <div className="border-t border-gray-100 divide-y divide-gray-50">
+                      {m.products.map((p, i) => <ProductResultCard key={i} product={p} isBn={isBn} locale={locale} />)}
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           </div>
         ))}
         {isLoading && (
           <div className="flex items-start gap-2">
             <BrahmanAvatar size={28} />
-            <div className="bg-white border border-gray-100 rounded-2xl px-3 py-2 text-sm text-gray-400">
-              {isBn ? "লিখছে..." : "Typing..."}
+            <div className="bg-white border border-gray-100 rounded-2xl px-3 py-2.5 flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: "0ms" }} />
+              <span className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: "150ms" }} />
+              <span className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: "300ms" }} />
             </div>
           </div>
         )}

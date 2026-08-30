@@ -10,8 +10,20 @@ interface SupportChatRequest {
   history: SupportChatTurn[]
 }
 
+export interface SupportChatProduct {
+  name_bn: string
+  name_en: string
+  price: string
+  original_price: string | null
+  discount_percent: string | null
+  in_stock: boolean
+  url: string | null
+  image_url: string | null
+}
+
 interface SupportChatResult {
   reply: string
+  products: SupportChatProduct[]
 }
 
 export const supportChatApi = baseApi.injectEndpoints({
