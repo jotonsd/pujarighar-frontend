@@ -283,6 +283,7 @@ export default function SupportChatWidget() {
   const [input, setInput] = useState("");
   const [sendChat, { isLoading }] = useSendSupportChatMutation();
   const listRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const { data: siteSettings } = useGetSiteSettingsQuery();
 
   const waNumber = siteSettings?.contact_phone
@@ -322,16 +323,30 @@ export default function SupportChatWidget() {
     });
   }, [messages, isOpen]);
 
+  // Auto-grow the textarea as the customer types multi-line text (Shift+Enter),
+  // capped by the max-h-24 class on the element itself.
+  useEffect(() => {
+    const el = inputRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${el.scrollHeight}px`;
+  }, [input]);
+
   if (isAdmin || !isOpen) return null;
 
   const sendMessage = async (text: string) => {
     if (!text || isLoading) return;
     const userMsg: Message = { id: `${Date.now()}-u`, role: "user", text };
     const history = messages.map(({ role, text }) => ({ role, text }));
+    // Echo back the last order preview the customer actually saw — the
+    // backend trusts this (real product IDs) over re-guessing which exact
+    // product the model's own later, vaguer wording refers to.
+    const lastModelMsg = [...messages].reverse().find(m => m.role === "model");
+    const pendingOrder = lastModelMsg?.pendingOrder ?? null;
     setMessages(prev => [...prev, userMsg]);
     setInput("");
     try {
-      const res = await sendChat({ message: text, history }).unwrap();
+      const res = await sendChat({ message: text, history, pending_order: pendingOrder }).unwrap();
       setMessages(prev => [
         ...prev,
         {
@@ -549,8 +564,9 @@ export default function SupportChatWidget() {
         )}
       </div>
 
-      <div className="flex items-center gap-2 p-3 border-t border-gray-100 shrink-0">
-        <input
+      <div className="flex items-end gap-2 p-3 border-t border-gray-100 shrink-0">
+        <textarea
+          ref={inputRef}
           value={input}
           onChange={e => setInput(e.target.value)}
           onKeyDown={e => {
@@ -558,9 +574,11 @@ export default function SupportChatWidget() {
               e.preventDefault();
               handleSend();
             }
+            // Shift+Enter: no preventDefault — browser inserts the newline itself.
           }}
-          placeholder={isBn ? "একটি বার্তা লিখুন..." : "Type a message..."}
-          className="flex-1 text-sm border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:border-amber-400"
+          placeholder={isBn ? "একটি বার্তা লিখুন... (Shift+Enter নতুন লাইন)" : "Type a message... (Shift+Enter for new line)"}
+          rows={1}
+          className="flex-1 text-sm border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:border-amber-400 resize-none max-h-24 overflow-y-auto"
         />
         <button
           onClick={handleSend}
