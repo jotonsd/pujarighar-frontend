@@ -562,6 +562,32 @@ export default function SupportChatWidget() {
             {isBn
               ? "পণ্য, দাম, ছাড়, ডেলিভারি চার্জ, রেফারেল, ক্যাশব্যাক, যোগাযোগের তথ্য অথবা সরাসরি অর্ডার করতে যেকোনো প্রশ্ন করুন।"
               : "Ask anything about products, prices, discounts, delivery charges, referrals, cashback, how to reach us — or place an order directly."}
+            <div className="flex flex-wrap justify-center gap-2 mt-4">
+              {(isBn
+                ? [
+                    "আমি একটি পণ্য খুঁজছি",
+                    "আমি রেফারেল বোনাস সম্পর্কে জানতে চাই",
+                    "আমি ক্যাশব্যাক বোনাস সম্পর্কে জানতে চাই",
+                    "আমি ডেলিভারি চার্জ সম্পর্কে জানতে চাই",
+                  ]
+                : [
+                    "I'm looking for a product",
+                    "I want to know about referral bonus",
+                    "I want to know about cashback bonus",
+                    "I want to know about delivery charges",
+                  ]
+              ).map(q => (
+                <button
+                  key={q}
+                  type="button"
+                  onClick={() => sendMessage(q)}
+                  disabled={isLoading}
+                  className="px-3 py-1.5 rounded-full border border-amber-200 bg-white text-amber-700 text-xs font-medium hover:bg-amber-50 transition-colors disabled:opacity-60"
+                >
+                  {q}
+                </button>
+              ))}
+            </div>
           </div>
         )}
         {messages.map(m => {
