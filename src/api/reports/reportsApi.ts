@@ -61,9 +61,36 @@ export interface SalesReport {
   total_amount: string
 }
 
+export interface CartReportItem {
+  product_name_bn: string
+  product_name_en: string
+  quantity: string
+  unit_price: string
+}
+
+export interface CartReportRow {
+  customer_id: string
+  name_bn: string
+  name_en: string
+  phone: string
+  email: string
+  item_count: number
+  total_quantity: string
+  cart_value: string
+  last_activity: string | null
+  items: CartReportItem[]
+}
+
+export interface CartReport {
+  rows: CartReportRow[]
+  total_carts: number
+  total_value: string
+}
+
 type ReportParams = { supplier_id?: string; product_id?: string; from?: string; to?: string; payment_method?: string }
 type LedgerReportParams = { account_id?: string; from?: string; to?: string }
 type SalesReportParams = { from?: string; to?: string; status?: string; payment_status?: string; payment_method?: string }
+type CartReportParams = { search?: string }
 
 function buildReportQuery(base: string) {
   return ({ supplier_id = '', product_id = '', from = '', to = '', payment_method = '' }: ReportParams = {}) => {
@@ -106,6 +133,15 @@ export const reportsApi = baseApi.injectEndpoints({
       transformResponse: (res: { data: SalesReport }) => res.data,
       providesTags: ['Orders'],
     }),
+    getCartReport: build.query<CartReport, CartReportParams | void>({
+      query: ({ search = '' }: CartReportParams = {}) => {
+        const p = new URLSearchParams()
+        if (search) p.set('search', search)
+        return `/api/reports/carts/?${p}`
+      },
+      transformResponse: (res: { data: CartReport }) => res.data,
+      providesTags: ['Cart'],
+    }),
     getPurchaseReport: build.query<PurchaseReport, ReportParams | void>({
       query: buildReportQuery('/api/reports/purchases/'),
       transformResponse: (res: { data: PurchaseReport }) => res.data,
@@ -131,6 +167,7 @@ export const reportsApi = baseApi.injectEndpoints({
 
 export const {
   useGetSalesReportQuery,
+  useGetCartReportQuery,
   useGetPurchaseReportQuery,
   useGetSupplierReturnReportQuery,
   useGetIncomeReportQuery,
