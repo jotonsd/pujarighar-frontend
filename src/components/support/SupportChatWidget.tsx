@@ -108,8 +108,22 @@ function OrderPreviewCard({
   confirming: boolean;
   interactive: boolean;
 }) {
+  const hasDeliveryInfo = order.customer_name || order.phone || order.address || order.district;
+
   return (
     <div className="border-t border-amber-100">
+      {hasDeliveryInfo && (
+        <div className="px-3 py-2 bg-gray-50 border-b border-gray-100 text-xs text-gray-700 space-y-0.5">
+          <p className="font-semibold text-gray-800 mb-1">
+            {isBn ? "ডেলিভারি তথ্য" : "Delivery details"}
+          </p>
+          {order.customer_name && <p>{order.customer_name}</p>}
+          {order.phone && <p>{order.phone}</p>}
+          {(order.address || order.district) && (
+            <p>{[order.address, order.district].filter(Boolean).join(", ")}</p>
+          )}
+        </div>
+      )}
       <div className="divide-y divide-gray-50">
         {order.items.map((item, i) => (
           <div key={i} className="flex items-center gap-2.5 p-2">
@@ -576,7 +590,7 @@ export default function SupportChatWidget() {
             }
             // Shift+Enter: no preventDefault — browser inserts the newline itself.
           }}
-          placeholder={isBn ? "একটি বার্তা লিখুন... (Shift+Enter নতুন লাইন)" : "Type a message... (Shift+Enter for new line)"}
+          placeholder={isBn ? "টাইপ করুন..." : "Type here..."}
           rows={1}
           className="flex-1 text-sm border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:border-amber-400 resize-none max-h-24 overflow-y-auto"
         />

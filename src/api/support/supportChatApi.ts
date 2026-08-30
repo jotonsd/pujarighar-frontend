@@ -39,6 +39,10 @@ export interface PendingOrder {
   delivery_charge: string
   grand_total: string
   payment_method: string
+  customer_name: string | null
+  phone: string | null
+  address: string | null
+  district: string | null
 }
 
 interface SupportChatResult {
