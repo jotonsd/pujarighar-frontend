@@ -72,15 +72,25 @@ function QuickLink({ href, label, bg, compact, children }: { href: string; label
   );
 }
 
-// The model replies in light markdown (**bold**, "- "/"* " bullet lists).
-// No markdown library needed for just these two — split into React nodes
-// directly, never dangerouslySetInnerHTML, so there's no injection risk.
-function renderInlineBold(text: string): React.ReactNode[] {
-  return text.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
-    part.startsWith("**") && part.endsWith("**")
-      ? <strong key={i}>{part.slice(2, -2)}</strong>
-      : <span key={i}>{part}</span>
-  );
+// The model replies in light markdown (**bold**, [text](url) links, "- "/"* "
+// bullet lists). No markdown library needed for just these — split into
+// React nodes directly, never dangerouslySetInnerHTML, so there's no
+// injection risk regardless of what URL the model puts in a link.
+function renderInline(text: string): React.ReactNode[] {
+  return text.split(/(\*\*[^*]+\*\*|\[[^\]]+\]\([^)]+\))/g).map((part, i) => {
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return <strong key={i}>{part.slice(2, -2)}</strong>;
+    }
+    const link = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+    if (link) {
+      return (
+        <a key={i} href={link[2]} target="_blank" rel="noopener noreferrer" className="text-amber-700 underline hover:text-amber-800">
+          {link[1]}
+        </a>
+      );
+    }
+    return <span key={i}>{part}</span>;
+  });
 }
 
 function FormattedMessage({ text }: { text: string }) {
@@ -93,11 +103,11 @@ function FormattedMessage({ text }: { text: string }) {
           return (
             <div key={i} className="flex gap-1.5 pl-1">
               <span className="shrink-0">•</span>
-              <span>{renderInlineBold(bullet[1])}</span>
+              <span>{renderInline(bullet[1])}</span>
             </div>
           );
         }
-        return line ? <div key={i}>{renderInlineBold(line)}</div> : <div key={i} className="h-1" />;
+        return line ? <div key={i}>{renderInline(line)}</div> : <div key={i} className="h-1" />;
       })}
     </div>
   );
