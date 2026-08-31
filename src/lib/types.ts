@@ -19,6 +19,7 @@ export interface Role {
 
 export type Locale = 'bn' | 'en'
 export type OrderStatus = 'PENDING' | 'CONFIRMED' | 'PACKED' | 'ASSIGNED' | 'ON_THE_WAY' | 'DELIVERED' | 'RETURNED' | 'CANCELLED'
+export type OrderSource = 'WEBSITE' | 'AI_CHATBOT' | 'POS'
 
 // ─── Shipping ────────────────────────────────────────────────────────────────
 
@@ -486,6 +487,7 @@ export interface SalesOrder {
   customer_email: string
   status: OrderStatus
   status_label: string
+  source: OrderSource
   payment_method: 'COD' | 'ONLINE'
   payment_status: 'UNPAID' | 'PAID'
   shipping_name_bn: string

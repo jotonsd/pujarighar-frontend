@@ -9,6 +9,7 @@ import OrderActions from "@/components/admin/orders/OrderActions";
 import OrderItems from "@/components/admin/orders/OrderItems";
 import OrderShipping from "@/components/admin/orders/OrderShipping";
 import OrderProgressBar from "@/components/orders/OrderProgressBar";
+import OrderSourceBadge from "@/components/orders/OrderSourceBadge";
 import OrderStatusBadge from "@/components/orders/OrderStatusBadge";
 import StatusTimeline from "@/components/orders/StatusTimeline";
 import PageHeader from "@/components/ui/PageHeader";
@@ -60,6 +61,7 @@ export default function AdminOrderDetailPage({
               <FileText className="w-3.5 h-3.5" />
               {locale === "bn" ? "চালান" : "Invoice"}
             </button>
+            <OrderSourceBadge source={order.source} locale={locale} />
             <OrderStatusBadge status={order.status} locale={locale} />
           </div>
         }
