@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Eye, Filter, X } from 'lucide-react'
+import OrderSourceBadge from '@/components/orders/OrderSourceBadge'
 import OrderStatusBadge from '@/components/orders/OrderStatusBadge'
 import { FloatingDatePicker, FloatingInput, FloatingSelect } from '@/components/ui/forms'
 import PageHeader from '@/components/ui/PageHeader'
@@ -61,6 +62,11 @@ export default function OrderList() {
       exportValue: o => `${o.payment_method} / ${o.payment_status}`,
     },
     { header: t('order.status'), accessor: o => <OrderStatusBadge status={o.status} locale={locale} />, exportValue: o => o.status },
+    {
+      header: locale === 'bn' ? 'উৎস' : 'Source',
+      accessor: o => <OrderSourceBadge source={o.source} locale={locale} />,
+      exportValue: o => o.source,
+    },
     {
       header: locale === 'bn' ? 'তারিখ' : 'Date',
       accessor: o => <span className="text-xs text-gray-500">{formatDate(o.created_at, locale)}</span>,
