@@ -15,7 +15,7 @@ import {
   toWhatsAppNumber,
 } from "@/utils/contact";
 import { formatAmount, localName } from "@/utils/format";
-import { CheckCircle2, Mail, Minus, Phone, Send, Sparkles, User, X } from "lucide-react";
+import { CheckCircle2, Mail, Minus, Phone, RefreshCw, Send, Sparkles, User, X } from "lucide-react";
 import { useLocale } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
@@ -37,6 +37,7 @@ function BrahmanAvatar({ size = 28 }: { size?: number }) {
 interface Message extends SupportChatTurn {
   id: string;
   isError?: boolean;
+  retryText?: string;
   products?: SupportChatProduct[];
   pendingOrder?: PendingOrder | null;
   candidates?: DisambiguationCandidate[];
@@ -433,6 +434,7 @@ export default function SupportChatWidget() {
           id: `${Date.now()}-m`,
           role: "model",
           isError: true,
+          retryText: text,
           text: isBn
             ? "দুঃখিত, এই মুহূর্তে সাহায্য করতে পারছি না। পরে আবার চেষ্টা করুন।\n\nঅথবা যোগাযোগ করুন সরাসরি:"
             : "Sorry, I can't help right now — please try again shortly.\n\nOr contact us directly:",
@@ -620,7 +622,20 @@ export default function SupportChatWidget() {
                 <>
                   <div className="px-3 py-2">
                     <FormattedMessage text={m.text} />
-                    {m.isError && contactIcons(true)}
+                    {m.isError && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => m.retryText && sendMessage(m.retryText)}
+                          disabled={isLoading}
+                          className="mt-2 flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-amber-200 bg-white text-amber-700 text-xs font-medium hover:bg-amber-50 transition-colors disabled:opacity-60"
+                        >
+                          <RefreshCw className="w-3.5 h-3.5" />
+                          {isBn ? "আবার চেষ্টা করুন" : "Retry"}
+                        </button>
+                        {contactIcons(true)}
+                      </>
+                    )}
                   </div>
                   {!!m.products?.length && (
                     <div className="border-t border-gray-100 divide-y divide-gray-50">
