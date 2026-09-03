@@ -12,7 +12,27 @@ import ToggleSwitch from "@/components/ui/forms/ToggleSwitch";
 import { CourierProvider } from "@/lib/types";
 import { toast } from "@/store/toastStore";
 import { formatAmount } from "@/utils/format";
+import { Check, Copy } from "lucide-react";
 import { useState } from "react";
+
+function CopyButton({ value, isBn }: { value: string; isBn: boolean }) {
+  const [copied, setCopied] = useState(false);
+  const handleCopy = () => {
+    navigator.clipboard.writeText(value);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+  return (
+    <button
+      type="button"
+      onClick={handleCopy}
+      title={isBn ? "কপি করুন" : "Copy"}
+      className="inline-flex items-center justify-center w-5 h-5 rounded text-gray-400 hover:text-amber-700 hover:bg-amber-100 transition-colors shrink-0"
+    >
+      {copied ? <Check className="w-3.5 h-3.5 text-green-600" /> : <Copy className="w-3.5 h-3.5" />}
+    </button>
+  );
+}
 
 const API_ORIGIN = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 const WEBHOOK_URLS = {
@@ -146,8 +166,16 @@ function ProviderCard({ provider, isBn, locale }: { provider: CourierProvider; i
               ? (isBn ? "নিচের তথ্য Pathao পোর্টালের Webhook Integration সেটিংসে যোগ করুন (Auth Token একবারই দেখানো হবে):" : "Add these to Pathao's Webhook Integration settings (Auth Token shown only once):")
               : (isBn ? "নিচের তথ্য Steadfast পোর্টালের Webhook Integration সেটিংসে \"Auth Token (Bearer)\" ফিল্ডে বসান (একবারই দেখানো হবে):" : "Paste this into Steadfast's Webhook Integration \"Auth Token (Bearer)\" field (shown only once):")}
           </p>
-          <p><span className="text-gray-500">Callback Url:</span> <span className="font-mono">{WEBHOOK_URLS[provider.code as keyof typeof WEBHOOK_URLS] ?? WEBHOOK_URLS.STEADFAST}</span></p>
-          <p><span className="text-gray-500">{isPathao ? "Secret:" : "Auth Token (Bearer):"}</span> <span className="font-mono break-all">{revealedSecret}</span></p>
+          <p className="flex items-center gap-1.5">
+            <span className="text-gray-500 shrink-0">Callback Url:</span>
+            <span className="font-mono break-all">{WEBHOOK_URLS[provider.code as keyof typeof WEBHOOK_URLS] ?? WEBHOOK_URLS.STEADFAST}</span>
+            <CopyButton value={WEBHOOK_URLS[provider.code as keyof typeof WEBHOOK_URLS] ?? WEBHOOK_URLS.STEADFAST} isBn={isBn} />
+          </p>
+          <p className="flex items-center gap-1.5">
+            <span className="text-gray-500 shrink-0">{isPathao ? "Secret:" : "Auth Token (Bearer):"}</span>
+            <span className="font-mono break-all">{revealedSecret}</span>
+            <CopyButton value={revealedSecret} isBn={isBn} />
+          </p>
         </div>
       )}
 
