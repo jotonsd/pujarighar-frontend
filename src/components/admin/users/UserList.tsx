@@ -28,7 +28,7 @@ export default function UserList() {
   const [search, setSearch] = useState('')
 
   const currentUserId = useAuthStore(s => s.user?.id)
-  const { data, isLoading } = useGetUsersQuery({ page, page_size: limit, role, search })
+  const { data, isLoading, isFetching } = useGetUsersQuery({ page, page_size: limit, role, search })
   const { data: roles = [] } = useGetRolesQuery()
   const [activate]   = useActivateUserMutation()
   const [deactivate] = useDeactivateUserMutation()
@@ -87,7 +87,7 @@ export default function UserList() {
       </div>
 
       <ReusableTable data={data?.data ?? []} columns={columns} keyExtractor={u => u.id}
-        isLoading={isLoading} totalPages={data?.pagination?.total_pages ?? 1}
+        isLoading={isLoading || isFetching} totalPages={data?.pagination?.total_pages ?? 1}
         totalRecords={data?.pagination?.total} currentPage={page} onPageChange={setPage}
         exportFilename="users" emptyMessage={locale === 'bn' ? 'কোনো ব্যবহারকারী নেই' : 'No users found'}
         quickActions={[{

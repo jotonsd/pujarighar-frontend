@@ -31,7 +31,7 @@ export default function ProductSelector({ selected, onSelect }: Props) {
   // meant to cover everything stock-manageable, not a paged browse view)
   // doesn't hide products behind pagination clicks unless the catalog
   // genuinely grows past 100, in which case Pagination below still kicks in.
-  const { data: products, isLoading } = useGetProductsQuery({
+  const { data: products, isLoading, isFetching } = useGetProductsQuery({
     page, page_size: 100, search,
     category: category || undefined,
     brand: brand || undefined,
@@ -88,7 +88,7 @@ export default function ProductSelector({ selected, onSelect }: Props) {
         </FloatingSelect>
       </div>
       <div className="overflow-y-auto flex-1">
-        {isLoading ? (
+        {isLoading || isFetching ? (
           <TableSkeleton columns={3} rows={8} />
         ) : (
           <table className="w-full text-sm">

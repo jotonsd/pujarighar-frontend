@@ -32,7 +32,7 @@ export default function OrderList() {
   const handleSubmit = () => { setApplied(draft); setPage(1) }
   const clearAll = () => { setDraft(EMPTY); setApplied(EMPTY); setPage(1) }
 
-  const { data, isLoading } = useGetOrdersQuery({ page, page_size: limit, ...applied })
+  const { data, isLoading, isFetching } = useGetOrdersQuery({ page, page_size: limit, ...applied })
 
   const columns: Column<SalesOrder>[] = [
     { header: t('order.number'), accessor: o => <span className="font-mono text-sm">{o.order_number}</span>, exportValue: o => o.order_number },
@@ -121,7 +121,7 @@ export default function OrderList() {
       )}
 
       <ReusableTable data={data?.data ?? []} columns={columns} keyExtractor={o => o.id}
-        isLoading={isLoading} totalPages={data?.pagination?.total_pages ?? 1}
+        isLoading={isLoading || isFetching} totalPages={data?.pagination?.total_pages ?? 1}
         totalRecords={data?.pagination?.total} currentPage={page} onPageChange={setPage}
         limit={limit} onLimitChange={l => { setLimit(l); setPage(1) }}
         exportFilename="orders" emptyMessage={locale === 'bn' ? 'কোনো অর্ডার নেই' : 'No orders found'}

@@ -34,7 +34,7 @@ export default function ProductList() {
 
   const { data: categories = [] } = useGetCategoriesQuery()
   const { data: brands = [] }     = useGetBrandsQuery()
-  const { data, isLoading } = useGetProductsQuery({ page, search, category, brand, is_package: isPackage, is_active: status, page_size: limit, include_inactive: true })
+  const { data, isLoading, isFetching } = useGetProductsQuery({ page, search, category, brand, is_package: isPackage, is_active: status, page_size: limit, include_inactive: true })
   const [updateProduct] = useUpdateProductMutation()
 
   const handleToggleActive = async (p: Product) => {
@@ -130,7 +130,7 @@ export default function ProductList() {
       </div>
 
       <ReusableTable data={data?.data ?? []} columns={columns} keyExtractor={p => p.id}
-        isLoading={isLoading} totalPages={data?.pagination?.total_pages ?? 1}
+        isLoading={isLoading || isFetching} totalPages={data?.pagination?.total_pages ?? 1}
         totalRecords={data?.pagination?.total} currentPage={page} onPageChange={p => setPage(p)}
         limit={limit} onLimitChange={l => { setLimit(l); setPage(1) }}
         exportFilename="products" emptyMessage={locale === 'bn' ? 'কোনো পণ্য নেই' : 'No products found'}

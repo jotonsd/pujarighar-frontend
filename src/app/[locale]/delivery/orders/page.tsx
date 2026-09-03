@@ -25,7 +25,7 @@ export default function DeliveryOrdersPage() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
 
-  const { data, isLoading } = useGetOrdersQuery({
+  const { data, isLoading, isFetching } = useGetOrdersQuery({
     status,
     page,
     page_size: limit,
@@ -119,7 +119,7 @@ export default function DeliveryOrdersPage() {
         data={data?.data ?? []}
         columns={columns}
         keyExtractor={o => o.id}
-        isLoading={isLoading}
+        isLoading={isLoading || isFetching}
         totalPages={data?.pagination?.total_pages ?? 1}
         totalRecords={data?.pagination?.total}
         currentPage={page}

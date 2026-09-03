@@ -26,7 +26,7 @@ export default function PackageList() {
   const isAdmin = useAuthStore(s => hasPermission(s.user, 'packages', 'edit'));
   const [page, setPage] = useState(1);
 
-  const { data, isLoading } = useGetProductsQuery({
+  const { data, isLoading, isFetching } = useGetProductsQuery({
     page,
     is_package: "true",
     include_inactive: true,
@@ -140,7 +140,7 @@ export default function PackageList() {
         data={data?.data ?? []}
         columns={columns}
         keyExtractor={p => p.id}
-        isLoading={isLoading}
+        isLoading={isLoading || isFetching}
         totalPages={data?.pagination?.total_pages ?? 1}
         totalRecords={data?.pagination?.total}
         currentPage={page}
