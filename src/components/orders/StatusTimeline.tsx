@@ -86,14 +86,6 @@ export default function StatusTimeline({ logs, locale, deliveryInfo, courierTrac
               </p>
             )}
 
-            {/* Picked-up timestamp inline under ON_THE_WAY entry */}
-            {log.to_status === "ON_THE_WAY" && deliveryInfo?.picked_up_at && (
-              <p className="text-xs text-gray-400 mt-1">
-                {isBn ? "পিকআপ: " : "Picked up: "}
-                {fmt(deliveryInfo.picked_up_at, locale)}
-              </p>
-            )}
-
             {/* Delivered timestamp inline under DELIVERED entry */}
             {log.to_status === "DELIVERED" && deliveryInfo?.delivered_at && (
               <p className="text-xs text-gray-400 mt-1">
