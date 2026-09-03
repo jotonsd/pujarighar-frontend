@@ -168,7 +168,7 @@ export default function DiscountList() {
 
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
-  const { data, isLoading } = useGetDiscountsQuery({ page, page_size: limit });
+  const { data, isLoading, isFetching } = useGetDiscountsQuery({ page, page_size: limit });
   const discounts = data?.data ?? [];
   const [toggle] = useToggleDiscountMutation();
   const [remove] = useDeleteDiscountMutation();
@@ -323,7 +323,7 @@ export default function DiscountList() {
         data={discounts}
         columns={columns}
         keyExtractor={d => d.id}
-        isLoading={isLoading}
+        isLoading={isLoading || isFetching}
         quickActions={quickActions}
         enableSelection
         onBulkDelete={handleBulkDelete}

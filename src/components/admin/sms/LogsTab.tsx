@@ -16,7 +16,7 @@ export default function LogsTab({ isBn }: { isBn: boolean }) {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
 
-  const { data, isLoading } = useGetSmsLogsQuery({
+  const { data, isLoading, isFetching } = useGetSmsLogsQuery({
     page,
     status: status || undefined,
     phone: phone || undefined,
@@ -84,7 +84,7 @@ export default function LogsTab({ isBn }: { isBn: boolean }) {
         data={data?.data ?? []}
         columns={columns}
         keyExtractor={r => r.id}
-        isLoading={isLoading}
+        isLoading={isLoading || isFetching}
         totalPages={data?.pagination?.total_pages ?? 1}
         totalRecords={data?.pagination?.total}
         currentPage={page}

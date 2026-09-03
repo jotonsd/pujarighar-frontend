@@ -47,7 +47,7 @@ export default function PromoEmailsAdminPage() {
   const [viewItem, setViewItem] = useState<PromoEmail | null>(null);
   const [resendTarget, setResendTarget] = useState<PromoEmail | null>(null);
 
-  const { data, isLoading } = useGetPromoEmailsQuery({ page, page_size: 10 });
+  const { data, isLoading, isFetching } = useGetPromoEmailsQuery({ page, page_size: 10 });
   const { data: audience } = useGetPromoEmailAudienceQuery(form.email_type);
   const [createPromoEmail, { isLoading: sending }] = useCreatePromoEmailMutation();
   const [resendPromoEmail, { isLoading: resending }] = useResendPromoEmailMutation();
@@ -233,7 +233,7 @@ export default function PromoEmailsAdminPage() {
         data={data?.data ?? []}
         columns={columns}
         keyExtractor={e => e.id}
-        isLoading={isLoading}
+        isLoading={isLoading || isFetching}
         quickActions={quickActions}
         totalPages={data?.pagination?.total_pages ?? 1}
         currentPage={page}

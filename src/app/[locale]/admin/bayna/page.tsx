@@ -40,7 +40,7 @@ export default function BaynaBookingsPage() {
   const [status, setStatus] = useState("");
   const [serviceType, setServiceType] = useState("");
 
-  const { data, isLoading } = useGetBaynaBookingsQuery({ page, status, service_type: serviceType });
+  const { data, isLoading, isFetching } = useGetBaynaBookingsQuery({ page, status, service_type: serviceType });
 
   const columns: Column<BaynaBooking>[] = [
     {
@@ -113,7 +113,7 @@ export default function BaynaBookingsPage() {
         data={data?.data ?? []}
         columns={columns}
         keyExtractor={b => b.id}
-        isLoading={isLoading}
+        isLoading={isLoading || isFetching}
         totalPages={data?.pagination?.total_pages ?? 1}
         totalRecords={data?.pagination?.total}
         currentPage={page}
