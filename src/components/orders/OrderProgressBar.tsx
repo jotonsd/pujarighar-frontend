@@ -5,13 +5,21 @@ import { CheckCircle2 } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
-const STAGES: { statuses: OrderStatus[]; label_bn: string; label_en: string }[] = [
-  { statuses: ["PENDING", "CONFIRMED"], label_bn: "গৃহীত", label_en: "Accepted" },
-  { statuses: ["PACKED"], label_bn: "প্যাক করা", label_en: "Packed" },
-  { statuses: ["ASSIGNED", "PICKED"], label_bn: "ডেলিভারির জন্য প্রস্তুত", label_en: "Ready for Delivery" },
-  { statuses: ["ON_THE_WAY"], label_bn: "পথে আছে", label_en: "In Transit" },
-  { statuses: ["DELIVERED"], label_bn: "ডেলিভারি হয়েছে", label_en: "Delivered" },
-];
+// ASSIGNED's label depends on who's actually delivering — "Delivery
+// Assigned" is wrong when it's really a courier consignment (Pathao/
+// Steadfast), not an internal delivery person, that was just assigned.
+function getStages(isCourier: boolean): { statuses: OrderStatus[]; label_bn: string; label_en: string }[] {
+  return [
+    { statuses: ["PENDING", "CONFIRMED"], label_bn: "গৃহীত", label_en: "Accepted" },
+    { statuses: ["PACKED"], label_bn: "প্যাক করা", label_en: "Packed" },
+    isCourier
+      ? { statuses: ["ASSIGNED"], label_bn: "কুরিয়ারে পাঠানো হয়েছে", label_en: "Sent to Courier" }
+      : { statuses: ["ASSIGNED"], label_bn: "ডেলিভারিম্যান নির্ধারিত", label_en: "Delivery Assigned" },
+    { statuses: ["PICKED"], label_bn: "পিকআপ হয়েছে", label_en: "Picked Up" },
+    { statuses: ["ON_THE_WAY"], label_bn: "পথে আছে", label_en: "In Transit" },
+    { statuses: ["DELIVERED"], label_bn: "ডেলিভারি হয়েছে", label_en: "Delivered" },
+  ];
+}
 
 // How long one stage-to-stage move takes, and how long it pauses at each
 // completed stage before continuing — kept in sync with the CSS transition
@@ -19,8 +27,9 @@ const STAGES: { statuses: OrderStatus[]; label_bn: string; label_en: string }[] 
 const MOVE_MS = 1100;
 const PAUSE_MS = 650;
 
-export default function OrderProgressBar({ status, locale }: { status: OrderStatus; locale: string }) {
+export default function OrderProgressBar({ status, locale, isCourier = false }: { status: OrderStatus; locale: string; isCourier?: boolean }) {
   const isBn = locale === "bn";
+  const STAGES = getStages(isCourier);
 
   const found = STAGES.findIndex(s => s.statuses.includes(status));
   const activeIndex = found === -1 ? 0 : found;
