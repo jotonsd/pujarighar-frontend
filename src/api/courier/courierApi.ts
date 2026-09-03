@@ -25,6 +25,12 @@ export const courierApi = baseApi.injectEndpoints({
       invalidatesTags: ['CourierProviders'],
     }),
 
+    regenerateWebhookSecret: build.mutation<CourierProvider, number>({
+      query: id => ({ url: `/api/courier/providers/${id}/regenerate-webhook-secret/`, method: 'POST' }),
+      transformResponse: (res: { data: CourierProvider }) => res.data,
+      invalidatesTags: ['CourierProviders'],
+    }),
+
     getCourierProviderBalance: build.query<{ current_balance: number }, number>({
       query: providerId => `/api/courier/providers/${providerId}/balance/`,
       transformResponse: (res: { data: { current_balance: number } }) => res.data,
@@ -84,6 +90,7 @@ export const {
   useGetCourierProvidersQuery,
   useCreateCourierProviderMutation,
   useUpdateCourierProviderMutation,
+  useRegenerateWebhookSecretMutation,
   useGetCourierProviderBalanceQuery,
   useGetCourierConsignmentsQuery,
   useGetCourierConsignmentQuery,

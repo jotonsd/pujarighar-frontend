@@ -4,6 +4,7 @@ import {
   useCreateCourierProviderMutation,
   useGetCourierProviderBalanceQuery,
   useGetCourierProvidersQuery,
+  useRegenerateWebhookSecretMutation,
   useUpdateCourierProviderMutation,
 } from "@/api/courier/courierApi";
 import { FloatingInput, FloatingSelect } from "@/components/ui/forms";
@@ -37,8 +38,23 @@ function ProviderCard({ provider, isBn, locale }: { provider: CourierProvider; i
   const [password, setPassword] = useState("");
   const [storeId, setStoreId] = useState(provider.store_id ?? "");
   const [webhookVerificationSecret, setWebhookVerificationSecret] = useState(provider.webhook_verification_secret ?? "");
+  // The webhook secret only ever comes back in plaintext once, right when
+  // it's (re)generated — the list endpoint never includes it, so this has
+  // to be tracked in local state rather than read off `provider` directly.
+  const [revealedSecret, setRevealedSecret] = useState(provider.webhook_secret ?? "");
   const [update, { isLoading }] = useUpdateCourierProviderMutation();
+  const [regenerateSecret, { isLoading: regenerating }] = useRegenerateWebhookSecretMutation();
   const { data: balance, refetch: refetchBalance, isFetching: balanceLoading } = useGetCourierProviderBalanceQuery(provider.id, { skip: !provider.is_active || isPathao });
+
+  const handleRegenerateSecret = async () => {
+    try {
+      const updated = await regenerateSecret(provider.id).unwrap();
+      setRevealedSecret(updated.webhook_secret ?? "");
+      toast.success(isBn ? "নতুন সিক্রেট তৈরি হয়েছে — এখনই কপি করে কুরিয়ারের ড্যাশবোর্ডে বসান" : "New secret generated — copy it into the courier's dashboard now");
+    } catch {
+      toast.error(isBn ? "ব্যর্থ হয়েছে" : "Failed to regenerate");
+    }
+  };
 
   const handleToggleActive = async () => {
     try {
@@ -111,17 +127,27 @@ function ProviderCard({ provider, isBn, locale }: { provider: CourierProvider; i
         {isPathao && (
           <span>{isBn ? "ভেরিফিকেশন সিক্রেট: " : "Verification secret: "}{provider.webhook_verification_secret ? "✓" : "—"}</span>
         )}
+        <button
+          type="button"
+          onClick={handleRegenerateSecret}
+          disabled={regenerating}
+          className="text-amber-700 hover:underline disabled:opacity-50"
+        >
+          {regenerating
+            ? (isBn ? "তৈরি হচ্ছে..." : "Generating...")
+            : (isBn ? "ওয়েবহুক সিক্রেট নতুন করে তৈরি করুন" : "Regenerate webhook secret")}
+        </button>
       </div>
 
-      {provider.webhook_secret && (
+      {revealedSecret && (
         <div className="bg-green-50 border border-green-100 rounded-lg p-3 text-xs space-y-1">
           <p className="font-semibold text-green-700">
             {isPathao
               ? (isBn ? "নিচের তথ্য Pathao পোর্টালের Webhook Integration সেটিংসে যোগ করুন (Auth Token একবারই দেখানো হবে):" : "Add these to Pathao's Webhook Integration settings (Auth Token shown only once):")
-              : (isBn ? "নিচের তথ্য Steadfast পোর্টালের Webhook Integration সেটিংসে যোগ করুন (একবারই দেখানো হবে):" : "Add these to Steadfast's Webhook Integration settings (shown only once):")}
+              : (isBn ? "নিচের তথ্য Steadfast পোর্টালের Webhook Integration সেটিংসে \"Auth Token (Bearer)\" ফিল্ডে বসান (একবারই দেখানো হবে):" : "Paste this into Steadfast's Webhook Integration \"Auth Token (Bearer)\" field (shown only once):")}
           </p>
           <p><span className="text-gray-500">Callback Url:</span> <span className="font-mono">{WEBHOOK_URLS[provider.code as keyof typeof WEBHOOK_URLS] ?? WEBHOOK_URLS.STEADFAST}</span></p>
-          <p><span className="text-gray-500">{isPathao ? "Secret:" : "Auth Token (Bearer):"}</span> <span className="font-mono break-all">{provider.webhook_secret}</span></p>
+          <p><span className="text-gray-500">{isPathao ? "Secret:" : "Auth Token (Bearer):"}</span> <span className="font-mono break-all">{revealedSecret}</span></p>
         </div>
       )}
 
