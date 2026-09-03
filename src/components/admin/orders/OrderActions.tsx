@@ -137,7 +137,7 @@ export default function OrderActions({ order, orderId }: Props) {
 
   const hasPayAction = order.payment_method === 'COD' && order.payment_status === 'UNPAID' && !['CANCELLED', 'RETURNED'].includes(order.status)
   const hasStatusAction = ['PENDING', 'CONFIRMED', 'PACKED'].includes(order.status)
-  const hasCancelAction = !['ASSIGNED', 'ON_THE_WAY', 'DELIVERED', 'RETURNED', 'CANCELLED'].includes(order.status)
+  const hasCancelAction = !['ASSIGNED', 'PICKED', 'ON_THE_WAY', 'DELIVERED', 'RETURNED', 'CANCELLED'].includes(order.status)
   const hasDiscountAction = ['PENDING', 'CONFIRMED'].includes(order.status) && order.payment_status === 'UNPAID'
   const hasWaiveDeliveryAction = hasDiscountAction && Number(order.delivery_charge) > 0
   // Admin can drive the order through every status regardless of whether a delivery
@@ -152,7 +152,7 @@ export default function OrderActions({ order, orderId }: Props) {
   // already has someone assigned). Only show it when there's genuinely
   // nobody assigned yet.
   const hasDeliveryChoice = (order.status === 'PACKED' && !hasAssignedPerson) || hasAssignPersonOnly
-  const hasDispatchAction = order.status === 'ASSIGNED'
+  const hasDispatchAction = order.status === 'ASSIGNED' || order.status === 'PICKED'
   const hasDeliverAction = order.status === 'ON_THE_WAY'
   const hasReturnAction = order.status === 'DELIVERED'
   const hasAnyAction = hasPayAction || hasStatusAction || hasCancelAction || hasDiscountAction
@@ -474,7 +474,7 @@ export default function OrderActions({ order, orderId }: Props) {
             )}
           </>
         )}
-        {!['ASSIGNED', 'ON_THE_WAY', 'DELIVERED', 'RETURNED', 'CANCELLED'].includes(order.status) && (
+        {!['ASSIGNED', 'PICKED', 'ON_THE_WAY', 'DELIVERED', 'RETURNED', 'CANCELLED'].includes(order.status) && (
           <>
             <button disabled={loading} className="btn-secondary text-sm" onClick={() => setShowCancelModal(true)}>
               {t('order.cancel')}

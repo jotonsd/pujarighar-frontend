@@ -14,7 +14,10 @@ import { formatAmount } from "@/utils/format";
 import { useState } from "react";
 
 const API_ORIGIN = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
-const WEBHOOK_URL = `${API_ORIGIN}/api/courier/webhooks/steadfast/`;
+const WEBHOOK_URLS = {
+  STEADFAST: `${API_ORIGIN}/api/courier/webhooks/steadfast/`,
+  PATHAO:    `${API_ORIGIN}/api/courier/webhooks/pathao/`,
+} as const;
 
 // Provider-type presets — driving the "Add Provider" defaults and which
 // credential fields each one actually needs (Steadfast: static API key/
@@ -33,6 +36,7 @@ function ProviderCard({ provider, isBn, locale }: { provider: CourierProvider; i
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [storeId, setStoreId] = useState(provider.store_id ?? "");
+  const [webhookVerificationSecret, setWebhookVerificationSecret] = useState(provider.webhook_verification_secret ?? "");
   const [update, { isLoading }] = useUpdateCourierProviderMutation();
   const { data: balance, refetch: refetchBalance, isFetching: balanceLoading } = useGetCourierProviderBalanceQuery(provider.id, { skip: !provider.is_active || isPathao });
 
@@ -53,7 +57,7 @@ function ProviderCard({ provider, isBn, locale }: { provider: CourierProvider; i
         ...(secretKey ? { secret_key: secretKey } : {}),
         ...(isPathao && username ? { username } : {}),
         ...(isPathao && password ? { password } : {}),
-        ...(isPathao ? { store_id: storeId } : {}),
+        ...(isPathao ? { store_id: storeId, webhook_verification_secret: webhookVerificationSecret } : {}),
       }).unwrap();
       toast.success(isBn ? "সংরক্ষণ হয়েছে" : "Saved");
       setApiKey("");
@@ -96,32 +100,36 @@ function ProviderCard({ provider, isBn, locale }: { provider: CourierProvider; i
       <div className="flex items-center gap-4 text-xs text-gray-500 flex-wrap">
         <span>{isBn ? (isPathao ? "ক্লায়েন্ট আইডি: " : "API কী: ") : (isPathao ? "Client ID: " : "API key: ")}{provider.has_api_key ? "✓" : "—"}</span>
         <span>{isBn ? (isPathao ? "ক্লায়েন্ট সিক্রেট: " : "সিক্রেট কী: ") : (isPathao ? "Client secret: " : "Secret key: ")}{provider.has_secret_key ? "✓" : "—"}</span>
-        {isPathao ? (
+        {isPathao && (
           <>
             <span>{isBn ? "ইউজারনেম: " : "Username: "}{provider.has_username ? "✓" : "—"}</span>
             <span>{isBn ? "পাসওয়ার্ড: " : "Password: "}{provider.has_password ? "✓" : "—"}</span>
             <span>{isBn ? "স্টোর আইডি: " : "Store ID: "}{provider.store_id || "—"}</span>
           </>
-        ) : (
-          <span>{isBn ? "ওয়েবহুক: " : "Webhook: "}{provider.has_webhook_secret ? "✓" : "—"}</span>
+        )}
+        <span>{isBn ? "ওয়েবহুক: " : "Webhook: "}{provider.has_webhook_secret ? "✓" : "—"}</span>
+        {isPathao && (
+          <span>{isBn ? "ভেরিফিকেশন সিক্রেট: " : "Verification secret: "}{provider.webhook_verification_secret ? "✓" : "—"}</span>
         )}
       </div>
 
       {provider.webhook_secret && (
         <div className="bg-green-50 border border-green-100 rounded-lg p-3 text-xs space-y-1">
           <p className="font-semibold text-green-700">
-            {isBn ? "নিচের তথ্য Steadfast পোর্টালের Webhook Integration সেটিংসে যোগ করুন (একবারই দেখানো হবে):" : "Add these to Steadfast's Webhook Integration settings (shown only once):"}
+            {isPathao
+              ? (isBn ? "নিচের তথ্য Pathao পোর্টালের Webhook Integration সেটিংসে যোগ করুন (Auth Token একবারই দেখানো হবে):" : "Add these to Pathao's Webhook Integration settings (Auth Token shown only once):")
+              : (isBn ? "নিচের তথ্য Steadfast পোর্টালের Webhook Integration সেটিংসে যোগ করুন (একবারই দেখানো হবে):" : "Add these to Steadfast's Webhook Integration settings (shown only once):")}
           </p>
-          <p><span className="text-gray-500">Callback Url:</span> <span className="font-mono">{WEBHOOK_URL}</span></p>
-          <p><span className="text-gray-500">Auth Token (Bearer):</span> <span className="font-mono break-all">{provider.webhook_secret}</span></p>
+          <p><span className="text-gray-500">Callback Url:</span> <span className="font-mono">{WEBHOOK_URLS[provider.code as keyof typeof WEBHOOK_URLS] ?? WEBHOOK_URLS.STEADFAST}</span></p>
+          <p><span className="text-gray-500">{isPathao ? "Secret:" : "Auth Token (Bearer):"}</span> <span className="font-mono break-all">{provider.webhook_secret}</span></p>
         </div>
       )}
 
       {isPathao && (
         <p className="text-xs text-gray-400">
           {isBn
-            ? "পাথাও পুশ আপডেট (ওয়েবহুক) সমর্থন করে না — অর্ডারের কুরিয়ার প্যানেল থেকে ম্যানুয়ালি রিফ্রেশ করে সর্বশেষ স্ট্যাটাস আনতে হবে।"
-            : "Pathao has no push webhook — refresh an order's courier status manually from its detail page to pull the latest update."}
+            ? "Pathao ওয়েবহুক যোগ করার সময় তাদের ড্যাশবোর্ডে যে ভেরিফিকেশন সিক্রেট দেখাবে, সেটি নিচে \"ভেরিফিকেশন সিক্রেট\" ফিল্ডে বসান — এটি ছাড়া তাদের ভেরিফিকেশন ধাপ ব্যর্থ হবে।"
+            : "When adding the webhook in Pathao's dashboard, paste the verification secret it shows you into the \"Verification secret\" field below — without it, their verification step will fail."}
         </p>
       )}
 
@@ -157,6 +165,12 @@ function ProviderCard({ provider, isBn, locale }: { provider: CourierProvider; i
                 value={storeId}
                 onChange={e => setStoreId(e.target.value)}
                 placeholder={isBn ? "Pathao মার্চেন্ট প্যানেল থেকে নিন" : "From Pathao's merchant panel"}
+              />
+              <FloatingInput
+                label={isBn ? "ভেরিফিকেশন সিক্রেট" : "Verification secret"}
+                value={webhookVerificationSecret}
+                onChange={e => setWebhookVerificationSecret(e.target.value)}
+                placeholder={isBn ? "Pathao ওয়েবহুক ড্যাশবোর্ডে যা দেখাবে" : "Shown on Pathao's webhook setup dashboard"}
               />
             </>
           )}

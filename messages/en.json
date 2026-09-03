@@ -103,6 +103,7 @@
     "CONFIRMED": "Confirmed",
     "PACKED": "Packed",
     "ASSIGNED": "Assigned",
+    "PICKED": "Picked Up",
     "ON_THE_WAY": "On the Way",
     "DELIVERED": "Delivered",
     "RETURNED": "Returned",

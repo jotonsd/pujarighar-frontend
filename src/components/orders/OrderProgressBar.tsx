@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 const STAGES: { statuses: OrderStatus[]; label_bn: string; label_en: string }[] = [
   { statuses: ["PENDING", "CONFIRMED"], label_bn: "গৃহীত", label_en: "Accepted" },
   { statuses: ["PACKED"], label_bn: "প্যাক করা", label_en: "Packed" },
-  { statuses: ["ASSIGNED"], label_bn: "ডেলিভারির জন্য প্রস্তুত", label_en: "Ready for Delivery" },
+  { statuses: ["ASSIGNED", "PICKED"], label_bn: "ডেলিভারির জন্য প্রস্তুত", label_en: "Ready for Delivery" },
   { statuses: ["ON_THE_WAY"], label_bn: "পথে আছে", label_en: "In Transit" },
   { statuses: ["DELIVERED"], label_bn: "ডেলিভারি হয়েছে", label_en: "Delivered" },
 ];

@@ -62,7 +62,7 @@ export default function OrderStatusCell({ order, locale }: { order: SalesOrder; 
           {locale === 'bn' ? 'প্যাক করুন' : 'Pack'}
         </button>
       )}
-      {order.status === 'ASSIGNED' && (
+      {(order.status === 'ASSIGNED' || order.status === 'PICKED') && (
         <button
           type="button"
           disabled={loading}

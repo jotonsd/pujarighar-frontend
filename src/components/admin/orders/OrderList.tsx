@@ -14,7 +14,7 @@ import { OrderStatus, SalesOrder } from '@/lib/types'
 import { formatAmount, formatDate, localName } from '@/utils/format'
 import { useGetOrdersQuery } from '@/api/orders/ordersApi'
 
-const STATUSES: OrderStatus[] = ['PENDING', 'CONFIRMED', 'PACKED', 'ASSIGNED', 'ON_THE_WAY', 'DELIVERED', 'RETURNED', 'CANCELLED']
+const STATUSES: OrderStatus[] = ['PENDING', 'CONFIRMED', 'PACKED', 'ASSIGNED', 'PICKED', 'ON_THE_WAY', 'DELIVERED', 'RETURNED', 'CANCELLED']
 const EMPTY = { status: '', payment_status: '', order_number: '', phone: '', name: '', from: '', to: '' }
 
 export default function OrderList() {

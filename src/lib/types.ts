@@ -18,7 +18,7 @@ export interface Role {
 }
 
 export type Locale = 'bn' | 'en'
-export type OrderStatus = 'PENDING' | 'CONFIRMED' | 'PACKED' | 'ASSIGNED' | 'ON_THE_WAY' | 'DELIVERED' | 'RETURNED' | 'CANCELLED'
+export type OrderStatus = 'PENDING' | 'CONFIRMED' | 'PACKED' | 'ASSIGNED' | 'PICKED' | 'ON_THE_WAY' | 'DELIVERED' | 'RETURNED' | 'CANCELLED'
 export type OrderSource = 'WEBSITE' | 'AI_CHATBOT' | 'POS'
 
 // ─── Shipping ────────────────────────────────────────────────────────────────
@@ -523,6 +523,7 @@ export interface CourierProvider {
   base_url: string
   is_active: boolean
   store_id?: string
+  webhook_verification_secret?: string
   has_api_key: boolean
   has_secret_key: boolean
   has_webhook_secret: boolean
