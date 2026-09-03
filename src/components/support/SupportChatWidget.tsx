@@ -531,7 +531,7 @@ export default function SupportChatWidget() {
           <BrahmanAvatar size={24} />
           <span className="font-semibold text-sm flex items-center gap-1">
             {isBn ? "ব্রাহ্মণ AI" : "Brahman AI"}
-            <Sparkles className="w-3.5 h-3.5 text-amber-200" strokeWidth={2} />
+            <Sparkles className="w-3.5 h-3.5 text-amber-200 animate-pulse" strokeWidth={2} />
           </span>
         </div>
         <div className="flex items-center gap-3">

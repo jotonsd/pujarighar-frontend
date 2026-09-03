@@ -22,7 +22,7 @@ export default function OrderList() {
   const locale = useLocale()
   const router = useRouter()
   const [page, setPage]               = useState(1)
-  const [limit, setLimit]             = useState(10)
+  const [limit, setLimit]             = useState(25)
   const [showFilters, setShowFilters] = useState(false)
   const [draft, setDraft]             = useState(EMPTY)
   const [applied, setApplied]         = useState(EMPTY)

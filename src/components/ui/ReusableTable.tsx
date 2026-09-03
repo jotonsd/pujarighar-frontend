@@ -40,7 +40,7 @@ export interface QuickAction<T> {
 
 type SortDirection = 'asc' | 'desc' | null
 
-const PER_PAGE_OPTIONS = [10, 20, 30, 50, 80, 100]
+const PER_PAGE_OPTIONS = [10, 20, 25, 30, 50, 80, 100]
 
 interface ReusableTableProps<T> {
   data: T[]
