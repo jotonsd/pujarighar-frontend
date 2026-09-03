@@ -77,7 +77,7 @@ export default function AdminOrderDetailPage({
           <h2 className="font-semibold text-gray-700 mb-4">
             {locale === "bn" ? "ট্র্যাকিং" : "Tracking"}
           </h2>
-          <OrderProgressBar status={order.status} locale={locale} />
+          <OrderProgressBar status={order.status} locale={locale} isCourier={!!order.courier_consignment} />
           <StatusTimeline
             logs={logs}
             locale={locale}
