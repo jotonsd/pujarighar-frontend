@@ -56,7 +56,7 @@ export default function TrackingPageClient({ id, offerBanners }: { id: string; o
           <OrderStatusBadge status={order.status} locale={locale} />
         </div>
 
-        <OrderProgressBar status={order.status} locale={locale} />
+        <OrderProgressBar status={order.status} locale={locale} isCourier={order.is_courier} />
 
         {/* Customer */}
         <div className="border-t border-gray-100 pt-4 space-y-0.5">

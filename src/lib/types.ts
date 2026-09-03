@@ -426,6 +426,7 @@ export interface OrderTracking {
   created_at: string
   delivery_info: DeliveryInfo | null
   courier_tracking_url: string | null
+  is_courier: boolean
   timeline: StatusLogEntry[]
 }
 
