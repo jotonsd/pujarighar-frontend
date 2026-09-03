@@ -10,7 +10,7 @@ import { formatAmount, formatDate } from "@/utils/format";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 
-const STATUSES: OrderStatus[] = ["PENDING", "CONFIRMED", "PACKED", "ASSIGNED", "ON_THE_WAY", "DELIVERED", "RETURNED", "CANCELLED"];
+const STATUSES: OrderStatus[] = ["PENDING", "CONFIRMED", "PACKED", "ASSIGNED", "PICKED", "ON_THE_WAY", "DELIVERED", "RETURNED", "CANCELLED"];
 
 export default function SalesReportPage() {
   const t = useTranslations();
