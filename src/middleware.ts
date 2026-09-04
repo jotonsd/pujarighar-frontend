@@ -142,5 +142,9 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico|.*\\..*).*)'],
+  // /t/<code> short links must skip locale-prefixing entirely — with
+  // localePrefix: 'always', intlMiddleware would otherwise redirect
+  // /t/CODE -> /bn/t/CODE, which doesn't match the /t/:code rewrite in
+  // next.config.mjs and 404s.
+  matcher: ['/((?!api|t/|_next/static|_next/image|favicon.ico|.*\\..*).*)'],
 }
