@@ -23,6 +23,7 @@ const todayStr = () => toLocalDateStr(new Date());
 const getEmptyForm = () => ({
   movement_type: "PURCHASE",
   quantity: "",
+  direction: "ADD" as "ADD" | "DEDUCT",
   unit_cost: "",
   unit_price: "",
   supplier_id: "",
@@ -53,6 +54,7 @@ export default function StockAdjustPanel({ product }: Props) {
   const isBn = locale === "bn";
   const isPurchase = adjForm.movement_type === "PURCHASE";
   const isSupplierReturn = adjForm.movement_type === "SUPPLIER_RETURN";
+  const isAdjustment = adjForm.movement_type === "ADJUSTMENT";
   const needsCostAndSupplier = isPurchase || isSupplierReturn;
 
   const startEditMovement = (m: StockMovement) => {
@@ -87,10 +89,13 @@ export default function StockAdjustPanel({ product }: Props) {
   const handleAdjust = async () => {
     if (!adjForm.quantity) return;
     try {
+      const signedQuantity = isAdjustment && adjForm.direction === "DEDUCT"
+        ? -Math.abs(Number(adjForm.quantity))
+        : Math.abs(Number(adjForm.quantity));
       await adjustStock({
         productId: product.id,
         movement_type: adjForm.movement_type,
-        quantity: Number(adjForm.quantity),
+        quantity: signedQuantity,
         ...(needsCostAndSupplier && {
           unit_cost: Number(adjForm.unit_cost),
           ...(isPurchase && adjForm.unit_price && { unit_price: Number(adjForm.unit_price) }),
@@ -158,9 +163,37 @@ export default function StockAdjustPanel({ product }: Props) {
           <FloatingInput
             label={translations("product.quantity")}
             type="number"
+            min="0"
             value={adjForm.quantity}
             onChange={e => setAdjForm(p => ({ ...p, quantity: e.target.value }))}
           />
+
+          {isAdjustment && (
+            <div className="col-span-2 flex rounded-lg border border-gray-200 overflow-hidden">
+              <button
+                type="button"
+                onClick={() => setAdjForm(p => ({ ...p, direction: "ADD" }))}
+                className={`flex-1 py-2 text-sm font-medium transition-colors ${
+                  adjForm.direction === "ADD"
+                    ? "bg-green-600 text-white"
+                    : "bg-white text-gray-500 hover:bg-gray-50"
+                }`}
+              >
+                {isBn ? "স্টক যোগ" : "Add Stock"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setAdjForm(p => ({ ...p, direction: "DEDUCT" }))}
+                className={`flex-1 py-2 text-sm font-medium transition-colors border-l border-gray-200 ${
+                  adjForm.direction === "DEDUCT"
+                    ? "bg-red-600 text-white"
+                    : "bg-white text-gray-500 hover:bg-gray-50"
+                }`}
+              >
+                {isBn ? "স্টক বিয়োগ" : "Deduct Stock"}
+              </button>
+            </div>
+          )}
 
           {needsCostAndSupplier && (
             <>
