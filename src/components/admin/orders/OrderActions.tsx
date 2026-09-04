@@ -232,6 +232,22 @@ export default function OrderActions({ order, orderId }: Props) {
               <ExternalLink className="w-3 h-3" />
             </a>
           )}
+          {!!order.courier_consignment.events?.length && (
+            <div className="pt-1.5 mt-1.5 border-t border-gray-200 space-y-1.5 max-h-40 overflow-y-auto">
+              <p className="text-[11px] font-medium text-gray-500">
+                {locale === 'bn' ? 'ওয়েবহুক লগ' : 'Webhook log'}
+              </p>
+              {order.courier_consignment.events.map(ev => (
+                <div key={ev.id} className="text-xs">
+                  <p className="text-gray-700">{ev.message || ev.status || '—'}</p>
+                  <p className="text-[11px] text-gray-400">
+                    {new Date(ev.created_at).toLocaleString(locale === 'bn' ? 'bn-BD' : 'en-US')}
+                    {' · '}{ev.source}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
