@@ -10,10 +10,19 @@ const nextConfig = {
   // on the Django API — proxy transparently so the browser never sees the
   // api.* subdomain.
   async rewrites() {
+    // Both forms proxy straight to the backend's trailing-slash URL — the
+    // Django route requires one (t/<code>/), and sending it without one
+    // would make Django's APPEND_SLASH middleware 301 back to a relative
+    // "/t/:code/" Location, which Next's own trailingSlash:false default
+    // then strips again before re-matching, looping forever.
     return [
       {
         source: "/t/:code",
-        destination: `${process.env.NEXT_PUBLIC_API_URL}/t/:code`,
+        destination: `${process.env.NEXT_PUBLIC_API_URL}/t/:code/`,
+      },
+      {
+        source: "/t/:code/",
+        destination: `${process.env.NEXT_PUBLIC_API_URL}/t/:code/`,
       },
     ];
   },
