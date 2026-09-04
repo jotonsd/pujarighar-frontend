@@ -5,6 +5,18 @@ const withNextIntl = createNextIntlPlugin("src/lib/i18n.ts");
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: "standalone",
+  // /t/<code> short links are generated with the customer-facing domain
+  // (see get_short_url in the backend) but the actual lookup/redirect lives
+  // on the Django API — proxy transparently so the browser never sees the
+  // api.* subdomain.
+  async rewrites() {
+    return [
+      {
+        source: "/t/:code",
+        destination: `${process.env.NEXT_PUBLIC_API_URL}/t/:code`,
+      },
+    ];
+  },
   images: {
     remotePatterns: [
       { protocol: "http", hostname: "localhost", port: "8020" },
