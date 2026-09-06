@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { SalesOrder } from '@/lib/types'
-import { formatAmount } from '@/utils/format'
+import { formatAmount, formatNumber } from '@/utils/format'
 
 interface ReturnedLine {
   checked: boolean
@@ -19,8 +19,11 @@ export default function PartialDeliverModal({
   onConfirm: (items: { item_id: string; quantity: number }[], noteBn: string) => void
 }) {
   const isBn = locale === 'bn'
+  // item.quantity comes from the backend as a fixed-3-decimal string
+  // ("1.000") — parse+restring it so both the display text and the
+  // pre-filled input show "1", not "1.000", for the common whole-number case.
   const [lines, setLines] = useState<Record<string, ReturnedLine>>(() =>
-    Object.fromEntries(order.items.map(i => [i.id, { checked: false, quantity: i.quantity }])),
+    Object.fromEntries(order.items.map(i => [i.id, { checked: false, quantity: String(parseFloat(i.quantity)) }])),
   )
   const [noteBn, setNoteBn] = useState('')
 
@@ -83,7 +86,7 @@ export default function PartialDeliverModal({
                     {isBn ? item.product_name_bn : item.product_name_en || item.product_name_bn}
                   </p>
                   <p className="text-xs text-gray-400">
-                    {isBn ? 'অর্ডারকৃত:' : 'Ordered:'} {item.quantity} · {formatAmount(item.unit_price, locale, 2)} {isBn ? '/একক' : '/unit'}
+                    {isBn ? 'অর্ডারকৃত:' : 'Ordered:'} {formatNumber(item.quantity, locale)} · {formatAmount(item.unit_price, locale, 2)} {isBn ? '/একক' : '/unit'}
                   </p>
                 </div>
                 {line.checked && (
