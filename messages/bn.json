@@ -140,7 +140,10 @@
     "pendingOrders": "পেন্ডিং অর্ডার",
     "lowStock": "কম স্টক",
     "totalCustomers": "মোট গ্রাহক",
-    "totalProducts": "মোট পণ্য"
+    "totalProducts": "মোট পণ্য",
+    "thisMonthOrders": "এই মাসের অর্ডার",
+    "thisMonthSales": "এই মাসের বিক্রয়",
+    "totalStockValue": "মোট স্টক মূল্য"
   },
   "role": {
     "ADMIN": "অ্যাডমিন",
