@@ -12,6 +12,7 @@ const statusVariants: Record<
   PICKED: "orange",
   ON_THE_WAY: "orange",
   DELIVERED: "green",
+  PARTIALLY_DELIVERED: "yellow",
   RETURNED: "red",
   CANCELLED: "red",
 };
@@ -24,6 +25,7 @@ const statusLabels: Record<OrderStatus, { bn: string; en: string }> = {
   PICKED: { bn: "পিকআপ হয়েছে", en: "Picked Up" },
   ON_THE_WAY: { bn: "পথে আছে", en: "On the Way" },
   DELIVERED: { bn: "ডেলিভারি হয়েছে", en: "Delivered" },
+  PARTIALLY_DELIVERED: { bn: "আংশিক ডেলিভারি হয়েছে", en: "Partially Delivered" },
   RETURNED: { bn: "ফেরত", en: "Returned" },
   CANCELLED: { bn: "বাতিল", en: "Cancelled" },
 };
