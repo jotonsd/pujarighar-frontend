@@ -1,6 +1,6 @@
 "use client";
 
-import { useGetDashboardSummaryQuery, RecentOrder, TopProduct } from "@/api/dashboard/dashboardApi";
+import { useGetDashboardSummaryQuery, DashboardSummary, RecentOrder, TopProduct } from "@/api/dashboard/dashboardApi";
 import PageHeader from "@/components/ui/PageHeader";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { formatAmount, formatNumber } from "@/utils/format";
@@ -16,21 +16,29 @@ import {
 } from "lucide-react";
 
 // ─── Stat card definitions ────────────────────────────────────────────────────
-const STAT_CARDS = [
-  // Row 1
+// Split into explicit rows (rather than one flat list) since each row now
+// has a different card count / grid-cols to match.
+const STAT_ROW_1 = [
   { key: "week_orders",    labelKey: "weekOrders",    icon: ShoppingBag,   bg: "bg-blue-600",    iconText: "text-blue-600" },
   { key: "week_revenue",   labelKey: "weekRevenue",   icon: Wallet,        bg: "bg-emerald-700",  iconText: "text-emerald-700", isCurrency: true },
   { key: "pending_orders", labelKey: "pendingOrders", icon: Clock,         bg: "bg-amber-700",    iconText: "text-amber-700" },
-  { key: "low_stock_count",labelKey: "lowStock",      icon: AlertTriangle, bg: "bg-red-600",      iconText: "text-red-700" },
-  { key: "total_customers",labelKey: "totalCustomers",icon: Users,         bg: "bg-purple-600",   iconText: "text-purple-600" },
-  // Row 2 — this month sales + stock value, grouped together
+] as const;
+
+const STAT_ROW_2 = [
   { key: "this_month_sales_amount", labelKey: "thisMonthSales",  icon: Wallet,      bg: "bg-sky-700",    iconText: "text-sky-700", isCurrency: true },
-  { key: "total_stock_value",       labelKey: "totalStockValue", icon: Package,     bg: "bg-teal-600",   iconText: "text-teal-600", isCurrency: true },
-  { key: "cash_stock_value",        labelKey: "cashStockValue",  icon: Wallet,      bg: "bg-lime-700",   iconText: "text-lime-700", isCurrency: true },
-  { key: "credit_stock_value",      labelKey: "bakiStockValue",  icon: HandCoins,   bg: "bg-rose-700",   iconText: "text-rose-700", isCurrency: true },
-  { key: "total_products",         labelKey: "totalProducts",   icon: Package,     bg: "bg-orange-700", iconText: "text-orange-700" },
-  // Row 3
-  { key: "this_month_orders", labelKey: "thisMonthOrders", icon: ShoppingBag, bg: "bg-indigo-600", iconText: "text-indigo-600" },
+  { key: "this_month_orders",       labelKey: "thisMonthOrders", icon: ShoppingBag, bg: "bg-indigo-600", iconText: "text-indigo-600" },
+  { key: "total_customers",         labelKey: "totalCustomers",  icon: Users,       bg: "bg-purple-600", iconText: "text-purple-600" },
+  { key: "total_products",          labelKey: "totalProducts",   icon: Package,     bg: "bg-orange-700", iconText: "text-orange-700" },
+] as const;
+
+const STAT_ROW_3 = [
+  { key: "total_stock_value",  labelKey: "totalStockValue", icon: Package,   bg: "bg-teal-600",  iconText: "text-teal-600", isCurrency: true },
+  { key: "cash_stock_value",   labelKey: "cashStockValue",  icon: Wallet,    bg: "bg-lime-700",   iconText: "text-lime-700", isCurrency: true },
+  { key: "credit_stock_value", labelKey: "bakiStockValue",  icon: HandCoins, bg: "bg-rose-700",   iconText: "text-rose-700", isCurrency: true },
+] as const;
+
+const STAT_ROW_4 = [
+  { key: "low_stock_count", labelKey: "lowStock", icon: AlertTriangle, bg: "bg-red-600", iconText: "text-red-700" },
 ] as const;
 
 const STATUS_META: Record<string, { label_bn: string; label_en: string; color: string }> = {
@@ -64,8 +72,17 @@ export default function DashboardPage() {
   if (isLoading) return (
     <div className="space-y-5">
       <Skeleton className="h-14 w-full rounded-xl" />
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
-        {Array.from({ length: 11 }).map((_, i) => <Skeleton key={i} className="h-20 rounded-2xl" />)}
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+        {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-20 rounded-2xl" />)}
+      </div>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-20 rounded-2xl" />)}
+      </div>
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+        {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-20 rounded-2xl" />)}
+      </div>
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+        {Array.from({ length: 1 }).map((_, i) => <Skeleton key={i} className="h-20 rounded-2xl" />)}
       </div>
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
         {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-24 rounded-2xl" />)}
@@ -101,6 +118,8 @@ export default function DashboardPage() {
     [thisMonthName]: d.this_month,
     [lastMonthName]: d.last_month,
   }));
+  const thisMonthOrderTotal = (data?.order_comparison_chart ?? []).reduce((s, d) => s + d.this_month, 0);
+  const lastMonthOrderTotal = (data?.order_comparison_chart ?? []).reduce((s, d) => s + d.last_month, 0);
 
   const statusRows = (data?.status_breakdown ?? []).filter(r => r.count > 0);
   const maxCount   = Math.max(...statusRows.map(r => r.count), 1);
@@ -110,39 +129,56 @@ export default function DashboardPage() {
 
   const topRevenue = Math.max(...(data?.top_products ?? []).map(p => parseFloat(p.revenue)), 1);
 
+  const renderStatCard = (card: {
+    key: keyof DashboardSummary
+    labelKey: string
+    icon: typeof ShoppingBag
+    bg: string
+    iconText: string
+    isCurrency?: boolean
+  }) => {
+    const raw = data?.[card.key];
+    const value = card.isCurrency
+      ? formatAmount((raw as string | number | undefined) ?? 0, locale, 0)
+      : formatNumber(Number(raw ?? 0), locale);
+    const isOutOfStock = card.key === "low_stock_count" && (data?.out_of_stock_count ?? 0) > 0;
+    const Icon = card.icon;
+    return (
+      <div key={card.key} className={`${card.bg} rounded-2xl p-4 flex items-start gap-3 shadow-sm hover:shadow-md transition-shadow`}>
+        <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 bg-white shadow-sm">
+          <Icon className={`w-5 h-5 ${card.iconText}`} strokeWidth={2} />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-xl font-bold leading-tight text-white">{value}</p>
+          <p className="text-xs text-white/80 mt-0.5">{t(card.labelKey)}</p>
+          {isOutOfStock && (
+            <p className="text-xs text-white mt-0.5 font-semibold">
+              +{formatNumber(data!.out_of_stock_count, locale)} {isBn ? "স্টক শেষ" : "out of stock"}
+            </p>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-5">
       <PageHeader
         title={isBn ? "ড্যাশবোর্ড" : "Dashboard"}
         description={isBn ? "ব্যবসার সার্বিক অবস্থার সংক্ষিপ্ত চিত্র" : "Overview of your business performance"}
       />
-      {/* ── Row 1: Today / quick stats ───────────────────────────────────── */}
+      {/* ── Stat rows 1-4 ─────────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
-        {STAT_CARDS.map(card => {
-          const raw   = data?.[card.key];
-          const value = "isCurrency" in card && card.isCurrency
-            ? formatAmount(raw ?? 0, locale, 0)
-            : formatNumber(Number(raw ?? 0), locale);
-
-          const isOutOfStock = card.key === "low_stock_count" && (data?.out_of_stock_count ?? 0) > 0;
-          const Icon = card.icon;
-          return (
-            <div key={card.key} className={`${card.bg} rounded-2xl p-4 flex items-start gap-3 shadow-sm hover:shadow-md transition-shadow`}>
-              <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 bg-white shadow-sm">
-                <Icon className={`w-5 h-5 ${card.iconText}`} strokeWidth={2} />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-xl font-bold leading-tight text-white">{value}</p>
-                <p className="text-xs text-white/80 mt-0.5">{t(card.labelKey)}</p>
-                {isOutOfStock && (
-                  <p className="text-xs text-white mt-0.5 font-semibold">
-                    +{formatNumber(data!.out_of_stock_count, locale)} {isBn ? "স্টক শেষ" : "out of stock"}
-                  </p>
-                )}
-              </div>
-            </div>
-          );
-        })}
+        {STAT_ROW_1.map(renderStatCard)}
+      </div>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        {STAT_ROW_2.map(renderStatCard)}
+      </div>
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+        {STAT_ROW_3.map(renderStatCard)}
+      </div>
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+        {STAT_ROW_4.map(renderStatCard)}
       </div>
 
       {/* ── Row 2: Financial health ──────────────────────────────────────── */}
@@ -283,9 +319,21 @@ export default function DashboardPage() {
 
       {/* ── Row 3b: This month vs last month order count ─────────────────── */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-        <div className="mb-1">
-          <h2 className="text-base font-bold text-gray-800">{isBn ? "এই মাস বনাম গত মাস" : "This Month vs Last Month"}</h2>
-          <p className="text-xs text-gray-400 mt-0.5">{isBn ? "দিন অনুযায়ী অর্ডার সংখ্যা" : "Order count by day of month"}</p>
+        <div className="flex items-start justify-between mb-1 flex-wrap gap-2">
+          <div>
+            <h2 className="text-base font-bold text-gray-800">{isBn ? "এই মাস বনাম গত মাস" : "This Month vs Last Month"}</h2>
+            <p className="text-xs text-gray-400 mt-0.5">{isBn ? "দিন অনুযায়ী অর্ডার সংখ্যা" : "Order count by day of month"}</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-100">
+              <span className="w-2 h-2 rounded-full bg-amber-600" />
+              {thisMonthName}: {formatNumber(thisMonthOrderTotal, locale)}
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-50 text-gray-600 border border-gray-200">
+              <span className="w-2 h-2 rounded-full bg-gray-400" />
+              {lastMonthName}: {formatNumber(lastMonthOrderTotal, locale)}
+            </span>
+          </div>
         </div>
         {orderComparisonData.length > 0 ? (
           <ResponsiveContainer width="100%" height={240}>
