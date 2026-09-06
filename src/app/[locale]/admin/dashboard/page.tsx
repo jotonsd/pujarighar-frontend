@@ -32,13 +32,10 @@ const STAT_ROW_2 = [
 ] as const;
 
 const STAT_ROW_3 = [
-  { key: "total_stock_value",  labelKey: "totalStockValue", icon: Package,   bg: "bg-teal-600",  iconText: "text-teal-600", isCurrency: true },
-  { key: "cash_stock_value",   labelKey: "cashStockValue",  icon: Wallet,    bg: "bg-lime-700",   iconText: "text-lime-700", isCurrency: true },
-  { key: "credit_stock_value", labelKey: "bakiStockValue",  icon: HandCoins, bg: "bg-rose-700",   iconText: "text-rose-700", isCurrency: true },
-] as const;
-
-const STAT_ROW_4 = [
-  { key: "low_stock_count", labelKey: "lowStock", icon: AlertTriangle, bg: "bg-red-600", iconText: "text-red-700" },
+  { key: "total_stock_value",  labelKey: "totalStockValue", icon: Package,       bg: "bg-teal-600",  iconText: "text-teal-600", isCurrency: true },
+  { key: "cash_stock_value",   labelKey: "cashStockValue",  icon: Wallet,        bg: "bg-lime-700",   iconText: "text-lime-700", isCurrency: true },
+  { key: "credit_stock_value", labelKey: "bakiStockValue",  icon: HandCoins,     bg: "bg-rose-700",   iconText: "text-rose-700", isCurrency: true },
+  { key: "low_stock_count",    labelKey: "lowStock",        icon: AlertTriangle, bg: "bg-red-600",    iconText: "text-red-700" },
 ] as const;
 
 const STATUS_META: Record<string, { label_bn: string; label_en: string; color: string }> = {
@@ -78,11 +75,8 @@ export default function DashboardPage() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-20 rounded-2xl" />)}
       </div>
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
-        {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-20 rounded-2xl" />)}
-      </div>
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
-        {Array.from({ length: 1 }).map((_, i) => <Skeleton key={i} className="h-20 rounded-2xl" />)}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-20 rounded-2xl" />)}
       </div>
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
         {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-24 rounded-2xl" />)}
@@ -167,18 +161,15 @@ export default function DashboardPage() {
         title={isBn ? "ড্যাশবোর্ড" : "Dashboard"}
         description={isBn ? "ব্যবসার সার্বিক অবস্থার সংক্ষিপ্ত চিত্র" : "Overview of your business performance"}
       />
-      {/* ── Stat rows 1-4 ─────────────────────────────────────────────────── */}
+      {/* ── Stat rows 1-3 ─────────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
         {STAT_ROW_1.map(renderStatCard)}
       </div>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {STAT_ROW_2.map(renderStatCard)}
       </div>
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {STAT_ROW_3.map(renderStatCard)}
-      </div>
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
-        {STAT_ROW_4.map(renderStatCard)}
       </div>
 
       {/* ── Row 2: Financial health ──────────────────────────────────────── */}
