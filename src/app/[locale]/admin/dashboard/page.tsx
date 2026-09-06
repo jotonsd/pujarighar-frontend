@@ -17,17 +17,20 @@ import {
 
 // ─── Stat card definitions ────────────────────────────────────────────────────
 const STAT_CARDS = [
+  // Row 1
   { key: "week_orders",    labelKey: "weekOrders",    icon: ShoppingBag,   bg: "bg-blue-600",    iconText: "text-blue-600" },
   { key: "week_revenue",   labelKey: "weekRevenue",   icon: Wallet,        bg: "bg-emerald-700",  iconText: "text-emerald-700", isCurrency: true },
   { key: "pending_orders", labelKey: "pendingOrders", icon: Clock,         bg: "bg-amber-700",    iconText: "text-amber-700" },
   { key: "low_stock_count",labelKey: "lowStock",      icon: AlertTriangle, bg: "bg-red-600",      iconText: "text-red-700" },
   { key: "total_customers",labelKey: "totalCustomers",icon: Users,         bg: "bg-purple-600",   iconText: "text-purple-600" },
-  { key: "total_products", labelKey: "totalProducts", icon: Package,       bg: "bg-orange-700",   iconText: "text-orange-700" },
+  // Row 2 — this month + stock value, grouped together
   { key: "this_month_orders",       labelKey: "thisMonthOrders", icon: ShoppingBag, bg: "bg-indigo-600", iconText: "text-indigo-600" },
   { key: "this_month_sales_amount", labelKey: "thisMonthSales",  icon: Wallet,      bg: "bg-sky-700",    iconText: "text-sky-700", isCurrency: true },
   { key: "total_stock_value",       labelKey: "totalStockValue", icon: Package,     bg: "bg-teal-600",   iconText: "text-teal-600", isCurrency: true },
   { key: "cash_stock_value",        labelKey: "cashStockValue",  icon: Wallet,      bg: "bg-lime-700",   iconText: "text-lime-700", isCurrency: true },
   { key: "credit_stock_value",      labelKey: "bakiStockValue",  icon: HandCoins,   bg: "bg-rose-700",   iconText: "text-rose-700", isCurrency: true },
+  // Row 3
+  { key: "total_products", labelKey: "totalProducts", icon: Package,       bg: "bg-orange-700",   iconText: "text-orange-700" },
 ] as const;
 
 const STATUS_META: Record<string, { label_bn: string; label_en: string; color: string }> = {
@@ -61,7 +64,7 @@ export default function DashboardPage() {
   if (isLoading) return (
     <div className="space-y-5">
       <Skeleton className="h-14 w-full rounded-xl" />
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
         {Array.from({ length: 11 }).map((_, i) => <Skeleton key={i} className="h-20 rounded-2xl" />)}
       </div>
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
