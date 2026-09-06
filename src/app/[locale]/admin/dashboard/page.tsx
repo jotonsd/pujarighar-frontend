@@ -23,14 +23,14 @@ const STAT_CARDS = [
   { key: "pending_orders", labelKey: "pendingOrders", icon: Clock,         bg: "bg-amber-700",    iconText: "text-amber-700" },
   { key: "low_stock_count",labelKey: "lowStock",      icon: AlertTriangle, bg: "bg-red-600",      iconText: "text-red-700" },
   { key: "total_customers",labelKey: "totalCustomers",icon: Users,         bg: "bg-purple-600",   iconText: "text-purple-600" },
-  // Row 2 — this month + stock value, grouped together
-  { key: "this_month_orders",       labelKey: "thisMonthOrders", icon: ShoppingBag, bg: "bg-indigo-600", iconText: "text-indigo-600" },
+  // Row 2 — this month sales + stock value, grouped together
   { key: "this_month_sales_amount", labelKey: "thisMonthSales",  icon: Wallet,      bg: "bg-sky-700",    iconText: "text-sky-700", isCurrency: true },
   { key: "total_stock_value",       labelKey: "totalStockValue", icon: Package,     bg: "bg-teal-600",   iconText: "text-teal-600", isCurrency: true },
   { key: "cash_stock_value",        labelKey: "cashStockValue",  icon: Wallet,      bg: "bg-lime-700",   iconText: "text-lime-700", isCurrency: true },
   { key: "credit_stock_value",      labelKey: "bakiStockValue",  icon: HandCoins,   bg: "bg-rose-700",   iconText: "text-rose-700", isCurrency: true },
+  { key: "total_products",         labelKey: "totalProducts",   icon: Package,     bg: "bg-orange-700", iconText: "text-orange-700" },
   // Row 3
-  { key: "total_products", labelKey: "totalProducts", icon: Package,       bg: "bg-orange-700",   iconText: "text-orange-700" },
+  { key: "this_month_orders", labelKey: "thisMonthOrders", icon: ShoppingBag, bg: "bg-indigo-600", iconText: "text-indigo-600" },
 ] as const;
 
 const STATUS_META: Record<string, { label_bn: string; label_en: string; color: string }> = {
