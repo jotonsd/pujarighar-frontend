@@ -38,6 +38,9 @@ export interface DashboardSummary {
   cash_on_hand: string
   cash_account_id: string | null
   out_of_stock_count: number
+  total_stock_value: string
+  this_month_orders: number
+  this_month_sales_amount: string
   recent_orders: RecentOrder[]
   top_products: TopProduct[]
 }

@@ -23,6 +23,9 @@ const STAT_CARDS = [
   { key: "low_stock_count",labelKey: "lowStock",      icon: AlertTriangle, bg: "bg-red-600",      iconText: "text-red-700" },
   { key: "total_customers",labelKey: "totalCustomers",icon: Users,         bg: "bg-purple-600",   iconText: "text-purple-600" },
   { key: "total_products", labelKey: "totalProducts", icon: Package,       bg: "bg-orange-700",   iconText: "text-orange-700" },
+  { key: "this_month_orders",       labelKey: "thisMonthOrders", icon: ShoppingBag, bg: "bg-indigo-600", iconText: "text-indigo-600" },
+  { key: "this_month_sales_amount", labelKey: "thisMonthSales",  icon: Wallet,      bg: "bg-sky-700",    iconText: "text-sky-700", isCurrency: true },
+  { key: "total_stock_value",       labelKey: "totalStockValue", icon: Package,     bg: "bg-teal-600",   iconText: "text-teal-600", isCurrency: true },
 ] as const;
 
 const STATUS_META: Record<string, { label_bn: string; label_en: string; color: string }> = {
@@ -57,7 +60,7 @@ export default function DashboardPage() {
     <div className="space-y-5">
       <Skeleton className="h-14 w-full rounded-xl" />
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
-        {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-20 rounded-2xl" />)}
+        {Array.from({ length: 9 }).map((_, i) => <Skeleton key={i} className="h-20 rounded-2xl" />)}
       </div>
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
         {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-24 rounded-2xl" />)}
@@ -266,7 +269,15 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
         {/* Recent orders */}
         <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-          <h2 className="text-base font-bold text-gray-800 mb-4">{isBn ? "সাম্প্রতিক অর্ডার" : "Recent Orders"}</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-base font-bold text-gray-800">{isBn ? "সাম্প্রতিক অর্ডার" : "Recent Orders"}</h2>
+            <Link
+              href={`/${locale}/admin/orders`}
+              className="text-xs font-medium text-amber-700 hover:underline"
+            >
+              {isBn ? "সব অর্ডার দেখুন" : "View All Orders"}
+            </Link>
+          </div>
           {(data?.recent_orders ?? []).length === 0 ? (
             <p className="text-sm text-gray-400 text-center py-8">{isBn ? "কোনো অর্ডার নেই" : "No orders yet"}</p>
           ) : (

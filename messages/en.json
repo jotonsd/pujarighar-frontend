@@ -140,7 +140,10 @@
     "pendingOrders": "Pending Orders",
     "lowStock": "Low Stock",
     "totalCustomers": "Total Customers",
-    "totalProducts": "Total Products"
+    "totalProducts": "Total Products",
+    "thisMonthOrders": "This Month's Orders",
+    "thisMonthSales": "This Month's Sales",
+    "totalStockValue": "Total Stock Value"
   },
   "role": {
     "ADMIN": "Admin",
