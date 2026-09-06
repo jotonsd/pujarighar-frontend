@@ -25,10 +25,23 @@ export interface SiteSettings {
   has_gemini_api_key?:        boolean
   gemini_model?:              string
   ai_ordering_enabled?:       boolean
+  whatsapp_phone_number_id?:      string
+  whatsapp_business_account_id?:  string
+  has_whatsapp_access_token?:     boolean
+  has_whatsapp_app_secret?:       boolean
+  whatsapp_verify_token?:         string
+  whatsapp_enabled?:              boolean
 }
 
-// email_host_password / telegram_bot_token / gemini_api_key are write-only — sent on update, never read back
-export type SiteSettingsUpdate = Partial<SiteSettings> & { email_host_password?: string; telegram_bot_token?: string; gemini_api_key?: string }
+// email_host_password / telegram_bot_token / gemini_api_key / whatsapp_access_token / whatsapp_app_secret
+// are write-only — sent on update, never read back
+export type SiteSettingsUpdate = Partial<SiteSettings> & {
+  email_host_password?: string
+  telegram_bot_token?: string
+  gemini_api_key?: string
+  whatsapp_access_token?: string
+  whatsapp_app_secret?: string
+}
 
 export const settingsApi = baseApi.injectEndpoints({
   endpoints: build => ({
