@@ -10,12 +10,12 @@ import ImageUpload from "@/components/ui/ImageUpload";
 import PageHeader from "@/components/ui/PageHeader";
 import { FloatingInput, FloatingTextarea } from "@/components/ui/forms";
 import { toast } from "@/store/toastStore";
-import { Bot, Building2, FileText, Gift, Mail, Send, Sparkles } from "lucide-react";
+import { Bot, Building2, FileText, Gift, Mail, MessageCircle, Send, Sparkles } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useEffect, useState } from "react";
 
 // ── Menu config ────────────────────────────────────────────────────────────────
-type SectionId = "general" | "invoice" | "mail" | "referral" | "first_order" | "telegram" | "ai_support";
+type SectionId = "general" | "invoice" | "mail" | "referral" | "first_order" | "telegram" | "ai_support" | "whatsapp";
 
 const MENU: { id: SectionId; icon: React.ReactNode; label_bn: string; label_en: string }[] = [
   { id: "general",  icon: <Building2 className="w-4 h-4" />, label_bn: "সাধারণ তথ্য",   label_en: "General Info" },
@@ -25,6 +25,7 @@ const MENU: { id: SectionId; icon: React.ReactNode; label_bn: string; label_en: 
   { id: "first_order", icon: <Sparkles className="w-4 h-4" />, label_bn: "প্রথম অর্ডার ছাড়", label_en: "First Order Discount" },
   { id: "telegram", icon: <Send      className="w-4 h-4" />, label_bn: "টেলিগ্রাম",      label_en: "Telegram" },
   { id: "ai_support", icon: <Bot     className="w-4 h-4" />, label_bn: "এআই সহায়তা",     label_en: "AI Support" },
+  { id: "whatsapp", icon: <MessageCircle className="w-4 h-4" />, label_bn: "হোয়াটসঅ্যাপ", label_en: "WhatsApp" },
 ];
 
 // ── Page-size options ──────────────────────────────────────────────────────────
@@ -515,6 +516,148 @@ function AISupportPanel({ settings, isBn }: { settings: SiteSettings; isBn: bool
   );
 }
 
+// ── WhatsApp panel ──────────────────────────────────────────────────────────────
+function WhatsAppPanel({ settings, isBn }: { settings: SiteSettings; isBn: boolean }) {
+  const [form, setForm] = useState({
+    whatsapp_phone_number_id:     settings.whatsapp_phone_number_id ?? "",
+    whatsapp_business_account_id: settings.whatsapp_business_account_id ?? "",
+    whatsapp_access_token:        "",
+    whatsapp_app_secret:          "",
+    whatsapp_verify_token:        settings.whatsapp_verify_token ?? "",
+    whatsapp_enabled:             settings.whatsapp_enabled ?? false,
+  });
+
+  useEffect(() => {
+    setForm({
+      whatsapp_phone_number_id:     settings.whatsapp_phone_number_id ?? "",
+      whatsapp_business_account_id: settings.whatsapp_business_account_id ?? "",
+      whatsapp_access_token:        "",
+      whatsapp_app_secret:          "",
+      whatsapp_verify_token:        settings.whatsapp_verify_token ?? "",
+      whatsapp_enabled:             settings.whatsapp_enabled ?? false,
+    });
+  }, [settings]);
+
+  const [update, { isLoading }] = useUpdateSiteSettingsMutation();
+
+  const f = (key: "whatsapp_phone_number_id" | "whatsapp_business_account_id" | "whatsapp_access_token" | "whatsapp_app_secret" | "whatsapp_verify_token") =>
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      setForm(p => ({ ...p, [key]: e.target.value }));
+
+  const callbackUrl = typeof window !== "undefined"
+    ? `${process.env.NEXT_PUBLIC_API_URL}/api/whatsapp/webhook/`
+    : "";
+
+  const handleSave = async () => {
+    try {
+      await update({
+        whatsapp_phone_number_id: form.whatsapp_phone_number_id,
+        whatsapp_business_account_id: form.whatsapp_business_account_id,
+        ...(form.whatsapp_access_token ? { whatsapp_access_token: form.whatsapp_access_token } : {}),
+        ...(form.whatsapp_app_secret ? { whatsapp_app_secret: form.whatsapp_app_secret } : {}),
+        whatsapp_verify_token: form.whatsapp_verify_token,
+        whatsapp_enabled: form.whatsapp_enabled,
+      }).unwrap();
+      toast.success(isBn ? "সংরক্ষিত হয়েছে" : "Saved");
+    } catch {
+      toast.error(isBn ? "ব্যর্থ হয়েছে" : "Failed to save");
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="bg-amber-50 border border-amber-100 rounded-xl p-3 text-xs text-gray-600 space-y-1.5 leading-relaxed">
+        <p className="font-semibold text-amber-700">
+          {isBn ? "সেটআপ করবেন যেভাবে" : "How to set this up"}
+        </p>
+        <p>
+          {isBn
+            ? "১. developers.facebook.com এ একটি Meta App তৈরি করুন এবং তাতে WhatsApp যোগ করুন।"
+            : "1. Create a Meta App at developers.facebook.com and add the WhatsApp product to it."}
+        </p>
+        <p>
+          {isBn
+            ? "২. WhatsApp → API Setup পেজ থেকে Phone Number ID, WhatsApp Business Account ID এবং একটি এক্সেস টোকেন সংগ্রহ করুন।"
+            : "2. Grab the Phone Number ID, WhatsApp Business Account ID, and an access token from the WhatsApp → API Setup page."}
+        </p>
+        <p>
+          {isBn
+            ? "৩. App Settings → Basic থেকে App Secret সংগ্রহ করুন।"
+            : "3. Get the App Secret from App Settings → Basic."}
+        </p>
+        <p>
+          {isBn
+            ? "৪. নিচের Callback URL এবং Verify Token মেটার Webhooks কনফিগারেশনে বসান।"
+            : "4. Paste the Callback URL and Verify Token below into Meta's Webhooks configuration."}
+        </p>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <FloatingInput
+          label={isBn ? "ফোন নম্বর আইডি" : "Phone Number ID"}
+          value={form.whatsapp_phone_number_id}
+          onChange={f("whatsapp_phone_number_id")}
+        />
+        <FloatingInput
+          label={isBn ? "বিজনেস অ্যাকাউন্ট আইডি" : "WhatsApp Business Account ID"}
+          value={form.whatsapp_business_account_id}
+          onChange={f("whatsapp_business_account_id")}
+        />
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <FloatingInput
+          label={isBn ? "এক্সেস টোকেন" : "Access Token"}
+          type="password"
+          value={form.whatsapp_access_token}
+          onChange={f("whatsapp_access_token")}
+          placeholder={settings.has_whatsapp_access_token ? (isBn ? "সংরক্ষিত আছে — পরিবর্তন করতে নতুনটি লিখুন" : "Already saved — enter a new one to change") : "EAAU..."}
+        />
+        <FloatingInput
+          label={isBn ? "অ্যাপ সিক্রেট" : "App Secret"}
+          type="password"
+          value={form.whatsapp_app_secret}
+          onChange={f("whatsapp_app_secret")}
+          placeholder={settings.has_whatsapp_app_secret ? (isBn ? "সংরক্ষিত আছে — পরিবর্তন করতে নতুনটি লিখুন" : "Already saved — enter a new one to change") : ""}
+        />
+      </div>
+      <FloatingInput
+        label={isBn ? "ভেরিফাই টোকেন (আপনি নিজে বানান)" : "Verify Token (you invent this)"}
+        value={form.whatsapp_verify_token}
+        onChange={f("whatsapp_verify_token")}
+        placeholder="pujarighar_whatsapp_2026"
+      />
+
+      <div className="bg-gray-50 border border-gray-100 rounded-xl p-3 space-y-1">
+        <p className="text-xs font-semibold text-gray-500">{isBn ? "কলব্যাক ইউআরএল" : "Callback URL"}</p>
+        <p className="text-xs font-mono text-gray-700 break-all">{callbackUrl}</p>
+      </div>
+
+      <div className="border-t border-gray-100 pt-4">
+        <label className="flex items-start gap-3 cursor-pointer select-none">
+          <div
+            onClick={() => setForm(p => ({ ...p, whatsapp_enabled: !p.whatsapp_enabled }))}
+            className={`mt-0.5 w-10 h-5 rounded-full transition-colors relative shrink-0 ${form.whatsapp_enabled ? "bg-amber-600" : "bg-gray-200"}`}
+          >
+            <span className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${form.whatsapp_enabled ? "translate-x-5" : ""}`} />
+          </div>
+          <div>
+            <span className="text-sm font-medium text-gray-700">{isBn ? "হোয়াটসঅ্যাপ অটো-রিপ্লাই সক্রিয়" : "WhatsApp auto-reply enabled"}</span>
+            <p className="text-xs text-gray-400 mt-0.5">
+              {isBn
+                ? "চালু থাকলে, গ্রাহকরা হোয়াটসঅ্যাপে মেসেজ পাঠালে ব্রাহ্মণ AI স্বয়ংক্রিয়ভাবে উত্তর দেবে — ওয়েবসাইট চ্যাটের মতোই।"
+                : "When on, ব্রাহ্মণ AI automatically replies to customer WhatsApp messages — same logic as the website chat widget."}
+            </p>
+          </div>
+        </label>
+      </div>
+
+      <button onClick={handleSave} disabled={isLoading} className="btn-primary">
+        {isLoading ? (isBn ? "সংরক্ষণ হচ্ছে..." : "Saving...") : (isBn ? "সংরক্ষণ করুন" : "Save Changes")}
+      </button>
+    </div>
+  );
+}
+
 // ── Main page ──────────────────────────────────────────────────────────────────
 export default function SettingsPage() {
   const locale = useLocale();
@@ -535,12 +678,12 @@ export default function SettingsPage() {
       <div className="grid grid-cols-1 md:grid-cols-[220px_1fr] gap-4">
         {/* Left menu */}
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-2 h-fit md:sticky md:top-20">
-          <nav className="flex md:flex-col gap-1">
+          <nav className="flex md:flex-col gap-1 overflow-x-auto md:overflow-visible [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {MENU.map(item => (
               <button
                 key={item.id}
                 onClick={() => setActive(item.id)}
-                className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-left transition-colors ${
+                className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-left transition-colors shrink-0 whitespace-nowrap ${
                   active === item.id
                     ? "bg-amber-50 text-amber-700 font-semibold"
                     : "text-gray-600 hover:bg-gray-50 hover:text-gray-800"
@@ -572,6 +715,7 @@ export default function SettingsPage() {
               {active === "first_order" && <FirstOrderDiscountPanel settings={settings} isBn={isBn} />}
               {active === "telegram" && <TelegramPanel settings={settings} isBn={isBn} />}
               {active === "ai_support" && <AISupportPanel settings={settings} isBn={isBn} />}
+              {active === "whatsapp" && <WhatsAppPanel settings={settings} isBn={isBn} />}
             </>
           ) : null}
         </div>
