@@ -143,7 +143,9 @@
     "totalProducts": "মোট পণ্য",
     "thisMonthOrders": "এই মাসের অর্ডার",
     "thisMonthSales": "এই মাসের বিক্রয়",
-    "totalStockValue": "মোট স্টক মূল্য"
+    "totalStockValue": "মোট স্টক মূল্য",
+    "cashStockValue": "ক্যাশ স্টক",
+    "bakiStockValue": "বাকি স্টক"
   },
   "role": {
     "ADMIN": "অ্যাডমিন",

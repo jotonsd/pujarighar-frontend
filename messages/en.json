@@ -143,7 +143,9 @@
     "totalProducts": "Total Products",
     "thisMonthOrders": "This Month's Orders",
     "thisMonthSales": "This Month's Sales",
-    "totalStockValue": "Total Stock Value"
+    "totalStockValue": "Total Stock Value",
+    "cashStockValue": "Cash Stock",
+    "bakiStockValue": "Baki (Credit) Stock"
   },
   "role": {
     "ADMIN": "Admin",
