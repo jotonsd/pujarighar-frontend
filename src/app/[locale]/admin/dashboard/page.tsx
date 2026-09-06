@@ -26,6 +26,8 @@ const STAT_CARDS = [
   { key: "this_month_orders",       labelKey: "thisMonthOrders", icon: ShoppingBag, bg: "bg-indigo-600", iconText: "text-indigo-600" },
   { key: "this_month_sales_amount", labelKey: "thisMonthSales",  icon: Wallet,      bg: "bg-sky-700",    iconText: "text-sky-700", isCurrency: true },
   { key: "total_stock_value",       labelKey: "totalStockValue", icon: Package,     bg: "bg-teal-600",   iconText: "text-teal-600", isCurrency: true },
+  { key: "cash_stock_value",        labelKey: "cashStockValue",  icon: Wallet,      bg: "bg-lime-700",   iconText: "text-lime-700", isCurrency: true },
+  { key: "credit_stock_value",      labelKey: "bakiStockValue",  icon: HandCoins,   bg: "bg-rose-700",   iconText: "text-rose-700", isCurrency: true },
 ] as const;
 
 const STATUS_META: Record<string, { label_bn: string; label_en: string; color: string }> = {
@@ -60,7 +62,7 @@ export default function DashboardPage() {
     <div className="space-y-5">
       <Skeleton className="h-14 w-full rounded-xl" />
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
-        {Array.from({ length: 9 }).map((_, i) => <Skeleton key={i} className="h-20 rounded-2xl" />)}
+        {Array.from({ length: 11 }).map((_, i) => <Skeleton key={i} className="h-20 rounded-2xl" />)}
       </div>
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
         {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-24 rounded-2xl" />)}
