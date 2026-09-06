@@ -13,6 +13,7 @@ import {
   useDispatchOrderMutation,
   useMarkCodPaidMutation,
   usePackOrderMutation,
+  usePartialDeliverOrderMutation,
   useReturnOrderMutation,
   useWaiveDeliveryChargeMutation,
 } from '@/api/orders/ordersApi'
@@ -24,6 +25,7 @@ import {
 } from '@/api/courier/courierApi'
 import CancelConfirmModal from './CancelConfirmModal'
 import ApplyDiscountModal from './ApplyDiscountModal'
+import PartialDeliverModal from './PartialDeliverModal'
 import PaymentConfirmModal from '@/components/ui/PaymentConfirmModal'
 import ConfirmModal from '@/components/ui/ConfirmModal'
 import { ChevronDown, CheckCircle2, Undo2, RefreshCw, Truck, ExternalLink } from 'lucide-react'
@@ -107,6 +109,7 @@ export default function OrderActions({ order, orderId }: Props) {
   const [showPayModal, setShowPayModal]         = useState(false)
   const [showDiscountModal, setShowDiscountModal] = useState(false)
   const [showDeliverModal, setShowDeliverModal] = useState(false)
+  const [showPartialDeliverModal, setShowPartialDeliverModal] = useState(false)
   const [showReturnModal, setShowReturnModal]   = useState(false)
   const [showWaiveDeliveryModal, setShowWaiveDeliveryModal] = useState(false)
   const [deliveryMethod, setDeliveryMethod] = useState<'internal' | 'courier'>('internal')
@@ -125,6 +128,7 @@ export default function OrderActions({ order, orderId }: Props) {
   const [waiveDelivery, { isLoading: waivingDelivery }] = useWaiveDeliveryChargeMutation()
   const [dispatch, { isLoading: dispatching }]    = useDispatchOrderMutation()
   const [deliver, { isLoading: delivering }]      = useDeliverOrderMutation()
+  const [partialDeliver, { isLoading: partiallyDelivering }] = usePartialDeliverOrderMutation()
   const [returnOrd, { isLoading: returning }]     = useReturnOrderMutation()
 
   const { data: courierProviders = [] } = useGetCourierProvidersQuery()
@@ -133,7 +137,7 @@ export default function OrderActions({ order, orderId }: Props) {
   const [refreshCourierStatus, { isLoading: refreshingCourier }] = useRefreshCourierStatusMutation()
 
   const loading = confirming || packing || assigning || cancelling || markingPaid || discounting
-    || dispatching || delivering || returning || sendingToCourier || waivingDelivery
+    || dispatching || delivering || partiallyDelivering || returning || sendingToCourier || waivingDelivery
 
   const hasPayAction = order.payment_method === 'COD' && order.payment_status === 'UNPAID' && !['CANCELLED', 'RETURNED'].includes(order.status)
   const hasStatusAction = ['PENDING', 'CONFIRMED', 'PACKED'].includes(order.status)
@@ -154,9 +158,14 @@ export default function OrderActions({ order, orderId }: Props) {
   const hasDeliveryChoice = (order.status === 'PACKED' && !hasAssignedPerson) || hasAssignPersonOnly
   const hasDispatchAction = order.status === 'ASSIGNED' || order.status === 'PICKED'
   const hasDeliverAction = order.status === 'ON_THE_WAY'
+  // Reachable from ON_THE_WAY (courier reports a shortfall directly) or
+  // from an already-DELIVERED order (the more common real case: full
+  // delivery got recorded first, and the gap only surfaces once COD is
+  // reconciled) — see partial_deliver() in order_service.py.
+  const hasPartialDeliverAction = order.status === 'ON_THE_WAY' || order.status === 'DELIVERED'
   const hasReturnAction = order.status === 'DELIVERED'
   const hasAnyAction = hasPayAction || hasStatusAction || hasCancelAction || hasDiscountAction
-    || hasDeliveryChoice || hasDispatchAction || hasDeliverAction || hasReturnAction
+    || hasDeliveryChoice || hasDispatchAction || hasDeliverAction || hasPartialDeliverAction || hasReturnAction
     || !!order.courier_consignment
 
   if (!hasAnyAction) return null
@@ -417,6 +426,28 @@ export default function OrderActions({ order, orderId }: Props) {
                 onConfirm={async () => {
                   await doAction(() => deliver(orderId).unwrap(), locale === 'bn' ? 'ডেলিভারি সম্পন্ন হয়েছে' : 'Marked as delivered')
                   setShowDeliverModal(false)
+                }}
+              />
+            )}
+          </>
+        )}
+        {hasPartialDeliverAction && (
+          <>
+            <button disabled={loading} className="btn-secondary text-sm" onClick={() => setShowPartialDeliverModal(true)}>
+              📦 {locale === 'bn' ? 'আংশিক ডেলিভারি' : 'Partial Delivery'}
+            </button>
+            {showPartialDeliverModal && (
+              <PartialDeliverModal
+                order={order}
+                locale={locale}
+                loading={partiallyDelivering}
+                onCancel={() => setShowPartialDeliverModal(false)}
+                onConfirm={async (items, noteBn) => {
+                  await doAction(
+                    () => partialDeliver({ id: orderId, items, note_bn: noteBn }).unwrap(),
+                    locale === 'bn' ? 'আংশিক ডেলিভারি চিহ্নিত হয়েছে' : 'Marked as partially delivered',
+                  )
+                  setShowPartialDeliverModal(false)
                 }}
               />
             )}

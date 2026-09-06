@@ -18,7 +18,7 @@ export interface Role {
 }
 
 export type Locale = 'bn' | 'en'
-export type OrderStatus = 'PENDING' | 'CONFIRMED' | 'PACKED' | 'ASSIGNED' | 'PICKED' | 'ON_THE_WAY' | 'DELIVERED' | 'RETURNED' | 'CANCELLED'
+export type OrderStatus = 'PENDING' | 'CONFIRMED' | 'PACKED' | 'ASSIGNED' | 'PICKED' | 'ON_THE_WAY' | 'DELIVERED' | 'PARTIALLY_DELIVERED' | 'RETURNED' | 'CANCELLED'
 export type OrderSource = 'WEBSITE' | 'AI_CHATBOT' | 'POS'
 
 // ─── Shipping ────────────────────────────────────────────────────────────────

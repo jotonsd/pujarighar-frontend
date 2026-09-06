@@ -90,6 +90,17 @@ export const ordersApi = baseApi.injectEndpoints({
       invalidatesTags: (_r, _e, { id }) => ['Orders', { type: 'Order', id }, { type: 'OrderLogs', id }],
     }),
 
+    partialDeliverOrder: build.mutation<SalesOrder, {
+      id: string
+      items: { item_id: string; quantity: number }[]
+      note_bn?: string
+      note_en?: string
+    }>({
+      query: ({ id, ...body }) => ({ url: `/api/orders/${id}/partial-deliver/`, method: 'POST', body }),
+      transformResponse: (res: { data: SalesOrder }) => res.data,
+      invalidatesTags: (_r, _e, { id }) => ['Orders', { type: 'Order', id }, { type: 'OrderLogs', id }],
+    }),
+
     cancelOrder: build.mutation<SalesOrder, { id: string; note_bn?: string; note_en?: string }>({
       query: ({ id, ...body }) => ({ url: `/api/orders/${id}/cancel/`, method: 'POST', body }),
       transformResponse: (res: { data: SalesOrder }) => res.data,
@@ -179,6 +190,7 @@ export const {
   useAssignDeliveryMutation,
   useDispatchOrderMutation,
   useDeliverOrderMutation,
+  usePartialDeliverOrderMutation,
   useReturnOrderMutation,
   useCancelOrderMutation,
   useMarkCodPaidMutation,
