@@ -74,6 +74,7 @@ export default function DashboardPage() {
         <Skeleton className="lg:col-span-2 h-80 rounded-2xl" />
         <Skeleton className="h-80 rounded-2xl" />
       </div>
+      <Skeleton className="h-64 rounded-2xl" />
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
         <Skeleton className="lg:col-span-2 h-64 rounded-2xl" />
         <Skeleton className="h-64 rounded-2xl" />
@@ -89,6 +90,16 @@ export default function DashboardPage() {
     month: new Date(d.month).toLocaleDateString(isBn ? "bn-BD" : "en-US", { month: "short" }),
     [incomeKey]:  parseFloat(d.revenue),
     [expenseKey]: parseFloat(d.expense || "0"),
+  }));
+
+  const now = new Date();
+  const thisMonthName = now.toLocaleDateString(isBn ? "bn-BD" : "en-US", { month: "long" });
+  const lastMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const lastMonthName = lastMonthDate.toLocaleDateString(isBn ? "bn-BD" : "en-US", { month: "long" });
+  const orderComparisonData = (data?.order_comparison_chart ?? []).map(d => ({
+    day: d.day,
+    [thisMonthName]: d.this_month,
+    [lastMonthName]: d.last_month,
   }));
 
   const statusRows = (data?.status_breakdown ?? []).filter(r => r.count > 0);
@@ -268,6 +279,29 @@ export default function DashboardPage() {
             )}
           </div>
         </div>
+      </div>
+
+      {/* ── Row 3b: This month vs last month order count ─────────────────── */}
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+        <div className="mb-1">
+          <h2 className="text-base font-bold text-gray-800">{isBn ? "এই মাস বনাম গত মাস" : "This Month vs Last Month"}</h2>
+          <p className="text-xs text-gray-400 mt-0.5">{isBn ? "দিন অনুযায়ী অর্ডার সংখ্যা" : "Order count by day of month"}</p>
+        </div>
+        {orderComparisonData.length > 0 ? (
+          <ResponsiveContainer width="100%" height={240}>
+            <LineChart data={orderComparisonData} margin={{ top: 10, right: 8, left: 0, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
+              <XAxis dataKey="day" tick={{ fontSize: 11, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 11, fill: "#9ca3af" }} axisLine={false} tickLine={false} allowDecimals={false} width={32} />
+              <Tooltip formatter={v => [formatNumber(Number(v ?? 0), locale)]} labelFormatter={d => (isBn ? `দিন ${formatNumber(Number(d), locale)}` : `Day ${d}`)} contentStyle={{ borderRadius: "10px", border: "1px solid #e5e7eb", fontSize: "12px" }} />
+              <Legend wrapperStyle={{ fontSize: "12px", paddingTop: "12px" }} />
+              <Line type="monotone" dataKey={lastMonthName} stroke="#9ca3af" strokeWidth={2.5} strokeDasharray="6 3" dot={false} activeDot={{ r: 5 }} />
+              <Line type="monotone" dataKey={thisMonthName} stroke="#d97706" strokeWidth={2.5} dot={false} activeDot={{ r: 5 }} />
+            </LineChart>
+          </ResponsiveContainer>
+        ) : (
+          <div className="h-56 flex items-center justify-center text-gray-400 text-sm">{isBn ? "ডেটা নেই" : "No data yet"}</div>
+        )}
       </div>
 
       {/* ── Row 4: Recent orders + Top products ─────────────────────────── */}
