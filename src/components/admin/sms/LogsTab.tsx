@@ -46,6 +46,15 @@ export default function LogsTab({ isBn }: { isBn: boolean }) {
       exportValue: r => r.message,
     },
     {
+      header: isBn ? "খরচ" : "Cost",
+      accessor: r => (
+        <span className="text-xs font-medium">
+          {r.segments} {isBn ? "এসএমএস" : "SMS"}
+        </span>
+      ),
+      exportValue: r => String(r.segments),
+    },
+    {
       header: isBn ? "অবস্থা" : "Status",
       accessor: r => (
         <Badge variant={r.status === "SUCCESS" ? "green" : "red"}>

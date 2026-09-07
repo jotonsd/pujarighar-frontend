@@ -13,6 +13,7 @@ export interface SmsLogRow {
   order_number:  string | null
   phone:         string
   message:       string
+  segments:      number
   status:        'SUCCESS' | 'FAILED'
   response_code: string
   response_text: string
@@ -20,9 +21,10 @@ export interface SmsLogRow {
 }
 
 export interface SmsStats {
-  total:   number
-  success: number
-  failed:  number
+  total:           number
+  success:         number
+  failed:          number
+  billed_segments: number
 }
 
 export interface SmsRecipient {
