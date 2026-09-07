@@ -30,7 +30,7 @@ export default function ProductList() {
   const [brand, setBrand]         = useState('')
   const [isPackage, setIsPackage] = useState('')
   const [status, setStatus]       = useState('')
-  const [limit, setLimit]         = useState(10)
+  const [limit, setLimit]         = useState(20)
 
   const { data: categories = [] } = useGetCategoriesQuery()
   const { data: brands = [] }     = useGetBrandsQuery()

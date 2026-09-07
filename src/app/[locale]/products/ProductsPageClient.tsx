@@ -307,6 +307,7 @@ export default function ProductsPageClient({
 
   const { data, isLoading, isFetching } = useGetProductsQuery({
     page,
+    page_size: 40,
     search,
     is_package: "false",
     category: categories.length ? categories.join(",") : undefined,

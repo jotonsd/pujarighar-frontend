@@ -85,7 +85,7 @@ async function getInitialProducts(searchParams: Props["searchParams"]): Promise<
   // total_pages driving "hasMore" before the real data arrives) causes the
   // infinite-scroll sentinel to advance past page 1 before it's even loaded,
   // permanently orphaning the real results.
-  const p = new URLSearchParams({ page: "1", is_package: "false" });
+  const p = new URLSearchParams({ page: "1", page_size: "40", is_package: "false" });
   if (search) p.set("search", search);
   if (category) p.set("category", category);
   if (brand) p.set("brand", brand);
