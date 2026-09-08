@@ -20,11 +20,47 @@ function WeightTierEditor({
   onChange: (tiers: DeliveryWeightTier[]) => void;
   isBn: boolean;
 }) {
+  const [selected, setSelected] = useState<Set<number>>(new Set());
+  const [bulkAmount, setBulkAmount] = useState("");
+
   const updateRow = (i: number, key: keyof DeliveryWeightTier, val: string) =>
     onChange(tiers.map((t, idx) => (idx === i ? { ...t, [key]: val } : t)));
 
   const addRow = () => onChange([...tiers, { max_weight_kg: "", charge_amount: "" }]);
-  const removeRow = (i: number) => onChange(tiers.filter((_, idx) => idx !== i));
+
+  const removeRow = (i: number) => {
+    onChange(tiers.filter((_, idx) => idx !== i));
+    setSelected(prev => {
+      const next = new Set<number>();
+      prev.forEach(idx => {
+        if (idx < i) next.add(idx);
+        else if (idx > i) next.add(idx - 1);
+      });
+      return next;
+    });
+  };
+
+  const toggleRow = (i: number) =>
+    setSelected(prev => {
+      const next = new Set(prev);
+      if (next.has(i)) next.delete(i); else next.add(i);
+      return next;
+    });
+
+  const allSelected = tiers.length > 0 && selected.size === tiers.length;
+  const toggleAll = () => setSelected(allSelected ? new Set() : new Set(tiers.map((_, i) => i)));
+
+  const applyBulk = (sign: 1 | -1) => {
+    const amt = parseFloat(bulkAmount);
+    if (!amt || selected.size === 0) return;
+    onChange(
+      tiers.map((t, i) => {
+        if (!selected.has(i)) return t;
+        const current = parseFloat(t.charge_amount) || 0;
+        return { ...t, charge_amount: String(Math.max(0, current + sign * amt)) };
+      }),
+    );
+  };
 
   return (
     <div className="pt-2 border-t border-gray-100">
@@ -34,9 +70,54 @@ function WeightTierEditor({
           ? "ঐচ্ছিক — খালি রাখলে উপরের ফ্ল্যাট রেট প্রযোজ্য হবে। ওজন যত কেজি পর্যন্ত, সেই ব্র্যাকেটের চার্জ প্রযোজ্য হবে। সবচেয়ে ভারী ব্র্যাকেট এর চেয়ে বেশি ওজনের জন্যও প্রযোজ্য।"
           : "Optional — leave empty to keep using the flat rate above. Each row is \"up to this weight → this charge\"; the heaviest row also covers anything above it."}
       </p>
+
+      {tiers.length > 0 && (
+        <div className="flex flex-wrap items-center gap-2 mb-3 p-2 bg-gray-50 rounded-lg">
+          <label className="flex items-center gap-1.5 text-xs text-gray-600 shrink-0">
+            <input type="checkbox" checked={allSelected} onChange={toggleAll} />
+            {isBn ? "সব নির্বাচন" : "Select all"}
+          </label>
+          <input
+            type="number"
+            step="1"
+            placeholder={isBn ? "পরিমাণ (৳)" : "Amount (৳)"}
+            value={bulkAmount}
+            onChange={e => setBulkAmount(e.target.value)}
+            className="w-24 text-xs border border-gray-200 rounded-lg px-2 py-1.5"
+          />
+          <button
+            type="button"
+            onClick={() => applyBulk(1)}
+            disabled={selected.size === 0 || !bulkAmount}
+            className="text-xs px-2.5 py-1.5 rounded-lg border border-green-200 bg-green-50 text-green-700 disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            + {isBn ? "বৃদ্ধি" : "Increase"}
+          </button>
+          <button
+            type="button"
+            onClick={() => applyBulk(-1)}
+            disabled={selected.size === 0 || !bulkAmount}
+            className="text-xs px-2.5 py-1.5 rounded-lg border border-red-200 bg-red-50 text-red-700 disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            − {isBn ? "হ্রাস" : "Decrease"}
+          </button>
+          {selected.size > 0 && (
+            <span className="text-xs text-gray-400">
+              {selected.size} {isBn ? "টি নির্বাচিত" : "selected"}
+            </span>
+          )}
+        </div>
+      )}
+
       <div className="space-y-2">
         {tiers.map((t, i) => (
-          <div key={i} className="grid grid-cols-[1fr_1fr_auto] gap-2 items-center">
+          <div key={i} className="grid grid-cols-[auto_1fr_1fr_auto] gap-2 items-center">
+            <input
+              type="checkbox"
+              checked={selected.has(i)}
+              onChange={() => toggleRow(i)}
+              className="w-4 h-4"
+            />
             <FloatingInput
               label={isBn ? "সর্বোচ্চ ওজন (কেজি)" : "Up to weight (kg)"}
               type="number" min="0" step="0.01"
@@ -79,6 +160,8 @@ export default function DeliveryChargesPage() {
   const [outsideDhaka, setOutsideDhaka] = useState("");
   const [insideTiers,  setInsideTiers]  = useState<DeliveryWeightTier[]>([]);
   const [outsideTiers, setOutsideTiers] = useState<DeliveryWeightTier[]>([]);
+  const [insideExtraPerKg,  setInsideExtraPerKg]  = useState("");
+  const [outsideExtraPerKg, setOutsideExtraPerKg] = useState("");
 
   useEffect(() => {
     if (data) {
@@ -86,6 +169,8 @@ export default function DeliveryChargesPage() {
       setOutsideDhaka(data.outside_dhaka);
       setInsideTiers(data.inside_dhaka_weight_tiers ?? []);
       setOutsideTiers(data.outside_dhaka_weight_tiers ?? []);
+      setInsideExtraPerKg(data.inside_dhaka_extra_per_kg ?? "0");
+      setOutsideExtraPerKg(data.outside_dhaka_extra_per_kg ?? "0");
     }
   }, [data]);
 
@@ -98,6 +183,8 @@ export default function DeliveryChargesPage() {
         outside_dhaka: outsideDhaka,
         inside_dhaka_weight_tiers: validTiers(insideTiers),
         outside_dhaka_weight_tiers: validTiers(outsideTiers),
+        inside_dhaka_extra_per_kg: insideExtraPerKg,
+        outside_dhaka_extra_per_kg: outsideExtraPerKg,
       }).unwrap();
       toast.success(isBn ? "ডেলিভারি চার্জ আপডেট হয়েছে" : "Delivery charges updated");
     } catch {
@@ -154,11 +241,23 @@ export default function DeliveryChargesPage() {
               onChange={setInsideTiers}
               isBn={isBn}
             />
+            <FloatingInput
+              label={isBn ? "সর্বোচ্চ ব্র্যাকেটের পর প্রতি কেজি (৳) — ঢাকার ভিতরে" : "Per-kg after heaviest bracket (৳) — Inside Dhaka"}
+              type="number" min="0" step="1"
+              value={insideExtraPerKg}
+              onChange={e => setInsideExtraPerKg(e.target.value)}
+            />
             <WeightTierEditor
               title={isBn ? "ওজনভিত্তিক চার্জ — ঢাকার বাইরে" : "Weight-based charge — Outside Dhaka"}
               tiers={outsideTiers}
               onChange={setOutsideTiers}
               isBn={isBn}
+            />
+            <FloatingInput
+              label={isBn ? "সর্বোচ্চ ব্র্যাকেটের পর প্রতি কেজি (৳) — ঢাকার বাইরে" : "Per-kg after heaviest bracket (৳) — Outside Dhaka"}
+              type="number" min="0" step="1"
+              value={outsideExtraPerKg}
+              onChange={e => setOutsideExtraPerKg(e.target.value)}
             />
 
             <button onClick={handleSave} disabled={saving} className="btn-primary w-full">

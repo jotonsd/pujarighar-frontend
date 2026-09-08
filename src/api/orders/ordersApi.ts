@@ -62,11 +62,11 @@ export const ordersApi = baseApi.injectEndpoints({
       invalidatesTags: (_r, _e, id) => ['Orders', { type: 'Order', id }, { type: 'OrderLogs', id }],
     }),
 
-    assignDelivery: build.mutation<SalesOrder, { id: string; delivery_person_id: string | null; weight?: number }>({
-      query: ({ id, delivery_person_id, weight }) => ({
+    assignDelivery: build.mutation<SalesOrder, { id: string; delivery_person_id: string | null; weight?: number; note?: string }>({
+      query: ({ id, delivery_person_id, weight, note }) => ({
         url: `/api/orders/${id}/assign-delivery/`,
         method: 'POST',
-        body: { delivery_person_id: delivery_person_id || null, ...(weight && { weight }) },
+        body: { delivery_person_id: delivery_person_id || null, ...(weight && { weight }), ...(note && { note }) },
       }),
       transformResponse: (res: { data: SalesOrder }) => res.data,
       invalidatesTags: (_r, _e, { id }) => ['Orders', { type: 'Order', id }, { type: 'OrderLogs', id }],

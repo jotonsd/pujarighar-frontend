@@ -112,11 +112,11 @@ export default function OrderActions({ order, orderId }: Props) {
   const [showPartialDeliverModal, setShowPartialDeliverModal] = useState(false)
   const [showReturnModal, setShowReturnModal]   = useState(false)
   const [showWaiveDeliveryModal, setShowWaiveDeliveryModal] = useState(false)
+  const [showAssignDeliveryModal, setShowAssignDeliveryModal] = useState(false)
   const [deliveryMethod, setDeliveryMethod] = useState<'internal' | 'courier'>('internal')
   const [courierProviderId, setCourierProviderId] = useState('')
-  const [courierWeight, setCourierWeight] = useState('')
   const [courierNote, setCourierNote] = useState('')
-  const [internalWeight, setInternalWeight] = useState('')
+  const [internalNote, setInternalNote] = useState('')
 
   const { data: deliveryPersons = [] } = useGetDeliveryPersonsQuery()
   const [confirmOrder, { isLoading: confirming }] = useConfirmOrderMutation()
@@ -301,103 +301,114 @@ export default function OrderActions({ order, orderId }: Props) {
           </button>
         )}
         {hasDeliveryChoice && (
-          <div className="flex flex-col gap-2 w-full sm:w-auto">
-            {activeProviders.length > 0 && (
-              <div className="inline-flex rounded-lg border border-gray-200 p-0.5 w-fit">
-                <button
-                  type="button"
-                  onClick={() => setDeliveryMethod('internal')}
-                  className={`px-3 py-1 text-xs rounded-md transition-colors ${deliveryMethod === 'internal' ? 'bg-amber-50 text-amber-700 font-medium' : 'text-gray-500 hover:text-gray-700'}`}
-                >
-                  {locale === 'bn' ? 'নিজস্ব ডেলিভারি' : 'Internal Delivery'}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setDeliveryMethod('courier')}
-                  className={`px-3 py-1 text-xs rounded-md transition-colors ${deliveryMethod === 'courier' ? 'bg-amber-50 text-amber-700 font-medium' : 'text-gray-500 hover:text-gray-700'}`}
-                >
-                  <Truck className="w-3 h-3 inline mr-1" /> {locale === 'bn' ? 'কুরিয়ার' : 'Courier'}
-                </button>
-              </div>
-            )}
+          <>
+            <button disabled={loading} className="btn-primary text-sm" onClick={() => setShowAssignDeliveryModal(true)}>
+              <Truck className="w-4 h-4 inline mr-1" /> {t('order.assignDelivery')}
+            </button>
+            {showAssignDeliveryModal && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+                <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 space-y-4">
+                  <h2 className="text-lg font-bold text-gray-800">{t('order.assignDelivery')}</h2>
 
-            {deliveryMethod === 'courier' && activeProviders.length > 0 ? (
-              <div className="flex gap-2 items-center flex-wrap">
-                {activeProviders.length > 1 && (
-                  <select
-                    value={courierProviderId || activeProviders[0].id}
-                    onChange={e => setCourierProviderId(e.target.value)}
-                    className="px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-amber-500"
-                  >
-                    {activeProviders.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-                  </select>
-                )}
-                <input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  inputMode="decimal"
-                  value={courierWeight}
-                  onChange={e => setCourierWeight(e.target.value)}
-                  placeholder={locale === 'bn' ? 'ওজন (কেজি)' : 'Weight (kg)'}
-                  autoComplete="off"
-                  className="w-32 px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-amber-500"
-                />
-                <input
-                  type="text"
-                  value={courierNote}
-                  onChange={e => setCourierNote(e.target.value)}
-                  placeholder={locale === 'bn' ? 'বিশেষ নির্দেশনা (ঐচ্ছিক)' : 'Special instruction (optional)'}
-                  autoComplete="off"
-                  className="flex-1 min-w-[180px] px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-amber-500"
-                />
-                <button disabled={loading} className="btn-primary text-sm whitespace-nowrap !py-2.5 !rounded-xl"
-                  onClick={() => doAction(
-                    () => sendToCourier({
-                      orderId,
-                      provider_id: courierProviderId ? Number(courierProviderId) : activeProviders[0].id,
-                      weight: courierWeight ? Number(courierWeight) : undefined,
-                      note: courierNote || undefined,
-                    }).unwrap(),
-                    locale === 'bn' ? 'কুরিয়ারে পাঠানো হয়েছে' : 'Sent to courier',
-                  )}>
-                  <Truck className="w-4 h-4 inline mr-1" /> {locale === 'bn' ? 'কুরিয়ারে পাঠান' : 'Send to Courier'}
-                </button>
-              </div>
-            ) : (
-              <div className="flex gap-2 items-center flex-wrap">
-                <DeliveryPersonDropdown
-                  persons={deliveryPersons}
-                  value={deliveryPersonId}
-                  onChange={setDeliveryPersonId}
-                  label={locale === 'bn' ? 'ডেলিভারিম্যান বেছে নিন (ঐচ্ছিক)' : 'Select delivery person (optional)'}
-                />
-                <input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  inputMode="decimal"
-                  value={internalWeight}
-                  onChange={e => setInternalWeight(e.target.value)}
-                  placeholder={locale === 'bn' ? 'ওজন (কেজি, ঐচ্ছিক)' : 'Weight (kg, optional)'}
-                  title={locale === 'bn' ? 'দিলে ডেলিভারি চার্জ ওজন অনুযায়ী পুনর্গণনা হবে' : 'If given, delivery charge is recalculated for this weight'}
-                  autoComplete="off"
-                  className="w-40 px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-amber-500"
-                />
-                <button disabled={loading} className="btn-primary text-sm whitespace-nowrap !py-2.5 !rounded-xl"
-                  onClick={() => doAction(
-                    () => assign({
-                      id: orderId,
-                      delivery_person_id: deliveryPersonId || null,
-                      weight: internalWeight ? Number(internalWeight) : undefined,
-                    }).unwrap(),
-                    locale === 'bn' ? 'নির্ধারিত হয়েছে' : 'Assigned',
-                  )}>
-                  {t('order.assignDelivery')}
-                </button>
+                  {activeProviders.length > 0 && (
+                    <div className="inline-flex rounded-lg border border-gray-200 p-0.5 w-fit">
+                      <button
+                        type="button"
+                        onClick={() => setDeliveryMethod('internal')}
+                        className={`px-3 py-1 text-xs rounded-md transition-colors ${deliveryMethod === 'internal' ? 'bg-amber-50 text-amber-700 font-medium' : 'text-gray-500 hover:text-gray-700'}`}
+                      >
+                        {locale === 'bn' ? 'নিজস্ব ডেলিভারি' : 'Internal Delivery'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setDeliveryMethod('courier')}
+                        className={`px-3 py-1 text-xs rounded-md transition-colors ${deliveryMethod === 'courier' ? 'bg-amber-50 text-amber-700 font-medium' : 'text-gray-500 hover:text-gray-700'}`}
+                      >
+                        <Truck className="w-3 h-3 inline mr-1" /> {locale === 'bn' ? 'কুরিয়ার' : 'Courier'}
+                      </button>
+                    </div>
+                  )}
+
+                  {deliveryMethod === 'courier' && activeProviders.length > 0 ? (
+                    <div className="flex flex-col gap-2">
+                      {activeProviders.length > 1 && (
+                        <select
+                          value={courierProviderId || activeProviders[0].id}
+                          onChange={e => setCourierProviderId(e.target.value)}
+                          className="px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-amber-500"
+                        >
+                          {activeProviders.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                        </select>
+                      )}
+                      <input
+                        type="text"
+                        value={courierNote}
+                        onChange={e => setCourierNote(e.target.value)}
+                        placeholder={locale === 'bn' ? 'বিশেষ নির্দেশনা (ঐচ্ছিক)' : 'Special instruction (optional)'}
+                        autoComplete="off"
+                        className="px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-amber-500"
+                      />
+                      <div className="flex gap-3 pt-1">
+                        <button disabled={loading} className="btn-primary flex-1"
+                          onClick={async () => {
+                            await doAction(
+                              () => sendToCourier({
+                                orderId,
+                                provider_id: courierProviderId ? Number(courierProviderId) : activeProviders[0].id,
+                                note: courierNote || undefined,
+                              }).unwrap(),
+                              locale === 'bn' ? 'কুরিয়ারে পাঠানো হয়েছে' : 'Sent to courier',
+                            )
+                            setShowAssignDeliveryModal(false)
+                          }}>
+                          <Truck className="w-4 h-4 inline mr-1" /> {locale === 'bn' ? 'কুরিয়ারে পাঠান' : 'Send to Courier'}
+                        </button>
+                        <button type="button" onClick={() => setShowAssignDeliveryModal(false)} className="btn-secondary flex-1">
+                          {t('common.cancel')}
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col gap-2">
+                      <DeliveryPersonDropdown
+                        persons={deliveryPersons}
+                        value={deliveryPersonId}
+                        onChange={setDeliveryPersonId}
+                        label={locale === 'bn' ? 'ডেলিভারিম্যান বেছে নিন (ঐচ্ছিক)' : 'Select delivery person (optional)'}
+                      />
+                      <input
+                        type="text"
+                        value={internalNote}
+                        onChange={e => setInternalNote(e.target.value)}
+                        placeholder={locale === 'bn' ? 'বিশেষ নির্দেশনা (ঐচ্ছিক)' : 'Special note (optional)'}
+                        autoComplete="off"
+                        className="px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-amber-500"
+                      />
+                      <div className="flex gap-3 pt-1">
+                        <button disabled={loading} className="btn-primary flex-1"
+                          onClick={async () => {
+                            await doAction(
+                              () => assign({
+                                id: orderId,
+                                delivery_person_id: deliveryPersonId || null,
+                                note: internalNote || undefined,
+                              }).unwrap(),
+                              locale === 'bn' ? 'নির্ধারিত হয়েছে' : 'Assigned',
+                            )
+                            setShowAssignDeliveryModal(false)
+                          }}>
+                          {t('order.assignDelivery')}
+                        </button>
+                        <button type="button" onClick={() => setShowAssignDeliveryModal(false)} className="btn-secondary flex-1">
+                          {t('common.cancel')}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
-          </div>
+          </>
         )}
         {hasDispatchAction && (
           <button disabled={loading} className="btn-primary text-sm"

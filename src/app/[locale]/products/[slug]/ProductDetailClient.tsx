@@ -49,6 +49,7 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
         stock:               Number(product.stock_on_hand),
         is_package:          false,
         package_items:       [],
+        weight_kg:           product.weight_kg,
       });
       toast.success(locale === "bn" ? "কার্টে যোগ হয়েছে" : "Added to cart");
       return;

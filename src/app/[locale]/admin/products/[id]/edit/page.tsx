@@ -48,6 +48,7 @@ export default function EditProductPage({
     description_en: "",
     unit_bn: "",
     unit_en: "",
+    weight_kg: "",
     category: "",
     brand: "",
     is_active: true,
@@ -72,6 +73,7 @@ export default function EditProductPage({
         description_en: product.description_en,
         unit_bn:        product.unit_bn,
         unit_en:        product.unit_en,
+        weight_kg:      product.weight_kg ?? "",
         category:       product.category,
         brand:          product.brand ?? "",
         is_active:      product.is_active,
@@ -148,6 +150,28 @@ export default function EditProductPage({
               </option>
             ))}
           </FloatingSelect>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <FloatingInput
+            label={`${t("product.unit")} (বাংলা)`}
+            value={form.unit_bn}
+            onChange={f("unit_bn")}
+          />
+          <FloatingInput
+            label={`${t("product.unit")} (English)`}
+            value={form.unit_en}
+            onChange={f("unit_en")}
+          />
+          <FloatingInput
+            label={locale === "bn" ? "ওজন (কেজি, ঐচ্ছিক)" : "Weight (kg, optional)"}
+            type="number"
+            min="0"
+            step="0.001"
+            value={form.weight_kg}
+            onChange={f("weight_kg")}
+            error={fieldErrors.weight_kg}
+          />
         </div>
 
         <FloatingTextarea

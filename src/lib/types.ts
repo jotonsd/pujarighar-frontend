@@ -195,6 +195,7 @@ export interface Product {
   unit_bn: string
   unit_en: string
   unit: string
+  weight_kg: string | null
   is_package: boolean
   discount_type: 'NONE' | 'PERCENTAGE' | 'FLAT'
   discount_value: string
@@ -393,6 +394,7 @@ export interface Cart {
   subtotal: string
   discount_amount: string
   item_count: number
+  weight_kg: string
 }
 
 // ─── Order Tracking (public) ─────────────────────────────────────────────────
@@ -503,6 +505,7 @@ export interface SalesOrder {
   discount_amount: string
   tax_amount: string
   delivery_charge: string
+  estimated_weight_kg: string | null
   grand_total: string
   cashback_used: string
   cashback_amount: string

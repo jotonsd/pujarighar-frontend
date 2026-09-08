@@ -463,7 +463,21 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
   const [deliveryZone, setDeliveryZone] = useState<"inside" | "outside">(
     "inside",
   );
-  const { data: deliveryRates } = useGetDeliveryChargesQuery();
+  // Approximate — sum of each product's declared weight * quantity. Server
+  // computes this for the authenticated cart; guest cart has no server round
+  // trip until checkout, so it's summed client-side from the same per-item
+  // weight_kg the product pages/cards already attach to guestAddItem.
+  const cartWeightKg = isAuthenticated
+    ? cart?.weight_kg ?? "0"
+    : String(
+        guestItems.reduce((sum, i) => sum + (Number(i.weight_kg) || 0) * i.quantity, 0),
+      );
+  const { data: deliveryRates } = useGetDeliveryChargesQuery({ weight: cartWeightKg });
+  // Weight-aware quote when available (matches what checkout will actually
+  // charge), falling back to the flat rate if the backend hasn't computed
+  // one yet (e.g. still loading) or weight tiers aren't configured.
+  const insideCharge  = deliveryRates?.inside_dhaka_for_weight  ?? deliveryRates?.inside_dhaka  ?? "0";
+  const outsideCharge = deliveryRates?.outside_dhaka_for_weight ?? deliveryRates?.outside_dhaka ?? "0";
   const { data: me } = useGetMeQuery(undefined, { skip: !isAuthenticated });
 
   // Auto-select default address when addresses load
@@ -818,9 +832,19 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                 {/* Zone selector */}
                 {deliveryRates && (
                   <div>
-                    <p className="text-xs text-gray-500 mb-1.5">
-                      {locale === "bn" ? "ডেলিভারি এলাকা" : "Delivery Zone"}
-                    </p>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <p className="text-xs text-gray-500">
+                        {locale === "bn" ? "ডেলিভারি এলাকা" : "Delivery Zone"}
+                      </p>
+                      {parseFloat(cartWeightKg) > 0 && (
+                        <p className="text-xs text-gray-400">
+                          {locale === "bn" ? "আনুমানিক ওজন" : "Approx. weight"}{" "}
+                          <span className="font-medium text-gray-600">
+                            {formatNumber(parseFloat(cartWeightKg), locale)} kg
+                          </span>
+                        </p>
+                      )}
+                    </div>
                     <div className="grid grid-cols-2 gap-2">
                       {(["inside", "outside"] as const).map(z => (
                         <button
@@ -836,7 +860,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                               <span className="font-bold">
                                 ৳
                                 {formatNumber(
-                                  deliveryRates.inside_dhaka,
+                                  insideCharge,
                                   locale,
                                 )}
                               </span>
@@ -851,7 +875,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                               <span className="font-bold">
                                 ৳
                                 {formatNumber(
-                                  deliveryRates.outside_dhaka,
+                                  outsideCharge,
                                   locale,
                                 )}
                               </span>
@@ -890,8 +914,8 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                     <span>
                       {formatAmount(
                         deliveryZone === "inside"
-                          ? deliveryRates.inside_dhaka
-                          : deliveryRates.outside_dhaka,
+                          ? insideCharge
+                          : outsideCharge,
                         locale,
                         0,
                       )}
@@ -903,8 +927,8 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                   const dc = deliveryRates
                     ? parseFloat(
                         deliveryZone === "inside"
-                          ? deliveryRates.inside_dhaka
-                          : deliveryRates.outside_dhaka,
+                          ? insideCharge
+                          : outsideCharge,
                       )
                     : 0;
                   const cashbackBalance = parseFloat(
@@ -930,8 +954,8 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                       const dc = deliveryRates
                         ? parseFloat(
                             deliveryZone === "inside"
-                              ? deliveryRates.inside_dhaka
-                              : deliveryRates.outside_dhaka,
+                              ? insideCharge
+                              : outsideCharge,
                           )
                         : 0;
                       const cashbackBalance = parseFloat(
@@ -995,8 +1019,8 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
             const dc = deliveryRates
               ? parseFloat(
                   deliveryZone === "inside"
-                    ? deliveryRates.inside_dhaka
-                    : deliveryRates.outside_dhaka,
+                    ? insideCharge
+                    : outsideCharge,
                 )
               : 0;
             const discountAmt = parseFloat(cart?.discount_amount || "0");
@@ -1252,9 +1276,19 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
             {/* Delivery zone selector */}
             {deliveryRates && (
               <div>
-                <p className="text-xs text-gray-500 mb-1.5">
-                  {locale === "bn" ? "ডেলিভারি এলাকা" : "Delivery Zone"}
-                </p>
+                <div className="flex items-center justify-between mb-1.5">
+                  <p className="text-xs text-gray-500">
+                    {locale === "bn" ? "ডেলিভারি এলাকা" : "Delivery Zone"}
+                  </p>
+                  {parseFloat(cartWeightKg) > 0 && (
+                    <p className="text-xs text-gray-400">
+                      {locale === "bn" ? "আনুমানিক ওজন" : "Approx. weight"}{" "}
+                      <span className="font-medium text-gray-600">
+                        {formatNumber(parseFloat(cartWeightKg), locale)} kg
+                      </span>
+                    </p>
+                  )}
+                </div>
                 <div className="grid grid-cols-2 gap-2">
                   {(["inside", "outside"] as const).map(z => (
                     <button
@@ -1267,7 +1301,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                         <>
                           {locale === "bn" ? "ঢাকার ভিতরে" : "Inside Dhaka"} (
                           <span className="font-bold">
-                            ৳{formatNumber(deliveryRates.inside_dhaka, locale)}
+                            ৳{formatNumber(insideCharge, locale)}
                           </span>
                           )
                         </>
@@ -1275,7 +1309,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                         <>
                           {locale === "bn" ? "ঢাকার বাইরে" : "Outside Dhaka"} (
                           <span className="font-bold">
-                            ৳{formatNumber(deliveryRates.outside_dhaka, locale)}
+                            ৳{formatNumber(outsideCharge, locale)}
                           </span>
                           )
                         </>
@@ -1309,8 +1343,8 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                     <span>
                       {formatAmount(
                         deliveryZone === "inside"
-                          ? deliveryRates.inside_dhaka
-                          : deliveryRates.outside_dhaka,
+                          ? insideCharge
+                          : outsideCharge,
                         locale,
                         0,
                       )}
@@ -1323,8 +1357,8 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                         guestSubtotal() +
                           parseFloat(
                             deliveryZone === "inside"
-                              ? deliveryRates.inside_dhaka
-                              : deliveryRates.outside_dhaka,
+                              ? insideCharge
+                              : outsideCharge,
                           ),
                         locale,
                         0,
@@ -1377,8 +1411,8 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
           const dc = deliveryRates
             ? parseFloat(
                 deliveryZone === "inside"
-                  ? deliveryRates.inside_dhaka
-                  : deliveryRates.outside_dhaka,
+                  ? insideCharge
+                  : outsideCharge,
               )
             : 0;
           return (

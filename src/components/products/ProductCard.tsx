@@ -101,6 +101,7 @@ export default function ProductCard({
           is_package:          false,
           package_items:       [],
           image:               product.images?.[0]?.image,
+          weight_kg:           product.weight_kg,
         },
         qty,
       );

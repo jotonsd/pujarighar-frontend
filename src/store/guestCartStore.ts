@@ -18,6 +18,7 @@ export interface GuestCartItem {
   is_package:          boolean
   package_items:       GuestCartPackageItem[]
   image?:              string
+  weight_kg?:          string | null
 }
 
 interface GuestCartState {

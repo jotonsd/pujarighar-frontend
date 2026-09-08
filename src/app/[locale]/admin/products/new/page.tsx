@@ -47,6 +47,7 @@ export default function NewProductPage() {
     brand: "",
     unit_bn: "পিস",
     unit_en: "piece",
+    weight_kg: "",
     seo_title_bn: "",
     seo_title_en: "",
     meta_description_bn: "",
@@ -182,7 +183,7 @@ export default function NewProductPage() {
             ))}
           </FloatingSelect>
         </div>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <FloatingInput
             label={`${t("product.unit")} (বাংলা)`}
             value={form.unit_bn}
@@ -192,6 +193,15 @@ export default function NewProductPage() {
             label={`${t("product.unit")} (English)`}
             value={form.unit_en}
             onChange={f("unit_en")}
+          />
+          <FloatingInput
+            label={locale === "bn" ? "ওজন (কেজি, ঐচ্ছিক)" : "Weight (kg, optional)"}
+            type="number"
+            min="0"
+            step="0.001"
+            value={form.weight_kg}
+            onChange={f("weight_kg")}
+            error={fieldErrors.weight_kg}
           />
         </div>
         <FloatingTextarea
