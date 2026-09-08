@@ -249,7 +249,15 @@ export default function POSPage() {
   const [deliveryZone, setDeliveryZone] = useState<"inside" | "outside">(
     "inside",
   );
-  const { data: deliveryRates } = useGetDeliveryChargesQuery();
+  // Approximate — sum of each product's declared weight * quantity, same
+  // calculation the storefront cart uses, so POS orders get the same
+  // weight-tiered delivery pricing instead of the flat rate.
+  const cartWeightKg = String(
+    cart.reduce((sum, l) => sum + (Number(l.product.weight_kg) || 0) * l.quantity, 0),
+  );
+  const { data: deliveryRates } = useGetDeliveryChargesQuery({ weight: cartWeightKg });
+  const insideCharge  = deliveryRates?.inside_dhaka_for_weight  ?? deliveryRates?.inside_dhaka  ?? "0";
+  const outsideCharge = deliveryRates?.outside_dhaka_for_weight ?? deliveryRates?.outside_dhaka ?? "0";
 
   // ── Customer form ─────────────────────────────────────────────────────────
   const [customer, setCustomer] = useState({
@@ -313,11 +321,7 @@ export default function POSPage() {
 
   const deliveryCharge = (() => {
     if (!applyDelivery || !deliveryRates) return 0;
-    return parseFloat(
-      deliveryZone === "inside"
-        ? deliveryRates.inside_dhaka
-        : deliveryRates.outside_dhaka,
-    );
+    return parseFloat(deliveryZone === "inside" ? insideCharge : outsideCharge);
   })();
 
   const grandTotal = netSubtotal + deliveryCharge;
@@ -972,37 +976,47 @@ export default function POSPage() {
             }
           />
           {applyDelivery && deliveryRates && (
-            <div className="grid grid-cols-2 gap-2">
-              {(["inside", "outside"] as const).map(z => (
-                <button
-                  key={z}
-                  type="button"
-                  onClick={() => setDeliveryZone(z)}
-                  className={`py-2 px-3 rounded-lg border text-xs font-medium transition-colors ${
-                    deliveryZone === z
-                      ? "border-amber-500 bg-amber-50 text-amber-700"
-                      : "border-gray-200 text-gray-600 hover:border-amber-300"
-                  }`}
-                >
-                  {z === "inside" ? (
-                    <>
-                      {locale === "bn" ? "ঢাকার ভিতরে" : "Inside Dhaka"} (
-                      <span className="font-bold">
-                        ৳{formatNumber(deliveryRates.inside_dhaka, locale)}
-                      </span>
-                      )
-                    </>
-                  ) : (
-                    <>
-                      {locale === "bn" ? "ঢাকার বাইরে" : "Outside Dhaka"} (
-                      <span className="font-bold">
-                        ৳{formatNumber(deliveryRates.outside_dhaka, locale)}
-                      </span>
-                      )
-                    </>
-                  )}
-                </button>
-              ))}
+            <div>
+              {parseFloat(cartWeightKg) > 0 && (
+                <p className="text-xs text-gray-400 mb-1.5">
+                  {locale === "bn" ? "আনুমানিক ওজন" : "Approx. weight"}{" "}
+                  <span className="font-medium text-gray-600">
+                    {formatNumber(parseFloat(cartWeightKg), locale)} kg
+                  </span>
+                </p>
+              )}
+              <div className="grid grid-cols-2 gap-2">
+                {(["inside", "outside"] as const).map(z => (
+                  <button
+                    key={z}
+                    type="button"
+                    onClick={() => setDeliveryZone(z)}
+                    className={`py-2 px-3 rounded-lg border text-xs font-medium transition-colors ${
+                      deliveryZone === z
+                        ? "border-amber-500 bg-amber-50 text-amber-700"
+                        : "border-gray-200 text-gray-600 hover:border-amber-300"
+                    }`}
+                  >
+                    {z === "inside" ? (
+                      <>
+                        {locale === "bn" ? "ঢাকার ভিতরে" : "Inside Dhaka"} (
+                        <span className="font-bold">
+                          ৳{formatNumber(insideCharge, locale)}
+                        </span>
+                        )
+                      </>
+                    ) : (
+                      <>
+                        {locale === "bn" ? "ঢাকার বাইরে" : "Outside Dhaka"} (
+                        <span className="font-bold">
+                          ৳{formatNumber(outsideCharge, locale)}
+                        </span>
+                        )
+                      </>
+                    )}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
         </div>
