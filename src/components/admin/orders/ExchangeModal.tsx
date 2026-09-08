@@ -171,7 +171,7 @@ export default function ExchangeModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-3xl p-6 space-y-4 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center gap-3">
           <span className="text-3xl">🔄</span>
           <div>
@@ -184,68 +184,73 @@ export default function ExchangeModal({
           </div>
         </div>
 
-        <div className="space-y-2">
-          {order.items.map(item => {
-            const line = returnLines[item.id]
-            return (
-              <div key={item.id} className={`flex items-center gap-3 p-2.5 rounded-xl border ${line.checked ? 'border-amber-300 bg-amber-50' : 'border-gray-200'}`}>
-                <input
-                  type="checkbox"
-                  checked={line.checked}
-                  onChange={() => toggleReturn(item.id)}
-                  className="w-4 h-4 accent-amber-600 shrink-0"
-                />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-700 truncate">
-                    {isBn ? item.product_name_bn : item.product_name_en || item.product_name_bn}
-                  </p>
-                  <p className="text-xs text-gray-400">
-                    {isBn ? 'অর্ডারকৃত:' : 'Ordered:'} {formatNumber(item.quantity, locale)} · {formatAmount(item.unit_price, locale, 2)} {isBn ? '/একক' : '/unit'}
-                  </p>
-                </div>
-                {line.checked && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <p className="text-sm font-medium text-gray-700">
+              {isBn ? 'ফেরতযোগ্য পণ্য' : 'Item(s) being returned'}
+            </p>
+            {order.items.map(item => {
+              const line = returnLines[item.id]
+              return (
+                <div key={item.id} className={`flex items-center gap-3 p-2.5 rounded-xl border ${line.checked ? 'border-amber-300 bg-amber-50' : 'border-gray-200'}`}>
                   <input
-                    type="number"
-                    min="0"
-                    max={item.quantity}
-                    step="0.001"
-                    value={line.quantity}
-                    onChange={e => setReturnQty(item.id, e.target.value)}
-                    className="w-20 px-2 py-1.5 rounded-lg border border-gray-200 text-sm text-right focus:outline-none focus:border-amber-500"
+                    type="checkbox"
+                    checked={line.checked}
+                    onChange={() => toggleReturn(item.id)}
+                    className="w-4 h-4 accent-amber-600 shrink-0"
                   />
-                )}
-              </div>
-            )
-          })}
-        </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-700 truncate">
+                      {isBn ? item.product_name_bn : item.product_name_en || item.product_name_bn}
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      {isBn ? 'অর্ডারকৃত:' : 'Ordered:'} {formatNumber(item.quantity, locale)} · {formatAmount(item.unit_price, locale, 2)} {isBn ? '/একক' : '/unit'}
+                    </p>
+                  </div>
+                  {line.checked && (
+                    <input
+                      type="number"
+                      min="0"
+                      max={item.quantity}
+                      step="0.001"
+                      value={line.quantity}
+                      onChange={e => setReturnQty(item.id, e.target.value)}
+                      className="w-20 px-2 py-1.5 rounded-lg border border-gray-200 text-sm text-right focus:outline-none focus:border-amber-500"
+                    />
+                  )}
+                </div>
+              )
+            })}
+          </div>
 
-        <div className="pt-2 border-t border-gray-100">
-          <p className="text-sm font-medium text-gray-700 mb-2">
-            {isBn ? 'প্রতিস্থাপন পণ্য' : 'Replacement product(s)'}
-          </p>
-          <ReplacementPicker locale={locale} onAdd={addReplacement} />
-          {replacementLines.length > 0 && (
-            <div className="mt-2 space-y-2">
-              {replacementLines.map(l => (
-                <div key={l.product.id} className="flex items-center gap-2 flex-wrap">
-                  <span className="flex items-center gap-2 flex-1 min-w-[160px] px-3 py-2 bg-amber-50 rounded-lg text-sm">
-                    <span className="truncate">{localName(l.product.name_bn, l.product.name_en, isBn)}</span>
-                    <button type="button" onClick={() => removeReplacement(l.product.id)} className="ml-auto text-gray-400 hover:text-gray-600 shrink-0">
-                      <X className="w-3.5 h-3.5" />
-                    </button>
-                  </span>
-                  <input
-                    type="number"
-                    min="0.001"
-                    step="0.001"
-                    value={l.quantity}
-                    onChange={e => setReplacementQty(l.product.id, e.target.value)}
-                    className="w-20 px-2 py-2 text-sm border border-gray-200 rounded-lg text-center focus:outline-none focus:border-amber-500"
-                  />
-                </div>
-              ))}
-            </div>
-          )}
+          <div className="space-y-2 md:border-l md:border-gray-100 md:pl-4">
+            <p className="text-sm font-medium text-gray-700">
+              {isBn ? 'প্রতিস্থাপন পণ্য' : 'Replacement product(s)'}
+            </p>
+            <ReplacementPicker locale={locale} onAdd={addReplacement} />
+            {replacementLines.length > 0 && (
+              <div className="space-y-2">
+                {replacementLines.map(l => (
+                  <div key={l.product.id} className="flex items-center gap-2 flex-wrap">
+                    <span className="flex items-center gap-2 flex-1 min-w-[160px] px-3 py-2 bg-amber-50 rounded-lg text-sm">
+                      <span className="truncate">{localName(l.product.name_bn, l.product.name_en, isBn)}</span>
+                      <button type="button" onClick={() => removeReplacement(l.product.id)} className="ml-auto text-gray-400 hover:text-gray-600 shrink-0">
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </span>
+                    <input
+                      type="number"
+                      min="0.001"
+                      step="0.001"
+                      value={l.quantity}
+                      onChange={e => setReplacementQty(l.product.id, e.target.value)}
+                      className="w-20 px-2 py-2 text-sm border border-gray-200 rounded-lg text-center focus:outline-none focus:border-amber-500"
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         <label className="flex items-center gap-2 text-sm text-gray-600">
