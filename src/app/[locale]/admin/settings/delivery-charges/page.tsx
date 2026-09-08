@@ -193,79 +193,91 @@ export default function DeliveryChargesPage() {
   };
 
   return (
-    <div className="max-w-xl">
+    <div>
       <PageHeader
         title={isBn ? "ডেলিভারি চার্জ" : "Delivery Charges"}
         description={isBn ? "ঢাকার ভিতরে ও বাইরের ডেলিভারি চার্জ নির্ধারণ করুন" : "Set delivery charges for inside and outside Dhaka"}
         showBack
       />
 
-      <div className="card space-y-6">
-        {isLoading ? (
-          <>
-            <Skeleton className="h-12 rounded-lg" />
-            <Skeleton className="h-12 rounded-lg" />
-          </>
-        ) : (
-          <>
-            <div>
-              <p className="text-xs text-gray-400 mb-1">
-                {isBn ? "ঢাকার জেলাসমূহ (Inside Dhaka)" : "Dhaka district"}
-              </p>
-              <FloatingInput
-                label={isBn ? "ঢাকার ভিতরে (৳)" : "Inside Dhaka (৳)"}
-                type="number"
-                min="0"
-                step="1"
-                value={insideDhaka}
-                onChange={e => setInsideDhaka(e.target.value)}
+      {isLoading ? (
+        <div className="card space-y-6">
+          <Skeleton className="h-12 rounded-lg" />
+          <Skeleton className="h-12 rounded-lg" />
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="card space-y-4">
+              <h2 className="font-semibold text-gray-700">
+                {isBn ? "ঢাকার ভিতরে" : "Inside Dhaka"}
+              </h2>
+              <div>
+                <p className="text-xs text-gray-400 mb-1">
+                  {isBn ? "ঢাকার জেলাসমূহ (Inside Dhaka)" : "Dhaka district"}
+                </p>
+                <FloatingInput
+                  label={isBn ? "ঢাকার ভিতরে (৳)" : "Inside Dhaka (৳)"}
+                  type="number"
+                  min="0"
+                  step="1"
+                  value={insideDhaka}
+                  onChange={e => setInsideDhaka(e.target.value)}
+                />
+              </div>
+              <WeightTierEditor
+                title={isBn ? "ওজনভিত্তিক চার্জ" : "Weight-based charge"}
+                tiers={insideTiers}
+                onChange={setInsideTiers}
+                isBn={isBn}
               />
-            </div>
-            <div>
-              <p className="text-xs text-gray-400 mb-1">
-                {isBn ? "ঢাকার বাইরের জেলাসমূহ" : "All other districts"}
-              </p>
               <FloatingInput
-                label={isBn ? "ঢাকার বাইরে (৳)" : "Outside Dhaka (৳)"}
-                type="number"
-                min="0"
-                step="1"
-                value={outsideDhaka}
-                onChange={e => setOutsideDhaka(e.target.value)}
+                label={isBn ? "সর্বোচ্চ ব্র্যাকেটের পর প্রতি কেজি (৳)" : "Per-kg after heaviest bracket (৳)"}
+                type="number" min="0" step="1"
+                value={insideExtraPerKg}
+                onChange={e => setInsideExtraPerKg(e.target.value)}
               />
             </div>
 
-            <WeightTierEditor
-              title={isBn ? "ওজনভিত্তিক চার্জ — ঢাকার ভিতরে" : "Weight-based charge — Inside Dhaka"}
-              tiers={insideTiers}
-              onChange={setInsideTiers}
-              isBn={isBn}
-            />
-            <FloatingInput
-              label={isBn ? "সর্বোচ্চ ব্র্যাকেটের পর প্রতি কেজি (৳) — ঢাকার ভিতরে" : "Per-kg after heaviest bracket (৳) — Inside Dhaka"}
-              type="number" min="0" step="1"
-              value={insideExtraPerKg}
-              onChange={e => setInsideExtraPerKg(e.target.value)}
-            />
-            <WeightTierEditor
-              title={isBn ? "ওজনভিত্তিক চার্জ — ঢাকার বাইরে" : "Weight-based charge — Outside Dhaka"}
-              tiers={outsideTiers}
-              onChange={setOutsideTiers}
-              isBn={isBn}
-            />
-            <FloatingInput
-              label={isBn ? "সর্বোচ্চ ব্র্যাকেটের পর প্রতি কেজি (৳) — ঢাকার বাইরে" : "Per-kg after heaviest bracket (৳) — Outside Dhaka"}
-              type="number" min="0" step="1"
-              value={outsideExtraPerKg}
-              onChange={e => setOutsideExtraPerKg(e.target.value)}
-            />
+            <div className="card space-y-4">
+              <h2 className="font-semibold text-gray-700">
+                {isBn ? "ঢাকার বাইরে" : "Outside Dhaka"}
+              </h2>
+              <div>
+                <p className="text-xs text-gray-400 mb-1">
+                  {isBn ? "ঢাকার বাইরের জেলাসমূহ" : "All other districts"}
+                </p>
+                <FloatingInput
+                  label={isBn ? "ঢাকার বাইরে (৳)" : "Outside Dhaka (৳)"}
+                  type="number"
+                  min="0"
+                  step="1"
+                  value={outsideDhaka}
+                  onChange={e => setOutsideDhaka(e.target.value)}
+                />
+              </div>
+              <WeightTierEditor
+                title={isBn ? "ওজনভিত্তিক চার্জ" : "Weight-based charge"}
+                tiers={outsideTiers}
+                onChange={setOutsideTiers}
+                isBn={isBn}
+              />
+              <FloatingInput
+                label={isBn ? "সর্বোচ্চ ব্র্যাকেটের পর প্রতি কেজি (৳)" : "Per-kg after heaviest bracket (৳)"}
+                type="number" min="0" step="1"
+                value={outsideExtraPerKg}
+                onChange={e => setOutsideExtraPerKg(e.target.value)}
+              />
+            </div>
+          </div>
 
+          <div className="mt-6">
             <button onClick={handleSave} disabled={saving} className="btn-primary w-full">
               {saving ? (isBn ? "সংরক্ষণ হচ্ছে..." : "Saving...") : (isBn ? "সংরক্ষণ করুন" : "Save")}
             </button>
-          </>
-        )}
-      </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
