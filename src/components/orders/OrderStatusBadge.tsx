@@ -3,7 +3,7 @@ import { OrderStatus } from "@/lib/types";
 
 const statusVariants: Record<
   OrderStatus,
-  "gray" | "blue" | "yellow" | "orange" | "green" | "red"
+  "gray" | "blue" | "yellow" | "orange" | "green" | "red" | "purple"
 > = {
   PENDING: "yellow",
   CONFIRMED: "blue",
@@ -14,6 +14,7 @@ const statusVariants: Record<
   DELIVERED: "green",
   PARTIALLY_DELIVERED: "yellow",
   RETURNED: "red",
+  EXCHANGED: "purple",
   CANCELLED: "red",
 };
 
@@ -27,6 +28,7 @@ const statusLabels: Record<OrderStatus, { bn: string; en: string }> = {
   DELIVERED: { bn: "ডেলিভারি হয়েছে", en: "Delivered" },
   PARTIALLY_DELIVERED: { bn: "আংশিক ডেলিভারি হয়েছে", en: "Partially Delivered" },
   RETURNED: { bn: "ফেরত", en: "Returned" },
+  EXCHANGED: { bn: "বিনিময় হয়েছে", en: "Exchanged" },
   CANCELLED: { bn: "বাতিল", en: "Cancelled" },
 };
 

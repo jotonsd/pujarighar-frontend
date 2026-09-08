@@ -9,6 +9,7 @@ import {
   useAssignDeliveryMutation,
   useCancelOrderMutation,
   useConfirmOrderMutation,
+  useCreateExchangeMutation,
   useDeliverOrderMutation,
   useDispatchOrderMutation,
   useMarkCodPaidMutation,
@@ -26,9 +27,10 @@ import {
 import CancelConfirmModal from './CancelConfirmModal'
 import ApplyDiscountModal from './ApplyDiscountModal'
 import PartialDeliverModal from './PartialDeliverModal'
+import ExchangeModal from './ExchangeModal'
 import PaymentConfirmModal from '@/components/ui/PaymentConfirmModal'
 import ConfirmModal from '@/components/ui/ConfirmModal'
-import { ChevronDown, CheckCircle2, Undo2, RefreshCw, Truck, ExternalLink } from 'lucide-react'
+import { ChevronDown, CheckCircle2, Undo2, RefreshCw, Truck, ExternalLink, RefreshCcw } from 'lucide-react'
 
 interface Props {
   order: SalesOrder
@@ -111,6 +113,7 @@ export default function OrderActions({ order, orderId }: Props) {
   const [showDeliverModal, setShowDeliverModal] = useState(false)
   const [showPartialDeliverModal, setShowPartialDeliverModal] = useState(false)
   const [showReturnModal, setShowReturnModal]   = useState(false)
+  const [showExchangeModal, setShowExchangeModal] = useState(false)
   const [showWaiveDeliveryModal, setShowWaiveDeliveryModal] = useState(false)
   const [showAssignDeliveryModal, setShowAssignDeliveryModal] = useState(false)
   const [deliveryMethod, setDeliveryMethod] = useState<'internal' | 'courier'>('internal')
@@ -130,6 +133,7 @@ export default function OrderActions({ order, orderId }: Props) {
   const [deliver, { isLoading: delivering }]      = useDeliverOrderMutation()
   const [partialDeliver, { isLoading: partiallyDelivering }] = usePartialDeliverOrderMutation()
   const [returnOrd, { isLoading: returning }]     = useReturnOrderMutation()
+  const [createExchange, { isLoading: exchanging }] = useCreateExchangeMutation()
 
   const { data: courierProviders = [] } = useGetCourierProvidersQuery()
   const activeProviders = courierProviders.filter(p => p.is_active)
@@ -137,7 +141,7 @@ export default function OrderActions({ order, orderId }: Props) {
   const [refreshCourierStatus, { isLoading: refreshingCourier }] = useRefreshCourierStatusMutation()
 
   const loading = confirming || packing || assigning || cancelling || markingPaid || discounting
-    || dispatching || delivering || partiallyDelivering || returning || sendingToCourier || waivingDelivery
+    || dispatching || delivering || partiallyDelivering || returning || sendingToCourier || waivingDelivery || exchanging
 
   const hasPayAction = order.payment_method === 'COD' && order.payment_status === 'UNPAID' && !['CANCELLED', 'RETURNED'].includes(order.status)
   const hasStatusAction = ['PENDING', 'CONFIRMED', 'PACKED'].includes(order.status)
@@ -164,9 +168,10 @@ export default function OrderActions({ order, orderId }: Props) {
   // reconciled) — see partial_deliver() in order_service.py.
   const hasPartialDeliverAction = order.status === 'ON_THE_WAY' || order.status === 'DELIVERED'
   const hasReturnAction = order.status === 'DELIVERED'
+  const hasExchangeAction = order.status === 'DELIVERED'
   const hasAnyAction = hasPayAction || hasStatusAction || hasCancelAction || hasDiscountAction
     || hasDeliveryChoice || hasDispatchAction || hasDeliverAction || hasPartialDeliverAction || hasReturnAction
-    || !!order.courier_consignment
+    || hasExchangeAction || !!order.courier_consignment
 
   if (!hasAnyAction) return null
 
@@ -482,6 +487,28 @@ export default function OrderActions({ order, orderId }: Props) {
                 onConfirm={async () => {
                   await doAction(() => returnOrd({ id: orderId }).unwrap(), locale === 'bn' ? 'ফেরত দেওয়া হয়েছে' : 'Marked as returned')
                   setShowReturnModal(false)
+                }}
+              />
+            )}
+          </>
+        )}
+        {hasExchangeAction && (
+          <>
+            <button disabled={loading} className="btn-secondary text-sm inline-flex items-center gap-1" onClick={() => setShowExchangeModal(true)}>
+              <RefreshCcw className="w-3.5 h-3.5" /> {locale === 'bn' ? 'বিনিময়' : 'Exchange'}
+            </button>
+            {showExchangeModal && (
+              <ExchangeModal
+                order={order}
+                locale={locale}
+                loading={exchanging}
+                onCancel={() => setShowExchangeModal(false)}
+                onConfirm={async payload => {
+                  await doAction(
+                    () => createExchange({ id: orderId, ...payload }).unwrap(),
+                    locale === 'bn' ? 'বিনিময় তৈরি হয়েছে' : 'Exchange created',
+                  )
+                  setShowExchangeModal(false)
                 }}
               />
             )}

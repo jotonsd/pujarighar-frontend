@@ -130,6 +130,21 @@ export const ordersApi = baseApi.injectEndpoints({
       invalidatesTags: (_r, _e, { id }) => ['Orders', { type: 'Order', id }],
     }),
 
+    createExchange: build.mutation<{ original_order: SalesOrder; new_order: SalesOrder }, {
+      id: string
+      returned_items: { item_id: string; quantity: number }[]
+      replacement_items: { product_id: string; quantity: number }[]
+      delivery_charge_waived?: boolean
+      discount_type?: 'PERCENTAGE' | 'FLAT'
+      discount_value?: number
+      note_bn?: string
+      note_en?: string
+    }>({
+      query: ({ id, ...body }) => ({ url: `/api/orders/${id}/exchange/`, method: 'POST', body }),
+      transformResponse: (res: { data: { original_order: SalesOrder; new_order: SalesOrder } }) => res.data,
+      invalidatesTags: (_r, _e, { id }) => ['Orders', { type: 'Order', id }, { type: 'OrderLogs', id }],
+    }),
+
     updateShipping: build.mutation<SalesOrder, { id: string; shipping_name_bn?: string; shipping_name_en?: string; shipping_phone?: string; shipping_address_bn?: string; shipping_address_en?: string; shipping_district?: string; shipping_thana?: string; shipping_post_code?: string }>({
       query: ({ id, ...body }) => ({ url: `/api/orders/${id}/update-shipping/`, method: 'PATCH', body }),
       transformResponse: (res: { data: SalesOrder }) => res.data,
@@ -196,6 +211,7 @@ export const {
   useMarkCodPaidMutation,
   useApplyDiscountMutation,
   useWaiveDeliveryChargeMutation,
+  useCreateExchangeMutation,
   useLookupRecentOrderByPhoneQuery,
   useUpdateShippingMutation,
   useAddOrderItemMutation,

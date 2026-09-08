@@ -67,6 +67,27 @@ export default function AdminOrderDetailPage({
         }
       />
 
+      {(order.exchanged_from || order.exchanges.length > 0) && (
+        <div className="mb-4 space-y-2">
+          {order.exchanged_from && (
+            <div className="rounded-xl border border-purple-200 bg-purple-50 px-4 py-2.5 text-sm text-purple-800">
+              {locale === "bn" ? "এটি একটি বিনিময় প্রতিস্থাপন — মূল অর্ডার: " : "This is an exchange replacement for order "}
+              <a href={`/${locale}/admin/orders/${order.exchanged_from.id}`} className="font-semibold underline">
+                #{order.exchanged_from.order_number}
+              </a>
+            </div>
+          )}
+          {order.exchanges.map(ex => (
+            <div key={ex.id} className="rounded-xl border border-purple-200 bg-purple-50 px-4 py-2.5 text-sm text-purple-800">
+              {locale === "bn" ? "এই অর্ডারের একটি অংশ বিনিময় হয়েছে — নতুন অর্ডার: " : "Part of this order was exchanged — new order "}
+              <a href={`/${locale}/admin/orders/${ex.new_order_id}`} className="font-semibold underline">
+                #{ex.new_order_number}
+              </a>
+            </div>
+          ))}
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="lg:col-span-2 space-y-4">
           <OrderItems order={order} />

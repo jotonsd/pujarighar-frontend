@@ -63,7 +63,7 @@ export default function OrderProgressBar({ status, locale, isCourier = false }: 
 
   // Cancelled/returned/partially-delivered don't fit a linear progress model —
   // the existing status badge already communicates those, so just skip the bar.
-  if (status === "CANCELLED" || status === "RETURNED" || status === "PARTIALLY_DELIVERED") return null;
+  if (status === "CANCELLED" || status === "RETURNED" || status === "PARTIALLY_DELIVERED" || status === "EXCHANGED") return null;
 
   const pct = (visibleIndex / (STAGES.length - 1)) * 100;
   // Only once the car has visually settled at the end — not the instant the

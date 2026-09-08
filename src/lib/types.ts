@@ -18,7 +18,7 @@ export interface Role {
 }
 
 export type Locale = 'bn' | 'en'
-export type OrderStatus = 'PENDING' | 'CONFIRMED' | 'PACKED' | 'ASSIGNED' | 'PICKED' | 'ON_THE_WAY' | 'DELIVERED' | 'PARTIALLY_DELIVERED' | 'RETURNED' | 'CANCELLED'
+export type OrderStatus = 'PENDING' | 'CONFIRMED' | 'PACKED' | 'ASSIGNED' | 'PICKED' | 'ON_THE_WAY' | 'DELIVERED' | 'PARTIALLY_DELIVERED' | 'RETURNED' | 'EXCHANGED' | 'CANCELLED'
 export type OrderSource = 'WEBSITE' | 'AI_CHATBOT' | 'POS'
 
 // ─── Shipping ────────────────────────────────────────────────────────────────
@@ -483,11 +483,25 @@ export interface DeliveryAssignment {
   tracking_note: string
 }
 
+export interface ExchangeSummary {
+  id: string
+  new_order_id: string
+  new_order_number: string
+  returned_value: string
+  created_at: string
+}
+
+export interface ExchangedFromRef {
+  id: string
+  order_number: string
+}
+
 export interface SalesOrder {
   id: string
   order_number: string
   customer: string
   customer_email: string
+  is_guest: boolean
   status: OrderStatus
   status_label: string
   source: OrderSource
@@ -514,6 +528,8 @@ export interface SalesOrder {
   items: SalesOrderItem[]
   delivery: DeliveryAssignment | null
   courier_consignment: CourierConsignment | null
+  exchanges: ExchangeSummary[]
+  exchanged_from: ExchangedFromRef | null
   created_at: string
   updated_at: string
 }

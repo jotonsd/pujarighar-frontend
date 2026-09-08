@@ -132,6 +132,12 @@ export default function OrderShipping({ order }: Props) {
               <p className="font-medium text-gray-800">{order.shipping_district}, {order.shipping_thana} — {order.shipping_post_code}</p>
             </div>
           )}
+          {(order.notes_bn || order.notes_en) && (
+            <div className="col-span-2">
+              <p className="text-xs text-gray-400 mb-0.5">{isBn ? 'কাস্টমারের মন্তব্য' : 'Customer Note'}</p>
+              <p className="font-medium text-gray-800 whitespace-pre-wrap">{isBn ? (order.notes_bn || order.notes_en) : (order.notes_en || order.notes_bn)}</p>
+            </div>
+          )}
         </div>
       )}
     </div>
