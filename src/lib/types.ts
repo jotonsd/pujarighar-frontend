@@ -430,6 +430,7 @@ export interface OrderTracking {
   courier_tracking_url: string | null
   is_courier: boolean
   timeline: StatusLogEntry[]
+  exchanged_to: ExchangedFromRef | null
 }
 
 // ─── Order ───────────────────────────────────────────────────────────────────

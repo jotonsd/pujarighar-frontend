@@ -58,6 +58,17 @@ export default function TrackingPageClient({ id, offerBanners }: { id: string; o
 
         <OrderProgressBar status={order.status} locale={locale} isCourier={order.is_courier} />
 
+        {order.exchanged_to && (
+          <div className="rounded-xl border border-purple-200 bg-purple-50 px-4 py-3 text-sm text-purple-800">
+            {isBn
+              ? "এই অর্ডারটি বিনিময় করা হয়েছে। আপনার নতুন অর্ডারের অবস্থা দেখুন: "
+              : "This order was exchanged. Track your replacement order: "}
+            <a href={`/${locale}/orders/${order.exchanged_to.id}/tracking`} className="font-semibold underline">
+              #{order.exchanged_to.order_number}
+            </a>
+          </div>
+        )}
+
         {/* Customer */}
         <div className="border-t border-gray-100 pt-4 space-y-0.5">
           <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">
