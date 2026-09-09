@@ -120,6 +120,7 @@ export const baseApi = createApi({
     'Cashback',
     'SiteSettings',
     'PromoEmails',
+    'PromoPush',
     'GoogleAnalytics',
     'GooglePagespeed',
     'CourierProviders',
