@@ -16,7 +16,7 @@ import {
   Users as UsersIcon, Handshake, PiggyBank, Landmark, BookOpen, NotebookPen, PlusCircle,
   Scale, ShoppingCart, FileBarChart, Undo2, CreditCard, Megaphone,
   GalleryHorizontal, Target, Mail, Star, Home, Store, FileText, Shield, ListTree, Search, ChevronRight, Calendar,
-  MessageSquare,
+  MessageSquare, BellRing,
   type LucideIcon,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
@@ -91,6 +91,7 @@ const NAV_ICONS: Record<string, LucideIcon> = {
   "chevron-right": ChevronRight,
   calendar: Calendar,
   "message-square": MessageSquare,
+  "bell-ring": BellRing,
 };
 
 function NavIcon({ name, className = "w-4 h-4" }: { name: string; className?: string }) {
