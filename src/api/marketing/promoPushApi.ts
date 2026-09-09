@@ -9,6 +9,7 @@ export interface PromoPush {
   body_en: string
   sent_by: string | null
   recipient_count: number
+  delivered_count: number
   created_at: string
 }
 

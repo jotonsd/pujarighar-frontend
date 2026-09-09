@@ -40,8 +40,8 @@ export default function PromoPushAdminPage() {
       const result = await sendPromoPush(form).unwrap();
       toast.success(
         isBn
-          ? `${result.recipient_count} জন গ্রাহকের কাছে পুশ নোটিফিকেশন পাঠানো হয়েছে`
-          : `Push notification sent to ${result.recipient_count} customers`
+          ? `${result.recipient_count} টি ডিভাইসের মধ্যে ${result.delivered_count} টিতে পাঠানো হয়েছে`
+          : `Delivered to ${result.delivered_count} of ${result.recipient_count} devices`
       );
       setForm(EMPTY_FORM);
     } catch {
@@ -73,6 +73,14 @@ export default function PromoPushAdminPage() {
     {
       header: isBn ? "প্রাপক" : "Recipients",
       accessor: p => <span className="text-sm text-gray-600">{p.recipient_count}</span>,
+    },
+    {
+      header: isBn ? "ডেলিভার হয়েছে" : "Delivered",
+      accessor: p => (
+        <span className={`text-sm font-medium ${p.delivered_count > 0 ? "text-green-600" : "text-red-500"}`}>
+          {p.delivered_count} / {p.recipient_count}
+        </span>
+      ),
     },
     {
       header: isBn ? "তারিখ" : "Date",
