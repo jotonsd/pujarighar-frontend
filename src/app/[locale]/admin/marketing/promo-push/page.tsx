@@ -112,7 +112,7 @@ export default function PromoPushAdminPage() {
               value={form.title_bn}
               onChange={e => set("title_bn", e.target.value)}
               className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-400"
-              placeholder={isBn ? "যেমনঃ ঈদ অফার শুরু হয়েছে!" : "e.g. Eid offer is live!"}
+              placeholder={isBn ? "যেমনঃ দুর্গাপূজার অফার শুরু হয়েছে!" : "e.g. Durga Puja offer is live!"}
             />
           </div>
           <div>
@@ -121,7 +121,7 @@ export default function PromoPushAdminPage() {
               value={form.title_en}
               onChange={e => set("title_en", e.target.value)}
               className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-400"
-              placeholder="e.g. Eid offer is live!"
+              placeholder="e.g. Durga Puja offer is live!"
             />
           </div>
           <div>
