@@ -7,6 +7,7 @@ export interface PromoPush {
   title_en: string
   body_bn: string
   body_en: string
+  image_url: string | null
   sent_by: string | null
   recipient_count: number
   delivered_count: number
@@ -23,6 +24,7 @@ export interface SendPromoPushPayload {
   title_en: string
   body_bn: string
   body_en: string
+  image?: File | null
 }
 
 export const promoPushApi = baseApi.injectEndpoints({
@@ -39,7 +41,12 @@ export const promoPushApi = baseApi.injectEndpoints({
     }),
 
     sendPromoPush: build.mutation<PromoPush, SendPromoPushPayload>({
-      query: (body) => ({ url: '/api/promo-notifications/send/', method: 'POST', body }),
+      query: ({ image, ...fields }) => {
+        const body = new FormData()
+        Object.entries(fields).forEach(([k, v]) => body.append(k, v))
+        if (image) body.append('image', image)
+        return { url: '/api/promo-notifications/send/', method: 'POST', body, formData: true }
+      },
       transformResponse: (res: { data: PromoPush }) => res.data,
       invalidatesTags: ['PromoPush'],
     }),

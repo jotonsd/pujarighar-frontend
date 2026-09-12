@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useLocale } from "next-intl";
 import { Eye, BellRing, Send } from "lucide-react";
 import PageHeader from "@/components/ui/PageHeader";
@@ -24,6 +24,9 @@ export default function PromoPushAdminPage() {
   const locale = useLocale();
   const isBn = locale === "bn";
   const [form, setForm] = useState(EMPTY_FORM);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
   const [page, setPage] = useState(1);
   const [confirming, setConfirming] = useState(false);
   const [viewItem, setViewItem] = useState<PromoPush | null>(null);
@@ -37,13 +40,15 @@ export default function PromoPushAdminPage() {
 
   const handleSend = async () => {
     try {
-      const result = await sendPromoPush(form).unwrap();
+      const result = await sendPromoPush({ ...form, image: imageFile }).unwrap();
       toast.success(
         isBn
           ? `${result.recipient_count} টি ডিভাইসের মধ্যে ${result.delivered_count} টিতে পাঠানো হয়েছে`
           : `Delivered to ${result.delivered_count} of ${result.recipient_count} devices`
       );
       setForm(EMPTY_FORM);
+      setImageFile(null);
+      setImagePreview(null);
     } catch {
       toast.error(isBn ? "পাঠাতে ব্যর্থ হয়েছে" : "Failed to send");
     } finally {
@@ -144,6 +149,55 @@ export default function PromoPushAdminPage() {
           </div>
         </div>
 
+        <div>
+          <label className="text-xs font-medium text-gray-500 mb-1.5 block">
+            {isBn ? "বড় ছবি (ঐচ্ছিক)" : "Large image (optional)"}
+          </label>
+          <div className="flex items-center gap-3">
+            {imagePreview && (
+              <div className="relative">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="w-24 h-12 object-cover rounded-lg border border-gray-200"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setImageFile(null);
+                    setImagePreview(null);
+                    if (fileRef.current) fileRef.current.value = "";
+                  }}
+                  className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center hover:bg-red-600"
+                >
+                  ×
+                </button>
+              </div>
+            )}
+            <button type="button" onClick={() => fileRef.current?.click()} className="btn-secondary text-xs px-3 py-1.5">
+              {isBn ? "+ ছবি বেছে নিন" : "+ Choose Image"}
+            </button>
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={e => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                setImageFile(file);
+                setImagePreview(URL.createObjectURL(file));
+              }}
+            />
+          </div>
+          <p className="text-xs text-gray-400 mt-1.5">
+            {isBn
+              ? "স্ট্যান্ডার্ড সাইজ: ১০২৪x৫১২ পিক্সেল (২:১ অনুপাত), ১ এমবি এর কম। না দিলে সাইটের লোগো দেখানো হবে।"
+              : "Standard size: 1024×512px (2:1 ratio), under 1MB. Falls back to the site logo if not provided."}
+          </p>
+        </div>
+
         <p className="text-xs text-gray-400">
           {isBn
             ? "শুধুমাত্র মোবাইল অ্যাপ ব্যবহারকারী গ্রাহকরাই এটি পাবেন — যাদের ফোনে অ্যাপ ইনস্টল করা নেই তারা পাবেন না।"
@@ -205,6 +259,14 @@ export default function PromoPushAdminPage() {
             </div>
 
             <div className="space-y-3 max-h-[50vh] overflow-y-auto">
+              {viewItem.image_url && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={viewItem.image_url}
+                  alt=""
+                  className="w-full h-32 object-cover rounded-lg border border-gray-200"
+                />
+              )}
               <div>
                 <p className="text-xs font-semibold text-gray-500 mb-1">{isBn ? "শিরোনাম (বাংলা)" : "Title (Bengali)"}</p>
                 <p className="text-sm text-gray-800 bg-gray-50 rounded-lg px-3 py-2">{viewItem.title_bn}</p>
