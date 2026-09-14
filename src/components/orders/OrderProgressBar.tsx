@@ -13,7 +13,7 @@ function getStages(isCourier: boolean): { statuses: OrderStatus[]; label_bn: str
     { statuses: ["PENDING", "CONFIRMED"], label_bn: "গৃহীত", label_en: "Accepted" },
     { statuses: ["PACKED"], label_bn: "প্যাক করা", label_en: "Packed" },
     isCourier
-      ? { statuses: ["ASSIGNED"], label_bn: "কুরিয়ারে পাঠানো হয়েছে", label_en: "Sent to Courier" }
+      ? { statuses: ["ASSIGNED"], label_bn: "কুরিয়ার এসাইন্ড", label_en: "Courier Assigned" }
       : { statuses: ["ASSIGNED"], label_bn: "এসাইন্ড", label_en: "Assigned" },
     { statuses: ["PICKED"], label_bn: "পিকডআপ", label_en: "Picked Up" },
     { statuses: ["ON_THE_WAY"], label_bn: "পথে আছে", label_en: "In Transit" },
