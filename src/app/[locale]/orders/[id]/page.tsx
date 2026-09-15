@@ -10,6 +10,7 @@ import OrderReviewSection from "@/components/orders/OrderReviewSection";
 import OrderStatusBadge from "@/components/orders/OrderStatusBadge";
 import StatusTimeline from "@/components/orders/StatusTimeline";
 import InvoiceModal from "@/components/admin/orders/InvoiceModal";
+import CopyButton from "@/components/ui/CopyButton";
 import PageHeader from "@/components/ui/PageHeader";
 import Spinner from "@/components/ui/Spinner";
 import { useAuthStore } from "@/store/authStore";
@@ -249,7 +250,12 @@ export default function OrderDetailPage({
                   locale === "bn",
                 )}
               </p>
-              <p>{order.shipping_phone}</p>
+              <p className="flex items-center gap-1.5">
+                {order.shipping_phone}
+                {order.shipping_phone && (
+                  <CopyButton value={order.shipping_phone} isBn={locale === "bn"} />
+                )}
+              </p>
               <p>
                 {locale === "bn"
                   ? order.shipping_address_bn

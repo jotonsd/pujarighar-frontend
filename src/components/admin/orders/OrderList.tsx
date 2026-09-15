@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 import { Eye, Filter, X } from 'lucide-react'
 import OrderStatusCell from '@/components/admin/orders/OrderStatusCell'
 import OrderSourceBadge from '@/components/orders/OrderSourceBadge'
+import CopyButton from '@/components/ui/CopyButton'
 import { FloatingDatePicker, FloatingInput, FloatingSelect } from '@/components/ui/forms'
 import PageHeader from '@/components/ui/PageHeader'
 import { ReusableTable, Column } from '@/components/ui/ReusableTable'
@@ -38,7 +39,7 @@ export default function OrderList() {
     { header: t('order.number'), accessor: o => <span className="font-mono text-sm">{o.order_number}</span>, exportValue: o => o.order_number },
     {
       header: locale === 'bn' ? 'গ্রাহক' : 'Customer',
-      accessor: o => <div><p className="text-sm font-medium text-gray-800">{localName(o.shipping_name_bn, o.shipping_name_en, locale === 'bn')}</p><p className="text-xs text-gray-400">{o.shipping_phone}</p></div>,
+      accessor: o => <div><p className="text-sm font-medium text-gray-800">{localName(o.shipping_name_bn, o.shipping_name_en, locale === 'bn')}</p><p className="text-xs text-gray-400 flex items-center gap-1">{o.shipping_phone}{o.shipping_phone && <CopyButton value={o.shipping_phone} isBn={locale === 'bn'} />}</p></div>,
       exportValue: o => `${o.shipping_name_en} / ${o.shipping_phone}`,
     },
     {

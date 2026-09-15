@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
 import { Pencil } from 'lucide-react'
 import { SalesOrder } from '@/lib/types'
+import CopyButton from '@/components/ui/CopyButton'
 import { FloatingInput } from '@/components/ui/forms'
 import { localName } from '@/utils/format'
 import { toast } from '@/store/toastStore'
@@ -118,7 +119,7 @@ export default function OrderShipping({ order }: Props) {
           </div>
           <div>
             <p className="text-xs text-gray-400 mb-0.5">{isBn ? 'ফোন' : 'Phone'}</p>
-            <p className="font-medium text-gray-800">{order.shipping_phone}</p>
+            <p className="font-medium text-gray-800 flex items-center gap-1.5">{order.shipping_phone}{order.shipping_phone && <CopyButton value={order.shipping_phone} isBn={isBn} />}</p>
           </div>
           {(order.shipping_address_bn || order.shipping_address_en) && (
             <div className="col-span-2">
