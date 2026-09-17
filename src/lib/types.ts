@@ -118,6 +118,7 @@ export interface User {
   is_active: boolean
   date_joined: string
   referral_code: string
+  registered_via: 'WEBSITE' | 'MOBILE_APP'
   profile: Profile
   nav_menu?: NavItem[]
   permissions?: string[]

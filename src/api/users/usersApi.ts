@@ -1,17 +1,22 @@
 import { baseApi } from '@/api/baseApi'
 import { User, ApiMeta, ShippingAddress } from '@/lib/types'
 
-interface UserListResponse { data: User[]; pagination: ApiMeta }
+interface UserListResponse {
+  data: User[]
+  pagination: ApiMeta
+  meta?: { platform_counts: { website: number; mobile_app: number } }
+}
 
 export const usersApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
 
-    getUsers: build.query<UserListResponse, { page?: number; page_size?: number; role?: string; search?: string }>({
-      query: ({ page = 1, page_size, role = '', search = '' } = {}) => {
+    getUsers: build.query<UserListResponse, { page?: number; page_size?: number; role?: string; search?: string; registered_via?: string }>({
+      query: ({ page = 1, page_size, role = '', search = '', registered_via = '' } = {}) => {
         const p = new URLSearchParams({ page: String(page) })
-        if (page_size) p.set('page_size', String(page_size))
-        if (role)      p.set('role', role)
-        if (search)    p.set('search', search)
+        if (page_size)      p.set('page_size', String(page_size))
+        if (role)           p.set('role', role)
+        if (search)         p.set('search', search)
+        if (registered_via) p.set('registered_via', registered_via)
         return `/api/users/?${p}`
       },
       providesTags: ['Users'],

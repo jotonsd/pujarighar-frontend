@@ -26,9 +26,10 @@ export default function UserList() {
   const [limit, setLimit]   = useState(10)
   const [role, setRole]     = useState('')
   const [search, setSearch] = useState('')
+  const [registeredVia, setRegisteredVia] = useState('')
 
   const currentUserId = useAuthStore(s => s.user?.id)
-  const { data, isLoading, isFetching } = useGetUsersQuery({ page, page_size: limit, role, search })
+  const { data, isLoading, isFetching } = useGetUsersQuery({ page, page_size: limit, role, search, registered_via: registeredVia })
   const { data: roles = [] } = useGetRolesQuery()
   const [activate]   = useActivateUserMutation()
   const [deactivate] = useDeactivateUserMutation()
@@ -46,6 +47,17 @@ export default function UserList() {
         </Badge>
       ),
       exportValue: u => isBn ? u.role.name_bn : u.role.name_en,
+    },
+    {
+      header: locale === 'bn' ? 'প্ল্যাটফর্ম' : 'Platform',
+      accessor: u => (
+        <Badge variant={u.registered_via === 'MOBILE_APP' ? 'blue' : 'gray'}>
+          {u.registered_via === 'MOBILE_APP'
+            ? (locale === 'bn' ? 'অ্যাপ' : 'App')
+            : (locale === 'bn' ? 'ওয়েবসাইট' : 'Website')}
+        </Badge>
+      ),
+      exportValue: u => u.registered_via === 'MOBILE_APP' ? 'App' : 'Website',
     },
     {
       header: locale === 'bn' ? 'স্ট্যাটাস' : 'Status',
@@ -73,6 +85,19 @@ export default function UserList() {
         }
       />
 
+      {data?.meta?.platform_counts && (
+        <div className="flex gap-3 mb-4 flex-wrap">
+          <div className="px-4 py-2.5 rounded-lg bg-blue-50 border border-blue-100 text-sm text-blue-800">
+            <span className="font-semibold">{data.meta.platform_counts.mobile_app}</span>{' '}
+            {locale === 'bn' ? 'জন অ্যাপ ব্যবহারকারী' : 'app users'}
+          </div>
+          <div className="px-4 py-2.5 rounded-lg bg-gray-50 border border-gray-200 text-sm text-gray-700">
+            <span className="font-semibold">{data.meta.platform_counts.website}</span>{' '}
+            {locale === 'bn' ? 'জন ওয়েবসাইট ব্যবহারকারী' : 'website users'}
+          </div>
+        </div>
+      )}
+
       <div className="flex gap-3 mb-4 flex-wrap">
         <div className="w-64">
           <FloatingInput label={t('common.search')} value={search}
@@ -82,6 +107,14 @@ export default function UserList() {
           <FloatingSelect label="Role" value={role} onChange={val => { setRole(val); setPage(1) }}>
             <option value="">{t('common.all')}</option>
             {roles.map(r => <option key={r.id} value={r.id}>{isBn ? r.name_bn : r.name_en}</option>)}
+          </FloatingSelect>
+        </div>
+        <div className="w-48">
+          <FloatingSelect label={locale === 'bn' ? 'প্ল্যাটফর্ম' : 'Platform'} value={registeredVia}
+            onChange={val => { setRegisteredVia(val); setPage(1) }}>
+            <option value="">{t('common.all')}</option>
+            <option value="MOBILE_APP">{locale === 'bn' ? 'অ্যাপ' : 'Mobile App'}</option>
+            <option value="WEBSITE">{locale === 'bn' ? 'ওয়েবসাইট' : 'Website'}</option>
           </FloatingSelect>
         </div>
       </div>
