@@ -36,7 +36,7 @@ const GROUPS: { bn: string; en: string; modules: string[] }[] = [
   { bn: "ফিন্যান্স", en: "Finance", modules: ["accounting_chart", "accounting_journal", "accounting_ledger", "accounting_profit_loss", "accounting_trial_balance", "accounting_sales_summary", "expenses", "delivery_charges", "cashback"] },
   { bn: "রিপোর্ট", en: "Reports", modules: ["reports_purchases", "reports_supplier_returns", "reports_supplier_outstanding", "reports_product_stock", "reports_income", "reports_expenses", "reports_sales", "reports_carts"] },
   { bn: "মার্কেটিং", en: "Marketing", modules: ["hero_slider", "banners", "blog", "promo_emails", "promo_notifications", "reviews"] },
-  { bn: "অন্যান্য", en: "Other", modules: ["shipping_addresses", "site_settings", "sms", "notifications"] },
+  { bn: "অন্যান্য", en: "Other", modules: ["shipping_addresses", "site_settings", "payment_methods", "sms", "notifications"] },
 ];
 
 interface Props {

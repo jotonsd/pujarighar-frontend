@@ -10,6 +10,8 @@ import {
   useUpdateCartItemMutation,
 } from "@/api/cart/cartApi";
 import { useGetDeliveryChargesQuery } from "@/api/deliveryCharges/deliveryChargesApi";
+import { useGetSiteSettingsQuery } from "@/api/settings/settingsApi";
+import { useGetPaymentMethodsQuery } from "@/api/paymentMethods/paymentMethodsApi";
 import { useGuestCheckoutMutation } from "@/api/guest/guestApi";
 import {
   useCreateShippingAddressMutation,
@@ -27,7 +29,15 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-type PaymentMethod = "COD" | "ONLINE";
+type PaymentMethod = "COD" | "SSLCOMMERZ" | "BKASH" | "NAGAD" | "STRIPE";
+
+const METHOD_ICON: Record<PaymentMethod, string> = {
+  COD: "💵",
+  SSLCOMMERZ: "💳",
+  BKASH: "📱",
+  NAGAD: "📱",
+  STRIPE: "💳",
+};
 
 type GuestForm = {
   name_bn: string;
@@ -59,6 +69,20 @@ const BLANK_ADDR: NewAddressForm = {
   thana: "",
   post_code: "",
 };
+
+function FreeDeliveryNudge({ subtotal, locale }: { subtotal: number; locale: string }) {
+  const { data: settings } = useGetSiteSettingsQuery();
+  const threshold = parseFloat(settings?.free_delivery_min_subtotal ?? "0");
+  if (!threshold || threshold <= 0 || subtotal >= threshold) return null;
+  const remaining = threshold - subtotal;
+  return (
+    <div className="text-xs font-bold bg-green-50 text-green-700 border border-green-100 rounded-lg px-3 py-2">
+      {locale === "bn"
+        ? `আরও ৳${formatNumber(remaining, locale)} কিনলে ফ্রি ডেলিভারি পাবেন!`
+        : `Add ৳${formatNumber(remaining, locale)} more to get free delivery!`}
+    </div>
+  );
+}
 
 function AddAddressModal({
   locale,
@@ -219,6 +243,9 @@ function PaymentMethodModal({
   onSelect: (method: PaymentMethod) => void;
   onCancel: () => void;
 }) {
+  const { data: methods, isLoading } = useGetPaymentMethodsQuery();
+  const enabled = (methods ?? []).filter(m => m.is_enabled);
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 space-y-4">
@@ -228,22 +255,38 @@ function PaymentMethodModal({
             : "Choose Payment Method"}
         </h2>
 
-        <button
-          onClick={() => onSelect("COD")}
-          className="w-full flex items-center gap-3 p-4 rounded-xl border-2 border-gray-200 hover:border-amber-400 hover:bg-amber-50 transition-colors text-left"
-        >
-          <span className="text-3xl">💵</span>
-          <div>
-            <p className="font-semibold text-gray-800">
-              {locale === "bn" ? "ক্যাশ অন ডেলিভারি" : "Cash on Delivery"}
-            </p>
-            <p className="text-xs text-gray-500">
-              {locale === "bn"
-                ? "ডেলিভারির সময় পেমেন্ট করুন"
-                : "Pay when your order arrives"}
-            </p>
+        {isLoading ? (
+          <div className="space-y-2">
+            {[1, 2].map(i => <div key={i} className="h-16 bg-gray-100 rounded-xl animate-pulse" />)}
           </div>
-        </button>
+        ) : (
+          enabled.map(m => (
+            <button
+              key={m.code}
+              onClick={() => onSelect(m.code as PaymentMethod)}
+              className="w-full flex items-center gap-3 p-4 rounded-xl border-2 border-gray-200 hover:border-amber-400 hover:bg-amber-50 transition-colors text-left"
+            >
+              <span className="text-3xl">{METHOD_ICON[m.code as PaymentMethod] ?? "💳"}</span>
+              <div>
+                <p className="font-semibold text-gray-800">
+                  {locale === "bn" ? m.name_bn : m.name_en}
+                </p>
+                <p className="text-xs text-gray-500">
+                  {m.code === "COD"
+                    ? (locale === "bn" ? "ডেলিভারির সময় পেমেন্ট করুন" : "Pay when your order arrives")
+                    : (locale === "bn" ? "এখনই পেমেন্ট করুন" : "Pay now")}
+                  {m.charge_type !== "NONE" && (
+                    <>
+                      {" — "}
+                      {locale === "bn" ? "গেটওয়ে চার্জ প্রযোজ্য" : "gateway charge applies"}
+                      {m.charge_type === "PERCENT" ? ` (${m.charge_value}%)` : ` (৳${m.charge_value})`}
+                    </>
+                  )}
+                </p>
+              </div>
+            </button>
+          ))
+        )}
 
         <button
           onClick={onCancel}
@@ -277,12 +320,31 @@ function ConfirmModal({
   deliveryCharge: string;
   deliveryAmount: number;
   cashbackUsed: number;
-  grandTotal: string;
+  // Raw, pre-gateway-charge total — ConfirmModal adds the selected
+  // method's charge itself (from the same public payment-methods list
+  // PaymentMethodModal uses) so the customer sees exactly what they'll
+  // actually be charged, matching CheckoutService.checkout's server-side
+  // math (percent-of-total, then ceiled to a whole Taka).
+  grandTotal: number;
   paymentMethod: PaymentMethod;
   onConfirm: () => void;
   onCancel: () => void;
   loading: boolean;
 }) {
+  const { data: methods } = useGetPaymentMethodsQuery();
+  const method = methods?.find(m => m.code === paymentMethod);
+  const rawCharge = method && method.charge_type !== "NONE"
+    ? (method.charge_type === "PERCENT"
+        ? (grandTotal * parseFloat(method.charge_value)) / 100
+        : parseFloat(method.charge_value))
+    : 0;
+  // Ceil the total to a whole Taka and fold the rounding delta into the
+  // displayed charge itself — same "absorb it into gateway_charge_amount"
+  // approach CheckoutService.checkout uses server-side, so this line and
+  // the Grand Total below always add up exactly, never off by a poisha.
+  const finalTotal = paymentMethod === "COD" ? grandTotal : Math.ceil(grandTotal + rawCharge);
+  const gatewayCharge = paymentMethod === "COD" ? 0 : finalTotal - grandTotal;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 space-y-4">
@@ -338,11 +400,19 @@ function ConfirmModal({
               </span>
             </div>
           )}
+          {gatewayCharge > 0 && (
+            <div className="flex items-center justify-between text-sm text-gray-500">
+              <span>
+                {locale === "bn" ? "গেটওয়ে চার্জ" : "Gateway Charge"}
+              </span>
+              <span className="font-bold">{formatAmount(gatewayCharge, locale)}</span>
+            </div>
+          )}
           <div className="flex items-center justify-between font-bold text-base border-t border-gray-100 pt-1.5">
             <span className="text-gray-800">
               {locale === "bn" ? "সর্বমোট" : "Grand Total"}
             </span>
-            <span className="text-amber-700">{grandTotal}</span>
+            <span className="text-amber-700">{formatAmount(finalTotal, locale)}</span>
           </div>
         </div>
 
@@ -359,14 +429,13 @@ function ConfirmModal({
           </span>
         </div>
 
-        {paymentMethod === "COD" && (
+        {paymentMethod === "COD" ? (
           <p className="text-xs text-gray-500">
             {locale === "bn"
               ? "অর্ডারটি অ্যাডমিন কর্তৃক নিশ্চিত করার পর প্রসেস করা হবে।"
               : "Your order will be processed after admin confirmation."}
           </p>
-        )}
-        {paymentMethod === "ONLINE" && (
+        ) : (
           <p className="text-xs text-green-600">
             {locale === "bn"
               ? "পেমেন্ট সফল হলে অর্ডারটি স্বয়ংক্রিয়ভাবে নিশ্চিত হবে।"
@@ -479,6 +548,17 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
   const insideCharge  = deliveryRates?.inside_dhaka_for_weight  ?? deliveryRates?.inside_dhaka  ?? "0";
   const outsideCharge = deliveryRates?.outside_dhaka_for_weight ?? deliveryRates?.outside_dhaka ?? "0";
   const { data: me } = useGetMeQuery(undefined, { skip: !isAuthenticated });
+  const { data: siteSettings } = useGetSiteSettingsQuery();
+  const freeDeliveryThreshold = parseFloat(siteSettings?.free_delivery_min_subtotal ?? "0");
+  // The actual charge for the selected zone, zeroed out once subtotal
+  // clears the free-delivery threshold — mirrors CheckoutService.checkout /
+  // GuestCheckoutService.checkout's identical override server-side, so this
+  // pre-checkout summary matches what the order will actually be charged.
+  const deliveryChargeFor = (subtotal: number): number => {
+    const raw = parseFloat(deliveryZone === "inside" ? insideCharge : outsideCharge);
+    if (freeDeliveryThreshold > 0 && subtotal >= freeDeliveryThreshold) return 0;
+    return raw;
+  };
 
   // Auto-select default address when addresses load
   useEffect(() => {
@@ -897,6 +977,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                     )}
                   </span>
                 </div>
+                <FreeDeliveryNudge subtotal={parseFloat(String(cart?.subtotal ?? 0))} locale={locale} />
                 {cart?.discount_amount &&
                   parseFloat(cart.discount_amount) > 0 && (
                     <div className="flex justify-between text-sm text-green-600 font-bold">
@@ -913,9 +994,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                     </span>
                     <span>
                       {formatAmount(
-                        deliveryZone === "inside"
-                          ? insideCharge
-                          : outsideCharge,
+                        deliveryChargeFor(parseFloat(String(cart?.subtotal ?? 0))),
                         locale,
                         0,
                       )}
@@ -924,13 +1003,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                 )}
                 {(() => {
                   const sub = parseFloat(String(cart?.subtotal ?? 0));
-                  const dc = deliveryRates
-                    ? parseFloat(
-                        deliveryZone === "inside"
-                          ? insideCharge
-                          : outsideCharge,
-                      )
-                    : 0;
+                  const dc = deliveryRates ? deliveryChargeFor(sub) : 0;
                   const cashbackBalance = parseFloat(
                     me?.profile.cashback_balance || "0",
                   );
@@ -951,13 +1024,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                   <span className="text-amber-700">
                     {(() => {
                       const sub = parseFloat(String(cart?.subtotal ?? 0));
-                      const dc = deliveryRates
-                        ? parseFloat(
-                            deliveryZone === "inside"
-                              ? insideCharge
-                              : outsideCharge,
-                          )
-                        : 0;
+                      const dc = deliveryRates ? deliveryChargeFor(sub) : 0;
                       const cashbackBalance = parseFloat(
                         me?.profile.cashback_balance || "0",
                       );
@@ -1016,13 +1083,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
         {showConfirm &&
           (() => {
             const sub = parseFloat(String(cart?.subtotal ?? 0));
-            const dc = deliveryRates
-              ? parseFloat(
-                  deliveryZone === "inside"
-                    ? insideCharge
-                    : outsideCharge,
-                )
-              : 0;
+            const dc = deliveryRates ? deliveryChargeFor(sub) : 0;
             const discountAmt = parseFloat(cart?.discount_amount || "0");
             const cashbackBalance = parseFloat(
               me?.profile.cashback_balance || "0",
@@ -1038,7 +1099,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                 deliveryCharge={formatAmount(dc, locale, 0)}
                 deliveryAmount={dc}
                 cashbackUsed={cashbackToUse}
-                grandTotal={formatAmount(sub + dc - cashbackToUse, locale)}
+                grandTotal={sub + dc - cashbackToUse}
                 onConfirm={handleCheckout}
                 onCancel={() => setShowConfirm(false)}
                 loading={checkingOut}
@@ -1336,15 +1397,14 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                       </span>
                     </div>
                   )}
+                  <FreeDeliveryNudge subtotal={guestSubtotal()} locale={locale} />
                   <div className="flex justify-between font-bold text-sm text-gray-600">
                     <span>
                       {locale === "bn" ? "ডেলিভারি চার্জ" : "Delivery Charge"}
                     </span>
                     <span>
                       {formatAmount(
-                        deliveryZone === "inside"
-                          ? insideCharge
-                          : outsideCharge,
+                        deliveryChargeFor(guestSubtotal()),
                         locale,
                         0,
                       )}
@@ -1354,12 +1414,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                     <span>{locale === "bn" ? "সর্বমোট" : "Grand Total"}</span>
                     <span className="text-amber-700">
                       {formatAmount(
-                        guestSubtotal() +
-                          parseFloat(
-                            deliveryZone === "inside"
-                              ? insideCharge
-                              : outsideCharge,
-                          ),
+                        guestSubtotal() + deliveryChargeFor(guestSubtotal()),
                         locale,
                         0,
                       )}
@@ -1408,13 +1463,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
       {showConfirm &&
         (() => {
           const sub = guestSubtotal();
-          const dc = deliveryRates
-            ? parseFloat(
-                deliveryZone === "inside"
-                  ? insideCharge
-                  : outsideCharge,
-              )
-            : 0;
+          const dc = deliveryRates ? deliveryChargeFor(sub) : 0;
           return (
             <ConfirmModal
               locale={locale}
@@ -1425,7 +1474,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
               deliveryCharge={formatAmount(dc, locale, 0)}
               deliveryAmount={dc}
               cashbackUsed={0}
-              grandTotal={formatAmount(sub + dc, locale)}
+              grandTotal={sub + dc}
               onConfirm={confirmGuestCheckout}
               onCancel={() => setShowConfirm(false)}
               loading={submitting}

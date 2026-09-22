@@ -7,6 +7,11 @@ export default function PaymentSuccessPage() {
   const locale       = useLocale()
   const searchParams = useSearchParams()
   const orderId      = searchParams.get('order_id')
+  // Passed straight through in the backend's redirect (payment_views.py)
+  // rather than fetched from /api/orders/<id>/ — that endpoint requires
+  // login, which a guest checkout (a real path for online payment) never
+  // has, so fetching it here would silently show nothing for guests.
+  const orderNumber  = searchParams.get('order_number')
   const isBn         = locale === 'bn'
 
   return (
@@ -21,6 +26,12 @@ export default function PaymentSuccessPage() {
             ? 'আপনার পেমেন্ট গ্রহণ করা হয়েছে এবং অর্ডারটি নিশ্চিত করা হয়েছে।'
             : 'Your payment has been received and your order is confirmed.'}
         </p>
+        {orderNumber && (
+          <p className="text-sm text-gray-500">
+            {isBn ? 'অর্ডার নম্বর' : 'Order Number'}{': '}
+            <span className="font-bold text-gray-800">{orderNumber}</span>
+          </p>
+        )}
         {orderId && (
           <div className="flex flex-col gap-3">
             <Link href={`/${locale}/orders/${orderId}/tracking`} className="btn-primary">

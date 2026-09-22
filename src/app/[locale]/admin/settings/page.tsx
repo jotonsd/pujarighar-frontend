@@ -8,21 +8,23 @@ import {
 } from "@/api/settings/settingsApi";
 import ImageUpload from "@/components/ui/ImageUpload";
 import PageHeader from "@/components/ui/PageHeader";
-import { FloatingInput, FloatingTextarea } from "@/components/ui/forms";
+import { FloatingInput, FloatingTextarea, FloatingSelect } from "@/components/ui/forms";
 import { toast } from "@/store/toastStore";
-import { Bot, Building2, FileText, Gift, Mail, MessageCircle, Send, Sparkles } from "lucide-react";
+import { Bot, Building2, CreditCard, FileText, Gift, Mail, MessageCircle, Send, Sparkles } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useEffect, useState } from "react";
+import { useGetPaymentMethodsQuery, useUpdatePaymentMethodMutation, PaymentMethod, ChargeType } from "@/api/paymentMethods/paymentMethodsApi";
 
 // ── Menu config ────────────────────────────────────────────────────────────────
-type SectionId = "general" | "invoice" | "mail" | "referral" | "first_order" | "telegram" | "ai_support" | "whatsapp";
+type SectionId = "general" | "invoice" | "mail" | "referral" | "first_order" | "payment_methods" | "telegram" | "ai_support" | "whatsapp";
 
 const MENU: { id: SectionId; icon: React.ReactNode; label_bn: string; label_en: string }[] = [
   { id: "general",  icon: <Building2 className="w-4 h-4" />, label_bn: "সাধারণ তথ্য",   label_en: "General Info" },
   { id: "invoice",  icon: <FileText  className="w-4 h-4" />, label_bn: "চালান প্রিন্ট",  label_en: "Invoice Print" },
   { id: "mail",     icon: <Mail      className="w-4 h-4" />, label_bn: "মেইল কনফিগ",     label_en: "Mail Config" },
   { id: "referral", icon: <Gift      className="w-4 h-4" />, label_bn: "রেফারেল বোনাস",  label_en: "Referral Bonus" },
-  { id: "first_order", icon: <Sparkles className="w-4 h-4" />, label_bn: "প্রথম অর্ডার ছাড়", label_en: "First Order Discount" },
+  { id: "first_order", icon: <Sparkles className="w-4 h-4" />, label_bn: "ছাড় ও ফ্রি ডেলিভারি", label_en: "Discounts & Free Delivery" },
+  { id: "payment_methods", icon: <CreditCard className="w-4 h-4" />, label_bn: "পেমেন্ট পদ্ধতি", label_en: "Payment Methods" },
   { id: "telegram", icon: <Send      className="w-4 h-4" />, label_bn: "টেলিগ্রাম",      label_en: "Telegram" },
   { id: "ai_support", icon: <Bot     className="w-4 h-4" />, label_bn: "এআই সহায়তা",     label_en: "AI Support" },
   { id: "whatsapp", icon: <MessageCircle className="w-4 h-4" />, label_bn: "হোয়াটসঅ্যাপ", label_en: "WhatsApp" },
@@ -298,19 +300,30 @@ function ReferralPanel({ settings, isBn }: { settings: SiteSettings; isBn: boole
   );
 }
 
-// ── First order discount panel ──────────────────────────────────────────────────
+// ── First order discount / mobile app discount / free delivery panel ────────────
 function FirstOrderDiscountPanel({ settings, isBn }: { settings: SiteSettings; isBn: boolean }) {
-  const [percent, setPercent] = useState(settings.first_order_discount_percent ?? "20.00");
+  const [form, setForm] = useState({
+    first_order_discount_percent: settings.first_order_discount_percent ?? "20.00",
+    mobile_app_order_discount_percent: settings.mobile_app_order_discount_percent ?? "0",
+    free_delivery_min_subtotal: settings.free_delivery_min_subtotal ?? "0",
+  });
 
   useEffect(() => {
-    setPercent(settings.first_order_discount_percent ?? "20.00");
+    setForm({
+      first_order_discount_percent: settings.first_order_discount_percent ?? "20.00",
+      mobile_app_order_discount_percent: settings.mobile_app_order_discount_percent ?? "0",
+      free_delivery_min_subtotal: settings.free_delivery_min_subtotal ?? "0",
+    });
   }, [settings]);
 
   const [update, { isLoading }] = useUpdateSiteSettingsMutation();
 
+  const f = (key: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    setForm(p => ({ ...p, [key]: e.target.value }));
+
   const handleSave = async () => {
     try {
-      await update({ first_order_discount_percent: percent }).unwrap();
+      await update(form).unwrap();
       toast.success(isBn ? "সংরক্ষিত হয়েছে" : "Saved");
     } catch {
       toast.error(isBn ? "ব্যর্থ হয়েছে" : "Failed to save");
@@ -318,24 +331,164 @@ function FirstOrderDiscountPanel({ settings, isBn }: { settings: SiteSettings; i
   };
 
   return (
-    <div className="space-y-4">
-      <FloatingInput
-        label={isBn ? "ছাড়ের হার (%)" : "Discount (%)"}
-        type="number"
-        min="0"
-        max="100"
-        step="0.01"
-        value={percent}
-        onChange={e => setPercent(e.target.value)}
-      />
-      <p className="text-xs text-gray-400">
-        {isBn
-          ? "একজন নিবন্ধিত গ্রাহক নিজে সাইট থেকে চেকআউট করে প্রথমবার অর্ডার দিলে সাবটোটালের ওপর স্বয়ংক্রিয়ভাবে এই হারে ছাড় প্রয়োগ হবে। ০ দিলে এই সুবিধা বন্ধ থাকবে। গেস্ট বা POS অর্ডারে প্রযোজ্য নয়।"
-          : "Automatically applied to the subtotal when a registered customer checks out their own cart for the very first time. Set to 0 to disable. Doesn't apply to guest or POS orders."}
-      </p>
-      <button onClick={handleSave} disabled={isLoading || !percent} className="btn-primary">
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <FloatingInput
+          label={isBn ? "প্রথম অর্ডার ছাড়ের হার (%)" : "First Order Discount (%)"}
+          type="number" min="0" max="100" step="0.01"
+          value={form.first_order_discount_percent}
+          onChange={f("first_order_discount_percent")}
+        />
+        <p className="text-xs text-gray-400">
+          {isBn
+            ? "একজন নিবন্ধিত গ্রাহক নিজে সাইট থেকে চেকআউট করে প্রথমবার অর্ডার দিলে সাবটোটালের ওপর স্বয়ংক্রিয়ভাবে এই হারে ছাড় প্রয়োগ হবে। ০ দিলে এই সুবিধা বন্ধ থাকবে। গেস্ট বা POS অর্ডারে প্রযোজ্য নয়।"
+            : "Automatically applied to the subtotal when a registered customer checks out their own cart for the very first time. Set to 0 to disable. Doesn't apply to guest or POS orders."}
+        </p>
+      </div>
+
+      <div className="space-y-2 border-t border-gray-100 pt-4">
+        <FloatingInput
+          label={isBn ? "অ্যাপ অর্ডার ছাড়ের হার (%)" : "Mobile App Order Discount (%)"}
+          type="number" min="0" max="100" step="0.01"
+          value={form.mobile_app_order_discount_percent}
+          onChange={f("mobile_app_order_discount_percent")}
+        />
+        <p className="text-xs text-gray-400">
+          {isBn
+            ? "মোবাইল অ্যাপ থেকে দেওয়া প্রতিটি অর্ডারে এই হারে ছাড় প্রয়োগ হবে (শুধু প্রথম অর্ডারে নয়) — অ্যাপ ব্যবহারে উৎসাহ দিতে। প্রথম অর্ডার ছাড়ের সাথে একসাথে প্রযোজ্য হতে পারে। ০ দিলে বন্ধ থাকবে।"
+            : "Applied to every order placed through the mobile app (not just the first) — a standing incentive to use the app. Can stack with the first-order discount above. Set to 0 to disable."}
+        </p>
+      </div>
+
+      <div className="space-y-2 border-t border-gray-100 pt-4">
+        <FloatingInput
+          label={isBn ? "ফ্রি ডেলিভারি — সর্বনিম্ন সাবটোটাল (৳)" : "Free Delivery — Minimum Subtotal (৳)"}
+          type="number" min="0" step="0.01"
+          value={form.free_delivery_min_subtotal}
+          onChange={f("free_delivery_min_subtotal")}
+        />
+        <p className="text-xs text-gray-400">
+          {isBn
+            ? "অর্ডারের সাবটোটাল (অন্যান্য ছাড়ের পর) এই পরিমাণ বা তার বেশি হলে ডেলিভারি চার্জ সম্পূর্ণ মাফ হয়ে যাবে — ওয়েবসাইট, গেস্ট ও মোবাইল অ্যাপ, সব ধরনের চেকআউটে প্রযোজ্য। ০ দিলে বন্ধ থাকবে।"
+            : "Delivery charge is waived entirely once the order subtotal (after other discounts) reaches this amount — applies to every checkout channel: website, guest, and mobile app. Set to 0 to disable."}
+        </p>
+      </div>
+
+      <button onClick={handleSave} disabled={isLoading} className="btn-primary">
         {isLoading ? (isBn ? "সংরক্ষণ হচ্ছে..." : "Saving...") : (isBn ? "সংরক্ষণ করুন" : "Save Changes")}
       </button>
+    </div>
+  );
+}
+
+// ── Payment methods panel ────────────────────────────────────────────────────────
+function PaymentMethodRow({ method, isBn }: { method: PaymentMethod; isBn: boolean }) {
+  const [chargeType, setChargeType] = useState<ChargeType>(method.charge_type);
+  const [chargeValue, setChargeValue] = useState(method.charge_value);
+  const [update, { isLoading }] = useUpdatePaymentMethodMutation();
+
+  useEffect(() => {
+    setChargeType(method.charge_type);
+    setChargeValue(method.charge_value);
+  }, [method]);
+
+  const toggle = async () => {
+    if (!method.is_integrated && !method.is_enabled) {
+      toast.error(isBn
+        ? "এই পদ্ধতির জন্য এখনো কোনো গেটওয়ে ইন্টিগ্রেশন নেই — শুধু আগে থেকে কনফিগার করে রাখতে পারবেন।"
+        : "This method has no gateway integration yet — you can only pre-configure it, not enable it.");
+      return;
+    }
+    try {
+      await update({ id: method.id, is_enabled: !method.is_enabled }).unwrap();
+      toast.success(isBn ? "সংরক্ষিত হয়েছে" : "Saved");
+    } catch {
+      toast.error(isBn ? "ব্যর্থ হয়েছে" : "Failed to save");
+    }
+  };
+
+  const saveCharge = async () => {
+    try {
+      await update({ id: method.id, charge_type: chargeType, charge_value: chargeValue }).unwrap();
+      toast.success(isBn ? "সংরক্ষিত হয়েছে" : "Saved");
+    } catch {
+      toast.error(isBn ? "ব্যর্থ হয়েছে" : "Failed to save");
+    }
+  };
+
+  const chargeChanged = chargeType !== method.charge_type || chargeValue !== method.charge_value;
+
+  return (
+    <div className="border border-gray-100 rounded-xl p-4 space-y-3">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <span className="font-semibold text-gray-800 text-sm">{isBn ? method.name_bn : method.name_en}</span>
+          {!method.is_integrated && (
+            <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 border border-amber-100">
+              {isBn ? "শীঘ্রই আসছে" : "Coming soon"}
+            </span>
+          )}
+        </div>
+        <button
+          onClick={toggle}
+          disabled={isLoading}
+          className={`w-10 h-5 rounded-full transition-colors relative shrink-0 ${method.is_enabled ? "bg-amber-600" : "bg-gray-200"} ${!method.is_integrated ? "opacity-50 cursor-not-allowed" : ""}`}
+        >
+          <span className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${method.is_enabled ? "translate-x-5" : ""}`} />
+        </button>
+      </div>
+
+      <div className="flex items-end gap-2">
+        <div className="w-40">
+          <FloatingSelect
+            label={isBn ? "গেটওয়ে চার্জ" : "Gateway Charge"}
+            value={chargeType}
+            onChange={val => setChargeType(val as ChargeType)}
+          >
+            <option value="NONE">{isBn ? "কোনো চার্জ নেই" : "No charge"}</option>
+            <option value="PERCENT">{isBn ? "শতাংশ (%)" : "Percentage (%)"}</option>
+            <option value="FLAT">{isBn ? "নির্দিষ্ট পরিমাণ (৳)" : "Flat amount (৳)"}</option>
+          </FloatingSelect>
+        </div>
+        {chargeType !== "NONE" && (
+          <div className="w-32">
+            <FloatingInput
+              label={chargeType === "PERCENT" ? (isBn ? "হার (%)" : "Rate (%)") : (isBn ? "পরিমাণ (৳)" : "Amount (৳)")}
+              type="number" min="0" step="0.01"
+              value={chargeValue}
+              onChange={e => setChargeValue(e.target.value)}
+            />
+          </div>
+        )}
+        {chargeChanged && (
+          <button onClick={saveCharge} disabled={isLoading} className="btn-primary text-xs px-3 py-2.5">
+            {isBn ? "সংরক্ষণ" : "Save"}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function PaymentMethodsPanel({ isBn }: { isBn: boolean }) {
+  const { data: methods = [], isLoading } = useGetPaymentMethodsQuery();
+
+  return (
+    <div className="space-y-4">
+      <p className="text-xs text-gray-400">
+        {isBn
+          ? "কাস্টমার চেকআউটে কোন পেমেন্ট পদ্ধতি দেখবে তা নিয়ন্ত্রণ করুন — ওয়েবসাইট ও মোবাইল অ্যাপ উভয় জায়গায় প্রযোজ্য। যেসব পদ্ধতির গেটওয়ে এখনো ইন্টিগ্রেট করা হয়নি সেগুলো আগে থেকে কনফিগার করে রাখা যাবে, ইন্টিগ্রেশন সম্পন্ন হওয়ার সাথে সাথেই চালু করা যাবে।"
+          : "Control which payment methods customers see at checkout — applies to both the website and the mobile app. Methods with no gateway integration yet can be pre-configured now and switched on the moment that integration is built."}
+      </p>
+      {isLoading ? (
+        <div className="space-y-3">
+          {[1, 2, 3].map(i => <div key={i} className="h-20 bg-gray-100 rounded-xl animate-pulse" />)}
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {methods.map(m => <PaymentMethodRow key={m.id} method={m} isBn={isBn} />)}
+        </div>
+      )}
     </div>
   );
 }
@@ -713,6 +866,7 @@ export default function SettingsPage() {
               {active === "mail"     && <MailPanel     settings={settings} isBn={isBn} />}
               {active === "referral" && <ReferralPanel settings={settings} isBn={isBn} />}
               {active === "first_order" && <FirstOrderDiscountPanel settings={settings} isBn={isBn} />}
+              {active === "payment_methods" && <PaymentMethodsPanel isBn={isBn} />}
               {active === "telegram" && <TelegramPanel settings={settings} isBn={isBn} />}
               {active === "ai_support" && <AISupportPanel settings={settings} isBn={isBn} />}
               {active === "whatsapp" && <WhatsAppPanel settings={settings} isBn={isBn} />}

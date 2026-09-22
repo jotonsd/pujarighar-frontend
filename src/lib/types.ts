@@ -521,6 +521,7 @@ export interface SalesOrder {
   discount_amount: string
   tax_amount: string
   delivery_charge: string
+  gateway_charge_amount?: string
   estimated_weight_kg: string | null
   grand_total: string
   cashback_used: string

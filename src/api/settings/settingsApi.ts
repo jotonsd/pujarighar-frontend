@@ -12,6 +12,7 @@ export interface SiteSettings {
   address_en:          string
   logo:                string | null
   favicon:             string | null
+  free_delivery_min_subtotal?: string
   email_host?:               string
   email_port?:               number
   email_host_user?:          string
@@ -20,6 +21,7 @@ export interface SiteSettings {
   email_default_from?:        string
   referral_bonus_amount?:     string
   first_order_discount_percent?: string
+  mobile_app_order_discount_percent?: string
   has_telegram_bot_token?:    boolean
   telegram_chat_id?:          string
   has_gemini_api_key?:        boolean

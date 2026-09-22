@@ -115,6 +115,7 @@ export default function NotificationBell({ isAdmin }: { isAdmin: boolean }) {
                           dangerouslySetInnerHTML={{
                             __html: (isBn ? n.body_bn : n.body_en)
                               .replace(/\*\*(.+?)\*\*/g, '<strong class="text-gray-800">$1</strong>')
+                              .replace(/\n/g, '<br />')
                           }}
                         />
                         <p className="text-[10px] text-gray-400 mt-1">{timeAgo(n.created_at)}</p>

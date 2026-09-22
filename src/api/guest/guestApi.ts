@@ -10,7 +10,7 @@ interface GuestCheckoutPayload {
   post_code?: string
   notes_bn?: string
   email?: string
-  payment_method: 'COD' | 'ONLINE'
+  payment_method: 'COD' | 'SSLCOMMERZ' | 'BKASH' | 'NAGAD' | 'STRIPE'
   delivery_zone?: 'inside' | 'outside'
   apply_delivery?: boolean
 }
@@ -19,6 +19,7 @@ interface GuestOrderResult {
   order_number: string
   order_id: string
   grand_total: string
+  gateway_charge_amount?: string
   status: string
   gateway_url?: string
 }

@@ -119,6 +119,7 @@ export const baseApi = createApi({
     'Loans',
     'Cashback',
     'SiteSettings',
+    'PaymentMethods',
     'PromoEmails',
     'PromoPush',
     'GoogleAnalytics',
