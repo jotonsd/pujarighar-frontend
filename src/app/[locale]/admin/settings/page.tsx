@@ -10,10 +10,17 @@ import ImageUpload from "@/components/ui/ImageUpload";
 import PageHeader from "@/components/ui/PageHeader";
 import { FloatingInput, FloatingTextarea, FloatingSelect } from "@/components/ui/forms";
 import { toast } from "@/store/toastStore";
-import { Bot, Building2, CreditCard, FileText, Gift, Mail, MessageCircle, Send, Sparkles } from "lucide-react";
+import { Bot, Building2, CreditCard, FileText, Gift, ImagePlus, Mail, MessageCircle, Percent, Plus, Send } from "lucide-react";
 import { useLocale } from "next-intl";
-import { useEffect, useState } from "react";
-import { useGetPaymentMethodsQuery, useUpdatePaymentMethodMutation, PaymentMethod, ChargeType } from "@/api/paymentMethods/paymentMethodsApi";
+import { useEffect, useRef, useState } from "react";
+import {
+  useGetPaymentMethodsQuery,
+  useCreatePaymentMethodMutation,
+  useUpdatePaymentMethodMutation,
+  useUploadPaymentMethodLogoMutation,
+  PaymentMethod,
+  ChargeType,
+} from "@/api/paymentMethods/paymentMethodsApi";
 
 // ── Menu config ────────────────────────────────────────────────────────────────
 type SectionId = "general" | "invoice" | "mail" | "referral" | "first_order" | "payment_methods" | "telegram" | "ai_support" | "whatsapp";
@@ -23,7 +30,7 @@ const MENU: { id: SectionId; icon: React.ReactNode; label_bn: string; label_en: 
   { id: "invoice",  icon: <FileText  className="w-4 h-4" />, label_bn: "চালান প্রিন্ট",  label_en: "Invoice Print" },
   { id: "mail",     icon: <Mail      className="w-4 h-4" />, label_bn: "মেইল কনফিগ",     label_en: "Mail Config" },
   { id: "referral", icon: <Gift      className="w-4 h-4" />, label_bn: "রেফারেল বোনাস",  label_en: "Referral Bonus" },
-  { id: "first_order", icon: <Sparkles className="w-4 h-4" />, label_bn: "ছাড় ও ফ্রি ডেলিভারি", label_en: "Discounts & Free Delivery" },
+  { id: "first_order", icon: <Percent className="w-4 h-4" />, label_bn: "ছাড় ও ফ্রি ডেলিভারি", label_en: "Discounts & Free Delivery" },
   { id: "payment_methods", icon: <CreditCard className="w-4 h-4" />, label_bn: "পেমেন্ট পদ্ধতি", label_en: "Payment Methods" },
   { id: "telegram", icon: <Send      className="w-4 h-4" />, label_bn: "টেলিগ্রাম",      label_en: "Telegram" },
   { id: "ai_support", icon: <Bot     className="w-4 h-4" />, label_bn: "এআই সহায়তা",     label_en: "AI Support" },
@@ -382,6 +389,38 @@ function FirstOrderDiscountPanel({ settings, isBn }: { settings: SiteSettings; i
 }
 
 // ── Payment methods panel ────────────────────────────────────────────────────────
+function PaymentMethodLogo({ method, isBn }: { method: PaymentMethod; isBn: boolean }) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [uploadLogo, { isLoading }] = useUploadPaymentMethodLogoMutation();
+
+  const handlePick = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    try {
+      await uploadLogo({ id: method.id, file }).unwrap();
+      toast.success(isBn ? "লোগো আপলোড হয়েছে" : "Logo uploaded");
+    } catch {
+      toast.error(isBn ? "আপলোড ব্যর্থ হয়েছে" : "Upload failed");
+    }
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={() => inputRef.current?.click()}
+      disabled={isLoading}
+      title={isBn ? "লোগো পরিবর্তন করুন" : "Change logo"}
+      className="w-9 h-9 rounded-lg border border-gray-200 bg-white flex items-center justify-center overflow-hidden shrink-0 hover:border-amber-300 transition-colors"
+    >
+      {method.logo
+        ? <img src={method.logo} alt={method.name_en} className="w-full h-full object-contain" />
+        : <ImagePlus className="w-4 h-4 text-gray-300" />}
+      <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={handlePick} />
+    </button>
+  );
+}
+
 function PaymentMethodRow({ method, isBn }: { method: PaymentMethod; isBn: boolean }) {
   const [chargeType, setChargeType] = useState<ChargeType>(method.charge_type);
   const [chargeValue, setChargeValue] = useState(method.charge_value);
@@ -421,13 +460,16 @@ function PaymentMethodRow({ method, isBn }: { method: PaymentMethod; isBn: boole
   return (
     <div className="border border-gray-100 rounded-xl p-4 space-y-3">
       <div className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <span className="font-semibold text-gray-800 text-sm">{isBn ? method.name_bn : method.name_en}</span>
-          {!method.is_integrated && (
-            <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 border border-amber-100">
-              {isBn ? "শীঘ্রই আসছে" : "Coming soon"}
-            </span>
-          )}
+        <div className="flex items-center gap-3">
+          <PaymentMethodLogo method={method} isBn={isBn} />
+          <div className="flex items-center gap-2">
+            <span className="font-semibold text-gray-800 text-sm">{isBn ? method.name_bn : method.name_en}</span>
+            {!method.is_integrated && (
+              <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 border border-amber-100">
+                {isBn ? "শীঘ্রই আসছে" : "Coming soon"}
+              </span>
+            )}
+          </div>
         </div>
         <button
           onClick={toggle}
@@ -470,8 +512,80 @@ function PaymentMethodRow({ method, isBn }: { method: PaymentMethod; isBn: boole
   );
 }
 
+function AddPaymentMethodForm({ isBn, onDone }: { isBn: boolean; onDone: () => void }) {
+  const [form, setForm] = useState({ code: "", name_bn: "", name_en: "" });
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [create, { isLoading }] = useCreatePaymentMethodMutation();
+
+  const handleCreate = async () => {
+    if (!form.code.trim() || !form.name_bn.trim() || !form.name_en.trim()) {
+      toast.error(isBn ? "কোড, বাংলা ও ইংরেজি নাম আবশ্যক" : "Code, Bangla name and English name are required");
+      return;
+    }
+    try {
+      const fd = new FormData();
+      fd.append("code", form.code.trim());
+      fd.append("name_bn", form.name_bn.trim());
+      fd.append("name_en", form.name_en.trim());
+      if (logoFile) fd.append("logo", logoFile);
+      await create(fd).unwrap();
+      toast.success(isBn ? "যোগ করা হয়েছে" : "Added");
+      onDone();
+    } catch {
+      toast.error(isBn ? "ব্যর্থ হয়েছে — এই কোড আগে থেকেই আছে কিনা দেখুন" : "Failed — check the code isn't already taken");
+    }
+  };
+
+  return (
+    <div className="border border-amber-200 bg-amber-50/50 rounded-xl p-4 space-y-3">
+      <p className="text-xs text-gray-500">
+        {isBn
+          ? "নতুন পদ্ধতি শুধু প্রি-কনফিগার হবে (নাম, লোগো) — চালু করার আগে এর গেটওয়ে ইন্টিগ্রেশন কোড লিখে দিতে হবে।"
+          : "A newly added method is pre-configured only (name, logo) — its gateway integration still needs to be built in code before it can be enabled."}
+      </p>
+      <div className="grid grid-cols-3 gap-2">
+        <FloatingInput
+          label={isBn ? "কোড (ইংরেজি, স্পেস ছাড়া)" : "Code (English, no spaces)"}
+          value={form.code}
+          onChange={e => setForm(p => ({ ...p, code: e.target.value }))}
+          placeholder="ROCKET"
+        />
+        <FloatingInput
+          label={isBn ? "নাম (বাংলা)" : "Name (Bangla)"}
+          value={form.name_bn}
+          onChange={e => setForm(p => ({ ...p, name_bn: e.target.value }))}
+        />
+        <FloatingInput
+          label={isBn ? "নাম (ইংরেজি)" : "Name (English)"}
+          value={form.name_en}
+          onChange={e => setForm(p => ({ ...p, name_en: e.target.value }))}
+        />
+      </div>
+      <div className="flex items-center gap-3">
+        <label className="text-xs text-gray-500 cursor-pointer inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-200 bg-white hover:border-amber-300">
+          <ImagePlus className="w-3.5 h-3.5" />
+          {logoFile ? logoFile.name : (isBn ? "লোগো বেছে নিন (ঐচ্ছিক)" : "Choose logo (optional)")}
+          <input
+            type="file" accept="image/*" className="hidden"
+            onChange={e => setLogoFile(e.target.files?.[0] ?? null)}
+          />
+        </label>
+      </div>
+      <div className="flex gap-2">
+        <button onClick={handleCreate} disabled={isLoading} className="btn-primary text-xs px-4 py-2">
+          {isLoading ? (isBn ? "যোগ করা হচ্ছে..." : "Adding...") : (isBn ? "যোগ করুন" : "Add")}
+        </button>
+        <button onClick={onDone} className="text-xs text-gray-400 hover:text-gray-600 px-2">
+          {isBn ? "বাতিল" : "Cancel"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function PaymentMethodsPanel({ isBn }: { isBn: boolean }) {
   const { data: methods = [], isLoading } = useGetPaymentMethodsQuery();
+  const [showAddForm, setShowAddForm] = useState(false);
 
   return (
     <div className="space-y-4">
@@ -488,6 +602,17 @@ function PaymentMethodsPanel({ isBn }: { isBn: boolean }) {
         <div className="space-y-3">
           {methods.map(m => <PaymentMethodRow key={m.id} method={m} isBn={isBn} />)}
         </div>
+      )}
+      {showAddForm ? (
+        <AddPaymentMethodForm isBn={isBn} onDone={() => setShowAddForm(false)} />
+      ) : (
+        <button
+          onClick={() => setShowAddForm(true)}
+          className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-dashed border-gray-300 text-sm text-gray-500 hover:border-amber-400 hover:text-amber-700 transition-colors"
+        >
+          <Plus className="w-4 h-4" />
+          {isBn ? "নতুন পেমেন্ট পদ্ধতি যোগ করুন" : "Add New Payment Method"}
+        </button>
       )}
     </div>
   );

@@ -266,7 +266,12 @@ function PaymentMethodModal({
               onClick={() => onSelect(m.code as PaymentMethod)}
               className="w-full flex items-center gap-3 p-4 rounded-xl border-2 border-gray-200 hover:border-amber-400 hover:bg-amber-50 transition-colors text-left"
             >
-              <span className="text-3xl">{METHOD_ICON[m.code as PaymentMethod] ?? "💳"}</span>
+              {m.logo ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={m.logo} alt={m.name_en} className="w-10 h-10 object-contain shrink-0" />
+              ) : (
+                <span className="text-3xl">{METHOD_ICON[m.code as PaymentMethod] ?? "💳"}</span>
+              )}
               <div>
                 <p className="font-semibold text-gray-800">
                   {locale === "bn" ? m.name_bn : m.name_en}
@@ -417,15 +422,14 @@ function ConfirmModal({
         </div>
 
         <div className="flex items-center gap-2 bg-amber-50 rounded-lg px-3 py-2 text-sm">
-          <span>{paymentMethod === "COD" ? "💵" : "💳"}</span>
+          {method?.logo ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={method.logo} alt={method.name_en} className="w-6 h-6 object-contain shrink-0" />
+          ) : (
+            <span>{METHOD_ICON[paymentMethod] ?? "💳"}</span>
+          )}
           <span className="text-gray-700">
-            {paymentMethod === "COD"
-              ? locale === "bn"
-                ? "ক্যাশ অন ডেলিভারি"
-                : "Cash on Delivery"
-              : locale === "bn"
-                ? "অনলাইন পেমেন্ট"
-                : "Online Payment"}
+            {method ? (locale === "bn" ? method.name_bn : method.name_en) : paymentMethod}
           </span>
         </div>
 
