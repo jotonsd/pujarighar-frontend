@@ -967,7 +967,7 @@ export default function SettingsPage() {
                     : "text-gray-600 hover:bg-gray-50 hover:text-gray-800"
                 }`}
               >
-                {item.icon}
+                <span className="shrink-0">{item.icon}</span>
                 {isBn ? item.label_bn : item.label_en}
               </button>
             ))}
