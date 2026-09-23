@@ -5,6 +5,7 @@ import {
   useCancelOrderMutation,
   useGetOrderQuery,
   useGetOrderStatusLogQuery,
+  usePayOrderMutation,
 } from "@/api/orders/ordersApi";
 import OrderReviewSection from "@/components/orders/OrderReviewSection";
 import OrderStatusBadge from "@/components/orders/OrderStatusBadge";
@@ -90,6 +91,7 @@ export default function OrderDetailPage({
   const { data: order, isLoading } = useGetOrderQuery(params.id);
   const { data: logs = [] } = useGetOrderStatusLogQuery(params.id);
   const [cancelOrder, { isLoading: cancelling }] = useCancelOrderMutation();
+  const [payOrder, { isLoading: payingNow }] = usePayOrderMutation();
 
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showInvoice, setShowInvoice] = useState(false);
@@ -104,6 +106,17 @@ export default function OrderDetailPage({
     } catch {
       toast.error(
         locale === "bn" ? "বাতিল ব্যর্থ হয়েছে" : "Cancellation failed",
+      );
+    }
+  };
+
+  const handlePayNow = async () => {
+    try {
+      const { gateway_url } = await payOrder(params.id).unwrap();
+      window.location.href = gateway_url;
+    } catch {
+      toast.error(
+        locale === "bn" ? "পেমেন্ট শুরু করা যায়নি" : "Could not start payment",
       );
     }
   };
@@ -276,14 +289,34 @@ export default function OrderDetailPage({
               locale={locale}
             />
           )}
-          {user?.role.code === "CUSTOMER" && order.status === "PENDING" && (
-            <button
-              onClick={() => setShowCancelModal(true)}
-              className="btn-secondary"
-            >
-              {t("order.cancel")}
-            </button>
-          )}
+          <div className="flex flex-wrap gap-2">
+            {user?.role.code === "CUSTOMER" &&
+              !order.is_guest &&
+              order.payment_status === "UNPAID" &&
+              !["CANCELLED", "RETURNED", "EXCHANGED"].includes(order.status) && (
+                <button
+                  onClick={handlePayNow}
+                  disabled={payingNow}
+                  className="btn-primary"
+                >
+                  {payingNow
+                    ? locale === "bn"
+                      ? "শুরু হচ্ছে..."
+                      : "Starting..."
+                    : locale === "bn"
+                      ? "এখনই পেমেন্ট করুন"
+                      : "Pay Now"}
+                </button>
+              )}
+            {user?.role.code === "CUSTOMER" && order.status === "PENDING" && (
+              <button
+                onClick={() => setShowCancelModal(true)}
+                className="btn-secondary"
+              >
+                {t("order.cancel")}
+              </button>
+            )}
+          </div>
           {showCancelModal && (
             <CancelConfirmModal
               locale={locale}

@@ -588,19 +588,24 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
 
   const handleCheckout = async () => {
     try {
-      const order = await checkout({
+      const result = await checkout({
         payment_method: paymentMethod,
         shipping_address_id: selectedAddressId ?? undefined,
         delivery_zone: deliveryZone,
       }).unwrap();
-      setItemCount(0);
-      setShowConfirm(false);
-      if (order.gateway_url) {
-        window.location.href = order.gateway_url;
+      // Online payment — no order exists yet (see cartApi.checkout's
+      // comment), so there's nothing to clear or navigate to here. If the
+      // customer backs out of the gateway without paying, their cart is
+      // exactly as it was; clearing it now would lose it for nothing.
+      if (result.gateway_url) {
+        setShowConfirm(false);
+        window.location.href = result.gateway_url;
         return;
       }
+      setItemCount(0);
+      setShowConfirm(false);
       toast.success(t("cart.orderPlaced"));
-      router.push(`/${locale}/orders/${order.id}`);
+      router.push(`/${locale}/orders/${result.id}`);
     } catch {
       toast.error(locale === "bn" ? "চেকআউট ব্যর্থ হয়েছে" : "Checkout failed");
     }
@@ -622,13 +627,16 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
         payment_method: paymentMethod,
         delivery_zone: deliveryZone,
       }).unwrap();
-      guestClear();
-      setShowConfirm(false);
+      // Online payment — no order exists yet, so nothing to clear here;
+      // see handleCheckout's identical comment above.
       if (result.gateway_url) {
+        setShowConfirm(false);
         window.location.href = result.gateway_url;
         return;
       }
-      setOrderSuccess({ number: result.order_number, phone: form.phone });
+      guestClear();
+      setShowConfirm(false);
+      setOrderSuccess({ number: result.order_number!, phone: form.phone });
     } catch (err: unknown) {
       const msg = (err as { data?: { error?: { message_bn?: string } } }).data
         ?.error?.message_bn;

@@ -107,6 +107,13 @@ export const ordersApi = baseApi.injectEndpoints({
       invalidatesTags: (_r, _e, { id }) => ['Orders', { type: 'Order', id }, { type: 'OrderLogs', id }],
     }),
 
+    // Lets a customer pay online for their own still-UNPAID order (e.g.
+    // chose COD, changed their mind) — see order_views.pay_order.
+    payOrder: build.mutation<{ gateway_url: string }, string>({
+      query: (id) => ({ url: `/api/orders/${id}/pay/`, method: 'POST', body: {} }),
+      transformResponse: (res: { data: { gateway_url: string } }) => res.data,
+    }),
+
     markCodPaid: build.mutation<SalesOrder, string>({
       query: (id) => ({ url: `/api/orders/${id}/mark-cod-paid/`, method: 'POST' }),
       transformResponse: (res: { data: SalesOrder }) => res.data,
@@ -208,6 +215,7 @@ export const {
   usePartialDeliverOrderMutation,
   useReturnOrderMutation,
   useCancelOrderMutation,
+  usePayOrderMutation,
   useMarkCodPaidMutation,
   useApplyDiscountMutation,
   useWaiveDeliveryChargeMutation,

@@ -36,9 +36,13 @@ export const cartApi = baseApi.injectEndpoints({
       invalidatesTags: ['Cart'],
     }),
 
-    checkout: build.mutation<SalesOrder & { gateway_url?: string }, { payment_method: 'COD' | 'SSLCOMMERZ' | 'BKASH' | 'NAGAD' | 'STRIPE'; shipping_address_id?: string; delivery_zone?: 'inside' | 'outside' }>({
+    // For an online payment_method the order doesn't exist yet — only
+    // gateway_url/grand_total come back; SalesOrder's other fields are
+    // absent until SSLCommerzService.confirm_payment actually creates it
+    // (see CheckoutService.initiate_online_checkout's docstring for why).
+    checkout: build.mutation<Partial<SalesOrder> & { gateway_url?: string; grand_total?: string }, { payment_method: 'COD' | 'SSLCOMMERZ' | 'BKASH' | 'NAGAD' | 'STRIPE'; shipping_address_id?: string; delivery_zone?: 'inside' | 'outside' }>({
       query: (body) => ({ url: '/api/cart/checkout/', method: 'POST', body }),
-      transformResponse: (res: { data: SalesOrder & { gateway_url?: string } }) => res.data,
+      transformResponse: (res: { data: Partial<SalesOrder> & { gateway_url?: string; grand_total?: string } }) => res.data,
       invalidatesTags: ['Cart', 'Orders'],
     }),
 
