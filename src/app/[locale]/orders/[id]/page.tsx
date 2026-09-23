@@ -7,6 +7,7 @@ import {
   useGetOrderStatusLogQuery,
   usePayOrderMutation,
 } from "@/api/orders/ordersApi";
+import { useGetPaymentMethodsQuery } from "@/api/paymentMethods/paymentMethodsApi";
 import OrderReviewSection from "@/components/orders/OrderReviewSection";
 import OrderStatusBadge from "@/components/orders/OrderStatusBadge";
 import StatusTimeline from "@/components/orders/StatusTimeline";
@@ -92,6 +93,10 @@ export default function OrderDetailPage({
   const { data: logs = [] } = useGetOrderStatusLogQuery(params.id);
   const [cancelOrder, { isLoading: cancelling }] = useCancelOrderMutation();
   const [payOrder, { isLoading: payingNow }] = usePayOrderMutation();
+  const { data: paymentMethods } = useGetPaymentMethodsQuery();
+  const hasOnlineGateway = paymentMethods?.some(
+    m => m.code !== "COD" && m.is_enabled,
+  );
 
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showInvoice, setShowInvoice] = useState(false);
@@ -293,6 +298,7 @@ export default function OrderDetailPage({
             {user?.role.code === "CUSTOMER" &&
               !order.is_guest &&
               order.payment_status === "UNPAID" &&
+              hasOnlineGateway &&
               !["CANCELLED", "RETURNED", "EXCHANGED"].includes(order.status) && (
                 <button
                   onClick={handlePayNow}
