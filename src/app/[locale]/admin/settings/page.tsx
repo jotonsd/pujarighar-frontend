@@ -10,7 +10,7 @@ import ImageUpload from "@/components/ui/ImageUpload";
 import PageHeader from "@/components/ui/PageHeader";
 import { FloatingInput, FloatingTextarea, FloatingSelect } from "@/components/ui/forms";
 import { toast } from "@/store/toastStore";
-import { Bot, Building2, CreditCard, FileText, Gift, ImagePlus, Mail, MessageCircle, Percent, Plus, Send } from "lucide-react";
+import { Bot, Building2, CreditCard, FileText, Gift, ImagePlus, Mail, MessageCircle, Plus, Send, Tag } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -30,7 +30,7 @@ const MENU: { id: SectionId; icon: React.ReactNode; label_bn: string; label_en: 
   { id: "invoice",  icon: <FileText  className="w-4 h-4" />, label_bn: "চালান প্রিন্ট",  label_en: "Invoice Print" },
   { id: "mail",     icon: <Mail      className="w-4 h-4" />, label_bn: "মেইল কনফিগ",     label_en: "Mail Config" },
   { id: "referral", icon: <Gift      className="w-4 h-4" />, label_bn: "রেফারেল বোনাস",  label_en: "Referral Bonus" },
-  { id: "first_order", icon: <Percent className="w-4 h-4" />, label_bn: "ছাড় ও ফ্রি ডেলিভারি", label_en: "Discounts & Free Delivery" },
+  { id: "first_order", icon: <Tag className="w-4 h-4" />, label_bn: "ছাড় ও ফ্রি ডেলিভারি", label_en: "Discounts & Free Delivery" },
   { id: "payment_methods", icon: <CreditCard className="w-4 h-4" />, label_bn: "পেমেন্ট পদ্ধতি", label_en: "Payment Methods" },
   { id: "telegram", icon: <Send      className="w-4 h-4" />, label_bn: "টেলিগ্রাম",      label_en: "Telegram" },
   { id: "ai_support", icon: <Bot     className="w-4 h-4" />, label_bn: "এআই সহায়তা",     label_en: "AI Support" },
