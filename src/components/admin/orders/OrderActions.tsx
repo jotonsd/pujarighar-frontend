@@ -17,6 +17,7 @@ import {
   usePartialDeliverOrderMutation,
   useReturnOrderMutation,
   useWaiveDeliveryChargeMutation,
+  useChangeDeliveryZoneMutation,
 } from '@/api/orders/ordersApi'
 import { useGetDeliveryPersonsQuery } from '@/api/users/usersApi'
 import {
@@ -28,6 +29,7 @@ import CancelConfirmModal from './CancelConfirmModal'
 import ApplyDiscountModal from './ApplyDiscountModal'
 import PartialDeliverModal from './PartialDeliverModal'
 import ExchangeModal from './ExchangeModal'
+import ChangeDeliveryZoneModal from './ChangeDeliveryZoneModal'
 import PaymentConfirmModal from '@/components/ui/PaymentConfirmModal'
 import ConfirmModal from '@/components/ui/ConfirmModal'
 import { ChevronDown, CheckCircle2, Undo2, RefreshCw, Truck, ExternalLink, RefreshCcw } from 'lucide-react'
@@ -115,6 +117,7 @@ export default function OrderActions({ order, orderId }: Props) {
   const [showReturnModal, setShowReturnModal]   = useState(false)
   const [showExchangeModal, setShowExchangeModal] = useState(false)
   const [showWaiveDeliveryModal, setShowWaiveDeliveryModal] = useState(false)
+  const [showZoneModal, setShowZoneModal] = useState(false)
   const [showAssignDeliveryModal, setShowAssignDeliveryModal] = useState(false)
   const [deliveryMethod, setDeliveryMethod] = useState<'internal' | 'courier'>('internal')
   const [courierProviderId, setCourierProviderId] = useState('')
@@ -129,6 +132,7 @@ export default function OrderActions({ order, orderId }: Props) {
   const [markPaid, { isLoading: markingPaid }]    = useMarkCodPaidMutation()
   const [applyDiscount, { isLoading: discounting }] = useApplyDiscountMutation()
   const [waiveDelivery, { isLoading: waivingDelivery }] = useWaiveDeliveryChargeMutation()
+  const [changeZone, { isLoading: changingZone }] = useChangeDeliveryZoneMutation()
   const [dispatch, { isLoading: dispatching }]    = useDispatchOrderMutation()
   const [deliver, { isLoading: delivering }]      = useDeliverOrderMutation()
   const [partialDeliver, { isLoading: partiallyDelivering }] = usePartialDeliverOrderMutation()
@@ -148,6 +152,8 @@ export default function OrderActions({ order, orderId }: Props) {
   const hasCancelAction = !['ASSIGNED', 'PICKED', 'ON_THE_WAY', 'DELIVERED', 'RETURNED', 'CANCELLED'].includes(order.status)
   const hasDiscountAction = ['PENDING', 'CONFIRMED'].includes(order.status) && order.payment_status === 'UNPAID'
   const hasWaiveDeliveryAction = hasDiscountAction && Number(order.delivery_charge) > 0
+  // Online-gateway orders carry a percentage gateway fee computed on the old total, so the server refuses those.
+  const hasChangeZoneAction = hasDiscountAction && Number(order.gateway_charge_amount ?? 0) === 0
   // Admin can drive the order through every status regardless of whether a delivery
   // person is attached yet — the backend already allows this (admin bypasses the
   // "must be the assigned delivery person" ownership check entirely). Excluded once
@@ -554,6 +560,27 @@ export default function OrderActions({ order, orderId }: Props) {
                 onConfirm={async () => {
                   await doAction(() => waiveDelivery({ id: orderId }).unwrap(), locale === 'bn' ? 'ডেলিভারি চার্জ মওকুফ হয়েছে' : 'Delivery charge waived')
                   setShowWaiveDeliveryModal(false)
+                }}
+              />
+            )}
+          </>
+        )}
+        {hasChangeZoneAction && (
+          <>
+            <button disabled={loading} className="btn-secondary text-sm" onClick={() => setShowZoneModal(true)}>
+              📍 {locale === 'bn' ? 'ডেলিভারি অঞ্চল পরিবর্তন' : 'Change Delivery Zone'}
+            </button>
+            {showZoneModal && (
+              <ChangeDeliveryZoneModal
+                locale={locale}
+                orderNumber={order.order_number}
+                weightKg={order.estimated_weight_kg ? Number(order.estimated_weight_kg) : null}
+                currentCharge={Number(order.delivery_charge)}
+                loading={changingZone}
+                onCancel={() => setShowZoneModal(false)}
+                onConfirm={async zone => {
+                  await doAction(() => changeZone({ id: orderId, zone }).unwrap(), locale === 'bn' ? 'ডেলিভারি অঞ্চল আপডেট হয়েছে' : 'Delivery zone updated')
+                  setShowZoneModal(false)
                 }}
               />
             )}
