@@ -53,7 +53,10 @@ const hindSiliguri = Hind_Siliguri({
 
 export const metadata: Metadata = {
   title: "পূজারিঘর | PujariGhar",
-  icons: { icon: "/assets/logo/favicon.png" },
+  icons: {
+    icon: "/assets/logo/brahman.png",
+    apple: "/assets/logo/brahman.png",
+  },
 };
 
 export function generateStaticParams() {
