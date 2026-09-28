@@ -21,7 +21,6 @@ export interface SiteSettings {
   email_default_from?:        string
   referral_bonus_amount?:     string
   first_order_discount_percent?: string
-  mobile_app_order_discount_percent?: string
   has_telegram_bot_token?:    boolean
   telegram_chat_id?:          string
   has_gemini_api_key?:        boolean

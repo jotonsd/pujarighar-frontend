@@ -311,14 +311,12 @@ function ReferralPanel({ settings, isBn }: { settings: SiteSettings; isBn: boole
 function FirstOrderDiscountPanel({ settings, isBn }: { settings: SiteSettings; isBn: boolean }) {
   const [form, setForm] = useState({
     first_order_discount_percent: settings.first_order_discount_percent ?? "20.00",
-    mobile_app_order_discount_percent: settings.mobile_app_order_discount_percent ?? "0",
     free_delivery_min_subtotal: settings.free_delivery_min_subtotal ?? "0",
   });
 
   useEffect(() => {
     setForm({
       first_order_discount_percent: settings.first_order_discount_percent ?? "20.00",
-      mobile_app_order_discount_percent: settings.mobile_app_order_discount_percent ?? "0",
       free_delivery_min_subtotal: settings.free_delivery_min_subtotal ?? "0",
     });
   }, [settings]);
@@ -350,20 +348,6 @@ function FirstOrderDiscountPanel({ settings, isBn }: { settings: SiteSettings; i
           {isBn
             ? "একজন নিবন্ধিত গ্রাহক নিজে সাইট থেকে চেকআউট করে প্রথমবার অর্ডার দিলে সাবটোটালের ওপর স্বয়ংক্রিয়ভাবে এই হারে ছাড় প্রয়োগ হবে। ০ দিলে এই সুবিধা বন্ধ থাকবে। গেস্ট বা POS অর্ডারে প্রযোজ্য নয়।"
             : "Automatically applied to the subtotal when a registered customer checks out their own cart for the very first time. Set to 0 to disable. Doesn't apply to guest or POS orders."}
-        </p>
-      </div>
-
-      <div className="space-y-2 border-t border-gray-100 pt-4">
-        <FloatingInput
-          label={isBn ? "অ্যাপ অর্ডার ছাড়ের হার (%)" : "Mobile App Order Discount (%)"}
-          type="number" min="0" max="100" step="0.01"
-          value={form.mobile_app_order_discount_percent}
-          onChange={f("mobile_app_order_discount_percent")}
-        />
-        <p className="text-xs text-gray-400">
-          {isBn
-            ? "মোবাইল অ্যাপ থেকে দেওয়া প্রতিটি অর্ডারে এই হারে ছাড় প্রয়োগ হবে (শুধু প্রথম অর্ডারে নয়) — অ্যাপ ব্যবহারে উৎসাহ দিতে। প্রথম অর্ডার ছাড়ের সাথে একসাথে প্রযোজ্য হতে পারে। ০ দিলে বন্ধ থাকবে।"
-            : "Applied to every order placed through the mobile app (not just the first) — a standing incentive to use the app. Can stack with the first-order discount above. Set to 0 to disable."}
         </p>
       </div>
 
