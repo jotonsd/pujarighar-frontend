@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useLocale } from "next-intl";
 import { Plus, Ticket } from "lucide-react";
 import PageHeader from "@/components/ui/PageHeader";
-import { FloatingInput, FloatingSelect } from "@/components/ui/forms";
+import { FloatingInput, FloatingSelect, FloatingDatePicker } from "@/components/ui/forms";
 import { toast } from "@/store/toastStore";
 import {
   useGetPromoCodesQuery,
@@ -76,9 +76,10 @@ function PromoCodeRow({ promo, isBn }: { promo: PromoCode; isBn: boolean }) {
 function AddPromoCodeForm({ isBn, onDone }: { isBn: boolean; onDone: () => void }) {
   const [code, setCode] = useState("");
   const [scope, setScope] = useState<PromoScope>("MOBILE_APP");
+  const [validUntil, setValidUntil] = useState("");
   const [discountType, setDiscountType] = useState<PromoDiscountType>("PERCENT");
   const [discountValue, setDiscountValue] = useState("10");
-  const [validUntil, setValidUntil] = useState("");
+  const [isActive, setIsActive] = useState(true);
   const [create, { isLoading }] = useCreatePromoCodeMutation();
 
   const handleCreate = async () => {
@@ -90,6 +91,7 @@ function AddPromoCodeForm({ isBn, onDone }: { isBn: boolean; onDone: () => void 
         discount_type: discountType,
         discount_value: discountValue,
         valid_until: validUntil ? new Date(validUntil).toISOString() : null,
+        is_active: isActive,
       }).unwrap();
       toast.success(isBn ? "প্রোমো কোড তৈরি হয়েছে" : "Promo code created");
       onDone();
@@ -100,7 +102,7 @@ function AddPromoCodeForm({ isBn, onDone }: { isBn: boolean; onDone: () => void 
 
   return (
     <div className="border border-gray-200 rounded-xl p-4 space-y-3">
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-3 gap-3">
         <FloatingInput label={isBn ? "কোড (যেমন: PUJA10)" : "Code (e.g. PUJA10)"} value={code}
           onChange={e => setCode(e.target.value.toUpperCase())} />
         <FloatingSelect
@@ -111,8 +113,14 @@ function AddPromoCodeForm({ isBn, onDone }: { isBn: boolean; onDone: () => void 
           <option value="MOBILE_APP">{isBn ? "শুধু মোবাইল অ্যাপ" : "Mobile app only"}</option>
           <option value="WEBSITE">{isBn ? "শুধু ওয়েবসাইট" : "Website only"}</option>
         </FloatingSelect>
+        <FloatingDatePicker
+          label={isBn ? "মেয়াদ শেষের তারিখ (ঐচ্ছিক)" : "Valid until (optional)"}
+          value={validUntil} onChange={setValidUntil}
+          minDate={new Date()}
+          clearable
+        />
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-3 gap-3">
         <FloatingSelect
           label={isBn ? "ছাড়ের ধরন" : "Discount type"}
           value={discountType}
@@ -125,11 +133,18 @@ function AddPromoCodeForm({ isBn, onDone }: { isBn: boolean; onDone: () => void 
           label={discountType === "PERCENT" ? (isBn ? "ছাড়ের হার (%)" : "Discount (%)") : (isBn ? "ছাড়ের পরিমাণ (৳)" : "Discount amount (৳)")}
           type="number" min="0" step="0.01" value={discountValue} onChange={e => setDiscountValue(e.target.value)}
         />
+        <label className="flex items-center gap-3 cursor-pointer select-none">
+          <div
+            onClick={() => setIsActive(v => !v)}
+            className={`w-10 h-5 rounded-full transition-colors relative shrink-0 ${isActive ? "bg-amber-600" : "bg-gray-200"}`}
+          >
+            <span className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${isActive ? "translate-x-5" : ""}`} />
+          </div>
+          <span className="text-sm text-gray-700">
+            {isActive ? (isBn ? "সক্রিয়" : "Active") : (isBn ? "নিষ্ক্রিয়" : "Inactive")}
+          </span>
+        </label>
       </div>
-      <FloatingInput
-        label={isBn ? "মেয়াদ শেষের তারিখ (ঐচ্ছিক)" : "Valid until (optional)"}
-        type="date" value={validUntil} onChange={e => setValidUntil(e.target.value)}
-      />
       <p className="text-xs text-gray-400">
         {isBn
           ? "শুধুমাত্র লগইন করা গ্রাহকের সংশ্লিষ্ট চ্যানেলে (অ্যাপ/ওয়েবসাইট) প্রথম অর্ডারেই ব্যবহারযোগ্য। মেয়াদ শেষের তারিখ ফাঁকা রাখলে কোনো ডেডলাইন থাকবে না।"

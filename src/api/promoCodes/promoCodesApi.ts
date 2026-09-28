@@ -30,6 +30,7 @@ export const promoCodesApi = baseApi.injectEndpoints({
       discount_value: string
       valid_from?: string | null
       valid_until?: string | null
+      is_active?: boolean
     }>({
       query: body => ({ url: '/api/promo-codes/create/', method: 'POST', body }),
       transformResponse: (res: { data: PromoCode }) => res.data,

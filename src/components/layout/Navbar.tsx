@@ -16,7 +16,7 @@ import {
   Users as UsersIcon, Handshake, PiggyBank, Landmark, BookOpen, NotebookPen, PlusCircle,
   Scale, ShoppingCart, FileBarChart, Undo2, CreditCard, Megaphone,
   GalleryHorizontal, Target, Mail, Star, Home, Store, FileText, Shield, ListTree, Search, ChevronRight, Calendar,
-  MessageSquare, BellRing,
+  MessageSquare, BellRing, Ticket,
   type LucideIcon,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
@@ -60,6 +60,7 @@ const NAV_ICONS: Record<string, LucideIcon> = {
   package: Package,
   gift: Gift,
   tag: Tag,
+  ticket: Ticket,
   "badge-check": BadgeCheck,
   percent: Percent,
   warehouse: Warehouse,
