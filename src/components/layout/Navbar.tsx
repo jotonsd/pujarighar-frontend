@@ -174,7 +174,7 @@ function NavDropdown({
         className={`flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-semibold whitespace-nowrap shrink-0 transition-colors ${
           isActive
             ? "bg-amber-50 text-amber-700"
-            : "text-gray-600 hover:text-amber-700 hover:bg-gray-50"
+            : "text-muted hover:text-amber-700 hover:bg-surface-alt"
         }`}
       >
         <NavIcon name={group.icon} />
@@ -191,7 +191,7 @@ function NavDropdown({
       </button>
       {open && (
         <div
-          className="fixed bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50 max-h-[70vh] overflow-y-auto"
+          className="fixed bg-surface rounded-xl shadow-lg border border-border py-1 z-50 max-h-[70vh] overflow-y-auto"
           style={{ top: pos.top, left: pos.left, width: PANEL_WIDTH }}
         >
           {group.items.map((item, i) => {
@@ -204,7 +204,7 @@ function NavDropdown({
                     className={`flex items-center justify-between gap-2 px-4 py-2.5 text-xs cursor-default transition-colors ${
                       active || subActive
                         ? "bg-amber-50 text-amber-700 font-medium"
-                        : "text-gray-600 hover:bg-gray-50 hover:text-amber-700"
+                        : "text-muted hover:bg-surface-alt hover:text-amber-700"
                     }`}
                   >
                     <span className="flex items-center gap-2">
@@ -229,7 +229,7 @@ function NavDropdown({
                 className={`flex items-center gap-2 px-4 py-2.5 text-xs transition-colors ${
                   active
                     ? "bg-amber-50 text-amber-700 font-medium"
-                    : "text-gray-600 hover:bg-gray-50 hover:text-amber-700"
+                    : "text-muted hover:bg-surface-alt hover:text-amber-700"
                 }`}
               >
                 <NavIcon name={item.icon} />
@@ -241,7 +241,7 @@ function NavDropdown({
       )}
       {activeSubGroup && (
         <div
-          className="fixed w-52 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50"
+          className="fixed w-52 bg-surface rounded-xl shadow-lg border border-border py-1 z-50"
           style={{ top: subOpen!.top, left: subOpen!.left }}
           onMouseEnter={clearCloseTimer}
           onMouseLeave={scheduleClose}
@@ -257,7 +257,7 @@ function NavDropdown({
                 className={`flex items-center gap-2 px-4 py-2.5 text-xs transition-colors ${
                   active
                     ? "bg-amber-50 text-amber-700 font-medium"
-                    : "text-gray-600 hover:bg-gray-50 hover:text-amber-700"
+                    : "text-muted hover:bg-surface-alt hover:text-amber-700"
                 }`}
               >
                 <NavIcon name={sub.icon} />
@@ -303,7 +303,7 @@ function ProfileDropdown({
 
       <button
         onClick={() => setOpen(o => !o)}
-        className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-amber-700 transition-colors"
+        className="flex items-center gap-1.5 text-sm text-muted hover:text-amber-700 transition-colors"
       >
         <span className="w-8 h-8 rounded-full bg-amber-100 text-amber-700 font-bold flex items-center justify-center text-sm overflow-hidden shrink-0">
           {user.profile?.avatar ? (
@@ -325,12 +325,12 @@ function ProfileDropdown({
       {open && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 top-full mt-2 w-52 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50">
-            <div className="px-4 py-2.5 border-b border-gray-50">
-              <p className="text-xs font-medium text-gray-800 truncate">
+          <div className="absolute right-0 top-full mt-2 w-52 bg-surface rounded-xl shadow-lg border border-border py-1 z-50">
+            <div className="px-4 py-2.5 border-b border-border">
+              <p className="text-xs font-medium text-body truncate">
                 {user.profile?.full_name_bn || user.profile?.full_name_en || "—"}
               </p>
-              <p className="text-xs text-gray-400 truncate">{user.email}</p>
+              <p className="text-xs text-muted truncate">{user.email}</p>
               <p className="text-xs text-amber-500 font-medium mt-0.5">{isBn ? user.role.name_bn : user.role.name_en}</p>
               {user.role.code === "CUSTOMER" && (
                 <>
@@ -345,8 +345,8 @@ function ProfileDropdown({
                     </div>
                   </div>
                   {user.referral_code && (
-                    <div className="mt-1.5 bg-gray-50 rounded-lg px-2 py-1.5">
-                      <p className="text-[10px] text-gray-400 leading-none mb-1">
+                    <div className="mt-1.5 bg-surface-alt rounded-lg px-2 py-1.5">
+                      <p className="text-[10px] text-muted leading-none mb-1">
                         {isBn ? "রেফারেল কোড" : "Referral Code"}
                       </p>
                       <button
@@ -358,11 +358,11 @@ function ProfileDropdown({
                         className="flex items-center gap-1.5 w-full"
                         title={isBn ? "কপি করুন" : "Copy"}
                       >
-                        <span className="text-xs font-mono font-bold text-gray-700 tracking-widest">{user.referral_code}</span>
+                        <span className="text-xs font-mono font-bold text-muted tracking-widest">{user.referral_code}</span>
                         <span className="text-[10px] ml-auto flex items-center gap-1">
                           {copied
                             ? <span className="text-green-500 font-medium flex items-center gap-1"><Check className="w-3 h-3" /> {isBn ? "কপি হয়েছে!" : "Copied!"}</span>
-                            : <Copy className="w-3 h-3 text-gray-400" />
+                            : <Copy className="w-3 h-3 text-muted" />
                           }
                         </span>
                       </button>
@@ -375,7 +375,7 @@ function ProfileDropdown({
             <Link
               href={`/${locale}/profile`}
               onClick={() => setOpen(false)}
-              className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-amber-50 hover:text-amber-700 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 text-sm text-muted hover:bg-amber-50 hover:text-amber-700 transition-colors"
             >
               <Cog className="w-4 h-4" /> {isBn ? "সেটিং" : "Settings"}
             </Link>
@@ -384,7 +384,7 @@ function ProfileDropdown({
               <Link
                 href={`/${locale}/admin/logs`}
                 onClick={() => setOpen(false)}
-                className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-amber-50 hover:text-amber-700 transition-colors"
+                className="flex items-center gap-2 px-4 py-2 text-sm text-muted hover:bg-amber-50 hover:text-amber-700 transition-colors"
               >
                 <ScrollText className="w-4 h-4" /> {isBn ? "লগ ভিউয়ার" : "Log Viewer"}
               </Link>
@@ -394,13 +394,13 @@ function ProfileDropdown({
               <Link
                 href={`/${locale}/orders`}
                 onClick={() => setOpen(false)}
-                className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-amber-50 hover:text-amber-700 transition-colors"
+                className="flex items-center gap-2 px-4 py-2 text-sm text-muted hover:bg-amber-50 hover:text-amber-700 transition-colors"
               >
                 <Package className="w-4 h-4" /> {t("nav.orders")}
               </Link>
             )}
 
-            <hr className="my-1 border-gray-100" />
+            <hr className="my-1 border-border" />
 
             <button
               onClick={() => {
@@ -465,7 +465,7 @@ function MobileMenu({
         className={`flex items-center gap-3 ${indent ? "pl-8 pr-4" : "px-4"} py-3 text-sm transition-colors ${
           active
             ? "bg-amber-50 text-amber-700 font-medium"
-            : "text-gray-700 hover:bg-gray-50"
+            : "text-muted hover:bg-surface-alt"
         }`}
       >
         <NavIcon name={icon} className="w-[18px] h-[18px]" />
@@ -495,14 +495,14 @@ function MobileMenu({
   return (
     <>
       <div className="fixed inset-0 z-40 bg-black/40" onClick={onClose} />
-      <div className="fixed top-0 left-0 h-full w-72 max-w-[85vw] bg-white z-50 shadow-xl flex flex-col">
+      <div className="fixed top-0 left-0 h-full w-72 max-w-[85vw] bg-surface z-50 shadow-xl flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100">
+        <div className="flex items-center justify-between px-4 py-4 border-b border-border">
           <Image src={logoSrc} alt={companyName} width={75} height={32} className="h-8 w-auto object-contain" />
           <button
             onClick={onClose}
             aria-label={locale === "bn" ? "বন্ধ করুন" : "Close menu"}
-            className="text-gray-400 hover:text-gray-600 p-1"
+            className="text-muted hover:text-body p-1"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -512,19 +512,19 @@ function MobileMenu({
 
         {/* Search — only for guest/customer */}
         {!hideSearch && (
-          <form onSubmit={handleSearch} className="px-4 py-3 border-b border-gray-100">
+          <form onSubmit={handleSearch} className="px-4 py-3 border-b border-border">
             <div className="relative">
               <input
                 type="text"
                 value={q}
                 onChange={e => setQ(e.target.value)}
                 placeholder={t("common.search")}
-                className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-300 bg-gray-50"
+                className="w-full pl-9 pr-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-300 bg-surface-alt"
                 autoComplete="off"
                 autoCorrect="off"
                 spellCheck={false}
               />
-              <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                 <circle cx="11" cy="11" r="8" />
                 <path d="m21 21-4.35-4.35" />
               </svg>
@@ -554,14 +554,14 @@ function MobileMenu({
                   <button
                     type="button"
                     onClick={() => setExpandedSubKey(expanded ? null : key)}
-                    className="w-full flex items-center justify-between gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                    className="w-full flex items-center justify-between gap-3 px-4 py-3 text-sm text-muted hover:bg-surface-alt transition-colors"
                   >
                     <span className="flex items-center gap-3">
                       <NavIcon name={grp.icon} className="w-[18px] h-[18px]" />
                       {label(grp, locale)}
                     </span>
                     <svg
-                      className={`w-3.5 h-3.5 text-gray-400 transition-transform ${expanded ? "rotate-180" : ""}`}
+                      className={`w-3.5 h-3.5 text-muted transition-transform ${expanded ? "rotate-180" : ""}`}
                       fill="none"
                       stroke="currentColor"
                       strokeWidth={2.5}
@@ -571,7 +571,7 @@ function MobileMenu({
                     </svg>
                   </button>
                   {expanded && (
-                    <div className="bg-gray-50/60">
+                    <div className="bg-surface-alt/60">
                       {grp.items.map(leaf =>
                         isSubGroup(leaf) ? null : navLink(leaf.href, leaf.icon, label(leaf, locale), true),
                       )}
@@ -582,8 +582,8 @@ function MobileMenu({
             }
 
             return (
-              <div key={i} className="border-t border-gray-100 mt-2 pt-2">
-                <p className="px-4 py-1 text-xs text-gray-400 font-medium uppercase tracking-wide">
+              <div key={i} className="border-t border-border mt-2 pt-2">
+                <p className="px-4 py-1 text-xs text-muted font-medium uppercase tracking-wide">
                   {label(grp, locale)}
                 </p>
                 {grp.items.map((sub, j) => {
@@ -595,14 +595,14 @@ function MobileMenu({
                         <button
                           type="button"
                           onClick={() => setExpandedSubKey(expanded ? null : key)}
-                          className="w-full flex items-center justify-between gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                          className="w-full flex items-center justify-between gap-3 px-4 py-3 text-sm text-muted hover:bg-surface-alt transition-colors"
                         >
                           <span className="flex items-center gap-3">
                             <NavIcon name={sub.icon} className="w-[18px] h-[18px]" />
                             {label(sub, locale)}
                           </span>
                           <svg
-                            className={`w-3.5 h-3.5 text-gray-400 transition-transform ${expanded ? "rotate-180" : ""}`}
+                            className={`w-3.5 h-3.5 text-muted transition-transform ${expanded ? "rotate-180" : ""}`}
                             fill="none"
                             stroke="currentColor"
                             strokeWidth={2.5}
@@ -612,7 +612,7 @@ function MobileMenu({
                           </svg>
                         </button>
                         {expanded && (
-                          <div className="bg-gray-50/60">
+                          <div className="bg-surface-alt/60">
                             {sub.items.map(leaf =>
                               navLink(leaf.href, leaf.icon, label(leaf, locale), true),
                             )}
@@ -629,7 +629,7 @@ function MobileMenu({
         </div>
 
         {/* Footer */}
-        <div className="border-t border-gray-100 p-4">
+        <div className="border-t border-border p-4">
           {currentUser ? (
             <div className="space-y-1">
               <div className="flex items-center gap-2.5 mb-1">
@@ -641,7 +641,7 @@ function MobileMenu({
                     (currentUser.profile?.full_name_bn || currentUser.email || "U")[0].toUpperCase()
                   )}
                 </span>
-                <p className="text-xs text-gray-700 font-medium truncate">
+                <p className="text-xs text-muted font-medium truncate">
                   {currentUser.profile?.full_name_bn || currentUser.email}
                 </p>
               </div>
@@ -825,7 +825,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-white shadow-sm border-b border-amber-100 sticky top-0 z-[1010]">
+    <nav className="bg-surface shadow-sm border-b border-amber-100 dark:border-amber-900/40 sticky top-0 z-[1010]">
       <Suspense fallback={null}>
         <SearchParamSync onChange={setQuery} />
       </Suspense>
@@ -846,7 +846,7 @@ export default function Navbar() {
           {/* Hamburger */}
           {role !== "DELIVERY" && (
             <button
-              className="md:hidden text-gray-600 hover:text-amber-700 p-1 -ml-1"
+              className="md:hidden text-muted hover:text-amber-700 p-1 -ml-1"
               onClick={() => setMobileOpen(true)}
               aria-label="Open menu"
             >
@@ -912,7 +912,7 @@ export default function Navbar() {
                   className={`flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-semibold whitespace-nowrap shrink-0 transition-colors ${
                     active
                       ? "bg-amber-50 text-amber-700"
-                      : "text-gray-600 hover:text-amber-700 hover:bg-gray-50"
+                      : "text-muted hover:text-amber-700 hover:bg-surface-alt"
                   }`}
                 >
                   <NavIcon name={item.icon} className="w-4 h-4" />
@@ -951,7 +951,7 @@ export default function Navbar() {
                 type="button"
                 onClick={() => setSearchOpen(true)}
                 aria-label={t("common.search")}
-                className="p-2 text-gray-700 hover:text-amber-700 hover:bg-gray-50 rounded-md transition-colors"
+                className="p-2 text-muted hover:text-amber-700 hover:bg-surface-alt rounded-md transition-colors"
               >
                 <Search className="w-5 h-5" strokeWidth={2.5} />
               </button>
@@ -980,12 +980,12 @@ export default function Navbar() {
                     value={query}
                     onChange={e => setQuery(e.target.value)}
                     placeholder={t("common.search")}
-                    className="w-full pl-9 pr-9 py-1.5 text-sm border-2 border-gray-200 rounded-lg shadow-lg focus:outline-none focus:border-amber-400 bg-white"
+                    className="w-full pl-9 pr-9 py-1.5 text-sm border-2 border-border rounded-lg shadow-lg focus:outline-none focus:border-amber-400 bg-surface"
                     autoComplete="off"
                     autoCorrect="off"
                     spellCheck={false}
                   />
-                  <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                  <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                     <circle cx="11" cy="11" r="8" />
                     <path d="m21 21-4.35-4.35" />
                   </svg>
@@ -994,7 +994,7 @@ export default function Navbar() {
                     tabIndex={searchOpen ? 0 : -1}
                     onClick={() => setSearchOpen(false)}
                     aria-label={locale === "bn" ? "বন্ধ করুন" : "Close"}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-muted hover:text-body"
                   >
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -1010,7 +1010,7 @@ export default function Navbar() {
             {role === "ADMIN" && (
               <Link
                 href={`/${locale}/admin/settings`}
-                className="text-gray-500 hover:text-amber-700 transition-colors"
+                className="text-muted hover:text-amber-700 transition-colors"
                 title={locale === "bn" ? "সেটিং" : "Settings"}
               >
                 <Settings className="w-5 h-5" />
@@ -1033,7 +1033,7 @@ export default function Navbar() {
                   </>
                 ) : (
                   <>
-                    <Link href={`/${locale}/auth/login`} className="text-gray-600 hover:text-amber-700 text-sm">
+                    <Link href={`/${locale}/auth/login`} className="text-muted hover:text-amber-700 text-sm">
                       {t("nav.login")}
                     </Link>
                     <Link href={`/${locale}/auth/register`} className="btn-primary text-sm">
