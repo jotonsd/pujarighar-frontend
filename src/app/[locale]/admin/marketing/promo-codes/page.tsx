@@ -19,7 +19,9 @@ function PromoCodeRow({ promo, isBn }: { promo: PromoCode; isBn: boolean }) {
   const [update, { isLoading }] = useUpdatePromoCodeMutation();
   const toggleActive = () => update({ id: promo.id, is_active: !promo.is_active }).unwrap().catch(() =>
     toast.error(isBn ? "ব্যর্থ হয়েছে" : "Failed to update"));
-  const toggleScope = (scope: PromoScope) => update({ id: promo.id, scope }).unwrap().catch(() =>
+  const cycleScope = (): PromoScope =>
+    promo.scope === "MOBILE_APP" ? "WEBSITE" : promo.scope === "WEBSITE" ? "BOTH" : "MOBILE_APP";
+  const toggleScope = () => update({ id: promo.id, scope: cycleScope() }).unwrap().catch(() =>
     toast.error(isBn ? "ব্যর্থ হয়েছে" : "Failed to update"));
 
   const fmt = (iso: string | null) => iso ? new Date(iso).toLocaleDateString(isBn ? "bn-BD" : "en-US") : null;
@@ -28,7 +30,9 @@ function PromoCodeRow({ promo, isBn }: { promo: PromoCode; isBn: boolean }) {
     : promo.is_valid_now
       ? (isBn ? "সক্রিয়" : "Active")
       : (isBn ? "মেয়াদোত্তীর্ণ / শুরু হয়নি" : "Expired / not started yet");
-  const scopeLabel = promo.scope === "MOBILE_APP" ? (isBn ? "শুধু অ্যাপ" : "App only") : (isBn ? "শুধু ওয়েবসাইট" : "Website only");
+  const scopeLabel = promo.scope === "MOBILE_APP" ? (isBn ? "শুধু অ্যাপ" : "App only")
+    : promo.scope === "WEBSITE" ? (isBn ? "শুধু ওয়েবসাইট" : "Website only")
+    : (isBn ? "অ্যাপ ও ওয়েবসাইট" : "App & website");
 
   return (
     <div className="border border-gray-100 rounded-xl p-4 flex items-center justify-between gap-4">
@@ -42,7 +46,7 @@ function PromoCodeRow({ promo, isBn }: { promo: PromoCode; isBn: boolean }) {
             {statusLabel}
           </span>
           <button
-            onClick={() => toggleScope(promo.scope === "MOBILE_APP" ? "WEBSITE" : "MOBILE_APP")}
+            onClick={toggleScope}
             disabled={isLoading}
             className="text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors"
             title={isBn ? "স্কোপ পরিবর্তন করতে ক্লিক করুন" : "Click to switch scope"}
@@ -112,6 +116,7 @@ function AddPromoCodeForm({ isBn, onDone }: { isBn: boolean; onDone: () => void 
         >
           <option value="MOBILE_APP">{isBn ? "শুধু মোবাইল অ্যাপ" : "Mobile app only"}</option>
           <option value="WEBSITE">{isBn ? "শুধু ওয়েবসাইট" : "Website only"}</option>
+          <option value="BOTH">{isBn ? "অ্যাপ ও ওয়েবসাইট উভয়ই" : "Both app & website"}</option>
         </FloatingSelect>
         <FloatingDatePicker
           label={isBn ? "মেয়াদ শেষের তারিখ (ঐচ্ছিক)" : "Valid until (optional)"}

@@ -1,7 +1,7 @@
 import { baseApi } from '@/api/baseApi'
 
 export type PromoDiscountType = 'PERCENT' | 'FLAT'
-export type PromoScope = 'MOBILE_APP' | 'WEBSITE'
+export type PromoScope = 'MOBILE_APP' | 'WEBSITE' | 'BOTH'
 
 export interface PromoCode {
   id: number
