@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useLocale } from "next-intl";
-import { Plus, Ticket } from "lucide-react";
+import { Pencil, Plus, Ticket } from "lucide-react";
 import PageHeader from "@/components/ui/PageHeader";
 import { FloatingInput, FloatingSelect, FloatingDatePicker } from "@/components/ui/forms";
 import { toast } from "@/store/toastStore";
@@ -15,13 +15,116 @@ import {
   PromoScope,
 } from "@/api/promoCodes/promoCodesApi";
 
+// Backend stores valid_from/valid_until as full datetimes; the pickers here
+// only deal in dates, so trim to 'YYYY-MM-DD' for editing and re-append a
+// day boundary when saving.
+const toDateInput = (iso: string | null) => iso ? iso.slice(0, 10) : "";
+
+function EditPromoCodeModal({ promo, isBn, onClose }: { promo: PromoCode; isBn: boolean; onClose: () => void }) {
+  const [scope, setScope] = useState<PromoScope>(promo.scope);
+  const [discountType, setDiscountType] = useState<PromoDiscountType>(promo.discount_type);
+  const [discountValue, setDiscountValue] = useState(promo.discount_value);
+  const [validFrom, setValidFrom] = useState(toDateInput(promo.valid_from));
+  const [validUntil, setValidUntil] = useState(toDateInput(promo.valid_until));
+  const [isActive, setIsActive] = useState(promo.is_active);
+  const [update, { isLoading }] = useUpdatePromoCodeMutation();
+
+  const handleSave = async () => {
+    if (!discountValue) return;
+    try {
+      await update({
+        id: promo.id,
+        scope,
+        discount_type: discountType,
+        discount_value: discountValue,
+        valid_from: validFrom ? new Date(validFrom).toISOString() : null,
+        valid_until: validUntil ? new Date(validUntil).toISOString() : null,
+        is_active: isActive,
+      }).unwrap();
+      toast.success(isBn ? "সংরক্ষিত হয়েছে" : "Saved");
+      onClose();
+    } catch {
+      toast.error(isBn ? "ব্যর্থ হয়েছে" : "Failed to save");
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4" onClick={onClose}>
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 space-y-4" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+            <Pencil className="w-5 h-5 text-amber-500" />
+            <span className="font-mono">{promo.code}</span>
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <FloatingSelect
+            label={isBn ? "কোথায় ব্যবহারযোগ্য" : "Usable on"}
+            value={scope}
+            onChange={value => setScope(value as PromoScope)}
+          >
+            <option value="MOBILE_APP">{isBn ? "শুধু মোবাইল অ্যাপ" : "Mobile app only"}</option>
+            <option value="WEBSITE">{isBn ? "শুধু ওয়েবসাইট" : "Website only"}</option>
+            <option value="BOTH">{isBn ? "অ্যাপ ও ওয়েবসাইট উভয়ই" : "Both app & website"}</option>
+          </FloatingSelect>
+          <FloatingSelect
+            label={isBn ? "ছাড়ের ধরন" : "Discount type"}
+            value={discountType}
+            onChange={value => setDiscountType(value as PromoDiscountType)}
+          >
+            <option value="PERCENT">{isBn ? "শতাংশ (%)" : "Percentage (%)"}</option>
+            <option value="FLAT">{isBn ? "নির্দিষ্ট পরিমাণ (৳)" : "Flat amount (৳)"}</option>
+          </FloatingSelect>
+        </div>
+
+        <FloatingInput
+          label={discountType === "PERCENT" ? (isBn ? "ছাড়ের হার (%)" : "Discount (%)") : (isBn ? "ছাড়ের পরিমাণ (৳)" : "Discount amount (৳)")}
+          type="number" min="0" step="0.01" value={discountValue} onChange={e => setDiscountValue(e.target.value)}
+        />
+
+        <div className="grid grid-cols-2 gap-3">
+          <FloatingDatePicker
+            label={isBn ? "শুরুর তারিখ (ঐচ্ছিক)" : "Valid from (optional)"}
+            value={validFrom} onChange={setValidFrom}
+            maxDate={validUntil ? new Date(validUntil) : undefined}
+            clearable
+          />
+          <FloatingDatePicker
+            label={isBn ? "মেয়াদ শেষের তারিখ (ঐচ্ছিক)" : "Valid until (optional)"}
+            value={validUntil} onChange={setValidUntil}
+            minDate={validFrom ? new Date(validFrom) : undefined}
+            clearable
+          />
+        </div>
+
+        <label className="flex items-center gap-3 cursor-pointer select-none">
+          <div
+            onClick={() => setIsActive(v => !v)}
+            className={`w-10 h-5 rounded-full transition-colors relative shrink-0 ${isActive ? "bg-amber-600" : "bg-gray-200"}`}
+          >
+            <span className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${isActive ? "translate-x-5" : ""}`} />
+          </div>
+          <span className="text-sm text-gray-700">
+            {isActive ? (isBn ? "সক্রিয়" : "Active") : (isBn ? "নিষ্ক্রিয়" : "Inactive")}
+          </span>
+        </label>
+
+        <div className="flex gap-2 pt-2">
+          <button onClick={handleSave} disabled={isLoading || !discountValue} className="btn-primary text-sm">
+            {isLoading ? (isBn ? "সংরক্ষণ হচ্ছে..." : "Saving...") : (isBn ? "সংরক্ষণ করুন" : "Save Changes")}
+          </button>
+          <button onClick={onClose} className="btn-secondary text-sm">{isBn ? "বাতিল" : "Cancel"}</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function PromoCodeRow({ promo, isBn }: { promo: PromoCode; isBn: boolean }) {
   const [update, { isLoading }] = useUpdatePromoCodeMutation();
+  const [editing, setEditing] = useState(false);
   const toggleActive = () => update({ id: promo.id, is_active: !promo.is_active }).unwrap().catch(() =>
-    toast.error(isBn ? "ব্যর্থ হয়েছে" : "Failed to update"));
-  const cycleScope = (): PromoScope =>
-    promo.scope === "MOBILE_APP" ? "WEBSITE" : promo.scope === "WEBSITE" ? "BOTH" : "MOBILE_APP";
-  const toggleScope = () => update({ id: promo.id, scope: cycleScope() }).unwrap().catch(() =>
     toast.error(isBn ? "ব্যর্থ হয়েছে" : "Failed to update"));
 
   const fmt = (iso: string | null) => iso ? new Date(iso).toLocaleDateString(isBn ? "bn-BD" : "en-US") : null;
@@ -45,14 +148,9 @@ function PromoCodeRow({ promo, isBn }: { promo: PromoCode; isBn: boolean }) {
           }`}>
             {statusLabel}
           </span>
-          <button
-            onClick={toggleScope}
-            disabled={isLoading}
-            className="text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors"
-            title={isBn ? "স্কোপ পরিবর্তন করতে ক্লিক করুন" : "Click to switch scope"}
-          >
+          <span className="text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-700">
             {scopeLabel}
-          </button>
+          </span>
         </div>
         <p className="text-sm text-gray-600 mt-1">
           {promo.discount_type === "PERCENT" ? `${promo.discount_value}%` : `৳${promo.discount_value}`}
@@ -70,9 +168,19 @@ function PromoCodeRow({ promo, isBn }: { promo: PromoCode; isBn: boolean }) {
           {isBn ? `${promo.times_used} বার ব্যবহৃত হয়েছে` : `Used ${promo.times_used} time${promo.times_used === 1 ? "" : "s"}`}
         </p>
       </div>
-      <button onClick={toggleActive} disabled={isLoading} className={promo.is_active ? "btn-secondary text-sm" : "btn-primary text-sm"}>
-        {promo.is_active ? (isBn ? "নিষ্ক্রিয় করুন" : "Deactivate") : (isBn ? "সক্রিয় করুন" : "Activate")}
-      </button>
+      <div className="flex items-center gap-2 shrink-0">
+        <button
+          onClick={() => setEditing(true)}
+          className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-gray-200 bg-gray-50 text-gray-600 hover:bg-gray-100 transition-colors"
+          title={isBn ? "সম্পাদনা করুন" : "Edit"}
+        >
+          <Pencil className="w-3.5 h-3.5" />
+        </button>
+        <button onClick={toggleActive} disabled={isLoading} className={promo.is_active ? "btn-secondary text-sm" : "btn-primary text-sm"}>
+          {promo.is_active ? (isBn ? "নিষ্ক্রিয় করুন" : "Deactivate") : (isBn ? "সক্রিয় করুন" : "Activate")}
+        </button>
+      </div>
+      {editing && <EditPromoCodeModal promo={promo} isBn={isBn} onClose={() => setEditing(false)} />}
     </div>
   );
 }
@@ -80,6 +188,7 @@ function PromoCodeRow({ promo, isBn }: { promo: PromoCode; isBn: boolean }) {
 function AddPromoCodeForm({ isBn, onDone }: { isBn: boolean; onDone: () => void }) {
   const [code, setCode] = useState("");
   const [scope, setScope] = useState<PromoScope>("MOBILE_APP");
+  const [validFrom, setValidFrom] = useState("");
   const [validUntil, setValidUntil] = useState("");
   const [discountType, setDiscountType] = useState<PromoDiscountType>("PERCENT");
   const [discountValue, setDiscountValue] = useState("10");
@@ -94,6 +203,7 @@ function AddPromoCodeForm({ isBn, onDone }: { isBn: boolean; onDone: () => void 
         scope,
         discount_type: discountType,
         discount_value: discountValue,
+        valid_from: validFrom ? new Date(validFrom).toISOString() : null,
         valid_until: validUntil ? new Date(validUntil).toISOString() : null,
         is_active: isActive,
       }).unwrap();
@@ -106,7 +216,7 @@ function AddPromoCodeForm({ isBn, onDone }: { isBn: boolean; onDone: () => void 
 
   return (
     <div className="border border-gray-200 rounded-xl p-4 space-y-3">
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <FloatingInput label={isBn ? "কোড (যেমন: PUJA10)" : "Code (e.g. PUJA10)"} value={code}
           onChange={e => setCode(e.target.value.toUpperCase())} />
         <FloatingSelect
@@ -119,9 +229,15 @@ function AddPromoCodeForm({ isBn, onDone }: { isBn: boolean; onDone: () => void 
           <option value="BOTH">{isBn ? "অ্যাপ ও ওয়েবসাইট উভয়ই" : "Both app & website"}</option>
         </FloatingSelect>
         <FloatingDatePicker
+          label={isBn ? "শুরুর তারিখ (ঐচ্ছিক)" : "Valid from (optional)"}
+          value={validFrom} onChange={setValidFrom}
+          maxDate={validUntil ? new Date(validUntil) : undefined}
+          clearable
+        />
+        <FloatingDatePicker
           label={isBn ? "মেয়াদ শেষের তারিখ (ঐচ্ছিক)" : "Valid until (optional)"}
           value={validUntil} onChange={setValidUntil}
-          minDate={new Date()}
+          minDate={validFrom ? new Date(validFrom) : new Date()}
           clearable
         />
       </div>
