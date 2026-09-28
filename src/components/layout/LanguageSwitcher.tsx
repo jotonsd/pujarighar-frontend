@@ -45,17 +45,17 @@ export default function LanguageSwitcher() {
       role="switch"
       aria-checked={isBn}
       title="Switch language"
-      className="relative inline-flex items-center h-7 w-16 shrink-0 rounded-full bg-gray-100 border border-gray-200 hover:bg-gray-200 transition-colors"
+      className="relative inline-flex items-center h-7 w-16 shrink-0 rounded-full bg-surface-alt border border-border hover:bg-border transition-colors"
     >
       <span
-        className={`absolute left-0.5 h-6 w-[30px] rounded-full bg-white shadow-sm transition-transform duration-200 ease-out ${
+        className={`absolute left-0.5 h-6 w-[30px] rounded-full bg-surface shadow-sm transition-transform duration-200 ease-out ${
           isBn ? 'translate-x-0' : 'translate-x-[30px]'
         }`}
       />
-      <span className={`relative z-10 w-8 text-center text-[11px] font-bold transition-colors ${isBn ? 'text-amber-700' : 'text-gray-700'}`}>
+      <span className={`relative z-10 w-8 text-center text-[11px] font-bold transition-colors ${isBn ? 'text-amber-700 dark:text-amber-400' : 'text-muted'}`}>
         বাং
       </span>
-      <span className={`relative z-10 w-8 text-center text-[11px] font-bold transition-colors ${isBn ? 'text-gray-700' : 'text-amber-700'}`}>
+      <span className={`relative z-10 w-8 text-center text-[11px] font-bold transition-colors ${isBn ? 'text-muted' : 'text-amber-700 dark:text-amber-400'}`}>
         EN
       </span>
     </button>

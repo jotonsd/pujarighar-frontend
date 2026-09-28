@@ -629,7 +629,13 @@ function MobileMenu({
         </div>
 
         {/* Footer */}
-        <div className="border-t border-border p-4">
+        <div className="border-t border-border p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium text-muted">
+              {locale === "bn" ? "ডার্ক মোড" : "Dark Mode"}
+            </span>
+            <ThemeToggle />
+          </div>
           {currentUser ? (
             <div className="space-y-1">
               <div className="flex items-center gap-2.5 mb-1">
@@ -1016,7 +1022,10 @@ export default function Navbar() {
                 <Settings className="w-5 h-5" />
               </Link>
             )}
-            <ThemeToggle />
+            {/* Hidden on mobile (moved into the drawer footer, full-width) —
+                packed this tight next to LanguageSwitcher on a narrow
+                screen was causing mis-taps between the two. */}
+            <ThemeToggle className="hidden md:inline-flex" />
             <LanguageSwitcher />
             {currentUser && <NotificationBell isAdmin={role === "ADMIN"} />}
 
