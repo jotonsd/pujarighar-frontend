@@ -72,6 +72,12 @@ export const ordersApi = baseApi.injectEndpoints({
       invalidatesTags: (_r, _e, { id }) => ['Orders', { type: 'Order', id }, { type: 'OrderLogs', id }],
     }),
 
+    pickUpOrder: build.mutation<SalesOrder, string>({
+      query: (id) => ({ url: `/api/orders/${id}/pick-up/`, method: 'POST', body: {} }),
+      transformResponse: (res: { data: SalesOrder }) => res.data,
+      invalidatesTags: (_r, _e, id) => ['Orders', { type: 'Order', id }, { type: 'OrderLogs', id }],
+    }),
+
     dispatchOrder: build.mutation<SalesOrder, string>({
       query: (id) => ({ url: `/api/orders/${id}/dispatch/`, method: 'POST', body: {} }),
       transformResponse: (res: { data: SalesOrder }) => res.data,
@@ -216,6 +222,7 @@ export const {
   useConfirmOrderMutation,
   usePackOrderMutation,
   useAssignDeliveryMutation,
+  usePickUpOrderMutation,
   useDispatchOrderMutation,
   useDeliverOrderMutation,
   usePartialDeliverOrderMutation,

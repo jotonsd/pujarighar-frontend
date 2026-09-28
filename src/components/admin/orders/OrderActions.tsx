@@ -11,6 +11,7 @@ import {
   useConfirmOrderMutation,
   useCreateExchangeMutation,
   useDeliverOrderMutation,
+  usePickUpOrderMutation,
   useDispatchOrderMutation,
   useMarkCodPaidMutation,
   usePackOrderMutation,
@@ -133,6 +134,7 @@ export default function OrderActions({ order, orderId }: Props) {
   const [applyDiscount, { isLoading: discounting }] = useApplyDiscountMutation()
   const [waiveDelivery, { isLoading: waivingDelivery }] = useWaiveDeliveryChargeMutation()
   const [changeZone, { isLoading: changingZone }] = useChangeDeliveryZoneMutation()
+  const [pickUp, { isLoading: pickingUp }]        = usePickUpOrderMutation()
   const [dispatch, { isLoading: dispatching }]    = useDispatchOrderMutation()
   const [deliver, { isLoading: delivering }]      = useDeliverOrderMutation()
   const [partialDeliver, { isLoading: partiallyDelivering }] = usePartialDeliverOrderMutation()
@@ -145,7 +147,7 @@ export default function OrderActions({ order, orderId }: Props) {
   const [refreshCourierStatus, { isLoading: refreshingCourier }] = useRefreshCourierStatusMutation()
 
   const loading = confirming || packing || assigning || cancelling || markingPaid || discounting
-    || dispatching || delivering || partiallyDelivering || returning || sendingToCourier || waivingDelivery || exchanging
+    || pickingUp || dispatching || delivering || partiallyDelivering || returning || sendingToCourier || waivingDelivery || exchanging
 
   const hasPayAction = order.payment_method === 'COD' && order.payment_status === 'UNPAID' && !['CANCELLED', 'RETURNED'].includes(order.status)
   const hasStatusAction = ['PENDING', 'CONFIRMED', 'PACKED'].includes(order.status)
@@ -166,6 +168,11 @@ export default function OrderActions({ order, orderId }: Props) {
   // already has someone assigned). Only show it when there's genuinely
   // nobody assigned yet.
   const hasDeliveryChoice = (order.status === 'PACKED' && !hasAssignedPerson) || hasAssignPersonOnly
+  // Manual counterpart to what the courier webhook does automatically
+  // (see CourierService._apply_courier_status_to_order's PICK action) — for
+  // when a courier's tracking doesn't cleanly map to a pickup event, or the
+  // order isn't going through a courier at all.
+  const hasPickUpAction = order.status === 'ASSIGNED'
   const hasDispatchAction = order.status === 'ASSIGNED' || order.status === 'PICKED'
   const hasDeliverAction = order.status === 'ON_THE_WAY'
   // Reachable from ON_THE_WAY (courier reports a shortfall directly) or
@@ -176,7 +183,7 @@ export default function OrderActions({ order, orderId }: Props) {
   const hasReturnAction = order.status === 'DELIVERED'
   const hasExchangeAction = order.status === 'DELIVERED'
   const hasAnyAction = hasPayAction || hasStatusAction || hasCancelAction || hasDiscountAction
-    || hasDeliveryChoice || hasDispatchAction || hasDeliverAction || hasPartialDeliverAction || hasReturnAction
+    || hasDeliveryChoice || hasPickUpAction || hasDispatchAction || hasDeliverAction || hasPartialDeliverAction || hasReturnAction
     || hasExchangeAction || !!order.courier_consignment
 
   if (!hasAnyAction) return null
@@ -420,6 +427,15 @@ export default function OrderActions({ order, orderId }: Props) {
               </div>
             )}
           </>
+        )}
+        {hasPickUpAction && (
+          <button disabled={loading} className="btn-secondary text-sm"
+            onClick={() => doAction(
+              () => pickUp(orderId).unwrap(),
+              locale === 'bn' ? 'পিকআপ হয়েছে হিসেবে চিহ্নিত হয়েছে' : 'Marked as picked up',
+            )}>
+            📤 {locale === 'bn' ? 'পিকআপ হয়েছে' : 'Mark as Picked Up'}
+          </button>
         )}
         {hasDispatchAction && (
           <button disabled={loading} className="btn-primary text-sm"
