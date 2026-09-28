@@ -117,7 +117,7 @@ function OrderPreviewCard({
   return (
     <div className="border-t border-amber-100 dark:border-amber-900/40">
       {hasDeliveryInfo && (
-        <div className="px-3 py-2 bg-surface-alt border-b border-border text-xs text-muted space-y-0.5">
+        <div className="px-3 py-2 bg-surface border-b border-border text-xs text-muted space-y-0.5">
           <p className="font-semibold text-body mb-1">
             {isBn ? "ডেলিভারি তথ্য" : "Delivery details"}
           </p>
