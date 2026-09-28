@@ -937,7 +937,7 @@ export default function SettingsPage() {
         description={isBn ? "সিস্টেম কনফিগারেশন ও পছন্দ পরিচালনা করুন" : "Manage system configuration and preferences"}
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-[220px_1fr] gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-[260px_1fr] gap-4">
         {/* Left menu */}
         <div className="bg-surface rounded-xl border border-border shadow-sm p-2 h-fit md:sticky md:top-20">
           <nav className="flex md:flex-col gap-1 overflow-x-auto md:overflow-visible [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
