@@ -45,7 +45,7 @@ export default function CategoryCreateForm({ onClose }: Props) {
 
   return (
     <div className="card mb-4 space-y-3">
-      <h2 className="font-medium text-gray-700">{locale === 'bn' ? 'নতুন কেটাগরি' : 'New Category'}</h2>
+      <h2 className="font-medium text-muted">{locale === 'bn' ? 'নতুন কেটাগরি' : 'New Category'}</h2>
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
         <FloatingInput label="নাম (বাংলা) *" value={form.name_bn}
           onChange={e => setForm(f => ({ ...f, name_bn: e.target.value }))} error={fieldErrors.name_bn} />
@@ -64,7 +64,7 @@ export default function CategoryCreateForm({ onClose }: Props) {
           <button type="button"
             onClick={() => { slugManualRef.current = false; setForm(f => ({ ...f, slug: slugify(f.name_en) })) }}
             title={locale === 'bn' ? 'পুনরায় তৈরি করুন' : 'Regenerate slug'}
-            className="h-10 w-10 shrink-0 flex items-center justify-center rounded-lg border border-gray-300 text-gray-500 hover:text-amber-700 hover:border-amber-400 transition-colors">
+            className="h-10 w-10 shrink-0 flex items-center justify-center rounded-lg border border-border text-muted hover:text-amber-700 dark:hover:text-amber-400 hover:border-amber-400 dark:hover:border-amber-600 transition-colors">
             <RefreshCw className="w-4 h-4" />
           </button>
         </div>

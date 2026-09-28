@@ -57,11 +57,11 @@ export default function TrackOrderClient({ offerBanners }: { offerBanners?: Reac
       <div className="card space-y-4">
         <div className="flex items-center gap-3 mb-2">
           <span className="text-3xl">📦</span>
-          <h1 className="text-xl font-bold text-gray-800">
+          <h1 className="text-xl font-bold text-body">
             {isBn ? "অর্ডার ট্র্যাক করুন" : "Track Your Order"}
           </h1>
         </div>
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-muted">
           {isBn
             ? "আপনার অর্ডার নম্বর ও ফোন নম্বর দিয়ে অর্ডারের বর্তমান অবস্থা জানুন।"
             : "Enter your order number and phone number to check the status of your order."}
@@ -107,10 +107,10 @@ export default function TrackOrderClient({ offerBanners }: { offerBanners?: Reac
       {!isLoading && isError && query && (
         <div className="card text-center py-8 space-y-2">
           <p className="text-3xl">🔍</p>
-          <p className="font-semibold text-gray-700">
+          <p className="font-semibold text-muted">
             {isBn ? "অর্ডার পাওয়া যায়নি" : "Order not found"}
           </p>
-          <p className="text-sm text-gray-400">
+          <p className="text-sm text-muted">
             {isBn
               ? "অর্ডার নম্বর বা ফোন নম্বর সঠিক কিনা যাচাই করুন।"
               : "Please check your order number and phone number."}
@@ -124,13 +124,13 @@ export default function TrackOrderClient({ offerBanners }: { offerBanners?: Reac
           {/* Header */}
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-xs text-gray-400 uppercase tracking-wide mb-0.5">
+              <p className="text-xs text-muted uppercase tracking-wide mb-0.5">
                 {isBn ? "অর্ডার নম্বর" : "Order Number"}
               </p>
-              <h2 className="text-lg font-bold text-gray-800">
+              <h2 className="text-lg font-bold text-body">
                 {order.order_number}
               </h2>
-              <p className="text-sm text-gray-400 mt-0.5">
+              <p className="text-sm text-muted mt-0.5">
                 {new Date(order.created_at).toLocaleDateString(
                   isBn ? "bn-BD" : "en-US",
                   {
@@ -147,7 +147,7 @@ export default function TrackOrderClient({ offerBanners }: { offerBanners?: Reac
           <OrderProgressBar status={order.status} locale={locale} />
 
           {order.exchanged_to && (
-            <div className="rounded-xl border border-purple-200 bg-purple-50 px-4 py-3 text-sm text-purple-800">
+            <div className="rounded-xl border border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-900/30 px-4 py-3 text-sm text-purple-800 dark:text-purple-300">
               {isBn
                 ? "এই অর্ডারটি বিনিময় করা হয়েছে। আপনার নতুন অর্ডারের অবস্থা দেখুন: "
                 : "This order was exchanged. Track your replacement order: "}
@@ -158,17 +158,17 @@ export default function TrackOrderClient({ offerBanners }: { offerBanners?: Reac
           )}
 
           {/* Shipping info */}
-          <div className="border-t border-gray-100 pt-4 space-y-1">
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
+          <div className="border-t border-border pt-4 space-y-1">
+            <p className="text-xs font-semibold text-muted uppercase tracking-wide mb-2">
               {isBn ? "ডেলিভারি তথ্য" : "Delivery Info"}
             </p>
-            <p className="text-sm font-medium text-gray-700">
+            <p className="text-sm font-medium text-muted">
               {localName(order.shipping_name_bn, order.shipping_name_en, isBn)}
             </p>
-            <p className="text-sm text-gray-500">{order.shipping_phone}</p>
-            <p className="text-sm text-gray-500">{order.shipping_address_bn}</p>
+            <p className="text-sm text-muted">{order.shipping_phone}</p>
+            <p className="text-sm text-muted">{order.shipping_address_bn}</p>
             {order.shipping_district && (
-              <p className="text-sm text-gray-400">
+              <p className="text-sm text-muted">
                 {order.shipping_district}
                 {order.shipping_thana ? `, ${order.shipping_thana}` : ""}
               </p>
@@ -176,9 +176,9 @@ export default function TrackOrderClient({ offerBanners }: { offerBanners?: Reac
           </div>
 
           {/* Payment + total */}
-          <div className="border-t border-gray-100 pt-4 flex items-center justify-between">
-            <div className="text-sm text-gray-500">
-              <span className="font-medium text-gray-700">
+          <div className="border-t border-border pt-4 flex items-center justify-between">
+            <div className="text-sm text-muted">
+              <span className="font-medium text-muted">
                 {isBn
                   ? order.payment_method_label_bn
                   : order.payment_method_label_en}
@@ -187,8 +187,8 @@ export default function TrackOrderClient({ offerBanners }: { offerBanners?: Reac
               <span
                 className={
                   order.payment_status === "PAID"
-                    ? "text-green-600"
-                    : "text-amber-700"
+                    ? "text-green-600 dark:text-green-400"
+                    : "text-amber-700 dark:text-amber-400"
                 }
               >
                 {order.payment_status === "PAID"
@@ -200,15 +200,15 @@ export default function TrackOrderClient({ offerBanners }: { offerBanners?: Reac
                     : "Unpaid"}
               </span>
             </div>
-            <p className="font-bold text-amber-700 text-lg">
+            <p className="font-bold text-amber-700 dark:text-amber-400 text-lg">
               {formatAmount(order.grand_total, locale)}
             </p>
           </div>
 
           {/* Timeline */}
           {order.timeline.length > 0 && (
-            <div className="border-t border-gray-100 pt-4">
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-4">
+            <div className="border-t border-border pt-4">
+              <p className="text-xs font-semibold text-muted uppercase tracking-wide mb-4">
                 {isBn ? "অর্ডারের অগ্রগতি" : "Order Progress"}
               </p>
               <StatusTimeline

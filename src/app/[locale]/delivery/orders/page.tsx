@@ -35,7 +35,7 @@ export default function DeliveryOrdersPage() {
     {
       header: locale === "bn" ? "অর্ডার নম্বর" : "Order",
       accessor: o => (
-        <span className="font-mono text-sm font-semibold text-gray-800">
+        <span className="font-mono text-sm font-semibold text-body">
           {o.order_number}
         </span>
       ),
@@ -45,10 +45,10 @@ export default function DeliveryOrdersPage() {
       header: locale === "bn" ? "গ্রাহক" : "Customer",
       accessor: o => (
         <div>
-          <p className="text-sm font-medium text-gray-800">
+          <p className="text-sm font-medium text-body">
             {localName(o.shipping_name_bn, o.shipping_name_en, locale === "bn")}
           </p>
-          <p className="text-xs text-gray-500">{o.shipping_phone}</p>
+          <p className="text-xs text-muted">{o.shipping_phone}</p>
         </div>
       ),
       exportValue: o =>
@@ -57,7 +57,7 @@ export default function DeliveryOrdersPage() {
     {
       header: locale === "bn" ? "ঠিকানা" : "Address",
       accessor: o => (
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-muted">
           {[o.shipping_district, o.shipping_thana].filter(Boolean).join(", ")}
         </p>
       ),
@@ -81,7 +81,7 @@ export default function DeliveryOrdersPage() {
     {
       header: locale === "bn" ? "তারিখ" : "Date",
       accessor: o => (
-        <span className="text-xs text-gray-400">
+        <span className="text-xs text-muted">
           {formatDate(o.created_at, locale)}
         </span>
       ),
@@ -107,7 +107,7 @@ export default function DeliveryOrdersPage() {
             className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
               status === f.value
                 ? "bg-amber-600 text-white"
-                : "bg-white text-gray-600 border border-gray-200 hover:border-amber-300"
+                : "bg-surface text-muted border border-border hover:border-amber-300"
             }`}
           >
             {locale === "bn" ? f.label_bn : f.label_en}

@@ -62,8 +62,8 @@ function POSProductCard({
         inCart
           ? "border-amber-400 bg-amber-50 ring-1 ring-amber-400"
           : inStock
-            ? "border-gray-200 bg-white hover:border-amber-300 hover:shadow-sm"
-            : "border-gray-100 bg-gray-50 opacity-50 cursor-not-allowed"
+            ? "border-border bg-surface hover:border-amber-300 hover:shadow-sm"
+            : "border-border bg-background opacity-50 cursor-not-allowed"
       }`}
     >
       <div className="aspect-square bg-amber-50 rounded-lg overflow-hidden mb-2 relative">
@@ -86,30 +86,30 @@ function POSProductCard({
           </div>
         )}
       </div>
-      <p className="text-xs font-medium text-gray-800 line-clamp-2 leading-tight">
+      <p className="text-xs font-medium text-body line-clamp-2 leading-tight">
         {name}
       </p>
       {(product.brand_name_bn || product.brand_name_en) && (
-        <p className="text-[10px] text-amber-500 font-medium truncate mt-0.5">
+        <p className="text-[10px] text-amber-500 dark:text-amber-400 font-medium truncate mt-0.5">
           {locale === "bn" ? (product.brand_name_bn || product.brand_name_en) : (product.brand_name_en || product.brand_name_bn)}
         </p>
       )}
       {product.active_discount_type && parseFloat(String(product.effective_price)) < parseFloat(String(product.unit_price)) ? (
         <div className="mt-0.5 flex items-baseline gap-1">
-          <p className="text-sm font-bold text-amber-700">
+          <p className="text-sm font-bold text-amber-700 dark:text-amber-400">
             {formatAmount(product.effective_price, locale, 0)}
           </p>
-          <p className="text-[10px] text-gray-400 line-through">
+          <p className="text-[10px] text-muted line-through">
             {formatAmount(product.unit_price, locale, 0)}
           </p>
         </div>
       ) : (
-        <p className="text-sm font-bold text-amber-700 mt-0.5">
+        <p className="text-sm font-bold text-amber-700 dark:text-amber-400 mt-0.5">
           {formatAmount(product.effective_price ?? product.unit_price, locale, 0)}
         </p>
       )}
       {inCart && (
-        <p className="text-xs text-amber-700 font-bold mt-0.5">
+        <p className="text-xs text-amber-700 dark:text-amber-400 font-bold mt-0.5">
           {locale === "bn"
             ? `কার্টে: ${formatNumber(inCart.quantity, locale)}`
             : `In cart: ${formatNumber(inCart.quantity, locale)}`}
@@ -419,7 +419,7 @@ export default function POSPage() {
         {/* Tab + Search */}
         <div className="shrink-0 pt-2 space-y-2">
           {/* Tabs */}
-          <div className="flex gap-1 bg-gray-100 rounded-lg p-1 w-fit">
+          <div className="flex gap-1 bg-surface-alt rounded-lg p-1 w-fit">
             {(["products", "packages"] as Tab[]).map(t => (
               <button
                 key={t}
@@ -431,8 +431,8 @@ export default function POSPage() {
                 }}
                 className={`px-4 py-1.5 rounded-md text-xs font-semibold transition-colors ${
                   tab === t
-                    ? "bg-white shadow text-amber-700"
-                    : "text-gray-500 hover:text-gray-700"
+                    ? "bg-surface shadow text-amber-700 dark:text-amber-400"
+                    : "text-muted hover:text-muted"
                 }`}
               >
                 {t === "products"
@@ -512,15 +512,15 @@ export default function POSPage() {
             ))}
             {isFetching && products.length > 0 &&
               Array.from({ length: 5 }).map((_, i) => (
-                <div key={`sk-${i}`} className="rounded-xl border border-gray-100 bg-white p-2 space-y-2">
-                  <div className="aspect-square w-full rounded-lg bg-gray-100 animate-pulse" />
-                  <div className="h-2.5 w-full rounded bg-gray-100 animate-pulse" />
-                  <div className="h-2.5 w-3/4 rounded bg-gray-100 animate-pulse" />
+                <div key={`sk-${i}`} className="rounded-xl border border-border bg-surface p-2 space-y-2">
+                  <div className="aspect-square w-full rounded-lg bg-surface-alt animate-pulse" />
+                  <div className="h-2.5 w-full rounded bg-surface-alt animate-pulse" />
+                  <div className="h-2.5 w-3/4 rounded bg-surface-alt animate-pulse" />
                 </div>
               ))
             }
             {products.length === 0 && !isFetching && (
-              <p className="col-span-full text-center text-gray-400 py-12">
+              <p className="col-span-full text-center text-muted py-12">
                 {locale === "bn"
                   ? "কোনো পণ্য পাওয়া যায়নি"
                   : "No products found"}
@@ -534,17 +534,17 @@ export default function POSPage() {
       {/* ── Right: Order panel ── */}
       <div className="w-full lg:w-80 shrink-0 flex flex-col gap-3 lg:overflow-y-auto">
         <div className="card lg:flex-1 lg:min-h-0 flex flex-col">
-          <h2 className="font-semibold text-gray-800 mb-3 shrink-0">
+          <h2 className="font-semibold text-body mb-3 shrink-0">
             {locale === "bn" ? "অর্ডার আইটেম" : "Order Items"}
             {cart.length > 0 && (
-              <span className="ml-2 text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full">
+              <span className="ml-2 text-xs bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 px-1.5 py-0.5 rounded-full">
                 {cart.reduce((sum, l) => sum + l.quantity, 0)}
               </span>
             )}
           </h2>
 
           {cart.length === 0 ? (
-            <p className="text-sm text-gray-400 text-center py-6 flex-1 flex items-center justify-center">
+            <p className="text-sm text-muted text-center py-6 flex-1 flex items-center justify-center">
               {locale === "bn"
                 ? "পণ্য নির্বাচন করুন"
                 : "Click a product to add"}
@@ -554,12 +554,12 @@ export default function POSPage() {
               {cart.map(line => (
                 <div
                   key={line.product.id}
-                  className={`rounded-lg ${line.product.is_package ? "bg-amber-50 border border-amber-100 p-2" : "py-1"}`}
+                  className={`rounded-lg ${line.product.is_package ? "bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800 p-2" : "py-1"}`}
                 >
                   {/* Main line */}
                   <div className="flex items-center gap-2">
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs font-medium text-gray-800 truncate">
+                      <p className="text-xs font-medium text-body truncate">
                         {line.product.is_package && (
                           <span className="mr-1">🎁</span>
                         )}
@@ -567,7 +567,7 @@ export default function POSPage() {
                           ? line.product.name_bn
                           : line.product.name_en}
                       </p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-muted">
                         {formatAmount(line.product.effective_price, locale, 0)}
                       </p>
                     </div>
@@ -576,7 +576,7 @@ export default function POSPage() {
                         onClick={() =>
                           updateQty(line.product.id, line.quantity - 1)
                         }
-                        className="w-5 h-5 bg-gray-100 rounded text-xs font-bold flex items-center justify-center hover:bg-amber-100"
+                        className="w-5 h-5 bg-surface-alt rounded text-xs font-bold flex items-center justify-center hover:bg-amber-100 dark:hover:bg-amber-900/40"
                       >
                         −
                       </button>
@@ -595,12 +595,12 @@ export default function POSPage() {
                             ),
                           )
                         }
-                        className="w-5 h-5 bg-gray-100 rounded text-xs font-bold flex items-center justify-center hover:bg-amber-100"
+                        className="w-5 h-5 bg-surface-alt rounded text-xs font-bold flex items-center justify-center hover:bg-amber-100 dark:hover:bg-amber-900/40"
                       >
                         +
                       </button>
                     </div>
-                    <p className="text-xs font-bold text-amber-700 w-14 text-right shrink-0">
+                    <p className="text-xs font-bold text-amber-700 dark:text-amber-400 w-14 text-right shrink-0">
                       {formatAmount(
                         parseFloat(line.product.effective_price) * line.quantity,
                         locale,
@@ -609,7 +609,7 @@ export default function POSPage() {
                     </p>
                     <button
                       onClick={() => removeFromCart(line.product.id)}
-                      className="w-5 h-5 flex items-center justify-center rounded text-red-400 hover:bg-red-50 hover:text-red-700 transition-colors shrink-0"
+                      className="w-5 h-5 flex items-center justify-center rounded text-red-400 dark:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-700 dark:hover:text-red-400 transition-colors shrink-0"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -618,11 +618,11 @@ export default function POSPage() {
                   {/* Package items sub-list */}
                   {line.product.is_package &&
                     line.product.package_items?.length > 0 && (
-                      <div className="mt-1.5 pl-2 border-l-2 border-amber-200 space-y-0.5">
+                      <div className="mt-1.5 pl-2 border-l-2 border-amber-200 dark:border-amber-800 space-y-0.5">
                         {line.product.package_items.map((item, i) => (
                           <div
                             key={i}
-                            className="flex items-center justify-between text-xs text-gray-500"
+                            className="flex items-center justify-between text-xs text-muted"
                           >
                             <span className="flex items-center gap-1 truncate">
                               <span className="w-1 h-1 rounded-full bg-amber-400 shrink-0" />
@@ -630,7 +630,7 @@ export default function POSPage() {
                                 ? item.component_name_bn
                                 : item.component_name_en}
                             </span>
-                            <span className="shrink-0 ml-1 text-gray-400">
+                            <span className="shrink-0 ml-1 text-muted">
                               ×{Number(item.quantity) * line.quantity}
                             </span>
                           </div>
@@ -643,16 +643,16 @@ export default function POSPage() {
           )}
 
           {cart.length > 0 && (
-            <div className="border-t border-gray-100 pt-2 mt-2 shrink-0 space-y-1">
-              <div className="flex justify-between text-xs text-gray-500">
+            <div className="border-t border-border pt-2 mt-2 shrink-0 space-y-1">
+              <div className="flex justify-between text-xs text-muted">
                 <span>{locale === "bn" ? "সাবটোটাল" : "Subtotal"}</span>
                 <span>{formatAmount(subtotal, locale, 0)}</span>
               </div>
 
               {/* Discount */}
               <div className="flex items-center gap-1.5 py-0.5">
-                <span className="text-xs text-gray-500 shrink-0">{locale === "bn" ? "ছাড়:" : "Discount:"}</span>
-                <div className="flex gap-0.5 bg-gray-100 rounded-md p-0.5 shrink-0">
+                <span className="text-xs text-muted shrink-0">{locale === "bn" ? "ছাড়:" : "Discount:"}</span>
+                <div className="flex gap-0.5 bg-surface-alt rounded-md p-0.5 shrink-0">
                   {([
                     { key: "PERCENTAGE", label: "%" },
                     { key: "FLAT", label: "৳" },
@@ -662,7 +662,7 @@ export default function POSPage() {
                       type="button"
                       onClick={() => setDiscountType(opt.key)}
                       className={`px-2 py-1 rounded text-[10px] font-semibold transition-colors ${
-                        discountType === opt.key ? "bg-white shadow text-amber-700" : "text-gray-500"
+                        discountType === opt.key ? "bg-surface shadow text-amber-700 dark:text-amber-400" : "text-muted"
                       }`}
                     >
                       {opt.label}
@@ -670,7 +670,7 @@ export default function POSPage() {
                   ))}
                 </div>
                 <div className="relative flex-1 min-w-0">
-                  <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-gray-400 pointer-events-none">
+                  <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-muted pointer-events-none">
                     {discountType === "PERCENTAGE" ? "%" : "৳"}
                   </span>
                   <input
@@ -679,26 +679,26 @@ export default function POSPage() {
                     max={discountType === "PERCENTAGE" ? 100 : undefined}
                     value={discountValue}
                     onChange={e => setDiscountValue(e.target.value)}
-                    className="w-full pl-5 pr-2 py-1 text-xs border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-amber-300"
+                    className="w-full pl-5 pr-2 py-1 text-xs border border-border rounded-md focus:outline-none focus:ring-1 focus:ring-amber-300"
                   />
                 </div>
               </div>
               {discountAmount > 0 && (
-                <div className="flex justify-between text-xs text-red-500">
+                <div className="flex justify-between text-xs text-red-500 dark:text-red-400">
                   <span>{locale === "bn" ? "ছাড়" : "Discount"}</span>
                   <span>−{formatAmount(discountAmount, locale, 0)}</span>
                 </div>
               )}
 
               {applyDelivery && deliveryCharge > 0 && (
-                <div className="flex justify-between text-xs text-gray-500">
+                <div className="flex justify-between text-xs text-muted">
                   <span>{locale === "bn" ? "ডেলিভারি" : "Delivery"}</span>
                   <span>{formatAmount(deliveryCharge, locale, 0)}</span>
                 </div>
               )}
-              <div className="flex justify-between font-bold text-sm pt-1 border-t border-gray-100">
+              <div className="flex justify-between font-bold text-sm pt-1 border-t border-border">
                 <span>{locale === "bn" ? "সর্বমোট" : "Grand Total"}</span>
-                <span className="text-amber-700">
+                <span className="text-amber-700 dark:text-amber-400">
                   {formatAmount(grandTotal, locale, 0)}
                 </span>
               </div>
@@ -707,7 +707,7 @@ export default function POSPage() {
         </div>
 
         <div className="card space-y-3">
-          <h2 className="font-semibold text-gray-800 text-sm">
+          <h2 className="font-semibold text-body text-sm">
             {locale === "bn" ? "গ্রাহকের তথ্য" : "Customer Details"}
           </h2>
 
@@ -726,13 +726,13 @@ export default function POSPage() {
               placeholder="01XXXXXXXXX"
             />
             {foundUser && customer.phone.length >= 11 && (
-              <div className="mt-1.5 flex items-center justify-between bg-green-50 border border-green-200 rounded-xl px-3 py-2">
+              <div className="mt-1.5 flex items-center justify-between bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl px-3 py-2">
                 <div className="min-w-0">
-                  <p className="text-xs font-semibold text-green-800 truncate flex items-center gap-1">
+                  <p className="text-xs font-semibold text-green-800 dark:text-green-400 truncate flex items-center gap-1">
                     <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
                     {foundUser.profile?.full_name_bn || foundUser.profile?.full_name_en || foundUser.email}
                   </p>
-                  <p className="text-[10px] text-green-600">{foundUser.email}</p>
+                  <p className="text-[10px] text-green-600 dark:text-green-400">{foundUser.email}</p>
                 </div>
                 {selectedUserId !== foundUser.id && (
                   <button
@@ -752,19 +752,19 @@ export default function POSPage() {
                   </button>
                 )}
                 {selectedUserId === foundUser.id && (
-                  <span className="text-[10px] text-green-700 ml-2 shrink-0 font-semibold">
+                  <span className="text-[10px] text-green-700 dark:text-green-400 ml-2 shrink-0 font-semibold">
                     {locale === "bn" ? "✓ নির্বাচিত" : "✓ Selected"}
                   </span>
                 )}
               </div>
             )}
             {!foundUser && recentGuestShipping && customer.phone.length >= 11 && !guestAutofillApplied && (
-              <div className="mt-1.5 flex items-center justify-between bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">
+              <div className="mt-1.5 flex items-center justify-between bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl px-3 py-2">
                 <div className="min-w-0">
-                  <p className="text-xs font-semibold text-amber-800 truncate">
+                  <p className="text-xs font-semibold text-amber-800 dark:text-amber-400 truncate">
                     {locale === "bn" ? "এই নম্বরে আগের অর্ডার পাওয়া গেছে" : "Found a previous order for this number"}
                   </p>
-                  <p className="text-[10px] text-amber-600 truncate">
+                  <p className="text-[10px] text-amber-600 dark:text-amber-400 truncate">
                     {recentGuestShipping.name_bn || recentGuestShipping.name_en}
                   </p>
                 </div>
@@ -801,7 +801,7 @@ export default function POSPage() {
           {/* Address section */}
           {selectedUserId ? (
             <div className="space-y-2">
-              <p className="text-xs font-semibold text-gray-600 flex items-center gap-1">
+              <p className="text-xs font-semibold text-muted flex items-center gap-1">
                 <MapPin className="w-3.5 h-3.5" />
                 {locale === "bn" ? "ডেলিভারি ঠিকানা" : "Delivery Address"}
               </p>
@@ -813,10 +813,10 @@ export default function POSPage() {
                     <div key={addr.id}>
                       {editingAddressId === addr.id ? (
                         /* ── Inline edit form ── */
-                        <div className="border border-amber-300 rounded-lg p-3 space-y-2 bg-amber-50">
+                        <div className="border border-amber-300 dark:border-amber-700 rounded-lg p-3 space-y-2 bg-amber-50 dark:bg-amber-900/20">
                           <div className="flex items-center justify-between">
-                            <p className="text-xs font-semibold text-amber-700">{locale === "bn" ? "ঠিকানা সম্পাদনা" : "Edit Address"}</p>
-                            <button type="button" onClick={() => setEditingAddressId(null)} className="text-gray-400 hover:text-gray-600">
+                            <p className="text-xs font-semibold text-amber-700 dark:text-amber-400">{locale === "bn" ? "ঠিকানা সম্পাদনা" : "Edit Address"}</p>
+                            <button type="button" onClick={() => setEditingAddressId(null)} className="text-muted hover:text-muted">
                               <X className="w-3.5 h-3.5" />
                             </button>
                           </div>
@@ -845,7 +845,7 @@ export default function POSPage() {
                             >
                               {savingEdit ? (locale === "bn" ? "সংরক্ষণ..." : "Saving...") : (locale === "bn" ? "আপডেট করুন" : "Update")}
                             </button>
-                            <button type="button" onClick={() => setEditingAddressId(null)} className="px-3 py-2 rounded-lg border border-gray-200 text-xs text-gray-500 hover:bg-gray-50">
+                            <button type="button" onClick={() => setEditingAddressId(null)} className="px-3 py-2 rounded-lg border border-border text-xs text-muted hover:bg-surface-alt">
                               {locale === "bn" ? "বাতিল" : "Cancel"}
                             </button>
                           </div>
@@ -854,24 +854,24 @@ export default function POSPage() {
                         /* ── Address card ── */
                         <div
                           className={`rounded-lg border px-3 py-2 transition-colors text-xs ${
-                            selectedAddressId === addr.id ? "border-amber-400 bg-amber-50" : "border-gray-200 bg-white"
+                            selectedAddressId === addr.id ? "border-amber-400 dark:border-amber-600 bg-amber-50 dark:bg-amber-900/20" : "border-border bg-surface"
                           }`}
                         >
                           <div className="flex items-start justify-between gap-1">
                             <button type="button" onClick={() => applyAddress(addr)} className="flex-1 text-left min-w-0">
-                              {addr.label && <p className="font-semibold text-gray-700 truncate">{addr.label}</p>}
-                              <p className="text-gray-600 truncate">{addr.address_bn || addr.address_en}</p>
-                              {addr.district && <p className="text-gray-400">{addr.district}{addr.thana ? `, ${addr.thana}` : ""}</p>}
+                              {addr.label && <p className="font-semibold text-muted truncate">{addr.label}</p>}
+                              <p className="text-muted truncate">{addr.address_bn || addr.address_en}</p>
+                              {addr.district && <p className="text-muted">{addr.district}{addr.thana ? `, ${addr.thana}` : ""}</p>}
                             </button>
                             <div className="flex items-center gap-1.5 shrink-0 mt-0.5">
                               {addr.is_default && selectedAddressId !== addr.id && (
-                                <span className="text-[9px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">{locale === "bn" ? "ডিফল্ট" : "Default"}</span>
+                                <span className="text-[9px] bg-surface-alt text-muted px-1.5 py-0.5 rounded">{locale === "bn" ? "ডিফল্ট" : "Default"}</span>
                               )}
                               {selectedAddressId === addr.id && <CheckCircle2 className="w-4 h-4 text-amber-500" />}
                               <button
                                 type="button"
                                 onClick={() => startEdit(addr)}
-                                className="text-gray-400 hover:text-amber-700 transition-colors p-0.5"
+                                className="text-muted hover:text-amber-700 dark:hover:text-amber-400 transition-colors p-0.5"
                                 title={locale === "bn" ? "সম্পাদনা" : "Edit"}
                               >
                                 <Pencil className="w-3 h-3" />
@@ -890,16 +890,16 @@ export default function POSPage() {
                 <button
                   type="button"
                   onClick={() => { setShowNewAddrForm(true); setSelectedAddressId(null); }}
-                  className="w-full flex items-center justify-center gap-1.5 border border-dashed border-gray-300 rounded-lg py-2 text-xs text-gray-500 hover:border-amber-400 hover:text-amber-700 transition-colors"
+                  className="w-full flex items-center justify-center gap-1.5 border border-dashed border-border rounded-lg py-2 text-xs text-muted hover:border-amber-400 hover:text-amber-700 dark:hover:text-amber-400 transition-colors"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   {locale === "bn" ? "নতুন ঠিকানা যোগ করুন" : "Add new address"}
                 </button>
               ) : (
-                <div className="border border-amber-200 rounded-lg p-3 space-y-2 bg-amber-50">
+                <div className="border border-amber-200 dark:border-amber-800 rounded-lg p-3 space-y-2 bg-amber-50 dark:bg-amber-900/20">
                   <div className="flex items-center justify-between">
-                    <p className="text-xs font-semibold text-amber-700">{locale === "bn" ? "নতুন ঠিকানা" : "New Address"}</p>
-                    <button type="button" onClick={() => setShowNewAddrForm(false)} className="text-gray-400 hover:text-gray-600">
+                    <p className="text-xs font-semibold text-amber-700 dark:text-amber-400">{locale === "bn" ? "নতুন ঠিকানা" : "New Address"}</p>
+                    <button type="button" onClick={() => setShowNewAddrForm(false)} className="text-muted hover:text-muted">
                       <X className="w-3.5 h-3.5" />
                     </button>
                   </div>
@@ -978,9 +978,9 @@ export default function POSPage() {
           {applyDelivery && deliveryRates && (
             <div>
               {parseFloat(cartWeightKg) > 0 && (
-                <p className="text-xs text-gray-400 mb-1.5">
+                <p className="text-xs text-muted mb-1.5">
                   {locale === "bn" ? "আনুমানিক ওজন" : "Approx. weight"}{" "}
-                  <span className="font-medium text-gray-600">
+                  <span className="font-medium text-muted">
                     {formatNumber(parseFloat(cartWeightKg), locale)} kg
                   </span>
                 </p>
@@ -993,8 +993,8 @@ export default function POSPage() {
                     onClick={() => setDeliveryZone(z)}
                     className={`py-2 px-3 rounded-lg border text-xs font-medium transition-colors ${
                       deliveryZone === z
-                        ? "border-amber-500 bg-amber-50 text-amber-700"
-                        : "border-gray-200 text-gray-600 hover:border-amber-300"
+                        ? "border-amber-500 dark:border-amber-600 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400"
+                        : "border-border text-muted hover:border-amber-300"
                     }`}
                   >
                     {z === "inside" ? (

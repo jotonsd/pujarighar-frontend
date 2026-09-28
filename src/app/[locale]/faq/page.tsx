@@ -98,17 +98,17 @@ export default async function FaqPage({ params }: Props) {
         />
       )}
 
-      <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6">
+      <h1 className="text-2xl sm:text-3xl font-bold text-body mb-6">
         {isBn ? "সচরাচর জিজ্ঞাসা" : "Frequently Asked Questions"}
       </h1>
 
       <div className="space-y-3">
         {FAQS.map((faq, i) => (
-          <details key={i} className="rounded-xl border border-gray-100 bg-white p-4 group shadow-sm">
-            <summary className="font-medium text-gray-800 cursor-pointer select-none">
+          <details key={i} className="rounded-xl border border-border bg-surface p-4 group shadow-sm">
+            <summary className="font-medium text-body cursor-pointer select-none">
               {isBn ? faq.question_bn : faq.question_en}
             </summary>
-            <p className="text-sm text-gray-500 mt-2 leading-relaxed">
+            <p className="text-sm text-muted mt-2 leading-relaxed">
               {isBn ? faq.answer_bn : faq.answer_en}
             </p>
           </details>

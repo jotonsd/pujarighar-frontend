@@ -53,7 +53,7 @@ export default function NewUserPage() {
         description={locale === 'bn' ? 'নতুন ব্যবহারকারী অ্যাকাউন্ট তৈরি করুন ও ভূমিকা নির্ধারণ করুন' : 'Create a new user account and assign their role'}
         showBack
       />
-      {error && <p className="text-amber-500 text-sm mb-4 bg-amber-50 p-3 rounded-lg">{error}</p>}
+      {error && <p className="text-amber-500 dark:text-amber-400 text-sm mb-4 bg-amber-50 dark:bg-amber-900/30 p-3 rounded-lg">{error}</p>}
 
       <div className="card space-y-4">
         <FloatingInput label={t('auth.email')} type="email" required value={form.email} onChange={f('email')} error={fieldErrors.email} />

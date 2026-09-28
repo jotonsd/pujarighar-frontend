@@ -102,29 +102,29 @@ export default function AddExpensePage() {
         </button>
       </div>
 
-      <h2 className="text-sm font-bold text-gray-700 mt-8 mb-3">{isBn ? "সাম্প্রতিক খরচ" : "Recent Expenses"}</h2>
+      <h2 className="text-sm font-bold text-muted mt-8 mb-3">{isBn ? "সাম্প্রতিক খরচ" : "Recent Expenses"}</h2>
       {recentLoading ? (
-        <p className="text-xs text-gray-400">{isBn ? "লোড হচ্ছে..." : "Loading..."}</p>
+        <p className="text-xs text-muted">{isBn ? "লোড হচ্ছে..." : "Loading..."}</p>
       ) : !recent?.rows.length ? (
-        <p className="text-sm text-gray-400">{isBn ? "কোনো খরচ নেই" : "No expenses recorded yet"}</p>
+        <p className="text-sm text-muted">{isBn ? "কোনো খরচ নেই" : "No expenses recorded yet"}</p>
       ) : (
         <div className="card p-0 overflow-hidden overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-amber-50 border-b border-amber-200">
+            <thead className="bg-amber-50 dark:bg-amber-900/30 border-b border-amber-200 dark:border-amber-800">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "তারিখ" : "Date"}</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "খাত" : "Category"}</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "বিবরণ" : "Description"}</th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "পরিমাণ" : "Amount"}</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">{isBn ? "তারিখ" : "Date"}</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">{isBn ? "খাত" : "Category"}</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">{isBn ? "বিবরণ" : "Description"}</th>
+                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">{isBn ? "পরিমাণ" : "Amount"}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-border">
               {recent.rows.slice(0, 10).map(r => (
-                <tr key={r.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-4 py-3 text-xs text-gray-500 whitespace-nowrap">{formatDate(r.date)}</td>
-                  <td className="px-4 py-3 text-gray-800">{isBn ? r.account_name_bn : r.account_name_en}</td>
-                  <td className="px-4 py-3 text-xs text-gray-600">{isBn ? r.description_bn : r.description_en}</td>
-                  <td className="px-4 py-3 text-right text-xs font-bold text-red-700">{formatAmount(r.amount, locale, 2)}</td>
+                <tr key={r.id} className="hover:bg-surface-alt transition-colors">
+                  <td className="px-4 py-3 text-xs text-muted whitespace-nowrap">{formatDate(r.date)}</td>
+                  <td className="px-4 py-3 text-body">{isBn ? r.account_name_bn : r.account_name_en}</td>
+                  <td className="px-4 py-3 text-xs text-muted">{isBn ? r.description_bn : r.description_en}</td>
+                  <td className="px-4 py-3 text-right text-xs font-bold text-red-700 dark:text-red-400">{formatAmount(r.amount, locale, 2)}</td>
                 </tr>
               ))}
             </tbody>

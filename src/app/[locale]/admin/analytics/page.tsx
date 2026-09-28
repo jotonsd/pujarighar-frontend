@@ -75,10 +75,10 @@ function RankedBars({ rows, max, colorClass = "bg-blue-500" }: { rows: { label: 
         return (
           <div key={idx}>
             <div className="flex items-center justify-between mb-1 gap-2">
-              <span className="text-sm text-gray-700 truncate">{row.label}</span>
-              <span className="text-sm font-bold text-gray-800 shrink-0">{formatNumber(row.value, "en")}{row.sub ? ` · ${row.sub}` : ""}</span>
+              <span className="text-sm text-muted truncate">{row.label}</span>
+              <span className="text-sm font-bold text-body shrink-0">{formatNumber(row.value, "en")}{row.sub ? ` · ${row.sub}` : ""}</span>
             </div>
-            <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+            <div className="h-1.5 bg-surface-alt rounded-full overflow-hidden">
               <div className={`h-full rounded-full ${colorClass}`} style={{ width: `${pct}%` }} />
             </div>
           </div>
@@ -89,7 +89,7 @@ function RankedBars({ rows, max, colorClass = "bg-blue-500" }: { rows: { label: 
 }
 
 function EmptyNote({ text }: { text: string }) {
-  return <p className="text-sm text-gray-400 text-center py-6">{text}</p>;
+  return <p className="text-sm text-muted text-center py-6">{text}</p>;
 }
 
 // ─── Traffic tab ─────────────────────────────────────────────────────────────
@@ -121,8 +121,8 @@ function TrafficTab({ from, to, isBn }: { from: string; to: string; isBn: boolea
         <StatTile label={isBn ? "ফিরে আসা ইউজার" : "Returning Users"} value={formatNumber(data.returning_users_total, "en")} tone="orange" icon={UserCheck} />
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-        <h3 className="text-sm font-bold text-gray-800 mb-3">{isBn ? "সেশন ও ইউজার প্রবণতা" : "Sessions & Users Trend"}</h3>
+      <div className="bg-surface rounded-2xl border border-border shadow-sm p-5">
+        <h3 className="text-sm font-bold text-body mb-3">{isBn ? "সেশন ও ইউজার প্রবণতা" : "Sessions & Users Trend"}</h3>
         {chartData.length > 0 ? (
           <ResponsiveContainer width="100%" height={240}>
             <LineChart data={chartData} margin={{ top: 6, right: 8, left: 0, bottom: 0 }}>
@@ -138,8 +138,8 @@ function TrafficTab({ from, to, isBn }: { from: string; to: string; isBn: boolea
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-          <h3 className="text-sm font-bold text-gray-800 mb-3">{isBn ? "শীর্ষ ট্রাফিক সোর্স" : "Top Traffic Sources"}</h3>
+        <div className="bg-surface rounded-2xl border border-border shadow-sm p-5">
+          <h3 className="text-sm font-bold text-body mb-3">{isBn ? "শীর্ষ ট্রাফিক সোর্স" : "Top Traffic Sources"}</h3>
           {data.top_traffic_sources.length > 0 ? (
             <RankedBars
               rows={data.top_traffic_sources.map(s => ({ label: s.source, value: s.sessions }))}
@@ -148,8 +148,8 @@ function TrafficTab({ from, to, isBn }: { from: string; to: string; isBn: boolea
           ) : <EmptyNote text={isBn ? "কোনো ট্রাফিক ডেটা নেই" : "No traffic data yet"} />}
         </div>
 
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-          <h3 className="text-sm font-bold text-gray-800 mb-3">{isBn ? "দেশ অনুযায়ী সেশন" : "Sessions by Country"}</h3>
+        <div className="bg-surface rounded-2xl border border-border shadow-sm p-5">
+          <h3 className="text-sm font-bold text-body mb-3">{isBn ? "দেশ অনুযায়ী সেশন" : "Sessions by Country"}</h3>
           {countryBreakdown.length > 0 ? (
             <div className="flex items-center gap-4">
               <ResponsiveContainer width="50%" height={200}>
@@ -180,11 +180,11 @@ function TrafficTab({ from, to, isBn }: { from: string; to: string; isBn: boolea
               <div className="flex-1 min-w-0 space-y-2">
                 {countryBreakdown.map((c, idx) => (
                   <div key={c.country} className="flex items-center justify-between gap-2 text-xs">
-                    <span className="flex items-center gap-1.5 min-w-0 text-gray-600">
+                    <span className="flex items-center gap-1.5 min-w-0 text-muted">
                       <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: COUNTRY_COLORS[idx % COUNTRY_COLORS.length] }} />
                       <span className="truncate">{c.country}</span>
                     </span>
-                    <span className="font-semibold text-gray-800 shrink-0">{Math.round((c.sessions / countryTotal) * 100)}%</span>
+                    <span className="font-semibold text-body shrink-0">{Math.round((c.sessions / countryTotal) * 100)}%</span>
                   </div>
                 ))}
               </div>
@@ -220,13 +220,13 @@ function SalesTab({ from, to, isBn }: { from: string; to: string; isBn: boolean 
         <StatTile label={isBn ? "কার্ট ছাড়ার হার" : "Cart Abandonment"} value={`${data.cart_abandonment_rate}%`} tone="orange" icon={ShoppingCart} />
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-        <h3 className="text-sm font-bold text-gray-800 mb-3">{isBn ? "কেনাকাটার ফানেল" : "Purchase Funnel"}</h3>
+      <div className="bg-surface rounded-2xl border border-border shadow-sm p-5">
+        <h3 className="text-sm font-bold text-body mb-3">{isBn ? "কেনাকাটার ফানেল" : "Purchase Funnel"}</h3>
         <RankedBars rows={funnel.map(f => ({ label: f.label, value: f.value }))} max={funnelMax} colorClass="bg-blue-600" />
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-        <h3 className="text-sm font-bold text-gray-800 mb-3">{isBn ? "শীর্ষ বিক্রীত পণ্য" : "Top Selling Products"}</h3>
+      <div className="bg-surface rounded-2xl border border-border shadow-sm p-5">
+        <h3 className="text-sm font-bold text-body mb-3">{isBn ? "শীর্ষ বিক্রীত পণ্য" : "Top Selling Products"}</h3>
         {data.top_selling_products.length > 0 ? (
           <RankedBars
             rows={data.top_selling_products.map(p => ({ label: p.name, value: p.revenue, sub: `${p.units_sold} ${isBn ? "ইউনিট" : "units"}` }))}
@@ -245,14 +245,14 @@ function CwvMeter({ label, bucket }: { label: string; bucket?: { good: number; n
   return (
     <div>
       <div className="flex items-center justify-between mb-1">
-        <span className="text-xs text-gray-600">{label}</span>
+        <span className="text-xs text-muted">{label}</span>
       </div>
-      <div className="h-2.5 rounded-full overflow-hidden flex bg-gray-100">
+      <div className="h-2.5 rounded-full overflow-hidden flex bg-surface-alt">
         <div className="h-full bg-green-500" style={{ width: `${bucket.good}%` }} title={`Good ${bucket.good}%`} />
         <div className="h-full bg-amber-400" style={{ width: `${bucket.needs_improvement}%` }} title={`Needs improvement ${bucket.needs_improvement}%`} />
         <div className="h-full bg-red-500" style={{ width: `${bucket.poor}%` }} title={`Poor ${bucket.poor}%`} />
       </div>
-      <div className="flex justify-between text-[11px] text-gray-400 mt-1">
+      <div className="flex justify-between text-[11px] text-muted mt-1">
         <span>{isFinite(bucket.good) ? `${bucket.good}% good` : ""}</span>
         <span>{bucket.poor}% poor</span>
       </div>
@@ -276,8 +276,8 @@ const PSI_LAB_METRIC_LABELS: Record<string, { bn: string; en: string }> = {
 };
 
 function ScoreRing({ score }: { score: number | null }) {
-  if (score === null) return <div className="w-14 h-14 rounded-full border-4 border-gray-100 flex items-center justify-center shrink-0"><span className="text-xs text-gray-300">—</span></div>;
-  const color = score >= 90 ? "text-green-600 border-green-100 bg-green-50" : score >= 50 ? "text-amber-500 border-amber-100 bg-amber-50" : "text-red-700 border-red-100 bg-red-50";
+  if (score === null) return <div className="w-14 h-14 rounded-full border-4 border-border flex items-center justify-center shrink-0"><span className="text-xs text-muted">—</span></div>;
+  const color = score >= 90 ? "text-green-600 dark:text-green-400 border-green-100 dark:border-green-800 bg-green-50 dark:bg-green-900/20" : score >= 50 ? "text-amber-500 dark:text-amber-400 border-amber-100 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20" : "text-red-700 dark:text-red-400 border-red-100 dark:border-red-800 bg-red-50 dark:bg-red-900/20";
   return (
     <div className={`w-14 h-14 rounded-full border-4 flex items-center justify-center shrink-0 ${color}`}>
       <span className="text-lg font-bold">{score}</span>
@@ -301,13 +301,13 @@ function PagespeedSeoCards({ isBn }: { isBn: boolean }) {
 
   const toolbar = (
     <div className="flex items-center justify-between flex-wrap gap-2">
-      <div className="flex gap-1 bg-gray-50 rounded-lg p-1 w-fit">
+      <div className="flex gap-1 bg-surface-alt rounded-lg p-1 w-fit">
         {(["MOBILE", "DESKTOP"] as const).map(s => (
           <button
             key={s}
             onClick={() => setStrategy(s)}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
-              strategy === s ? "bg-white shadow-sm text-amber-700" : "text-gray-500 hover:text-gray-700"
+              strategy === s ? "bg-surface shadow-sm text-amber-700 dark:text-amber-400" : "text-muted hover:text-body"
             }`}
           >
             {s === "MOBILE" ? <Smartphone className="w-3.5 h-3.5" /> : <Monitor className="w-3.5 h-3.5" />}
@@ -318,7 +318,7 @@ function PagespeedSeoCards({ isBn }: { isBn: boolean }) {
       <button
         onClick={handleRefresh}
         disabled={isRefreshing}
-        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-50 text-gray-600 border border-gray-200 hover:bg-gray-100 transition-colors disabled:opacity-50"
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-surface-alt text-muted border border-border hover:bg-border transition-colors disabled:opacity-50"
       >
         <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin" : ""}`} />
         {isRefreshing ? (isBn ? "রিফ্রেশ হচ্ছে..." : "Refreshing...") : (isBn ? "রিফ্রেশ" : "Refresh")}
@@ -339,8 +339,8 @@ function PagespeedSeoCards({ isBn }: { isBn: boolean }) {
     return (
       <div className="space-y-3">
         {toolbar}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-          <h3 className="text-sm font-bold text-gray-800 mb-1">{isBn ? "পেজস্পিড ইনসাইটস" : "PageSpeed Insights"}</h3>
+        <div className="bg-surface rounded-2xl border border-border shadow-sm p-5">
+          <h3 className="text-sm font-bold text-body mb-1">{isBn ? "পেজস্পিড ইনসাইটস" : "PageSpeed Insights"}</h3>
           <EmptyNote text={
             result?.reason === 'no_score_returned'
               ? (isBn ? "স্কোর পাওয়া যায়নি" : "No score returned")
@@ -360,11 +360,11 @@ function PagespeedSeoCards({ isBn }: { isBn: boolean }) {
       {toolbar}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {PSI_CATEGORY_META.map(cat => (
-          <div key={cat.key} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex items-center gap-3">
+          <div key={cat.key} className="bg-surface rounded-2xl border border-border shadow-sm p-4 flex items-center gap-3">
             <ScoreRing score={scores?.[cat.key] ?? null} />
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-gray-800">{isBn ? cat.label_bn : cat.label_en}</p>
-              <p className="text-xs text-gray-400 mt-0.5">
+              <p className="text-sm font-semibold text-body">{isBn ? cat.label_bn : cat.label_en}</p>
+              <p className="text-xs text-muted mt-0.5">
                 {issues?.[cat.key]?.length ? `${issues[cat.key].length} ${isBn ? "সমস্যা" : "issues"}` : (isBn ? "কোনো সমস্যা নেই" : "No issues")}
               </p>
             </div>
@@ -373,15 +373,15 @@ function PagespeedSeoCards({ isBn }: { isBn: boolean }) {
       </div>
 
       {Object.keys(lab).length > 0 && (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-          <h3 className="text-sm font-bold text-gray-800 mb-3">
+        <div className="bg-surface rounded-2xl border border-border shadow-sm p-5">
+          <h3 className="text-sm font-bold text-body mb-3">
             {isBn ? `ল্যাব পারফরম্যান্স মেট্রিক্স (${strategy === "MOBILE" ? "মোবাইল" : "ডেস্কটপ"})` : `Lab Performance Metrics (${strategy === "MOBILE" ? "mobile" : "desktop"})`}
           </h3>
           <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
             {Object.entries(lab).map(([id, value]) => (
               <div key={id}>
-                <p className="text-sm font-bold text-gray-800">{value}</p>
-                <p className="text-xs text-gray-400">{PSI_LAB_METRIC_LABELS[id] ? (isBn ? PSI_LAB_METRIC_LABELS[id].bn : PSI_LAB_METRIC_LABELS[id].en) : id}</p>
+                <p className="text-sm font-bold text-body">{value}</p>
+                <p className="text-xs text-muted">{PSI_LAB_METRIC_LABELS[id] ? (isBn ? PSI_LAB_METRIC_LABELS[id].bn : PSI_LAB_METRIC_LABELS[id].en) : id}</p>
               </div>
             ))}
           </div>
@@ -389,15 +389,15 @@ function PagespeedSeoCards({ isBn }: { isBn: boolean }) {
       )}
 
       {PSI_CATEGORY_META.some(cat => issues?.[cat.key]?.length) && (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-          <h3 className="text-sm font-bold text-gray-800 mb-3">{isBn ? "সমাধানযোগ্য সমস্যা" : "Issues to Fix"}</h3>
+        <div className="bg-surface rounded-2xl border border-border shadow-sm p-5">
+          <h3 className="text-sm font-bold text-body mb-3">{isBn ? "সমাধানযোগ্য সমস্যা" : "Issues to Fix"}</h3>
           <div className="space-y-4">
             {PSI_CATEGORY_META.filter(cat => issues?.[cat.key]?.length).map(cat => (
               <div key={cat.key}>
-                <p className="text-xs font-semibold text-gray-500 mb-1.5">{isBn ? cat.label_bn : cat.label_en}</p>
+                <p className="text-xs font-semibold text-muted mb-1.5">{isBn ? cat.label_bn : cat.label_en}</p>
                 <ul className="space-y-1">
                   {issues![cat.key].slice(0, 5).map((issue, idx) => (
-                    <li key={idx} className="text-xs text-gray-600 flex items-start gap-1.5">
+                    <li key={idx} className="text-xs text-muted flex items-start gap-1.5">
                       <span className="text-red-400 mt-0.5">•</span>
                       <span>{issue.title}</span>
                     </li>
@@ -434,8 +434,8 @@ function SeoTab({ from, to, isBn }: { from: string; to: string; isBn: boolean })
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-          <h3 className="text-sm font-bold text-gray-800 mb-3">{isBn ? "ক্লিক প্রবণতা" : "Clicks Trend"}</h3>
+        <div className="bg-surface rounded-2xl border border-border shadow-sm p-5">
+          <h3 className="text-sm font-bold text-body mb-3">{isBn ? "ক্লিক প্রবণতা" : "Clicks Trend"}</h3>
           {clicksData.length > 0 ? (
             <ResponsiveContainer width="100%" height={180}>
               <LineChart data={clicksData} margin={{ top: 6, right: 8, left: 0, bottom: 0 }}>
@@ -448,8 +448,8 @@ function SeoTab({ from, to, isBn }: { from: string; to: string; isBn: boolean })
             </ResponsiveContainer>
           ) : <EmptyNote text={isBn ? "কোনো ডেটা নেই" : "No data yet"} />}
         </div>
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-          <h3 className="text-sm font-bold text-gray-800 mb-3">{isBn ? "ইমপ্রেশন প্রবণতা" : "Impressions Trend"}</h3>
+        <div className="bg-surface rounded-2xl border border-border shadow-sm p-5">
+          <h3 className="text-sm font-bold text-body mb-3">{isBn ? "ইমপ্রেশন প্রবণতা" : "Impressions Trend"}</h3>
           {impressionsData.length > 0 ? (
             <ResponsiveContainer width="100%" height={180}>
               <LineChart data={impressionsData} margin={{ top: 6, right: 8, left: 0, bottom: 0 }}>
@@ -465,14 +465,14 @@ function SeoTab({ from, to, isBn }: { from: string; to: string; isBn: boolean })
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-          <h3 className="text-sm font-bold text-gray-800 mb-3">{isBn ? "শীর্ষ ১০ সার্চ কোয়েরি" : "Top 10 Search Queries"}</h3>
+        <div className="bg-surface rounded-2xl border border-border shadow-sm p-5">
+          <h3 className="text-sm font-bold text-body mb-3">{isBn ? "শীর্ষ ১০ সার্চ কোয়েরি" : "Top 10 Search Queries"}</h3>
           {data.top_queries.length > 0 ? (
             <RankedBars rows={data.top_queries.map(q => ({ label: q.query, value: q.clicks, sub: `#${q.position}` }))} max={maxQueryClicks} />
           ) : <EmptyNote text={isBn ? "কোনো কোয়েরি ডেটা নেই" : "No query data yet"} />}
         </div>
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-          <h3 className="text-sm font-bold text-gray-800 mb-3">{isBn ? "শীর্ষ ১০ ল্যান্ডিং পেজ" : "Top 10 Landing Pages"}</h3>
+        <div className="bg-surface rounded-2xl border border-border shadow-sm p-5">
+          <h3 className="text-sm font-bold text-body mb-3">{isBn ? "শীর্ষ ১০ ল্যান্ডিং পেজ" : "Top 10 Landing Pages"}</h3>
           {data.top_pages.length > 0 ? (
             <RankedBars rows={data.top_pages.map(p => ({ label: p.page, value: p.clicks, sub: `#${p.position}` }))} max={maxPageClicks} colorClass="bg-teal-600" />
           ) : <EmptyNote text={isBn ? "কোনো পেজ ডেটা নেই" : "No page data yet"} />}
@@ -480,9 +480,9 @@ function SeoTab({ from, to, isBn }: { from: string; to: string; isBn: boolean })
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-          <h3 className="text-sm font-bold text-gray-800 mb-1">{isBn ? "সার্চে দৃশ্যমান পেজ (ইনডেক্স অনুমান)" : "Pages Visible in Search (indexing proxy)"}</h3>
-          <p className="text-xs text-gray-400 mb-3">
+        <div className="bg-surface rounded-2xl border border-border shadow-sm p-5">
+          <h3 className="text-sm font-bold text-body mb-1">{isBn ? "সার্চে দৃশ্যমান পেজ (ইনডেক্স অনুমান)" : "Pages Visible in Search (indexing proxy)"}</h3>
+          <p className="text-xs text-muted mb-3">
             {isBn
               ? "সার্চ কনসোলে সঠিক ইনডেক্স সংখ্যার জন্য কোনো পাবলিক API নেই। এটি গত ১৬ মাসে কমপক্ষে একবার সার্চে দেখানো পেজের সংখ্যা — সাইটম্যাপ-ভিত্তিক পুরনো পদ্ধতির চেয়ে অনেক বেশি নির্ভরযোগ্য, কারণ ইনডেক্স না হলে কোনো পেজ সার্চে দেখানো সম্ভবই না।"
               : "Search Console has no public API for the exact indexed count. This counts distinct pages that got at least one search impression in the last 16 months — far more reliable than the old sitemap-based approach, since a page can't appear in Search at all unless Google has actually indexed it."}
@@ -490,20 +490,20 @@ function SeoTab({ from, to, isBn }: { from: string; to: string; isBn: boolean })
           {data.indexed_pages_estimate.available ? (
             <div className="flex items-center gap-6">
               <div>
-                <p className="text-2xl font-bold text-gray-800">{formatNumber(data.indexed_pages_estimate.indexed, "en")}</p>
-                <p className="text-xs text-gray-400">{isBn ? "সার্চে দৃশ্যমান" : "Visible in Search"}</p>
+                <p className="text-2xl font-bold text-body">{formatNumber(data.indexed_pages_estimate.indexed, "en")}</p>
+                <p className="text-xs text-muted">{isBn ? "সার্চে দৃশ্যমান" : "Visible in Search"}</p>
               </div>
               <div>
-                <p className="text-2xl font-bold text-gray-400">{formatNumber(data.indexed_pages_estimate.submitted, "en")}</p>
-                <p className="text-xs text-gray-400">{isBn ? "সাইটম্যাপে জমা দেওয়া" : "Submitted in Sitemap"}</p>
+                <p className="text-2xl font-bold text-muted">{formatNumber(data.indexed_pages_estimate.submitted, "en")}</p>
+                <p className="text-xs text-muted">{isBn ? "সাইটম্যাপে জমা দেওয়া" : "Submitted in Sitemap"}</p>
               </div>
             </div>
           ) : <EmptyNote text={isBn ? "কোনো সাইটম্যাপ জমা দেওয়া হয়নি" : "No sitemap submitted yet"} />}
         </div>
 
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-          <h3 className="text-sm font-bold text-gray-800 mb-1">{isBn ? "কোর ওয়েব ভাইটালস (মোবাইল)" : "Core Web Vitals (mobile)"}</h3>
-          <p className="text-xs text-gray-400 mb-3">
+        <div className="bg-surface rounded-2xl border border-border shadow-sm p-5">
+          <h3 className="text-sm font-bold text-body mb-1">{isBn ? "কোর ওয়েব ভাইটালস (মোবাইল)" : "Core Web Vitals (mobile)"}</h3>
+          <p className="text-xs text-muted mb-3">
             {isBn ? "গুগলের মোবাইল ইউজেবিলিটি রিপোর্ট বন্ধ হওয়ার পর এটিই বাস্তব বিকল্প (Chrome ইউজার ডেটা)।" : "Real substitute for Google's retired Mobile Usability report (Chrome field data)."}
           </p>
           {cwv.available ? (
@@ -541,13 +541,13 @@ function ConnectCard({ isBn }: { isBn: boolean }) {
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-10 flex flex-col items-center text-center gap-4">
-      <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center">
+    <div className="bg-surface rounded-2xl border border-border shadow-sm p-10 flex flex-col items-center text-center gap-4">
+      <div className="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center">
         <LinkIcon className="w-7 h-7 text-blue-600" />
       </div>
       <div>
-        <h2 className="text-base font-bold text-gray-800">{isBn ? "গুগল অ্যানালিটিক্স ও সার্চ কনসোল সংযুক্ত করুন" : "Connect Google Analytics & Search Console"}</h2>
-        <p className="text-sm text-gray-500 mt-1 max-w-md">
+        <h2 className="text-base font-bold text-body">{isBn ? "গুগল অ্যানালিটিক্স ও সার্চ কনসোল সংযুক্ত করুন" : "Connect Google Analytics & Search Console"}</h2>
+        <p className="text-sm text-muted mt-1 max-w-md">
           {isBn
             ? "আপনার গুগল অ্যাকাউন্ট দিয়ে সাইন ইন করুন যাতে ট্রাফিক, বিক্রয় ও এসইও ডেটা এখানেই দেখতে পারেন।"
             : "Sign in with your Google account to see traffic, sales, and SEO data right here."}
@@ -580,12 +580,12 @@ function PickerCard({ isBn }: { isBn: boolean }) {
   if (isLoading) return <Skeleton className="h-64 rounded-2xl" />;
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 max-w-lg mx-auto">
+    <div className="bg-surface rounded-2xl border border-border shadow-sm p-6 max-w-lg mx-auto">
       <div className="flex items-center gap-2 mb-1">
         <CheckCircle2 className="w-5 h-5 text-green-600" />
-        <h2 className="text-base font-bold text-gray-800">{isBn ? "সংযুক্ত হয়েছে — এখন নির্বাচন করুন" : "Connected — now pick your property"}</h2>
+        <h2 className="text-base font-bold text-body">{isBn ? "সংযুক্ত হয়েছে — এখন নির্বাচন করুন" : "Connected — now pick your property"}</h2>
       </div>
-      <p className="text-sm text-gray-500 mb-4">
+      <p className="text-sm text-muted mb-4">
         {isBn ? "কোন GA4 প্রপার্টি ও সার্চ কনসোল সাইট থেকে ডেটা আনতে চান তা বেছে নিন।" : "Choose which GA4 property and Search Console site to pull data from."}
       </p>
       <div className="space-y-4">
@@ -659,7 +659,7 @@ export default function AnalyticsPage() {
         actions={status?.is_connected ? (
           <button
             onClick={handleDisconnect}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-red-50 text-red-700 border border-red-100 hover:bg-red-100 transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 border border-red-100 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors"
           >
             <Unplug className="w-3.5 h-3.5" />
             {isBn ? "বিচ্ছিন্ন করুন" : "Disconnect"}
@@ -675,14 +675,14 @@ export default function AnalyticsPage() {
         <PickerCard isBn={isBn} />
       ) : (
         <>
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-3 flex flex-col sm:flex-row sm:items-center gap-3 sm:justify-between">
-            <div className="flex gap-1 bg-gray-50 rounded-xl p-1 w-fit">
+          <div className="bg-surface rounded-2xl border border-border shadow-sm p-3 flex flex-col sm:flex-row sm:items-center gap-3 sm:justify-between">
+            <div className="flex gap-1 bg-surface-alt rounded-xl p-1 w-fit">
               {TABS.map(tab => (
                 <button
                   key={tab.id}
                   onClick={() => setActive(tab.id)}
                   className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    active === tab.id ? "bg-white shadow-sm text-amber-700" : "text-gray-500 hover:text-gray-700"
+                    active === tab.id ? "bg-surface shadow-sm text-amber-700 dark:text-amber-400" : "text-muted hover:text-body"
                   }`}
                 >
                   {tab.icon}

@@ -19,7 +19,7 @@ export default function HomeNewArrivalsClient({ products }: { products: Product[
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-2">
           <Sparkles className="w-6 h-6 text-amber-600" />
-          <h2 className="text-xl font-bold text-gray-800">
+          <h2 className="text-xl font-bold text-body">
             {locale === "bn" ? "নতুন এসেছে" : "New Arrivals"}
           </h2>
         </div>

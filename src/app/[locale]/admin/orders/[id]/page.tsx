@@ -56,7 +56,7 @@ export default function AdminOrderDetailPage({
           <div className="flex items-center gap-2">
             <button
               onClick={() => setShowInvoice(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-xs font-medium text-muted hover:bg-surface-alt transition-colors"
             >
               <FileText className="w-3.5 h-3.5" />
               {locale === "bn" ? "চালান" : "Invoice"}
@@ -70,7 +70,7 @@ export default function AdminOrderDetailPage({
       {(order.exchanged_from || order.exchanges.length > 0) && (
         <div className="mb-4 space-y-2">
           {order.exchanged_from && (
-            <div className="rounded-xl border border-purple-200 bg-purple-50 px-4 py-2.5 text-sm text-purple-800">
+            <div className="rounded-xl border border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-900/30 px-4 py-2.5 text-sm text-purple-800 dark:text-purple-400">
               {locale === "bn" ? "এটি একটি বিনিময় প্রতিস্থাপন — মূল অর্ডার: " : "This is an exchange replacement for order "}
               <a href={`/${locale}/admin/orders/${order.exchanged_from.id}`} className="font-semibold underline">
                 #{order.exchanged_from.order_number}
@@ -78,7 +78,7 @@ export default function AdminOrderDetailPage({
             </div>
           )}
           {order.exchanges.map(ex => (
-            <div key={ex.id} className="rounded-xl border border-purple-200 bg-purple-50 px-4 py-2.5 text-sm text-purple-800">
+            <div key={ex.id} className="rounded-xl border border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-900/30 px-4 py-2.5 text-sm text-purple-800 dark:text-purple-400">
               {locale === "bn" ? "এই অর্ডারের একটি অংশ বিনিময় হয়েছে — নতুন অর্ডার: " : "Part of this order was exchanged — new order "}
               <a href={`/${locale}/admin/orders/${ex.new_order_id}`} className="font-semibold underline">
                 #{ex.new_order_number}
@@ -95,7 +95,7 @@ export default function AdminOrderDetailPage({
           <OrderActions order={order} orderId={params.id} />
         </div>
         <div className="card h-fit">
-          <h2 className="font-semibold text-gray-700 mb-4">
+          <h2 className="font-semibold text-muted mb-4">
             {locale === "bn" ? "ট্র্যাকিং" : "Tracking"}
           </h2>
           <OrderProgressBar status={order.status} locale={locale} isCourier={!!order.courier_consignment} />
@@ -118,8 +118,8 @@ export default function AdminOrderDetailPage({
             courierTrackingUrl={order.courier_consignment?.tracking_url}
           />
 
-          <div className="mt-4 pt-3 border-t border-gray-100">
-            <p className="text-xs font-medium text-gray-500 mb-1.5">
+          <div className="mt-4 pt-3 border-t border-border">
+            <p className="text-xs font-medium text-muted mb-1.5">
               {locale === "bn" ? "পাবলিক ট্র্যাকিং লিংক" : "Public tracking link"}
             </p>
             <div className="flex items-center gap-1.5">
@@ -127,26 +127,26 @@ export default function AdminOrderDetailPage({
                 readOnly
                 value={publicTrackingUrl}
                 onFocus={e => e.target.select()}
-                className="flex-1 min-w-0 text-xs text-gray-500 bg-gray-50 border border-gray-200 rounded-lg px-2 py-1.5 truncate"
+                className="flex-1 min-w-0 text-xs text-muted bg-background border border-border rounded-lg px-2 py-1.5 truncate"
               />
               <button
                 onClick={handleCopyTrackingLink}
                 title={locale === "bn" ? "কপি করুন" : "Copy"}
-                className="shrink-0 w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-100 transition-colors"
+                className="shrink-0 w-8 h-8 flex items-center justify-center rounded-lg border border-border text-muted hover:bg-surface-alt transition-colors"
               >
-                {copied ? <Check className="w-3.5 h-3.5 text-green-600" /> : <Copy className="w-3.5 h-3.5" />}
+                {copied ? <Check className="w-3.5 h-3.5 text-green-600 dark:text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
               </button>
               <a
                 href={publicTrackingUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 title={locale === "bn" ? "খুলুন" : "Open"}
-                className="shrink-0 w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-100 transition-colors"
+                className="shrink-0 w-8 h-8 flex items-center justify-center rounded-lg border border-border text-muted hover:bg-surface-alt transition-colors"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
               </a>
             </div>
-            <p className="text-[11px] text-gray-400 mt-1">
+            <p className="text-[11px] text-muted mt-1">
               {locale === "bn"
                 ? "গ্রাহককে এসএমএস/হোয়াটসঅ্যাপে পাঠানোর জন্য এই লিংকটি কপি করুন — লগইন লাগবে না।"
                 : "Copy this link to send the customer via SMS/WhatsApp — no login required."}

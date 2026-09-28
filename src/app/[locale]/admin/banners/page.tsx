@@ -47,10 +47,10 @@ export default function BannersAdminPage() {
       header: locale === 'bn' ? 'ছবি' : 'Image',
       accessor: b => b.image ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={b.image} alt="" className="w-16 h-10 object-cover rounded-lg border border-gray-100" />
+        <img src={b.image} alt="" className="w-16 h-10 object-cover rounded-lg border border-border" />
       ) : (
-        <div className="w-16 h-10 rounded-lg border border-gray-100 flex items-center justify-center" style={{ backgroundColor: b.bg_color }}>
-          <span className="text-xs text-gray-400">—</span>
+        <div className="w-16 h-10 rounded-lg border border-border flex items-center justify-center" style={{ backgroundColor: b.bg_color }}>
+          <span className="text-xs text-muted">—</span>
         </div>
       ),
       className: 'px-4 py-2 w-24',
@@ -59,21 +59,21 @@ export default function BannersAdminPage() {
       header: locale === 'bn' ? 'শিরোনাম' : 'Title',
       accessor: b => (
         <div>
-          <p className="font-medium text-gray-800 text-sm">
+          <p className="font-medium text-body text-sm">
             {locale === 'bn' ? b.title_bn : b.title_en}
-            {b.badge_text && <span className="ml-2 text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full">{b.badge_text}</span>}
+            {b.badge_text && <span className="ml-2 text-xs bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 px-1.5 py-0.5 rounded-full">{b.badge_text}</span>}
           </p>
           {(locale === 'bn' ? b.subtitle_bn : b.subtitle_en) && (
-            <p className="text-xs text-gray-400">{locale === 'bn' ? b.subtitle_bn : b.subtitle_en}</p>
+            <p className="text-xs text-muted">{locale === 'bn' ? b.subtitle_bn : b.subtitle_en}</p>
           )}
         </div>
       ),
     },
     {
       header: locale === 'bn' ? 'লিংক' : 'Link',
-      accessor: b => b.link ? <span className="text-xs text-blue-500 truncate max-w-xs block">{b.link}</span> : <span className="text-xs text-gray-300">—</span>,
+      accessor: b => b.link ? <span className="text-xs text-blue-500 truncate max-w-xs block">{b.link}</span> : <span className="text-xs text-muted">—</span>,
     },
-    { header: locale === 'bn' ? 'ক্রম' : 'Order', accessor: b => <span className="text-xs text-gray-500">#{b.order}</span>, className: 'px-4 py-3 w-20' },
+    { header: locale === 'bn' ? 'ক্রম' : 'Order', accessor: b => <span className="text-xs text-muted">#{b.order}</span>, className: 'px-4 py-3 w-20' },
     {
       header: locale === 'bn' ? 'স্ট্যাটাস' : 'Status',
       accessor: b => (
@@ -85,8 +85,8 @@ export default function BannersAdminPage() {
   ]
 
   const quickActions: QuickAction<Banner>[] = [
-    { label: 'Edit', icon: <Pencil className="w-3.5 h-3.5" />, onClick: openEdit, className: 'inline-flex items-center justify-center w-8 h-8 rounded-lg border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors' },
-    { label: 'Delete', icon: <Trash2 className="w-3.5 h-3.5" />, onClick: b => setDeleteTarget(b.id), className: 'inline-flex items-center justify-center w-8 h-8 rounded-lg border border-red-200 bg-red-50 text-red-500 hover:bg-red-100 transition-colors' },
+    { label: 'Edit', icon: <Pencil className="w-3.5 h-3.5" />, onClick: openEdit, className: 'inline-flex items-center justify-center w-8 h-8 rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/40 transition-colors' },
+    { label: 'Delete', icon: <Trash2 className="w-3.5 h-3.5" />, onClick: b => setDeleteTarget(b.id), className: 'inline-flex items-center justify-center w-8 h-8 rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors' },
   ]
 
   return (

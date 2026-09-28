@@ -113,7 +113,7 @@ export function CartSkeleton() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
       <div className="lg:col-span-2">
-        <div className="card divide-y divide-gray-100 p-0 overflow-hidden">
+        <div className="card divide-y divide-border p-0 overflow-hidden">
           {Array.from({ length: 3 }).map((_, i) => (
             <div key={i} className="px-4 py-3 flex items-center gap-3">
               <Skeleton className="w-11 h-11 rounded-lg shrink-0" />
@@ -130,7 +130,7 @@ export function CartSkeleton() {
         <Skeleton className="h-4 w-1/3" />
         <Skeleton className="h-16 w-full rounded-lg" />
         <Skeleton className="h-16 w-full rounded-lg" />
-        <div className="border-t border-gray-100 pt-3 space-y-2">
+        <div className="border-t border-border pt-3 space-y-2">
           <Skeleton className="h-3.5 w-full" />
           <Skeleton className="h-3.5 w-full" />
           <Skeleton className="h-4 w-2/3" />
@@ -228,17 +228,17 @@ export function TrackingSkeleton() {
         <Skeleton className="h-6 w-20 rounded-full" />
       </div>
       <Skeleton className="h-10 w-full rounded-lg" />
-      <div className="border-t border-gray-100 pt-4 space-y-2">
+      <div className="border-t border-border pt-4 space-y-2">
         <Skeleton className="h-3 w-28 mb-2" />
         <Skeleton className="h-4 w-1/2" />
         <Skeleton className="h-3.5 w-1/3" />
         <Skeleton className="h-3.5 w-2/3" />
       </div>
-      <div className="border-t border-gray-100 pt-4 flex items-center justify-between">
+      <div className="border-t border-border pt-4 flex items-center justify-between">
         <Skeleton className="h-4 w-32" />
         <Skeleton className="h-6 w-20" />
       </div>
-      <div className="border-t border-gray-100 pt-4 space-y-3">
+      <div className="border-t border-border pt-4 space-y-3">
         <Skeleton className="h-3 w-28 mb-2" />
         {Array.from({ length: 3 }).map((_, i) => (
           <div key={i} className="flex items-center gap-3">
@@ -262,7 +262,7 @@ export function POSProductSkeleton({ count = 25 }: { count?: number }) {
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={i}
-          className="rounded-xl border border-gray-100 bg-white p-2 space-y-2"
+          className="rounded-xl border border-border bg-surface p-2 space-y-2"
         >
           <Skeleton className="aspect-square w-full rounded-lg" />
           <Skeleton className="h-2.5 w-full" />
@@ -285,10 +285,10 @@ export default function TableSkeleton({
 }) {
   const widths = ["w-16", "w-32", "w-24", "w-28", "w-20", "w-12"];
   return (
-    <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+    <div className="bg-surface rounded-lg shadow-sm overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-amber-50 border-b border-amber-200">
+          <thead className="bg-amber-50 dark:bg-amber-900/20 border-b border-amber-200 dark:border-amber-800">
             <tr>
               {Array.from({ length: columns }).map((_, i) => (
                 <th key={i} className="px-4 py-3 text-left">
@@ -297,7 +297,7 @@ export default function TableSkeleton({
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-border">
             {Array.from({ length: rows }).map((_, r) => (
               <tr key={r}>
                 {Array.from({ length: columns }).map((_, c) => (

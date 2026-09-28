@@ -39,14 +39,14 @@ export default function Checkbox({
   return (
     <label
       className={`flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer transition-colors text-sm ${
-        checked ? v.active : 'text-gray-600 hover:bg-gray-50'
+        checked ? v.active : 'text-muted hover:bg-surface-alt'
       } ${className}`}
     >
       <input
         type="checkbox"
         checked={checked}
         onChange={onChange}
-        className={`w-4 h-4 rounded border-gray-300 shrink-0 cursor-pointer ${v.input} ${v.ring}`}
+        className={`w-4 h-4 rounded border-border shrink-0 cursor-pointer ${v.input} ${v.ring}`}
       />
       <span className={`leading-snug ${bold ? 'font-medium' : ''}`}>{label}</span>
     </label>

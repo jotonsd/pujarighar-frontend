@@ -64,17 +64,17 @@ function TierModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg">
+      <div className="bg-surface rounded-2xl shadow-2xl w-full max-w-lg">
         {/* Modal header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-          <h2 className="text-base font-bold text-gray-900">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+          <h2 className="text-base font-bold text-body">
             {editId !== null
               ? isBn ? "টায়ার সম্পাদনা করুন" : "Edit Cashback Tier"
               : isBn ? "নতুন টায়ার যোগ করুন" : "Add New Cashback Tier"}
           </h2>
           <button
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+            className="w-8 h-8 flex items-center justify-center rounded-lg text-muted hover:bg-surface-alt hover:text-muted transition-colors"
           >
             ✕
           </button>
@@ -121,7 +121,7 @@ function TierModal({
 
           {/* Active toggle */}
           <div className="flex items-center gap-3">
-            <span className="text-sm text-gray-600">
+            <span className="text-sm text-muted">
               {isBn ? "সক্রিয়" : "Active"}
             </span>
             <ToggleSwitch
@@ -134,7 +134,7 @@ function TierModal({
 
           {/* Live preview */}
           {preview !== null && (
-            <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-800">
+            <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-800 dark:bg-amber-900/30 dark:border-amber-800 dark:text-amber-400">
               <span className="font-semibold">
                 {isBn ? "পূর্বরূপ: " : "Preview: "}
               </span>
@@ -142,7 +142,7 @@ function TierModal({
                 ? `${formatAmount(form.min_order_amount, locale, 0)} অর্ডারে ক্যাশব্যাক → ${formatAmount(preview, locale)}`
                 : `${formatAmount(form.min_order_amount, locale, 0)} order → ${formatAmount(preview, locale)} cashback`}
               {Number(form.max_cashback) > 0 && (
-                <span className="text-amber-700 ml-2 text-xs">
+                <span className="text-amber-700 dark:text-amber-400 ml-2 text-xs">
                   ({isBn
                     ? `সর্বোচ্চ ${formatAmount(form.max_cashback, locale, 0)}`
                     : `max ${formatAmount(form.max_cashback, locale, 0)}`})
@@ -153,7 +153,7 @@ function TierModal({
         </div>
 
         {/* Modal footer */}
-        <div className="flex gap-3 px-6 py-4 border-t border-gray-100">
+        <div className="flex gap-3 px-6 py-4 border-t border-border">
           <button onClick={onSave} disabled={saving} className="btn-primary flex-1">
             {saving
               ? isBn ? "সংরক্ষণ হচ্ছে..." : "Saving..."
@@ -247,7 +247,7 @@ export default function CashbackSettingPage() {
     {
       header: isBn ? "সর্বনিম্ন অর্ডার" : "Min Order",
       accessor: (t) => (
-        <span className="font-bold text-gray-800">
+        <span className="font-bold text-body">
           {formatAmount(t.min_order_amount, locale, 0)}
         </span>
       ),
@@ -256,13 +256,13 @@ export default function CashbackSettingPage() {
       header: isBn ? "ধরন" : "Type",
       accessor: (t) =>
         t.cashback_type === "FIXED"
-          ? <span className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded-full text-xs font-medium">{isBn ? "নির্দিষ্ট" : "Fixed"}</span>
-          : <span className="px-2 py-0.5 bg-purple-50 text-purple-700 rounded-full text-xs font-medium">{isBn ? "শতাংশ" : "Percent"}</span>,
+          ? <span className="px-2 py-0.5 bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 rounded-full text-xs font-medium">{isBn ? "নির্দিষ্ট" : "Fixed"}</span>
+          : <span className="px-2 py-0.5 bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 rounded-full text-xs font-medium">{isBn ? "শতাংশ" : "Percent"}</span>,
     },
     {
       header: isBn ? "ক্যাশব্যাক পরিমাণ" : "Cashback Value",
       accessor: (t) => (
-        <span className="font-bold text-green-700">
+        <span className="font-bold text-green-700 dark:text-green-400">
           {t.cashback_type === "FIXED"
             ? formatAmount(t.cashback_value, locale, 0)
             : `${formatNumber(t.cashback_value, locale)}%`}
@@ -273,8 +273,8 @@ export default function CashbackSettingPage() {
       header: isBn ? "সর্বোচ্চ সীমা" : "Max Cap",
       accessor: (t) =>
         Number(t.max_cashback) > 0
-          ? <span className="font-bold text-gray-700">{formatAmount(t.max_cashback, locale, 0)}</span>
-          : <span className="text-gray-400 text-xs">—</span>,
+          ? <span className="font-bold text-muted">{formatAmount(t.max_cashback, locale, 0)}</span>
+          : <span className="text-muted text-xs">—</span>,
     },
     {
       header: isBn ? "সক্রিয়" : "Active",
@@ -300,7 +300,7 @@ export default function CashbackSettingPage() {
       icon: <Trash2 className="w-3.5 h-3.5" />,
       onClick: (t) => handleDelete(t.id),
       className:
-        "inline-flex items-center justify-center w-8 h-8 text-red-500 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition-colors text-xs",
+        "inline-flex items-center justify-center w-8 h-8 text-red-500 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 dark:bg-red-900/30 dark:border-red-800 dark:hover:bg-red-900/50 transition-colors text-xs",
     },
   ];
 

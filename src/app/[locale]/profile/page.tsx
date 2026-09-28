@@ -257,8 +257,8 @@ export default function ProfilePage() {
                 onClick={() => setTab(tb.key)}
                 className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium text-left transition-colors ${
                   tab === tb.key
-                    ? "bg-amber-50 text-amber-700"
-                    : "text-gray-600 hover:bg-gray-50"
+                    ? "bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
+                    : "text-muted hover:bg-surface-alt"
                 }`}
               >
                 {tb.icon}
@@ -309,10 +309,10 @@ export default function ProfilePage() {
                   />
                 </div>
                 <div>
-                  <p className="font-medium text-gray-700 text-sm">
+                  <p className="font-medium text-muted text-sm">
                     {locale === "bn" ? "প্রোফাইল ছবি" : "Profile Photo"}
                   </p>
-                  <p className="text-xs text-gray-400">
+                  <p className="text-xs text-muted">
                     {locale === "bn"
                       ? "ছবিতে ক্লিক করে পরিবর্তন করুন"
                       : "Click photo to change"}
@@ -353,7 +353,7 @@ export default function ProfilePage() {
                   label={isBn ? "ইমেইল" : "Email"}
                   value={me?.email ?? ""}
                   disabled
-                  className="bg-gray-50 text-gray-400 cursor-not-allowed"
+                  className="bg-background text-muted cursor-not-allowed"
                 />
               </div>
               <div className="grid grid-cols-2 gap-3">
@@ -404,7 +404,7 @@ export default function ProfilePage() {
 
           {tab === "password" && (
             <div className="card max-w-md space-y-4">
-              <h2 className="font-semibold text-gray-700 flex items-center gap-2">
+              <h2 className="font-semibold text-muted flex items-center gap-2">
                 <Lock className="w-4 h-4" />
                 {t("auth.changePassword")}
               </h2>
@@ -441,11 +441,11 @@ export default function ProfilePage() {
 
           {tab === "language" && (
             <div className="card max-w-md space-y-4">
-              <h2 className="font-semibold text-gray-700 flex items-center gap-2">
+              <h2 className="font-semibold text-muted flex items-center gap-2">
                 <Globe className="w-4 h-4" />
                 {isBn ? "ভাষা পছন্দ" : "Preferred Language"}
               </h2>
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-muted">
                 {isBn
                   ? "এই ভাষায় আপনি ইমেইল ও নোটিফিকেশন পাবেন"
                   : "You'll receive emails and notifications in this language"}
@@ -461,7 +461,7 @@ export default function ProfilePage() {
                     className={`flex-1 py-2.5 rounded-lg text-sm font-medium border transition-colors ${
                       (me?.preferred_language ?? "bn") === opt.code
                         ? "bg-amber-600 text-white border-amber-500"
-                        : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50"
+                        : "bg-surface text-muted border-border hover:bg-surface-alt"
                     }`}
                   >
                     {opt.label}
@@ -477,17 +477,17 @@ export default function ProfilePage() {
 
           {tab === "notifications" && isCustomer && (
             <div className="card max-w-md space-y-4">
-              <h2 className="font-semibold text-gray-700 flex items-center gap-2">
+              <h2 className="font-semibold text-muted flex items-center gap-2">
                 <Bell className="w-4 h-4" />
                 {locale === "bn" ? "ইমেইল নোটিফিকেশন" : "Email Notifications"}
               </h2>
 
-              <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+              <div className="flex items-center justify-between border-b border-border pb-3">
                 <div>
-                  <p className="text-sm font-medium text-gray-700">
+                  <p className="text-sm font-medium text-muted">
                     {locale === "bn" ? "প্রচারণামূলক ইমেইল" : "Marketing Emails"}
                   </p>
-                  <p className="text-xs text-gray-400">
+                  <p className="text-xs text-muted">
                     {locale === "bn"
                       ? "বন্ধ করলে আপনি নিচের কোনো ক্যাটাগরির ইমেইলই পাবেন না"
                       : "Turning this off stops all categories below"}
@@ -505,7 +505,7 @@ export default function ProfilePage() {
                 { key: "notify_offers" as const, bn: "অফার ও ছাড়", en: "Offers & discounts" },
               ].map((row) => (
                 <div key={row.key} className="flex items-center justify-between">
-                  <p className="text-sm text-gray-600">{locale === "bn" ? row.bn : row.en}</p>
+                  <p className="text-sm text-muted">{locale === "bn" ? row.bn : row.en}</p>
                   <ToggleSwitch
                     checked={me?.profile?.[row.key] ?? true}
                     disabled={!(me?.profile?.notify_marketing ?? true)}

@@ -29,11 +29,11 @@ export default async function ReturnPolicyPage({ params }: Props) {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-10">
-      <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6">
+      <h1 className="text-2xl sm:text-3xl font-bold text-body mb-6">
         {isBn ? "রিটার্ন নীতি" : "Return Policy"}
       </h1>
 
-      <div className="space-y-6 text-sm sm:text-base text-gray-600 leading-relaxed">
+      <div className="space-y-6 text-sm sm:text-base text-muted leading-relaxed">
         <p>
           {isBn
             ? "আমরা চাই আপনি আমাদের পণ্যে সম্পূর্ণ সন্তুষ্ট হন। যদি কোনো সমস্যা থাকে, নিচের নীতি অনুসরণ করে রিটার্ন বা প্রতিস্থাপনের ব্যবস্থা করা যাবে।"
@@ -41,7 +41,7 @@ export default async function ReturnPolicyPage({ params }: Props) {
         </p>
 
         <section>
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">
+          <h2 className="text-lg font-semibold text-body mb-2">
             {isBn ? "রিটার্নের শর্ত" : "Eligibility for Return"}
           </h2>
           <p>
@@ -52,7 +52,7 @@ export default async function ReturnPolicyPage({ params }: Props) {
         </section>
 
         <section>
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">
+          <h2 className="text-lg font-semibold text-body mb-2">
             {isBn ? "যেসব পণ্য রিটার্ন করা যায় না" : "Non-Returnable Items"}
           </h2>
           <p>
@@ -63,7 +63,7 @@ export default async function ReturnPolicyPage({ params }: Props) {
         </section>
 
         <section>
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">
+          <h2 className="text-lg font-semibold text-body mb-2">
             {isBn ? "রিটার্ন প্রক্রিয়া" : "How to Request a Return"}
           </h2>
           <p>
@@ -74,7 +74,7 @@ export default async function ReturnPolicyPage({ params }: Props) {
         </section>
 
         <section>
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">
+          <h2 className="text-lg font-semibold text-body mb-2">
             {isBn ? "রিফান্ড" : "Refunds"}
           </h2>
           <p>
@@ -85,7 +85,7 @@ export default async function ReturnPolicyPage({ params }: Props) {
         </section>
 
         <section>
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">
+          <h2 className="text-lg font-semibold text-body mb-2">
             {isBn ? "যোগাযোগ" : "Contact Us"}
           </h2>
           <p>

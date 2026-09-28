@@ -16,7 +16,7 @@ export default function CopyButton({ value, isBn }: { value: string; isBn: boole
       type="button"
       onClick={handleCopy}
       title={isBn ? "কপি করুন" : "Copy"}
-      className="inline-flex items-center justify-center w-5 h-5 rounded text-gray-400 hover:text-amber-700 hover:bg-amber-100 transition-colors shrink-0"
+      className="inline-flex items-center justify-center w-5 h-5 rounded text-muted hover:text-amber-700 hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors shrink-0"
     >
       {copied ? <Check className="w-3.5 h-3.5 text-green-600" /> : <Copy className="w-3.5 h-3.5" />}
     </button>

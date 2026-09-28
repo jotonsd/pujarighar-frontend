@@ -72,15 +72,15 @@ function EditModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg">
+      <div className="bg-surface rounded-2xl shadow-2xl w-full max-w-lg">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-          <h2 className="text-base font-bold text-gray-900">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+          <h2 className="text-base font-bold text-body">
             {isBn ? "ডিসকাউন্ট সম্পাদনা" : "Edit Discount"}
           </h2>
           <button
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+            className="w-8 h-8 flex items-center justify-center rounded-lg text-muted hover:bg-surface-alt hover:text-muted transition-colors"
           >
             ✕
           </button>
@@ -88,16 +88,16 @@ function EditModal({
 
         {/* Body */}
         <div className="p-6 space-y-4">
-          <div className="flex items-center gap-2.5 px-3 py-2 bg-gray-50 rounded-lg text-xs text-gray-500">
+          <div className="flex items-center gap-2.5 px-3 py-2 bg-background rounded-lg text-xs text-muted">
             {discount.product_image ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={discount.product_image} alt="" className="w-8 h-8 object-cover rounded-md border border-gray-200 shrink-0" />
+              <img src={discount.product_image} alt="" className="w-8 h-8 object-cover rounded-md border border-border shrink-0" />
             ) : (
-              <div className="w-8 h-8 rounded-md border border-gray-200 bg-white flex items-center justify-center text-gray-300 text-xs shrink-0">—</div>
+              <div className="w-8 h-8 rounded-md border border-border bg-surface flex items-center justify-center text-muted text-xs shrink-0">—</div>
             )}
             <span>
               {isBn ? "পণ্য: " : "Product: "}
-              <span className="font-semibold text-gray-700">
+              <span className="font-semibold text-muted">
                 {isBn ? discount.product_name_bn : discount.product_name_en}
               </span>
             </span>
@@ -147,7 +147,7 @@ function EditModal({
         </div>
 
         {/* Footer */}
-        <div className="flex gap-3 px-6 py-4 border-t border-gray-100">
+        <div className="flex gap-3 px-6 py-4 border-t border-border">
           <button onClick={handleSave} disabled={isLoading} className="btn-primary flex-1">
             {isLoading
               ? (isBn ? "সংরক্ষণ হচ্ছে..." : "Saving...")
@@ -209,15 +209,15 @@ export default function DiscountList() {
         <div className="flex items-center gap-2.5">
           {d.product_image ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={d.product_image} alt="" className="w-9 h-9 object-cover rounded-md border border-gray-100 shrink-0" />
+            <img src={d.product_image} alt="" className="w-9 h-9 object-cover rounded-md border border-border shrink-0" />
           ) : (
-            <div className="w-9 h-9 rounded-md border border-gray-100 bg-gray-50 flex items-center justify-center text-gray-300 text-xs shrink-0">—</div>
+            <div className="w-9 h-9 rounded-md border border-border bg-background flex items-center justify-center text-muted text-xs shrink-0">—</div>
           )}
           <div>
-            <p className="font-medium text-gray-800">
+            <p className="font-medium text-body">
               {isBn ? d.product_name_bn : d.product_name_en}
             </p>
-            <p className="text-xs text-gray-400 font-mono">{d.product_sku}</p>
+            <p className="text-xs text-muted font-mono">{d.product_sku}</p>
           </div>
         </div>
       ),
@@ -226,7 +226,7 @@ export default function DiscountList() {
     {
       header: isBn ? "ছাড়" : "Discount",
       accessor: d => (
-        <span className="text-sm font-bold text-amber-700">
+        <span className="text-sm font-bold text-amber-700 dark:text-amber-400">
           {d.discount_type === "PERCENTAGE"
             ? `${formatNumber(d.discount_value, locale)}% ${isBn ? "ছাড়" : "OFF"}`
             : `${formatAmount(d.discount_value, locale, 0)} ${isBn ? "ছাড়" : "OFF"}`}
@@ -239,16 +239,16 @@ export default function DiscountList() {
       header: isBn ? "নোট" : "Note",
       accessor: d =>
         d.note ? (
-          <span className="text-sm text-gray-500">{d.note}</span>
+          <span className="text-sm text-muted">{d.note}</span>
         ) : (
-          <span className="text-gray-300">—</span>
+          <span className="text-muted">—</span>
         ),
       exportValue: d => d.note,
     },
     {
       header: isBn ? "মেয়াদ" : "Validity",
       accessor: d => {
-        if (!d.start_date && !d.end_date) return <span className="text-gray-300 text-xs">—</span>;
+        if (!d.start_date && !d.end_date) return <span className="text-muted text-xs">—</span>;
         const today = new Date(); today.setHours(0, 0, 0, 0);
         const parseLocal = (s: string) => { const [y, m, day] = s.split('-').map(Number); return new Date(y, m - 1, day); };
         const expired = d.end_date && parseLocal(d.end_date) < today;
@@ -256,21 +256,21 @@ export default function DiscountList() {
         return (
           <div className="text-xs space-y-0.5">
             {d.start_date && (
-              <p className="text-gray-500">
+              <p className="text-muted">
                 {isBn ? "শুরু: " : "From: "}
-                <span className="font-medium text-gray-700">{formatDate(d.start_date, locale)}</span>
+                <span className="font-medium text-muted">{formatDate(d.start_date, locale)}</span>
               </p>
             )}
             {d.end_date && (
-              <p className={expired ? "text-red-500" : "text-gray-500"}>
+              <p className={expired ? "text-red-500 dark:text-red-400" : "text-muted"}>
                 {isBn ? "শেষ: " : "To: "}
-                <span className={`font-medium ${expired ? "text-red-700" : "text-gray-700"}`}>
+                <span className={`font-medium ${expired ? "text-red-700 dark:text-red-400" : "text-muted"}`}>
                   {formatDate(d.end_date, locale)}
                 </span>
               </p>
             )}
             {(expired || notStarted) && (
-              <span className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold ${expired ? "bg-red-50 text-red-700" : "bg-yellow-50 text-yellow-700"}`}>
+              <span className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold ${expired ? "bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400" : "bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400"}`}>
                 {expired
                   ? (isBn ? "মেয়াদ শেষ" : "Expired")
                   : (isBn ? "শুরু হয়নি" : "Not started")}
@@ -284,7 +284,7 @@ export default function DiscountList() {
     {
       header: isBn ? "তারিখ" : "Created",
       accessor: d => (
-        <span className="text-xs text-gray-400">{formatDate(d.created_at, locale)}</span>
+        <span className="text-xs text-muted">{formatDate(d.created_at, locale)}</span>
       ),
       exportValue: d => new Date(d.created_at).toLocaleDateString(),
     },
@@ -313,7 +313,7 @@ export default function DiscountList() {
       icon: <Trash2 className="w-3.5 h-3.5" />,
       onClick: d => handleDelete(d.id),
       className:
-        "inline-flex items-center justify-center w-8 h-8 rounded-lg border border-red-200 bg-red-50 text-red-500 hover:bg-red-100 transition-colors",
+        "inline-flex items-center justify-center w-8 h-8 rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/30 text-red-500 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors",
     },
   ];
 

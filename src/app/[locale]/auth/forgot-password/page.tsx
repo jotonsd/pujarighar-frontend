@@ -27,10 +27,10 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex bg-gray-50 lg:bg-transparent">
+    <div className="min-h-[calc(100vh-4rem)] flex bg-background lg:bg-transparent">
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-amber-500 to-amber-700 items-center justify-center relative overflow-hidden">
-        <div className="absolute w-72 h-72 rounded-full bg-white/10 -top-16 -left-16" />
-        <div className="absolute w-48 h-48 rounded-full bg-white/10 bottom-10 -right-10" />
+        <div className="absolute w-72 h-72 rounded-full bg-surface/10 -top-16 -left-16" />
+        <div className="absolute w-48 h-48 rounded-full bg-surface/10 bottom-10 -right-10" />
         <div className="absolute w-32 h-32 rounded-full bg-amber-400/40 top-1/2 left-1/3" />
         <div className="relative z-10 text-center px-10">
           <div className="relative w-20 h-20 mx-auto mb-5">
@@ -45,8 +45,8 @@ export default function ForgotPasswordPage() {
         </div>
       </div>
 
-      <div className="w-full lg:w-1/2 flex items-center justify-center px-4 py-8 sm:px-6 lg:px-12 bg-gray-50">
-        <div className="w-full max-w-md bg-white lg:bg-transparent p-6 sm:p-8 lg:p-0 rounded-2xl shadow-sm lg:shadow-none border border-gray-100 lg:border-none relative overflow-hidden">
+      <div className="w-full lg:w-1/2 flex items-center justify-center px-4 py-8 sm:px-6 lg:px-12 bg-background">
+        <div className="w-full max-w-md bg-surface lg:bg-transparent p-6 sm:p-8 lg:p-0 rounded-2xl shadow-sm lg:shadow-none border border-border lg:border-none relative overflow-hidden">
           <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-amber-500 to-amber-600 lg:hidden" />
 
           <div className="lg:hidden text-center mb-6 pt-2">
@@ -58,25 +58,25 @@ export default function ForgotPasswordPage() {
           {submitted ? (
             <div className="text-center py-6">
               <div className="text-5xl mb-4">📧</div>
-              <h2 className="text-xl font-bold text-gray-900 mb-2">
+              <h2 className="text-xl font-bold text-body mb-2">
                 {isBn ? "ইমেইল পাঠানো হয়েছে" : "Check Your Email"}
               </h2>
-              <p className="text-sm text-gray-500 mb-6">
+              <p className="text-sm text-muted mb-6">
                 {isBn
                   ? `যদি ${email} নিবন্ধিত থাকে, একটি পাসওয়ার্ড রিসেট লিংক পাঠানো হয়েছে।`
                   : `If ${email} is registered, a password reset link has been sent.`}
               </p>
-              <Link href={`/${locale}/auth/login`} className="text-amber-700 hover:text-amber-700 font-semibold text-sm hover:underline">
+              <Link href={`/${locale}/auth/login`} className="text-amber-700 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-400 font-semibold text-sm hover:underline">
                 {isBn ? "লগইনে ফিরে যান" : "Back to Login"}
               </Link>
             </div>
           ) : (
             <>
               <div className="mb-6 text-center lg:text-left">
-                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">
+                <h2 className="text-2xl sm:text-3xl font-bold text-body tracking-tight">
                   {isBn ? "পাসওয়ার্ড রিসেট করুন" : "Reset Password"}
                 </h2>
-                <p className="text-sm text-gray-500 mt-2">
+                <p className="text-sm text-muted mt-2">
                   {isBn
                     ? "আপনার ইমেইল দিন, আমরা একটি রিসেট লিংক পাঠাব"
                     : "Enter your email and we'll send you a reset link"}
@@ -103,10 +103,10 @@ export default function ForgotPasswordPage() {
                 </button>
               </form>
 
-              <div className="mt-8 pt-5 border-t border-gray-100 lg:border-gray-200">
+              <div className="mt-8 pt-5 border-t border-border lg:border-border">
                 <Link
                   href={`/${locale}/auth/login`}
-                  className="flex items-center justify-center gap-2 text-sm font-medium text-gray-400 hover:text-gray-600 transition-colors"
+                  className="flex items-center justify-center gap-2 text-sm font-medium text-muted hover:text-muted transition-colors"
                 >
                   <span>←</span>
                   <span>{isBn ? "লগইনে ফিরে যান" : "Back to Login"}</span>

@@ -29,7 +29,7 @@ function StarPicker({ value, onChange }: { value: number; onChange: (v: number) 
         <button
           key={s}
           type="button"
-          className={`text-2xl transition-colors ${s <= (hover || value) ? "text-amber-400" : "text-gray-300"}`}
+          className={`text-2xl transition-colors ${s <= (hover || value) ? "text-amber-400" : "text-muted"}`}
           onMouseEnter={() => setHover(s)}
           onMouseLeave={() => setHover(0)}
           onClick={() => onChange(s)}
@@ -43,20 +43,20 @@ function StarPicker({ value, onChange }: { value: number; onChange: (v: number) 
 
 function ReviewCard({ review, isBn }: { review: Review; isBn: boolean }) {
   return (
-    <div className="border border-gray-100 rounded-xl p-4 space-y-2 bg-gray-50">
+    <div className="border border-border rounded-xl p-4 space-y-2 bg-surface-alt">
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-sm shrink-0">
             {review.user_name.charAt(0).toUpperCase()}
           </div>
-          <span className="font-medium text-sm text-gray-700">{review.user_name}</span>
+          <span className="font-medium text-sm text-muted">{review.user_name}</span>
         </div>
         <StarDisplay rating={review.rating} />
       </div>
       {review.comment && (
-        <p className="text-sm text-gray-600 leading-relaxed pl-10">{review.comment}</p>
+        <p className="text-sm text-muted leading-relaxed pl-10">{review.comment}</p>
       )}
-      <p className="text-xs text-gray-400 pl-10">
+      <p className="text-xs text-muted pl-10">
         {new Date(review.created_at).toLocaleDateString(isBn ? "bn-BD" : "en-US", {
           year: "numeric",
           month: "long",
@@ -77,7 +77,7 @@ function AverageRating({ reviews, isBn }: { reviews: Review[]; isBn: boolean }) 
       </span>
       <div>
         <StarDisplay rating={Math.round(avg)} />
-        <p className="text-xs text-gray-500 mt-1">
+        <p className="text-xs text-muted mt-1">
           {isBn
             ? `${reviews.length.toLocaleString("bn-BD")}টি রিভিউ`
             : `${reviews.length} review${reviews.length !== 1 ? "s" : ""}`}
@@ -103,7 +103,7 @@ function WriteReviewForm({
 
   if (done) {
     return (
-      <div className="p-4 bg-green-50 border border-green-100 rounded-xl text-sm text-green-700 font-medium">
+      <div className="p-4 bg-green-50 border border-green-100 rounded-xl text-sm text-green-700 font-medium dark:bg-green-900/30 dark:border-green-900/50 dark:text-green-400">
         ✓ {isBn ? "রিভিউ জমা হয়েছে, অনুমোদনের পর দেখা যাবে।" : "Review submitted — it will appear after admin approval."}
       </div>
     );
@@ -126,7 +126,7 @@ function WriteReviewForm({
 
   return (
     <form onSubmit={handleSubmit} className="p-4 border border-amber-100 bg-amber-50 rounded-xl space-y-3">
-      <p className="text-sm font-semibold text-gray-700">
+      <p className="text-sm font-semibold text-muted">
         {isBn ? "আপনার রিভিউ দিন" : "Write Your Review"}
       </p>
       <StarPicker value={rating} onChange={setRating} />
@@ -135,7 +135,7 @@ function WriteReviewForm({
         onChange={(e) => setComment(e.target.value)}
         rows={2}
         placeholder={isBn ? "মন্তব্য লিখুন (ঐচ্ছিক)" : "Write a comment (optional)"}
-        className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 resize-none focus:outline-none focus:ring-2 focus:ring-amber-400 bg-white"
+        className="w-full text-sm border border-border rounded-lg px-3 py-2 resize-none focus:outline-none focus:ring-2 focus:ring-amber-400 bg-surface"
       />
       <button type="submit" disabled={isLoading} className="btn-primary text-sm py-2 px-4">
         {isLoading
@@ -180,12 +180,12 @@ export default function ProductReviews({
       {isLoading ? (
         <div className="space-y-3">
           {[1, 2].map((i) => (
-            <div key={i} className="h-20 bg-gray-100 rounded-xl animate-pulse" />
+            <div key={i} className="h-20 bg-surface-alt rounded-xl animate-pulse" />
           ))}
         </div>
       ) : reviews.length > 0 ? (
         <div>
-          <h2 className="text-lg font-bold text-gray-800 mb-4">
+          <h2 className="text-lg font-bold text-body mb-4">
             {isBn ? "ক্রেতাদের রিভিউ" : "Customer Reviews"}
           </h2>
           <AverageRating reviews={reviews} isBn={isBn} />

@@ -231,13 +231,13 @@ const FloatingSelect = forwardRef<HTMLDivElement, FloatingSelectProps>(
             role="combobox"
             aria-expanded={isOpen}
             aria-label={label}
-            className={`block px-2.5 pb-2 pt-3 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 cursor-pointer focus:outline-none focus:ring-0 focus:border-amber-600 ${
+            className={`block px-2.5 pb-2 pt-3 w-full text-sm text-body bg-surface rounded-lg border border-border cursor-pointer focus:outline-none focus:ring-0 focus:border-amber-600 ${
               error ? 'border-red-500' : ''
             } ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}
           >
             {searchable && isOpen ? (
               <div className="flex items-center gap-2">
-                <Search className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                <Search className="w-4 h-4 text-muted flex-shrink-0" />
                 <input
                   ref={searchInputRef}
                   autoFocus
@@ -256,7 +256,7 @@ const FloatingSelect = forwardRef<HTMLDivElement, FloatingSelectProps>(
                 />
               </div>
             ) : (
-              <span className={`flex items-center gap-2 truncate ${displayValue ? 'text-gray-900' : 'text-transparent'}`}>
+              <span className={`flex items-center gap-2 truncate ${displayValue ? 'text-body' : 'text-transparent'}`}>
                 {selectedOption?.image && (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={selectedOption.image} alt="" className="w-5 h-5 object-cover rounded shrink-0" />
@@ -268,10 +268,10 @@ const FloatingSelect = forwardRef<HTMLDivElement, FloatingSelectProps>(
 
           <label
             htmlFor={inputId}
-            className={`absolute text-sm duration-300 transform origin-[0] bg-white px-2 pointer-events-none start-1 ${
+            className={`absolute text-sm duration-300 transform origin-[0] bg-surface px-2 pointer-events-none start-1 ${
               displayValue || (searchable && isOpen)
                 ? '-translate-y-4 scale-75 top-2 text-amber-700'
-                : 'scale-100 -translate-y-1/2 top-1/2 text-gray-500'
+                : 'scale-100 -translate-y-1/2 top-1/2 text-muted'
             } ${error ? '!text-red-500' : ''}`}
           >
             {label}
@@ -282,14 +282,14 @@ const FloatingSelect = forwardRef<HTMLDivElement, FloatingSelectProps>(
               type="button"
               tabIndex={-1}
               onClick={handleClearAll}
-              className="absolute right-8 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors z-20"
+              className="absolute right-8 top-1/2 -translate-y-1/2 text-muted hover:text-body transition-colors z-20"
             >
               <X className="w-4 h-4" />
             </button>
           )}
 
           <ChevronDown
-            className={`absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none transition-transform ${
+            className={`absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted pointer-events-none transition-transform ${
               isOpen ? 'rotate-180' : ''
             }`}
           />
@@ -302,7 +302,7 @@ const FloatingSelect = forwardRef<HTMLDivElement, FloatingSelectProps>(
           createPortal(
             <div
               ref={dropdownRef}
-              className="bg-white rounded-lg shadow-lg border border-gray-200 py-1 overflow-auto"
+              className="bg-surface rounded-lg shadow-lg border border-border py-1 overflow-auto"
               style={{
                 position: dropdownPosition.positionType,
                 ...(dropdownPosition.top !== undefined && { top: `${dropdownPosition.top}px` }),
@@ -314,7 +314,7 @@ const FloatingSelect = forwardRef<HTMLDivElement, FloatingSelectProps>(
               }}
             >
               {filteredOptions.length === 0 ? (
-                <div className="px-3 py-2 text-sm text-gray-500">No options found</div>
+                <div className="px-3 py-2 text-sm text-muted">No options found</div>
               ) : (
                 filteredOptions.map(option => (
                   <div
@@ -323,8 +323,8 @@ const FloatingSelect = forwardRef<HTMLDivElement, FloatingSelectProps>(
                     onClick={() => handleSelect(option.value)}
                     className={`flex items-center gap-2 px-3 py-2 text-sm cursor-pointer ${
                       value === option.value
-                        ? 'bg-amber-50 text-amber-700 font-medium'
-                        : 'text-gray-700 hover:bg-gray-50'
+                        ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 font-medium'
+                        : 'text-muted hover:bg-surface-alt'
                     }`}
                   >
                     {option.image !== undefined && (
@@ -332,7 +332,7 @@ const FloatingSelect = forwardRef<HTMLDivElement, FloatingSelectProps>(
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={option.image} alt="" className="w-6 h-6 object-cover rounded shrink-0" />
                       ) : (
-                        <div className="w-6 h-6 rounded bg-gray-100 shrink-0" />
+                        <div className="w-6 h-6 rounded bg-surface-alt shrink-0" />
                       )
                     )}
                     <span className="truncate">{option.label}</span>

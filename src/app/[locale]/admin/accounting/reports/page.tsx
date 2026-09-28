@@ -44,7 +44,7 @@ export default function ReportsPage() {
           <button
             key={s}
             onClick={() => setTab(s)}
-            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${tab === s ? "border-amber-500 text-amber-700" : "border-transparent text-gray-500 hover:text-gray-700"}`}
+            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${tab === s ? "border-amber-500 text-amber-700 dark:text-amber-400" : "border-transparent text-muted hover:text-body"}`}
           >
             {s === "pl"
               ? t("profitLoss")
@@ -95,16 +95,16 @@ export default function ReportsPage() {
             <div className="space-y-4 max-w-sm">
               <div className="card">
                 {[
-                  { label: t("revenue"), value: pl.revenue, color: "text-green-600" },
-                  { label: t("expense"), value: pl.expense, color: "text-amber-500" },
+                  { label: t("revenue"), value: pl.revenue, color: "text-green-600 dark:text-green-400" },
+                  { label: t("expense"), value: pl.expense, color: "text-amber-500 dark:text-amber-400" },
                   {
                     label: t("netProfit"),
                     value: pl.net_profit,
-                    color: Number(pl.net_profit) >= 0 ? "text-green-700" : "text-amber-700",
+                    color: Number(pl.net_profit) >= 0 ? "text-green-700 dark:text-green-400" : "text-amber-700 dark:text-amber-400",
                   },
                 ].map(({ label, value, color }) => (
                   <div key={label} className="flex justify-between py-3 border-b last:border-0">
-                    <span className="text-gray-700">{label}</span>
+                    <span className="text-muted">{label}</span>
                     <span className={`font-bold ${color}`}>{formatAmount(value, locale, 2)}</span>
                   </div>
                 ))}
@@ -112,16 +112,16 @@ export default function ReportsPage() {
 
               {pl.equity_shares && pl.equity_shares.length > 0 && (
                 <div className="card">
-                  <h3 className="text-sm font-semibold text-gray-700 mb-3">
+                  <h3 className="text-sm font-semibold text-muted mb-3">
                     {locale === "bn" ? "অংশীদারদের লাভ বণ্টন" : "Partner Profit Distribution"}
                   </h3>
                   {pl.equity_shares.map(s => (
                     <div key={s.partner_id} className="flex justify-between py-2.5 border-b last:border-0">
                       <div>
-                        <p className="text-sm text-gray-800">{locale === "bn" ? s.name_bn || s.name_en : s.name_en || s.name_bn}</p>
-                        <p className="text-xs text-amber-500">{s.percentage}%</p>
+                        <p className="text-sm text-body">{locale === "bn" ? s.name_bn || s.name_en : s.name_en || s.name_bn}</p>
+                        <p className="text-xs text-amber-500 dark:text-amber-400">{s.percentage}%</p>
                       </div>
-                      <span className={`font-bold text-sm ${Number(s.share_amount) >= 0 ? "text-green-700" : "text-amber-700"}`}>
+                      <span className={`font-bold text-sm ${Number(s.share_amount) >= 0 ? "text-green-700 dark:text-green-400" : "text-amber-700 dark:text-amber-400"}`}>
                         {formatAmount(s.share_amount, locale, 2)}
                       </span>
                     </div>
@@ -149,8 +149,8 @@ export default function ReportsPage() {
                 <div
                   className={`flex items-center gap-2 mb-3 px-4 py-2.5 rounded-xl text-sm font-semibold w-fit ${
                     balanced
-                      ? "bg-green-50 text-green-700 border border-green-200"
-                      : "bg-red-50 text-red-700 border border-red-200"
+                      ? "bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800"
+                      : "bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800"
                   }`}
                 >
                   <span>{balanced ? "✓" : "✗"}</span>
@@ -164,34 +164,34 @@ export default function ReportsPage() {
                         : `Unbalanced — Difference: ৳${Math.abs(totalDebit - totalCredit).toFixed(2)}`}
                   </span>
                 </div>
-                <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+                <div className="bg-surface rounded-lg shadow-sm overflow-hidden">
                   <table className="w-full text-sm">
-                    <thead className="bg-amber-50 border-b border-amber-200">
+                    <thead className="bg-amber-50 dark:bg-amber-900/20 border-b border-amber-200 dark:border-amber-800">
                       <tr>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">
                           Code
                         </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">
                           {t("account")}
                         </th>
-                        <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 uppercase tracking-wider">
+                        <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">
                           {t("debit")}
                         </th>
-                        <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 uppercase tracking-wider">
+                        <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">
                           {t("credit")}
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100">
+                    <tbody className="divide-y divide-border">
                       {tb.rows.map((r, i) => (
                         <tr
                           key={i}
-                          className="hover:bg-gray-50 transition-colors"
+                          className="hover:bg-surface-alt transition-colors"
                         >
-                          <td className="px-4 py-3 font-mono text-xs text-gray-500">
+                          <td className="px-4 py-3 font-mono text-xs text-muted">
                             {r.account.code}
                           </td>
-                          <td className="px-4 py-3 text-sm text-gray-700">
+                          <td className="px-4 py-3 text-sm text-muted">
                             {locale === "bn"
                               ? r.account.name_bn
                               : r.account.name_en}
@@ -209,18 +209,18 @@ export default function ReportsPage() {
                         </tr>
                       ))}
                     </tbody>
-                    <tfoot className="border-t-2 border-amber-200 bg-amber-50">
+                    <tfoot className="border-t-2 border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20">
                       <tr>
                         <td
                           colSpan={2}
-                          className="px-4 py-3 text-xs font-bold text-gray-700 uppercase"
+                          className="px-4 py-3 text-xs font-bold text-body uppercase"
                         >
                           {locale === "bn" ? "মোট" : "Total"}
                         </td>
-                        <td className="px-4 py-3 text-right text-sm font-bold text-gray-800">
+                        <td className="px-4 py-3 text-right text-sm font-bold text-body">
                           {formatAmount(totalDebit, locale, 2)}
                         </td>
-                        <td className="px-4 py-3 text-right text-sm font-bold text-gray-800">
+                        <td className="px-4 py-3 text-right text-sm font-bold text-body">
                           {formatAmount(totalCredit, locale, 2)}
                         </td>
                       </tr>
@@ -233,7 +233,7 @@ export default function ReportsPage() {
         ))}
 
       {tab === "sales" && (
-        <p className="text-gray-400 text-sm">
+        <p className="text-muted text-sm">
           {locale === "bn" ? "শীঘ্রই আসছে" : "Coming soon"}
         </p>
       )}

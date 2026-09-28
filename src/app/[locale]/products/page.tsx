@@ -161,7 +161,7 @@ export default async function ProductsPage({ params, searchParams }: Props) {
       />
       {selectedCategory && categoryDescription && (
         <div className="max-w-6xl mx-auto px-4 py-8">
-          <div className="prose prose-sm sm:prose-base max-w-none text-gray-600 whitespace-pre-line">
+          <div className="prose prose-sm sm:prose-base max-w-none text-muted whitespace-pre-line">
             {categoryDescription}
           </div>
         </div>

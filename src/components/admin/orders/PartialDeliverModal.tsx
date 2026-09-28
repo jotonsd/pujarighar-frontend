@@ -57,14 +57,14 @@ export default function PartialDeliverModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+      <div className="bg-surface rounded-2xl shadow-xl w-full max-w-lg p-6 space-y-4 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center gap-3">
           <span className="text-3xl">📦</span>
           <div>
-            <h2 className="text-lg font-bold text-gray-800">
+            <h2 className="text-lg font-bold text-body">
               {isBn ? 'আংশিক ডেলিভারি চিহ্নিত করুন' : 'Mark as Partially Delivered'}
             </h2>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-muted">
               {isBn ? 'যে পণ্যগুলো ফেরত এসেছে সেগুলো নির্বাচন করুন' : 'Select the items that came back'}
             </p>
           </div>
@@ -74,7 +74,7 @@ export default function PartialDeliverModal({
           {order.items.map(item => {
             const line = lines[item.id]
             return (
-              <div key={item.id} className={`flex items-center gap-3 p-2.5 rounded-xl border ${line.checked ? 'border-amber-300 bg-amber-50' : 'border-gray-200'}`}>
+              <div key={item.id} className={`flex items-center gap-3 p-2.5 rounded-xl border ${line.checked ? 'border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-900/30' : 'border-border'}`}>
                 <input
                   type="checkbox"
                   checked={line.checked}
@@ -82,10 +82,10 @@ export default function PartialDeliverModal({
                   className="w-4 h-4 accent-amber-600 shrink-0"
                 />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-700 truncate">
+                  <p className="text-sm font-medium text-muted truncate">
                     {isBn ? item.product_name_bn : item.product_name_en || item.product_name_bn}
                   </p>
-                  <p className="text-xs text-gray-400">
+                  <p className="text-xs text-muted">
                     {isBn ? 'অর্ডারকৃত:' : 'Ordered:'} {formatNumber(item.quantity, locale)} · {formatAmount(item.unit_price, locale, 2)} {isBn ? '/একক' : '/unit'}
                   </p>
                 </div>
@@ -97,7 +97,7 @@ export default function PartialDeliverModal({
                     step="0.001"
                     value={line.quantity}
                     onChange={e => setQty(item.id, e.target.value)}
-                    className="w-20 px-2 py-1.5 rounded-lg border border-gray-200 text-sm text-right focus:outline-none focus:border-amber-500"
+                    className="w-20 px-2 py-1.5 rounded-lg border border-border text-sm text-right focus:outline-none focus:border-amber-500"
                   />
                 )}
               </div>
@@ -110,13 +110,13 @@ export default function PartialDeliverModal({
           value={noteBn}
           onChange={e => setNoteBn(e.target.value)}
           placeholder={isBn ? 'নোট (ঐচ্ছিক)' : 'Note (optional)'}
-          className="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-amber-500"
+          className="w-full px-3 py-2.5 rounded-xl border border-border text-sm focus:outline-none focus:border-amber-500"
         />
 
         {selected.length > 0 && (
-          <div className="bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-sm flex justify-between">
-            <span className="text-gray-600">{isBn ? 'ফেরতের মোট মূল্য' : 'Total returned value'}</span>
-            <span className="font-bold text-amber-700">{formatAmount(returnedValue.toString(), locale, 2)}</span>
+          <div className="bg-background border border-border rounded-lg px-3 py-2 text-sm flex justify-between">
+            <span className="text-muted">{isBn ? 'ফেরতের মোট মূল্য' : 'Total returned value'}</span>
+            <span className="font-bold text-amber-700 dark:text-amber-400">{formatAmount(returnedValue.toString(), locale, 2)}</span>
           </div>
         )}
 

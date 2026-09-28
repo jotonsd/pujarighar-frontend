@@ -99,7 +99,7 @@ export default function ProductStockReportPage() {
             { value: "CREDIT", label: isBn ? "বাকি স্টক" : "Credit stock" },
           ]}
         />
-        <label className="flex items-center gap-2 text-sm text-gray-600 px-1">
+        <label className="flex items-center gap-2 text-sm text-muted px-1">
           <input
             type="checkbox"
             checked={onlyLowStock}
@@ -113,55 +113,55 @@ export default function ProductStockReportPage() {
       {isLoading ? (
         <TableSkeleton columns={5} rows={8} />
       ) : rows.length === 0 ? (
-        <p className="text-gray-400 text-sm">{isBn ? "কোনো তথ্য নেই" : "No data found"}</p>
+        <p className="text-muted text-sm">{isBn ? "কোনো তথ্য নেই" : "No data found"}</p>
       ) : (
         <div className="card p-0 overflow-hidden overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-amber-50 border-b border-amber-200">
+            <thead className="bg-amber-50 dark:bg-amber-900/30 border-b border-amber-200 dark:border-amber-800">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "পণ্য" : "Product"}</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "কেটাগরি" : "Category"}</th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "স্টক" : "Stock"}</th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "ক্রয় মূল্য" : "Cost Price"}</th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "স্টক মূল্য" : "Stock Value"}</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">{isBn ? "পণ্য" : "Product"}</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">{isBn ? "কেটাগরি" : "Category"}</th>
+                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">{isBn ? "স্টক" : "Stock"}</th>
+                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">{isBn ? "ক্রয় মূল্য" : "Cost Price"}</th>
+                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">{isBn ? "স্টক মূল্য" : "Stock Value"}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-border">
               {rows.map(p => {
                 const stock = Number(p.stock_on_hand);
                 const value = stock * Number(p.cost_price);
                 return (
-                  <tr key={p.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-3 text-gray-800">
+                  <tr key={p.id} className="hover:bg-surface-alt transition-colors">
+                    <td className="px-4 py-3 text-body">
                       <div className="flex items-center gap-2.5">
                         {p.images?.[0]?.image ? (
                           // eslint-disable-next-line @next/next/no-img-element
-                          <img src={p.images[0].image} alt="" className="w-9 h-9 object-cover rounded-md border border-gray-100 shrink-0" />
+                          <img src={p.images[0].image} alt="" className="w-9 h-9 object-cover rounded-md border border-border shrink-0" />
                         ) : (
-                          <div className="w-9 h-9 rounded-md border border-gray-100 bg-gray-50 flex items-center justify-center text-gray-300 text-xs shrink-0">—</div>
+                          <div className="w-9 h-9 rounded-md border border-border bg-background flex items-center justify-center text-muted text-xs shrink-0">—</div>
                         )}
                         <div>
                           <div>{isBn ? p.name_bn : p.name_en}</div>
-                          <div className="text-[10px] text-gray-400 font-mono">{p.sku}</div>
+                          <div className="text-[10px] text-muted font-mono">{p.sku}</div>
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-xs text-gray-600">{isBn ? p.category_name_bn : p.category_name_en}</td>
-                    <td className={`px-4 py-3 text-right text-xs font-bold ${stock <= 0 ? "text-red-700" : stock <= 5 ? "text-amber-700" : "text-gray-700"}`}>
+                    <td className="px-4 py-3 text-xs text-muted">{isBn ? p.category_name_bn : p.category_name_en}</td>
+                    <td className={`px-4 py-3 text-right text-xs font-bold ${stock <= 0 ? "text-red-700 dark:text-red-400" : stock <= 5 ? "text-amber-700 dark:text-amber-400" : "text-muted"}`}>
                       {formatNumber(stock, locale)}
                     </td>
-                    <td className="px-4 py-3 text-right text-xs text-gray-600">{formatAmount(p.cost_price, locale, 2)}</td>
-                    <td className="px-4 py-3 text-right text-xs font-bold text-amber-700">{formatAmount(value.toString(), locale, 2)}</td>
+                    <td className="px-4 py-3 text-right text-xs text-muted">{formatAmount(p.cost_price, locale, 2)}</td>
+                    <td className="px-4 py-3 text-right text-xs font-bold text-amber-700 dark:text-amber-400">{formatAmount(value.toString(), locale, 2)}</td>
                   </tr>
                 );
               })}
             </tbody>
-            <tfoot className="border-t-2 border-amber-200 bg-amber-50">
+            <tfoot className="border-t-2 border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/30">
               <tr>
-                <td colSpan={2} className="px-4 py-3 text-xs font-bold text-gray-700">{isBn ? "সর্বমোট" : "Total"}</td>
-                <td className="px-4 py-3 text-right text-xs font-bold text-gray-800">{formatNumber(totalStock, locale)}</td>
+                <td colSpan={2} className="px-4 py-3 text-xs font-bold text-muted">{isBn ? "সর্বমোট" : "Total"}</td>
+                <td className="px-4 py-3 text-right text-xs font-bold text-body">{formatNumber(totalStock, locale)}</td>
                 <td></td>
-                <td className="px-4 py-3 text-right text-xs font-bold text-gray-800">{formatAmount(totalValue.toString(), locale, 2)}</td>
+                <td className="px-4 py-3 text-right text-xs font-bold text-body">{formatAmount(totalValue.toString(), locale, 2)}</td>
               </tr>
             </tfoot>
           </table>

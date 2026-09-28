@@ -123,7 +123,7 @@ export default function OrderProgressBar({ status, locale, isCourier = false }: 
         </div>
 
         {/* Track */}
-        <div className="h-1.5 rounded-full bg-gray-100 overflow-hidden">
+        <div className="h-1.5 rounded-full bg-surface-alt overflow-hidden">
           <div
             className="h-full rounded-full bg-gradient-to-r from-amber-400 to-amber-600 ease-in-out"
             style={{ width: `${pct}%`, transitionProperty: "width", transitionDuration: `${MOVE_MS}ms` }}
@@ -138,7 +138,7 @@ export default function OrderProgressBar({ status, locale, isCourier = false }: 
             key={i}
             className={`text-[10px] sm:text-xs leading-tight transition-colors ${
               i === 0 ? "text-left" : i === STAGES.length - 1 ? "text-right" : "text-center"
-            } ${i <= visibleIndex ? "text-gray-800 font-semibold" : "text-gray-400"}`}
+            } ${i <= visibleIndex ? "text-body font-semibold" : "text-muted"}`}
           >
             {isBn ? stage.label_bn : stage.label_en}
           </span>

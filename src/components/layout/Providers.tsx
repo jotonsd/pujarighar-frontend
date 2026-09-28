@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import { Provider } from 'react-redux'
+import { ThemeProvider } from 'next-themes'
 import { store } from '@/store/store'
 import { useAuthStore } from '@/store/authStore'
 
@@ -19,9 +20,11 @@ function AuthHydrator() {
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <Provider store={store}>
-      <AuthHydrator />
-      {children}
-    </Provider>
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <Provider store={store}>
+        <AuthHydrator />
+        {children}
+      </Provider>
+    </ThemeProvider>
   )
 }

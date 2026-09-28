@@ -40,7 +40,7 @@ export default function PackageCard({ pkg, locale }: Props) {
           className="absolute top-1 right-1 z-10"
         />
       )}
-      <div className="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-100 hover:shadow-md transition-shadow flex flex-col h-full">
+      <div className="bg-surface rounded-lg overflow-hidden shadow-sm border border-border hover:shadow-md transition-shadow flex flex-col h-full">
         {/* Image */}
         <div className="h-36 md:h-56 bg-amber-50 relative overflow-hidden">
           <ProductBadges badges={pkg.badges} locale={locale} />
@@ -61,12 +61,12 @@ export default function PackageCard({ pkg, locale }: Props) {
 
         {/* Info */}
         <div className="p-3 pb-2 flex-1">
-          <p className="text-sm font-semibold text-gray-800 line-clamp-2 leading-snug mb-1.5">
+          <p className="text-sm font-semibold text-body line-clamp-2 leading-snug mb-1.5">
             {name}
           </p>
 
           {pkg.package_items?.length > 0 && (
-            <p className="text-xs text-gray-500 mb-2">
+            <p className="text-xs text-muted mb-2">
               {formatNumber(pkg.package_items.length, locale)}{" "}
               {locale === "bn" ? "টি পণ্য" : "items"}
             </p>
@@ -79,7 +79,7 @@ export default function PackageCard({ pkg, locale }: Props) {
                 {formatAmount(finalPrice, locale, 0)}
               </span>
               {hasDiscount && (
-                <span className="text-xs text-gray-500 line-through">
+                <span className="text-xs text-muted line-through">
                   {formatAmount(originalPrice, locale, 0)}
                 </span>
               )}

@@ -19,7 +19,7 @@ export default function RecommendedForYou() {
     <section className="mb-8">
       <div className="flex items-center gap-2 mb-5">
         <Sparkles className="w-6 h-6 text-amber-600" />
-        <h2 className="text-xl font-bold text-gray-800">
+        <h2 className="text-xl font-bold text-body">
           {locale === "bn" ? "শুধু আপনার জন্য" : "Recommended for You"}
         </h2>
       </div>

@@ -85,7 +85,7 @@ export default function ImageUpload({
         onDragOver={onDragOver}
         onDragLeave={onDragLeave}
         className={`relative w-full h-32 rounded-xl border-2 border-dashed flex items-center justify-center overflow-hidden transition-colors ${
-          item ? 'border-gray-200 cursor-default' : `cursor-pointer ${dragging ? 'border-amber-400 bg-amber-50' : 'border-gray-200 bg-gray-50 hover:border-amber-300 hover:bg-amber-50/40'}`
+          item ? 'border-border cursor-default' : `cursor-pointer ${dragging ? 'border-amber-400 bg-amber-50 dark:bg-amber-900/20' : 'border-border bg-background hover:border-amber-300 hover:bg-amber-50/40 dark:hover:bg-amber-900/10'}`
         }`}
       >
         {item ? (
@@ -110,10 +110,10 @@ export default function ImageUpload({
             )}
           </>
         ) : (
-          <div className="flex flex-col items-center gap-1.5 text-gray-400 select-none">
+          <div className="flex flex-col items-center gap-1.5 text-muted select-none">
             <ImagePlus className="w-6 h-6" />
             <span className="text-xs">{isBn ? 'ছবি আপলোড করুন' : 'Upload image'}</span>
-            <span className="text-[10px] text-gray-300">PNG · JPG · WEBP</span>
+            <span className="text-[10px] text-muted">PNG · JPG · WEBP</span>
           </div>
         )}
         <input
@@ -131,9 +131,9 @@ export default function ImageUpload({
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between">
-        <span className="text-sm font-medium text-gray-700">
+        <span className="text-sm font-medium text-muted">
           {isBn ? 'ছবি' : 'Images'}
-          <span className="ml-2 text-xs text-gray-400">{totalCount}/{maxImages}</span>
+          <span className="ml-2 text-xs text-muted">{totalCount}/{maxImages}</span>
         </span>
       </div>
 
@@ -142,14 +142,14 @@ export default function ImageUpload({
         onDragOver={onDragOver}
         onDragLeave={onDragLeave}
         className={`rounded-xl border-2 border-dashed p-3 min-h-[7rem] transition-colors ${
-          dragging ? 'border-amber-400 bg-amber-50' : 'border-gray-200 bg-gray-50'
+          dragging ? 'border-amber-400 bg-amber-50 dark:bg-amber-900/20' : 'border-border bg-background'
         }`}
       >
         {totalCount === 0 ? (
           <button
             type="button"
             onClick={() => inputRef.current?.click()}
-            className="w-full h-full flex flex-col items-center justify-center gap-2 text-gray-400 py-4 select-none"
+            className="w-full h-full flex flex-col items-center justify-center gap-2 text-muted py-4 select-none"
           >
             <ImagePlus className="w-7 h-7" />
             <p className="text-sm">
@@ -157,13 +157,13 @@ export default function ImageUpload({
                 ? `ছবি টেনে আনুন বা ক্লিক করুন (সর্বোচ্চ ${maxImages}টি)`
                 : `Drag & drop or click to upload (max ${maxImages})`}
             </p>
-            <p className="text-xs text-gray-300">PNG · JPG · WEBP</p>
+            <p className="text-xs text-muted">PNG · JPG · WEBP</p>
           </button>
         ) : (
           <div className="flex flex-wrap gap-3">
             {/* Existing images */}
             {existingImages.map((img, i) => (
-              <div key={img.id} className="relative group w-24 h-24 rounded-lg overflow-hidden border border-gray-200 bg-white shadow-sm shrink-0">
+              <div key={img.id} className="relative group w-24 h-24 rounded-lg overflow-hidden border border-border bg-surface shadow-sm shrink-0">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={img.image} alt={img.alt_en || `Image ${i + 1}`} className="w-full h-full object-cover" />
                 {onDeleteExisting && (
@@ -180,7 +180,7 @@ export default function ImageUpload({
 
             {/* Pending images */}
             {previewUrls.map((url, i) => (
-              <div key={`p-${i}`} className="relative group w-24 h-24 rounded-lg overflow-hidden border-2 border-amber-300 bg-white shadow-sm shrink-0">
+              <div key={`p-${i}`} className="relative group w-24 h-24 rounded-lg overflow-hidden border-2 border-amber-300 bg-surface shadow-sm shrink-0">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={url} alt={`Preview ${i + 1}`} className="w-full h-full object-cover" />
                 <button
@@ -201,7 +201,7 @@ export default function ImageUpload({
               <button
                 type="button"
                 onClick={() => inputRef.current?.click()}
-                className="w-24 h-24 rounded-lg border-2 border-dashed border-gray-300 bg-white flex flex-col items-center justify-center gap-1 text-gray-400 hover:border-amber-400 hover:text-amber-500 transition-colors shrink-0"
+                className="w-24 h-24 rounded-lg border-2 border-dashed border-border bg-surface flex flex-col items-center justify-center gap-1 text-muted hover:border-amber-400 hover:text-amber-500 transition-colors shrink-0"
               >
                 <ImagePlus className="w-5 h-5" />
                 <span className="text-[10px]">{isBn ? 'যোগ করুন' : 'Add'}</span>

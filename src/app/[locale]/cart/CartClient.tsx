@@ -6,8 +6,12 @@ import { useGetMeQuery } from "@/api/auth/authApi";
 import {
   useCheckoutMutation,
   useGetCartQuery,
+  usePreviewPromoCodeMutation,
   useRemoveCartItemMutation,
   useUpdateCartItemMutation,
+  discountForPromo,
+  promoErrorMessage,
+  PromoPreview,
 } from "@/api/cart/cartApi";
 import { useGetDeliveryChargesQuery } from "@/api/deliveryCharges/deliveryChargesApi";
 import { useGetSiteSettingsQuery } from "@/api/settings/settingsApi";
@@ -76,7 +80,7 @@ function FreeDeliveryNudge({ subtotal, locale }: { subtotal: number; locale: str
   if (!threshold || threshold <= 0 || subtotal >= threshold) return null;
   const remaining = threshold - subtotal;
   return (
-    <div className="text-xs font-bold bg-green-50 text-green-700 border border-green-100 rounded-lg px-3 py-2">
+    <div className="text-xs font-bold bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400 border border-green-100 dark:border-green-800 rounded-lg px-3 py-2">
       {locale === "bn"
         ? `আরও ৳${formatNumber(remaining, locale)} কিনলে ফ্রি ডেলিভারি পাবেন!`
         : `Add ৳${formatNumber(remaining, locale)} more to get free delivery!`}
@@ -113,8 +117,8 @@ function AddAddressModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 space-y-3">
-        <h2 className="text-lg font-bold text-gray-800">
+      <div className="bg-surface rounded-2xl shadow-xl w-full max-w-md p-6 space-y-3">
+        <h2 className="text-lg font-bold text-body">
           {locale === "bn" ? "নতুন ঠিকানা যোগ করুন" : "Add New Address"}
         </h2>
         <form onSubmit={handleSubmit} className="space-y-3">
@@ -208,12 +212,12 @@ function RemoveConfirmModal({
   const isBn = locale === "bn";
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 space-y-4">
-        <h2 className="text-base font-bold text-gray-800">
+      <div className="bg-surface rounded-2xl shadow-xl w-full max-w-sm p-6 space-y-4">
+        <h2 className="text-base font-bold text-body">
           {isBn ? "কার্ট থেকে সরাবেন?" : "Remove from cart?"}
         </h2>
-        <p className="text-sm text-gray-500">
-          <span className="font-medium text-gray-700">{productName}</span>
+        <p className="text-sm text-muted">
+          <span className="font-medium text-muted">{productName}</span>
           {isBn
             ? " কার্ট থেকে সরিয়ে দেওয়া হবে।"
             : " will be removed from your cart."}
@@ -248,8 +252,8 @@ function PaymentMethodModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 space-y-4">
-        <h2 className="text-lg font-bold text-gray-800">
+      <div className="bg-surface rounded-2xl shadow-xl w-full max-w-sm p-6 space-y-4">
+        <h2 className="text-lg font-bold text-body">
           {locale === "bn"
             ? "পেমেন্ট পদ্ধতি বেছে নিন"
             : "Choose Payment Method"}
@@ -257,14 +261,14 @@ function PaymentMethodModal({
 
         {isLoading ? (
           <div className="space-y-2">
-            {[1, 2].map(i => <div key={i} className="h-16 bg-gray-100 rounded-xl animate-pulse" />)}
+            {[1, 2].map(i => <div key={i} className="h-16 bg-surface-alt rounded-xl animate-pulse" />)}
           </div>
         ) : (
           enabled.map(m => (
             <button
               key={m.code}
               onClick={() => onSelect(m.code as PaymentMethod)}
-              className="w-full flex items-center gap-3 p-4 rounded-xl border-2 border-gray-200 hover:border-amber-400 hover:bg-amber-50 transition-colors text-left"
+              className="w-full flex items-center gap-3 p-4 rounded-xl border-2 border-border hover:border-amber-400 hover:bg-amber-50 transition-colors text-left"
             >
               {m.logo ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -273,10 +277,10 @@ function PaymentMethodModal({
                 <span className="text-3xl">{METHOD_ICON[m.code as PaymentMethod] ?? "💳"}</span>
               )}
               <div>
-                <p className="font-semibold text-gray-800">
+                <p className="font-semibold text-body">
                   {locale === "bn" ? m.name_bn : m.name_en}
                 </p>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted">
                   {m.code === "COD"
                     ? (locale === "bn" ? "ডেলিভারির সময় পেমেন্ট করুন" : "Pay when your order arrives")
                     : (locale === "bn" ? "এখনই পেমেন্ট করুন" : "Pay now")}
@@ -295,7 +299,7 @@ function PaymentMethodModal({
 
         <button
           onClick={onCancel}
-          className="w-full text-sm text-gray-400 hover:text-gray-600 pt-1"
+          className="w-full text-sm text-muted hover:text-muted pt-1"
         >
           {locale === "bn" ? "বাতিল" : "Cancel"}
         </button>
@@ -352,30 +356,30 @@ function ConfirmModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 space-y-4">
-        <h2 className="text-lg font-bold text-gray-800">
+      <div className="bg-surface rounded-2xl shadow-xl w-full max-w-md p-6 space-y-4">
+        <h2 className="text-lg font-bold text-body">
           {locale === "bn" ? "অর্ডার নিশ্চিত করুন" : "Confirm Your Order"}
         </h2>
 
-        <div className="divide-y divide-gray-100 max-h-56 overflow-y-auto">
+        <div className="divide-y divide-border max-h-56 overflow-y-auto">
           {lines.map((l, i) => (
             <div
               key={i}
               className="flex items-center justify-between py-2 text-sm"
             >
-              <span className="text-gray-700 flex-1 truncate pr-2">
+              <span className="text-muted flex-1 truncate pr-2">
                 {l.label}
               </span>
-              <span className="text-gray-400 text-xs font-bold mr-3">
+              <span className="text-muted text-xs font-bold mr-3">
                 ×{formatNumber(l.qty, locale)}
               </span>
-              <span className="font-bold text-gray-800">{l.price}</span>
+              <span className="font-bold text-body">{l.price}</span>
             </div>
           ))}
         </div>
 
-        <div className="space-y-1.5 border-t border-gray-100 pt-2">
-          <div className="flex items-center justify-between text-sm text-gray-500">
+        <div className="space-y-1.5 border-t border-border pt-2">
+          <div className="flex items-center justify-between text-sm text-muted">
             <span>{locale === "bn" ? "সাবটোটাল" : "Subtotal"}</span>
             <span className="font-bold">{subtotal}</span>
           </div>
@@ -388,7 +392,7 @@ function ConfirmModal({
             </div>
           )}
           {deliveryAmount > 0 && (
-            <div className="flex items-center justify-between text-sm text-gray-500">
+            <div className="flex items-center justify-between text-sm text-muted">
               <span>
                 {locale === "bn" ? "ডেলিভারি চার্জ" : "Delivery Charge"}
               </span>
@@ -406,15 +410,15 @@ function ConfirmModal({
             </div>
           )}
           {gatewayCharge > 0 && (
-            <div className="flex items-center justify-between text-sm text-gray-500">
+            <div className="flex items-center justify-between text-sm text-muted">
               <span>
                 {locale === "bn" ? "গেটওয়ে চার্জ" : "Gateway Charge"}
               </span>
               <span className="font-bold">{formatAmount(gatewayCharge, locale)}</span>
             </div>
           )}
-          <div className="flex items-center justify-between font-bold text-base border-t border-gray-100 pt-1.5">
-            <span className="text-gray-800">
+          <div className="flex items-center justify-between font-bold text-base border-t border-border pt-1.5">
+            <span className="text-body">
               {locale === "bn" ? "সর্বমোট" : "Grand Total"}
             </span>
             <span className="text-amber-700">{formatAmount(finalTotal, locale)}</span>
@@ -428,13 +432,13 @@ function ConfirmModal({
           ) : (
             <span>{METHOD_ICON[paymentMethod] ?? "💳"}</span>
           )}
-          <span className="text-gray-700">
+          <span className="text-muted">
             {method ? (locale === "bn" ? method.name_bn : method.name_en) : paymentMethod}
           </span>
         </div>
 
         {paymentMethod === "COD" ? (
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-muted">
             {locale === "bn"
               ? "অর্ডারটি অ্যাডমিন কর্তৃক নিশ্চিত করার পর প্রসেস করা হবে।"
               : "Your order will be processed after admin confirmation."}
@@ -496,6 +500,13 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
   const [updateItem] = useUpdateCartItemMutation();
   const [checkout, { isLoading: checkingOut }] = useCheckoutMutation();
   const [guestCheckout, { isLoading: submitting }] = useGuestCheckoutMutation();
+
+  // Registered customers only — see promoErrorMessage/discountForPromo in
+  // cartApi.ts. Guest checkout never supports promo codes.
+  const [promoInput, setPromoInput] = useState("");
+  const [appliedPromo, setAppliedPromo] = useState<PromoPreview | null>(null);
+  const [promoError, setPromoError] = useState<string | null>(null);
+  const [previewPromoCode, { isLoading: checkingPromo }] = usePreviewPromoCodeMutation();
 
   const { data: addresses = [] } = useListShippingAddressesQuery(undefined, {
     skip: !isAuthenticated,
@@ -586,12 +597,33 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
     setShowConfirm(true);
   };
 
+  const handleApplyPromo = async () => {
+    const code = promoInput.trim();
+    if (!code) return;
+    setPromoError(null);
+    try {
+      const promo = await previewPromoCode({ code }).unwrap();
+      setAppliedPromo(promo);
+      toast.success(locale === "bn" ? "প্রোমো কোড প্রয়োগ হয়েছে" : "Promo code applied");
+    } catch (err) {
+      setAppliedPromo(null);
+      setPromoError(promoErrorMessage(err, locale === "bn"));
+    }
+  };
+
+  const handleRemovePromo = () => {
+    setAppliedPromo(null);
+    setPromoInput("");
+    setPromoError(null);
+  };
+
   const handleCheckout = async () => {
     try {
       const result = await checkout({
         payment_method: paymentMethod,
         shipping_address_id: selectedAddressId ?? undefined,
         delivery_zone: deliveryZone,
+        promo_code: appliedPromo?.code,
       }).unwrap();
       // Online payment — no order exists yet (see cartApi.checkout's
       // comment), so there's nothing to clear or navigate to here. If the
@@ -652,16 +684,16 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
       <div className="max-w-7xl mx-auto px-4 py-16 text-center">
         <div className="card space-y-3">
           <p className="text-5xl">✅</p>
-          <h2 className="text-xl font-bold text-gray-800">
+          <h2 className="text-xl font-bold text-body">
             {locale === "bn"
               ? "অর্ডার সফলভাবে দেওয়া হয়েছে!"
               : "Order Placed Successfully!"}
           </h2>
-          <p className="text-gray-700">
+          <p className="text-muted">
             {locale === "bn" ? "অর্ডার নম্বর:" : "Order Number:"}{" "}
             <strong className="text-amber-700">{orderSuccess.number}</strong>
           </p>
-          <p className="text-gray-500 text-sm">
+          <p className="text-muted text-sm">
             {locale === "bn"
               ? `আমরা শীঘ্রই ${orderSuccess.phone} নম্বরে যোগাযোগ করব।`
               : `We'll contact you at ${orderSuccess.phone} shortly.`}
@@ -706,14 +738,14 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
       <div className="max-w-7xl mx-auto px-4 py-3">
         {offerBanners}
         {items.length === 0 ? (
-          <div className="card text-center py-16 text-gray-400">
-            <ShoppingCart className="w-10 h-10 mx-auto mb-4 text-gray-300" />
+          <div className="card text-center py-16 text-muted">
+            <ShoppingCart className="w-10 h-10 mx-auto mb-4 text-muted" />
             <p>{t("cart.empty")}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <div className="lg:col-span-2">
-              <div className="card divide-y divide-gray-100 p-0 overflow-hidden">
+              <div className="card divide-y divide-border p-0 overflow-hidden">
                 {items.map(item => {
                   const name =
                     locale === "bn"
@@ -740,10 +772,10 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                         </div>
                         {/* Name + price */}
                         <div className="flex-1 min-w-0">
-                          <p className="font-medium text-gray-800 text-sm truncate">
+                          <p className="font-medium text-body text-sm truncate">
                             {name}
                           </p>
-                          <p className="text-xs text-gray-400 flex items-center gap-1">
+                          <p className="text-xs text-muted flex items-center gap-1">
                             {item.original_unit_price &&
                               parseFloat(item.original_unit_price) >
                                 parseFloat(item.unit_price) && (
@@ -830,7 +862,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                           {item.package_items.map((pi, i) => (
                             <div
                               key={i}
-                              className="flex items-center justify-between text-xs text-gray-400"
+                              className="flex items-center justify-between text-xs text-muted"
                             >
                               <span className="flex items-center gap-1">
                                 <span className="w-1 h-1 rounded-full bg-amber-300 shrink-0" />
@@ -858,7 +890,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
               {/* Delivery address — inline selection */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-semibold text-gray-700 text-sm">
+                  <h3 className="font-semibold text-muted text-sm">
                     {locale === "bn" ? "ডেলিভারি ঠিকানা" : "Delivery Address"}
                   </h3>
                   <button
@@ -884,7 +916,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                         className={`flex items-start gap-2 p-3 rounded-xl border-2 cursor-pointer transition-colors ${
                           selectedAddressId === addr.id
                             ? "border-amber-400 bg-amber-50"
-                            : "border-gray-100 hover:border-amber-200"
+                            : "border-border hover:border-amber-200"
                         }`}
                       >
                         <input
@@ -895,23 +927,23 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                           onChange={() => setSelectedAddressId(addr.id)}
                         />
                         <div className="min-w-0 flex-1">
-                          <p className="text-sm font-medium text-gray-800 leading-tight">
+                          <p className="text-sm font-medium text-body leading-tight">
                             {addr.full_name_bn}
                             {addr.label && (
-                              <span className="text-gray-400 text-xs ml-1">
+                              <span className="text-muted text-xs ml-1">
                                 · {addr.label}
                               </span>
                             )}
                             {addr.is_default && (
-                              <span className="ml-1 text-xs bg-amber-100 text-amber-700 px-1.5 rounded-full">
+                              <span className="ml-1 text-xs bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 px-1.5 rounded-full">
                                 {locale === "bn" ? "ডিফল্ট" : "Default"}
                               </span>
                             )}
                           </p>
-                          <p className="text-xs text-gray-500 truncate">
+                          <p className="text-xs text-muted truncate">
                             {addr.address_bn}
                           </p>
-                          <p className="text-xs text-gray-400">{addr.phone}</p>
+                          <p className="text-xs text-muted">{addr.phone}</p>
                         </div>
                       </label>
                     ))}
@@ -920,18 +952,18 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
               </div>
 
               {/* Delivery zone + Subtotal + checkout */}
-              <div className="border-t border-gray-100 pt-4 space-y-3">
+              <div className="border-t border-border pt-4 space-y-3">
                 {/* Zone selector */}
                 {deliveryRates && (
                   <div>
                     <div className="flex items-center justify-between mb-1.5">
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-muted">
                         {locale === "bn" ? "ডেলিভারি এলাকা" : "Delivery Zone"}
                       </p>
                       {parseFloat(cartWeightKg) > 0 && (
-                        <p className="text-xs text-gray-400">
+                        <p className="text-xs text-muted">
                           {locale === "bn" ? "আনুমানিক ওজন" : "Approx. weight"}{" "}
-                          <span className="font-medium text-gray-600">
+                          <span className="font-medium text-muted">
                             {formatNumber(parseFloat(cartWeightKg), locale)} kg
                           </span>
                         </p>
@@ -943,7 +975,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                           key={z}
                           type="button"
                           onClick={() => setDeliveryZone(z)}
-                          className={`py-2 px-3 rounded-lg border text-xs font-medium transition-colors ${deliveryZone === z ? "border-amber-500 bg-amber-50 text-amber-700" : "border-gray-200 text-gray-600 hover:border-amber-300"}`}
+                          className={`py-2 px-3 rounded-lg border text-xs font-medium transition-colors ${deliveryZone === z ? "border-amber-500 bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400" : "border-border text-muted hover:border-amber-300"}`}
                         >
                           {z === "inside" ? (
                             <>
@@ -979,7 +1011,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                     </div>
                   </div>
                 )}
-                <div className="flex justify-between font-bold  text-sm text-gray-600">
+                <div className="flex justify-between font-bold  text-sm text-muted">
                   <span>{t("cart.subtotal")}</span>
                   <span>
                     {formatAmount(
@@ -1000,7 +1032,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                     </div>
                   )}
                 {deliveryRates && (
-                  <div className="flex justify-between font-bold text-sm text-gray-600">
+                  <div className="flex justify-between font-bold text-sm text-muted">
                     <span>
                       {locale === "bn" ? "ডেলিভারি চার্জ" : "Delivery Charge"}
                     </span>
@@ -1013,13 +1045,73 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                     </span>
                   </div>
                 )}
+                {/* Promo code (registered customers, website channel — first
+                    order on the website only; see PromoCode.scope) */}
+                <div className="space-y-1.5">
+                  {appliedPromo ? (
+                    <div className="flex items-center justify-between gap-2 bg-green-50 dark:bg-green-900/30 border border-green-100 dark:border-green-800 rounded-lg px-3 py-2">
+                      <span className="text-xs font-bold text-green-700 dark:text-green-400">
+                        🎟️ {appliedPromo.code}
+                        {" "}
+                        {appliedPromo.discount_type === "PERCENT"
+                          ? `(${appliedPromo.discount_value}%)`
+                          : `(৳${appliedPromo.discount_value})`}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={handleRemovePromo}
+                        className="text-xs font-medium text-muted hover:text-body"
+                      >
+                        {locale === "bn" ? "সরান" : "Remove"}
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={promoInput}
+                        onChange={e => {
+                          setPromoInput(e.target.value.toUpperCase());
+                          if (promoError) setPromoError(null);
+                        }}
+                        placeholder={locale === "bn" ? "প্রোমো কোড" : "Promo code"}
+                        className="input-field flex-1 text-sm"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleApplyPromo}
+                        disabled={!promoInput.trim() || checkingPromo}
+                        className="btn-secondary text-sm shrink-0 disabled:opacity-50"
+                      >
+                        {checkingPromo
+                          ? (locale === "bn" ? "যাচাই হচ্ছে..." : "Checking...")
+                          : (locale === "bn" ? "প্রয়োগ করুন" : "Apply")}
+                      </button>
+                    </div>
+                  )}
+                  {promoError && (
+                    <p className="text-xs text-red-600 dark:text-red-400">{promoError}</p>
+                  )}
+                </div>
+                {appliedPromo && (
+                  <div className="flex justify-between text-sm text-green-600 font-bold">
+                    <span>{locale === "bn" ? "প্রোমো ছাড়" : "Promo discount"}</span>
+                    <span>
+                      − {formatAmount(
+                        discountForPromo(appliedPromo, parseFloat(String(cart?.subtotal ?? 0))),
+                        locale,
+                      )}
+                    </span>
+                  </div>
+                )}
                 {(() => {
                   const sub = parseFloat(String(cart?.subtotal ?? 0));
                   const dc = deliveryRates ? deliveryChargeFor(sub) : 0;
+                  const promoDiscount = appliedPromo ? discountForPromo(appliedPromo, sub) : 0;
                   const cashbackBalance = parseFloat(
                     me?.profile.cashback_balance || "0",
                   );
-                  const cashbackToUse = Math.min(cashbackBalance, sub + dc);
+                  const cashbackToUse = Math.min(cashbackBalance, Math.max(sub + dc - promoDiscount, 0));
                   return cashbackToUse > 0 ? (
                     <div className="flex justify-between text-sm text-purple-600 font-bold">
                       <span>
@@ -1031,23 +1123,24 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                     </div>
                   ) : null;
                 })()}
-                <div className="flex justify-between text-lg font-bold border-t border-gray-100 pt-2">
+                <div className="flex justify-between text-lg font-bold border-t border-border pt-2">
                   <span>{locale === "bn" ? "সর্বমোট" : "Grand Total"}</span>
                   <span className="text-amber-700">
                     {(() => {
                       const sub = parseFloat(String(cart?.subtotal ?? 0));
                       const dc = deliveryRates ? deliveryChargeFor(sub) : 0;
+                      const promoDiscount = appliedPromo ? discountForPromo(appliedPromo, sub) : 0;
                       const cashbackBalance = parseFloat(
                         me?.profile.cashback_balance || "0",
                       );
-                      const cashbackToUse = Math.min(cashbackBalance, sub + dc);
-                      return formatAmount(sub + dc - cashbackToUse, locale);
+                      const cashbackToUse = Math.min(cashbackBalance, Math.max(sub + dc - promoDiscount, 0));
+                      return formatAmount(Math.max(sub + dc - promoDiscount - cashbackToUse, 0), locale);
                     })()}
                   </span>
                 </div>
                 {cart?.discount_amount &&
                   parseFloat(cart.discount_amount) > 0 && (
-                    <div className="flex items-center justify-center gap-1.5 bg-green-50 border border-green-100 rounded-lg px-3 py-2 text-xs font-bold text-green-700">
+                    <div className="flex items-center justify-center gap-1.5 bg-green-50 dark:bg-green-900/30 border border-green-100 dark:border-green-800 rounded-lg px-3 py-2 text-xs font-bold text-green-700 dark:text-green-400">
                       🎉{" "}
                       {locale === "bn"
                         ? `আপনি ${formatAmount(cart.discount_amount, locale)} সাশ্রয় করছেন!`
@@ -1137,14 +1230,14 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
     <div className="max-w-7xl mx-auto px-4 py-3">
       {offerBanners}
       {guestItems.length === 0 ? (
-        <div className="card text-center py-16 text-gray-400">
-          <ShoppingCart className="w-10 h-10 mx-auto mb-4 text-gray-300" />
+        <div className="card text-center py-16 text-muted">
+          <ShoppingCart className="w-10 h-10 mx-auto mb-4 text-muted" />
           <p>{t("cart.empty")}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="lg:col-span-2">
-            <div className="card divide-y divide-gray-100 p-0 overflow-hidden">
+            <div className="card divide-y divide-border p-0 overflow-hidden">
               {guestItems.map(item => {
                 const name = locale === "bn" ? item.name_bn : item.name_en;
                 const total = (
@@ -1168,10 +1261,10 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-gray-800 text-sm truncate">
+                        <p className="font-medium text-body text-sm truncate">
                           {name}
                         </p>
-                        <p className="text-xs text-gray-400 flex items-center gap-1">
+                        <p className="text-xs text-muted flex items-center gap-1">
                           {parseFloat(item.original_unit_price) >
                             parseFloat(item.unit_price) && (
                             <span className="line-through">
@@ -1253,7 +1346,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                         {item.package_items.map((pi, i) => (
                           <div
                             key={i}
-                            className="flex items-center justify-between text-xs text-gray-400"
+                            className="flex items-center justify-between text-xs text-muted"
                           >
                             <span className="flex items-center gap-1">
                               <span className="w-1 h-1 rounded-full bg-amber-300 shrink-0" />
@@ -1276,7 +1369,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                 );
               })}
             </div>
-            <p className="text-base text-gray-500 mt-3">
+            <p className="text-base text-muted mt-3">
               <Link
                 href={`/${locale}/auth/login`}
                 className="text-amber-700 hover:underline font-medium"
@@ -1290,7 +1383,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
           </div>
 
           <form onSubmit={handleGuestCheckout} className="card space-y-3">
-            <h2 className="font-bold text-gray-800 text-lg">
+            <h2 className="font-bold text-body text-lg">
               {t("cart.guestCheckout")}
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -1350,13 +1443,13 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
             {deliveryRates && (
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-muted">
                     {locale === "bn" ? "ডেলিভারি এলাকা" : "Delivery Zone"}
                   </p>
                   {parseFloat(cartWeightKg) > 0 && (
-                    <p className="text-xs text-gray-400">
+                    <p className="text-xs text-muted">
                       {locale === "bn" ? "আনুমানিক ওজন" : "Approx. weight"}{" "}
-                      <span className="font-medium text-gray-600">
+                      <span className="font-medium text-muted">
                         {formatNumber(parseFloat(cartWeightKg), locale)} kg
                       </span>
                     </p>
@@ -1368,7 +1461,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                       key={z}
                       type="button"
                       onClick={() => setDeliveryZone(z)}
-                      className={`py-2 px-3 rounded-lg border text-xs font-medium transition-colors ${deliveryZone === z ? "border-amber-500 bg-amber-50 text-amber-700" : "border-gray-200 text-gray-600 hover:border-amber-300"}`}
+                      className={`py-2 px-3 rounded-lg border text-xs font-medium transition-colors ${deliveryZone === z ? "border-amber-500 bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400" : "border-border text-muted hover:border-amber-300"}`}
                     >
                       {z === "inside" ? (
                         <>
@@ -1391,7 +1484,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                   ))}
                 </div>
                 <div className="mt-2 space-y-1.5">
-                  <div className="flex justify-between font-bold text-sm text-gray-600">
+                  <div className="flex justify-between font-bold text-sm text-muted">
                     <span>{locale === "bn" ? "সাবটোটাল" : "Subtotal"}</span>
                     <span>
                       {formatAmount(
@@ -1410,7 +1503,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                     </div>
                   )}
                   <FreeDeliveryNudge subtotal={guestSubtotal()} locale={locale} />
-                  <div className="flex justify-between font-bold text-sm text-gray-600">
+                  <div className="flex justify-between font-bold text-sm text-muted">
                     <span>
                       {locale === "bn" ? "ডেলিভারি চার্জ" : "Delivery Charge"}
                     </span>
@@ -1422,7 +1515,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                       )}
                     </span>
                   </div>
-                  <div className="flex justify-between text-sm font-bold border-t border-gray-100 pt-1.5">
+                  <div className="flex justify-between text-sm font-bold border-t border-border pt-1.5">
                     <span>{locale === "bn" ? "সর্বমোট" : "Grand Total"}</span>
                     <span className="text-amber-700">
                       {formatAmount(
@@ -1433,7 +1526,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                     </span>
                   </div>
                   {guestDiscountAmount() > 0 && (
-                    <div className="flex items-center justify-center gap-1.5 bg-green-50 border border-green-100 rounded-lg px-3 py-2 text-xs font-bold text-green-700">
+                    <div className="flex items-center justify-center gap-1.5 bg-green-50 dark:bg-green-900/30 border border-green-100 dark:border-green-800 rounded-lg px-3 py-2 text-xs font-bold text-green-700 dark:text-green-400">
                       🎉{" "}
                       {locale === "bn"
                         ? `আপনি ${formatAmount(guestDiscountAmount(), locale, 0)} সাশ্রয় করছেন!`

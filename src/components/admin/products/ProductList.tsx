@@ -47,19 +47,19 @@ export default function ProductList() {
       header: locale === 'bn' ? 'ছবি' : 'Image',
       accessor: p => p.images?.[0]?.image ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={p.images[0].image} alt="" className="w-12 h-12 object-cover rounded-lg border border-gray-100" />
+        <img src={p.images[0].image} alt="" className="w-12 h-12 object-cover rounded-lg border border-border" />
       ) : (
-        <div className="w-12 h-12 rounded-lg border border-gray-100 bg-gray-50 flex items-center justify-center text-gray-300 text-xs">
+        <div className="w-12 h-12 rounded-lg border border-border bg-background flex items-center justify-center text-muted text-xs">
           —
         </div>
       ),
       className: 'px-4 py-2 w-20',
     },
-    { header: 'SKU', accessor: 'sku', className: 'px-4 py-3 text-sm text-gray-500 font-mono' },
+    { header: 'SKU', accessor: 'sku', className: 'px-4 py-3 text-sm text-muted font-mono' },
     {
       header: t('product.name'),
       accessor: p => (
-        <span className="text-gray-800 font-medium">
+        <span className="text-body font-medium">
           {locale === 'bn' ? p.name_bn : p.name_en}
           {p.is_package && <Badge variant="blue" className="ml-2 text-xs">{t('product.package')}</Badge>}
         </span>
@@ -67,14 +67,14 @@ export default function ProductList() {
     },
     {
       header: locale === 'bn' ? 'কেটাগরি' : 'Category',
-      accessor: p => <span className="text-sm text-gray-600">{locale === 'bn' ? p.category_name_bn : p.category_name_en}</span>,
+      accessor: p => <span className="text-sm text-muted">{locale === 'bn' ? p.category_name_bn : p.category_name_en}</span>,
       exportValue: p => locale === 'bn' ? p.category_name_bn : p.category_name_en,
     },
     {
       header: locale === 'bn' ? 'ব্র্যান্ড' : 'Brand',
       accessor: p => p.brand_name_bn || p.brand_name_en
-        ? <span className="text-xs font-semibold text-amber-700 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded-full">{locale === 'bn' ? (p.brand_name_bn ?? p.brand_name_en) : (p.brand_name_en ?? p.brand_name_bn)}</span>
-        : <span className="text-gray-300 text-xs">—</span>,
+        ? <span className="text-xs font-semibold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 border border-amber-100 dark:border-amber-800 px-2 py-0.5 rounded-full">{locale === 'bn' ? (p.brand_name_bn ?? p.brand_name_en) : (p.brand_name_en ?? p.brand_name_bn)}</span>
+        : <span className="text-muted text-xs">—</span>,
       exportValue: p => locale === 'bn' ? (p.brand_name_bn ?? '') : (p.brand_name_en ?? ''),
     },
     {
@@ -138,7 +138,7 @@ export default function ProductList() {
           label: t('common.edit'),
           render: p => (
             <Link href={`/${locale}/admin/products/${p.id}/edit`}
-              className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors"
+              className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/40 transition-colors"
               title={t('common.edit')}>
               <Pencil className="w-3.5 h-3.5" />
             </Link>

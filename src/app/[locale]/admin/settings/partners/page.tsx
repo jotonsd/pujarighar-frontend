@@ -235,17 +235,17 @@ function PaymentHistoryModal({
       header: isBn ? "মাস / বছর" : "Month / Year",
       accessor: p => (
         <div>
-          <p className="font-medium text-gray-800">
+          <p className="font-medium text-body">
             {isBn ? MONTH_NAMES_BN[p.month] : MONTH_NAMES_EN[p.month]} {p.year}
           </p>
-          {p.note && <p className="text-xs text-gray-400">{p.note}</p>}
+          {p.note && <p className="text-xs text-muted">{p.note}</p>}
         </div>
       ),
     },
     {
       header: isBn ? "নিট লাভ" : "Net Profit",
       accessor: p => (
-        <span className="text-gray-600">
+        <span className="text-muted">
           {formatAmount(p.total_profit, locale, 2)}
         </span>
       ),
@@ -279,7 +279,7 @@ function PaymentHistoryModal({
       header: isBn ? "বাকি" : "Balance",
       accessor: p => (
         <span
-          className={`font-semibold ${parseFloat(p.balance) > 0 ? "text-amber-700" : "text-gray-400"}`}
+          className={`font-semibold ${parseFloat(p.balance) > 0 ? "text-amber-700 dark:text-amber-500" : "text-muted"}`}
         >
           {formatAmount(p.balance, locale, 2)}
         </span>
@@ -291,7 +291,7 @@ function PaymentHistoryModal({
     {
       header: isBn ? "তারিখ" : "Paid Date",
       accessor: p => (
-        <span className="text-xs text-gray-400">{p.paid_date ?? "—"}</span>
+        <span className="text-xs text-muted">{p.paid_date ?? "—"}</span>
       ),
       headerClassName:
         "px-4 py-3 text-right text-xs font-bold text-amber-700 uppercase tracking-wider",
@@ -305,25 +305,25 @@ function PaymentHistoryModal({
       icon: <Pencil className="w-3 h-3" />,
       onClick: openEdit,
       className:
-        "inline-flex items-center justify-center w-7 h-7 rounded-lg border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors",
+        "inline-flex items-center justify-center w-7 h-7 rounded-lg border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 dark:border-amber-800 dark:bg-amber-900/30 dark:text-amber-400 dark:hover:bg-amber-900/50 transition-colors",
     },
     {
       label: "Delete",
       icon: <Trash2 className="w-3 h-3" />,
       onClick: handleDelete,
       className:
-        "inline-flex items-center justify-center w-7 h-7 rounded-lg border border-red-100 bg-red-50 text-red-400 hover:bg-red-100 transition-colors",
+        "inline-flex items-center justify-center w-7 h-7 rounded-lg border border-red-100 bg-red-50 text-red-400 hover:bg-red-100 dark:border-red-800 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50 transition-colors",
     },
   ];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col">
+      <div className="bg-surface rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b shrink-0">
           <div>
-            <h2 className="font-bold text-gray-800">{partner.name_bn}</h2>
-            <p className="text-xs text-gray-400">
+            <h2 className="font-bold text-body">{partner.name_bn}</h2>
+            <p className="text-xs text-muted">
               {partner.name_en && `${partner.name_en} · `}
               {formatNumber(partner.equity_percentage, locale)}%{" "}
               {isBn ? "ইক্যুইটি" : "equity"}
@@ -340,7 +340,7 @@ function PaymentHistoryModal({
             )}
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600"
+              className="text-muted hover:text-body"
             >
               <X className="w-5 h-5" />
             </button>
@@ -349,9 +349,9 @@ function PaymentHistoryModal({
 
         {/* All-time summary */}
         {data && (
-          <div className="grid grid-cols-3 gap-3 px-6 py-4 bg-gray-50 border-b shrink-0">
+          <div className="grid grid-cols-3 gap-3 px-6 py-4 bg-background border-b shrink-0">
             <div className="text-center">
-              <p className="text-xs text-gray-500 mb-0.5">
+              <p className="text-xs text-muted mb-0.5">
                 {isBn ? "মোট প্রাপ্য (সর্বকাল)" : "Total Share (all time)"}
               </p>
               <p className="font-bold text-green-600">
@@ -359,7 +359,7 @@ function PaymentHistoryModal({
               </p>
             </div>
             <div className="text-center border-x">
-              <p className="text-xs text-gray-500 mb-0.5">
+              <p className="text-xs text-muted mb-0.5">
                 {isBn ? "মোট পরিশোধ" : "Total Paid"}
               </p>
               <p className="font-bold text-blue-600">
@@ -367,11 +367,11 @@ function PaymentHistoryModal({
               </p>
             </div>
             <div className="text-center">
-              <p className="text-xs text-gray-500 mb-0.5">
+              <p className="text-xs text-muted mb-0.5">
                 {isBn ? "বাকি" : "Outstanding"}
               </p>
               <p
-                className={`font-bold ${parseFloat(totalBalance) > 0 ? "text-amber-700" : "text-gray-400"}`}
+                className={`font-bold ${parseFloat(totalBalance) > 0 ? "text-amber-700 dark:text-amber-500" : "text-muted"}`}
               >
                 {formatAmount(totalBalance, locale, 2)}
               </p>
@@ -381,8 +381,8 @@ function PaymentHistoryModal({
 
         {/* Record form */}
         {showForm && (
-          <div className="px-6 py-5 bg-amber-50 border-b shrink-0">
-            <h3 className="text-sm font-semibold text-gray-700 mb-4">
+          <div className="px-6 py-5 bg-amber-50 dark:bg-amber-900/20 border-b shrink-0">
+            <h3 className="text-sm font-semibold text-muted mb-4">
               {editingPayment
                 ? `${isBn ? "পেমেন্ট আপডেট" : "Update Payment"} — ${isBn ? MONTH_NAMES_BN[editingPayment.month] : MONTH_NAMES_EN[editingPayment.month]} ${editingPayment.year}`
                 : isBn
@@ -417,16 +417,16 @@ function PaymentHistoryModal({
                 </div>
 
                 {/* Auto-fetched P&L result */}
-                <div className="mb-4 p-4 rounded-xl border bg-white">
+                <div className="mb-4 p-4 rounded-xl border bg-surface">
                   {fetchingPL ? (
-                    <div className="flex items-center gap-2 text-gray-500 text-sm">
+                    <div className="flex items-center gap-2 text-muted text-sm">
                       <Loader2 className="w-4 h-4 animate-spin text-amber-500" />
                       {isBn ? "লাভ-ক্ষতি গণনা হচ্ছে..." : "Calculating P&L..."}
                     </div>
                   ) : plData ? (
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-xs text-gray-400 mb-0.5">
+                        <p className="text-xs text-muted mb-0.5">
                           {isBn
                             ? "নিট লাভ (P&L থেকে)"
                             : "Net Profit (from P&L)"}
@@ -445,7 +445,7 @@ function PaymentHistoryModal({
                         )}
                       </div>
                       <div className="text-right">
-                        <p className="text-xs text-gray-400 mb-0.5">
+                        <p className="text-xs text-muted mb-0.5">
                           {isBn
                             ? `অংশীদারের প্রাপ্য (${formatNumber(partner.equity_percentage, locale)}%)`
                             : `Share (${partner.equity_percentage}%)`}
@@ -458,7 +458,7 @@ function PaymentHistoryModal({
                       </div>
                     </div>
                   ) : (
-                    <p className="text-sm text-gray-400">
+                    <p className="text-sm text-muted">
                       {isBn ? "তথ্য পাওয়া যাচ্ছে না" : "No P&L data available"}
                     </p>
                   )}
@@ -466,9 +466,9 @@ function PaymentHistoryModal({
               </>
             ) : (
               /* Edit mode: locked summary */
-              <div className="mb-4 p-4 rounded-xl border bg-white flex items-center justify-between">
+              <div className="mb-4 p-4 rounded-xl border bg-surface flex items-center justify-between">
                 <div>
-                  <p className="text-xs text-gray-400 mb-0.5">
+                  <p className="text-xs text-muted mb-0.5">
                     {isBn ? "নিট লাভ" : "Net Profit"}
                   </p>
                   <p className="text-xl font-bold text-green-600">
@@ -476,7 +476,7 @@ function PaymentHistoryModal({
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-xs text-gray-400 mb-0.5">
+                  <p className="text-xs text-muted mb-0.5">
                     {isBn ? "প্রাপ্য অংশ" : "Share Amount"}
                   </p>
                   <p className="text-xl font-bold text-amber-700">
@@ -505,7 +505,7 @@ function PaymentHistoryModal({
                     onClick={() =>
                       setForm(p => ({ ...p, paid_amount: autoShare }))
                     }
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-xs px-2 py-0.5 rounded bg-amber-100 text-amber-700 hover:bg-amber-200 transition-colors"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-xs px-2 py-0.5 rounded bg-amber-100 text-amber-700 hover:bg-amber-200 dark:bg-amber-900/40 dark:text-amber-400 dark:hover:bg-amber-900/60 transition-colors"
                   >
                     {isBn ? "পূর্ণ" : "Full"}
                   </button>
@@ -673,15 +673,15 @@ export default function PartnersPage() {
       header: isBn ? "নাম" : "Name",
       accessor: p => (
         <div>
-          <p className="font-semibold text-gray-800">{p.name_bn}</p>
-          {p.name_en && <p className="text-xs text-gray-400">{p.name_en}</p>}
+          <p className="font-semibold text-body">{p.name_bn}</p>
+          {p.name_en && <p className="text-xs text-muted">{p.name_en}</p>}
         </div>
       ),
     },
     {
       header: isBn ? "বিনিয়োগ" : "Invested",
       accessor: p => (
-        <span className="font-bold text-gray-700">
+        <span className="font-bold text-muted">
           {formatAmount(p.invested_amount || "0", locale, 2)}
         </span>
       ),
@@ -692,7 +692,7 @@ export default function PartnersPage() {
     {
       header: isBn ? "ইক্যুইটি %" : "Equity %",
       accessor: p => (
-        <span className="inline-block px-3 py-1 rounded-full text-sm font-bold text-amber-700 bg-amber-50 border border-amber-100">
+        <span className="inline-block px-3 py-1 rounded-full text-sm font-bold text-amber-700 bg-amber-50 border border-amber-100 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800">
           {formatNumber(p.equity_percentage, locale)}%
         </span>
       ),
@@ -726,7 +726,7 @@ export default function PartnersPage() {
       header: isBn ? "বাকি" : "Balance",
       accessor: p => (
         <span
-          className={`font-bold ${parseFloat(p.total_balance || "0") > 0 ? "text-amber-700" : "text-gray-400"}`}
+          className={`font-bold ${parseFloat(p.total_balance || "0") > 0 ? "text-amber-700 dark:text-amber-500" : "text-muted"}`}
         >
           {formatAmount(p.total_balance || "0", locale, 2)}
         </span>
@@ -741,7 +741,7 @@ export default function PartnersPage() {
         <div className="flex justify-center">
           <button
             onClick={() => setHistoryPartner(p)}
-            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium text-blue-600 bg-blue-50 border border-blue-100 hover:bg-blue-100 transition-colors"
+            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium text-blue-600 bg-blue-50 border border-blue-100 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800 dark:hover:bg-blue-900/50 transition-colors"
           >
             {isBn ? "দেখুন" : "View"} <ChevronRight className="w-3 h-3" />
           </button>
@@ -759,14 +759,14 @@ export default function PartnersPage() {
       icon: <Pencil className="w-3.5 h-3.5" />,
       onClick: openEdit,
       className:
-        "inline-flex items-center justify-center w-8 h-8 rounded-lg border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors",
+        "inline-flex items-center justify-center w-8 h-8 rounded-lg border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 dark:border-amber-800 dark:bg-amber-900/30 dark:text-amber-400 dark:hover:bg-amber-900/50 transition-colors",
     },
     {
       label: isBn ? "মুছুন" : "Delete",
       icon: <Trash2 className="w-3.5 h-3.5" />,
       onClick: handleDelete,
       className:
-        "inline-flex items-center justify-center w-8 h-8 rounded-lg border border-red-100 bg-red-50 text-red-400 hover:bg-red-100 transition-colors",
+        "inline-flex items-center justify-center w-8 h-8 rounded-lg border border-red-100 bg-red-50 text-red-400 hover:bg-red-100 dark:border-red-800 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50 transition-colors",
     },
   ];
 
@@ -787,7 +787,7 @@ export default function PartnersPage() {
       {partners.length > 0 && (
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
           <div className="card text-center py-4">
-            <p className="text-xs text-gray-500 mb-1">
+            <p className="text-xs text-muted mb-1">
               {isBn ? "মোট বিনিয়োগ" : "Total Invested"}
             </p>
             <p className="text-2xl font-bold text-amber-700">
@@ -795,15 +795,15 @@ export default function PartnersPage() {
             </p>
           </div>
           <div className="card text-center py-4">
-            <p className="text-xs text-gray-500 mb-1">
+            <p className="text-xs text-muted mb-1">
               {isBn ? "মোট অংশীদার" : "Partners"}
             </p>
-            <p className="text-2xl font-bold text-gray-800">
+            <p className="text-2xl font-bold text-body">
               {formatNumber(partners.length, locale)}
             </p>
           </div>
-          <div className="card text-center py-4 border-amber-200 bg-amber-50">
-            <p className="text-xs text-gray-500 mb-1">
+          <div className="card text-center py-4 border-amber-200 bg-amber-50 dark:bg-amber-900/20">
+            <p className="text-xs text-muted mb-1">
               {isBn ? "ব্যবহৃত ইক্যুইটি" : "Assigned Equity"}
             </p>
             <p className="text-2xl font-bold text-amber-700">
@@ -811,9 +811,9 @@ export default function PartnersPage() {
             </p>
           </div>
           <div
-            className={`card text-center py-4 ${Math.abs(totalEquity - 100) < 0.01 ? "border-red-100 bg-red-50" : "border-green-200 bg-green-50"}`}
+            className={`card text-center py-4 ${Math.abs(totalEquity - 100) < 0.01 ? "border-red-100 bg-red-50 dark:bg-red-900/20" : "border-green-200 bg-green-50 dark:bg-green-900/20"}`}
           >
-            <p className="text-xs text-gray-500 mb-1">
+            <p className="text-xs text-muted mb-1">
               {isBn ? "বাকি ইক্যুইটি" : "Available Equity"}
             </p>
             <p
@@ -823,13 +823,13 @@ export default function PartnersPage() {
             </p>
           </div>
           <div
-            className={`card text-center py-4 ${totalOutstanding > 0 ? "border-red-100 bg-red-50" : ""}`}
+            className={`card text-center py-4 ${totalOutstanding > 0 ? "border-red-100 bg-red-50 dark:bg-red-900/20" : ""}`}
           >
-            <p className="text-xs text-gray-500 mb-1">
+            <p className="text-xs text-muted mb-1">
               {isBn ? "মোট বাকি" : "Outstanding"}
             </p>
             <p
-              className={`text-2xl font-bold ${totalOutstanding > 0 ? "text-red-700" : "text-gray-400"}`}
+              className={`text-2xl font-bold ${totalOutstanding > 0 ? "text-red-700" : "text-muted"}`}
             >
               {formatAmount(String(totalOutstanding.toFixed(2)), locale, 2)}
             </p>
@@ -851,9 +851,9 @@ export default function PartnersPage() {
       {/* Partner create/edit modal */}
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 space-y-4">
+          <div className="bg-surface rounded-2xl shadow-xl w-full max-w-sm p-6 space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="font-bold text-gray-800">
+              <h2 className="font-bold text-body">
                 {editing
                   ? isBn
                     ? "অংশীদার সম্পাদনা"
@@ -864,7 +864,7 @@ export default function PartnersPage() {
               </h2>
               <button
                 onClick={close}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-muted hover:text-body"
               >
                 <X className="w-5 h-5" />
               </button>

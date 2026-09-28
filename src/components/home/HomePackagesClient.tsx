@@ -56,7 +56,7 @@ export default function HomePackagesClient({ packages }: { packages: Product[] }
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-2">
           <Gift className="w-6 h-6 text-amber-600" />
-          <h2 className="text-xl font-bold text-gray-800">
+          <h2 className="text-xl font-bold text-body">
             {locale === "bn" ? "পূজার প্যাকেজ" : "Puja Packages"}
           </h2>
         </div>
@@ -76,14 +76,14 @@ export default function HomePackagesClient({ packages }: { packages: Product[] }
             <div className="hidden md:flex items-center gap-1.5">
               <button
                 onClick={() => scroll("left")}
-                className="p-1.5 rounded-full border border-gray-200 bg-white shadow-sm hover:bg-gray-50 text-gray-600 transition active:scale-95"
+                className="p-1.5 rounded-full border border-border bg-surface shadow-sm hover:bg-surface-alt text-muted transition active:scale-95"
                 aria-label="Previous slide"
               >
                 ←
               </button>
               <button
                 onClick={() => scroll("right")}
-                className="p-1.5 rounded-full border border-gray-200 bg-white shadow-sm hover:bg-gray-50 text-gray-600 transition active:scale-95"
+                className="p-1.5 rounded-full border border-border bg-surface shadow-sm hover:bg-surface-alt text-muted transition active:scale-95"
                 aria-label="Next slide"
               >
                 →

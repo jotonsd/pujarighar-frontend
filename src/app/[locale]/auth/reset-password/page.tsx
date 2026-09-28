@@ -50,15 +50,15 @@ export default function ResetPasswordPage() {
       <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4">
         <div className="text-center max-w-sm">
           <div className="text-5xl mb-4">⚠️</div>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">
+          <h2 className="text-xl font-bold text-body mb-2">
             {isBn ? "লিংকটি অবৈধ" : "Invalid Reset Link"}
           </h2>
-          <p className="text-sm text-gray-500 mb-6">
+          <p className="text-sm text-muted mb-6">
             {isBn
               ? "এই লিংকটি অবৈধ বা মেয়াদ শেষ হয়ে গেছে। নতুন করে চেষ্টা করুন।"
               : "This link is invalid or has expired. Please request a new one."}
           </p>
-          <Link href={`/${locale}/auth/forgot-password`} className="text-amber-700 hover:text-amber-700 font-semibold text-sm hover:underline">
+          <Link href={`/${locale}/auth/forgot-password`} className="text-amber-700 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-400 font-semibold text-sm hover:underline">
             {isBn ? "নতুন লিংক পাঠান" : "Request New Link"}
           </Link>
         </div>
@@ -67,10 +67,10 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex bg-gray-50 lg:bg-transparent">
+    <div className="min-h-[calc(100vh-4rem)] flex bg-background lg:bg-transparent">
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-amber-500 to-amber-700 items-center justify-center relative overflow-hidden">
-        <div className="absolute w-72 h-72 rounded-full bg-white/10 -top-16 -left-16" />
-        <div className="absolute w-48 h-48 rounded-full bg-white/10 bottom-10 -right-10" />
+        <div className="absolute w-72 h-72 rounded-full bg-surface/10 -top-16 -left-16" />
+        <div className="absolute w-48 h-48 rounded-full bg-surface/10 bottom-10 -right-10" />
         <div className="absolute w-32 h-32 rounded-full bg-amber-400/40 top-1/2 left-1/3" />
         <div className="relative z-10 text-center px-10">
           <div className="relative w-20 h-20 mx-auto mb-5">
@@ -85,8 +85,8 @@ export default function ResetPasswordPage() {
         </div>
       </div>
 
-      <div className="w-full lg:w-1/2 flex items-center justify-center px-4 py-8 sm:px-6 lg:px-12 bg-gray-50">
-        <div className="w-full max-w-md bg-white lg:bg-transparent p-6 sm:p-8 lg:p-0 rounded-2xl shadow-sm lg:shadow-none border border-gray-100 lg:border-none relative overflow-hidden">
+      <div className="w-full lg:w-1/2 flex items-center justify-center px-4 py-8 sm:px-6 lg:px-12 bg-background">
+        <div className="w-full max-w-md bg-surface lg:bg-transparent p-6 sm:p-8 lg:p-0 rounded-2xl shadow-sm lg:shadow-none border border-border lg:border-none relative overflow-hidden">
           <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-amber-500 to-amber-600 lg:hidden" />
 
           <div className="lg:hidden text-center mb-6 pt-2">
@@ -98,20 +98,20 @@ export default function ResetPasswordPage() {
           {done ? (
             <div className="text-center py-6">
               <div className="text-5xl mb-4">✅</div>
-              <h2 className="text-xl font-bold text-gray-900 mb-2">
+              <h2 className="text-xl font-bold text-body mb-2">
                 {isBn ? "পাসওয়ার্ড পরিবর্তন হয়েছে" : "Password Reset Successful"}
               </h2>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-muted">
                 {isBn ? "লগইন পেজে নিয়ে যাওয়া হচ্ছে..." : "Redirecting to login..."}
               </p>
             </div>
           ) : (
             <>
               <div className="mb-6 text-center lg:text-left">
-                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">
+                <h2 className="text-2xl sm:text-3xl font-bold text-body tracking-tight">
                   {isBn ? "নতুন পাসওয়ার্ড" : "New Password"}
                 </h2>
-                <p className="text-sm text-gray-500 mt-2">
+                <p className="text-sm text-muted mt-2">
                   {isBn ? "আপনার নতুন পাসওয়ার্ড লিখুন" : "Enter your new password below"}
                 </p>
               </div>

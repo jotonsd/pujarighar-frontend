@@ -48,11 +48,11 @@ export default function OrderShipping({ order }: Props) {
   return (
     <div className="card">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="font-semibold text-gray-700">{t('order.shipping')}</h2>
+        <h2 className="font-semibold text-muted">{t('order.shipping')}</h2>
         {!editing && !order.delivery && (
           <button
             onClick={() => setEditing(true)}
-            className="inline-flex items-center gap-1 text-xs text-amber-700 hover:text-amber-700 border border-amber-200 bg-amber-50 hover:bg-amber-100 px-2.5 py-1 rounded-lg transition-colors"
+            className="inline-flex items-center gap-1 text-xs text-amber-700 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-400 border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/30 hover:bg-amber-100 dark:hover:bg-amber-900/40 px-2.5 py-1 rounded-lg transition-colors"
           >
             <Pencil className="w-3 h-3" />
             {isBn ? 'সম্পাদনা' : 'Edit'}
@@ -114,29 +114,29 @@ export default function OrderShipping({ order }: Props) {
       ) : (
         <div className="grid grid-cols-2 gap-3 text-sm">
           <div>
-            <p className="text-xs text-gray-400 mb-0.5">{isBn ? 'নাম' : 'Name'}</p>
-            <p className="font-medium text-gray-800">{localName(order.shipping_name_bn, order.shipping_name_en, isBn)}</p>
+            <p className="text-xs text-muted mb-0.5">{isBn ? 'নাম' : 'Name'}</p>
+            <p className="font-medium text-body">{localName(order.shipping_name_bn, order.shipping_name_en, isBn)}</p>
           </div>
           <div>
-            <p className="text-xs text-gray-400 mb-0.5">{isBn ? 'ফোন' : 'Phone'}</p>
-            <p className="font-medium text-gray-800 flex items-center gap-1.5">{order.shipping_phone}{order.shipping_phone && <CopyButton value={order.shipping_phone} isBn={isBn} />}</p>
+            <p className="text-xs text-muted mb-0.5">{isBn ? 'ফোন' : 'Phone'}</p>
+            <p className="font-medium text-body flex items-center gap-1.5">{order.shipping_phone}{order.shipping_phone && <CopyButton value={order.shipping_phone} isBn={isBn} />}</p>
           </div>
           {(order.shipping_address_bn || order.shipping_address_en) && (
             <div className="col-span-2">
-              <p className="text-xs text-gray-400 mb-0.5">{isBn ? 'ঠিকানা' : 'Address'}</p>
-              <p className="font-medium text-gray-800">{isBn ? (order.shipping_address_bn || order.shipping_address_en) : (order.shipping_address_en || order.shipping_address_bn)}</p>
+              <p className="text-xs text-muted mb-0.5">{isBn ? 'ঠিকানা' : 'Address'}</p>
+              <p className="font-medium text-body">{isBn ? (order.shipping_address_bn || order.shipping_address_en) : (order.shipping_address_en || order.shipping_address_bn)}</p>
             </div>
           )}
           {order.shipping_district && (
             <div className="col-span-2">
-              <p className="text-xs text-gray-400 mb-0.5">{isBn ? 'জেলা / থানা / পোস্ট কোড' : 'District / Thana / Post Code'}</p>
-              <p className="font-medium text-gray-800">{order.shipping_district}, {order.shipping_thana} — {order.shipping_post_code}</p>
+              <p className="text-xs text-muted mb-0.5">{isBn ? 'জেলা / থানা / পোস্ট কোড' : 'District / Thana / Post Code'}</p>
+              <p className="font-medium text-body">{order.shipping_district}, {order.shipping_thana} — {order.shipping_post_code}</p>
             </div>
           )}
           {(order.notes_bn || order.notes_en) && (
             <div className="col-span-2">
-              <p className="text-xs text-gray-400 mb-0.5">{isBn ? 'কাস্টমারের মন্তব্য' : 'Customer Note'}</p>
-              <p className="font-medium text-gray-800 whitespace-pre-wrap">{isBn ? (order.notes_bn || order.notes_en) : (order.notes_en || order.notes_bn)}</p>
+              <p className="text-xs text-muted mb-0.5">{isBn ? 'কাস্টমারের মন্তব্য' : 'Customer Note'}</p>
+              <p className="font-medium text-body whitespace-pre-wrap">{isBn ? (order.notes_bn || order.notes_en) : (order.notes_en || order.notes_bn)}</p>
             </div>
           )}
         </div>

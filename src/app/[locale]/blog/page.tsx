@@ -75,7 +75,7 @@ export default async function BlogListPage({ params }: Props) {
       </div>
 
       {posts.length === 0 ? (
-        <p className="text-gray-400 text-sm">
+        <p className="text-muted text-sm">
           {isBn ? "কোনো ব্লগ পোস্ট নেই।" : "No blog posts yet."}
         </p>
       ) : (
@@ -90,9 +90,9 @@ export default async function BlogListPage({ params }: Props) {
               <Link
                 key={post.id}
                 href={`/${locale}/blog/${post.slug}`}
-                className="block rounded-2xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition-shadow overflow-hidden"
+                className="block rounded-2xl border border-border bg-surface shadow-sm hover:shadow-md transition-shadow overflow-hidden"
               >
-                <div className="relative w-full aspect-[1980/960] bg-gray-50">
+                <div className="relative w-full aspect-[1980/960] bg-background">
                   {post.cover_image ? (
                     <Image
                       src={post.cover_image}
@@ -102,20 +102,20 @@ export default async function BlogListPage({ params }: Props) {
                       sizes="(max-width: 768px) 100vw, 33vw"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-300 text-sm">
+                    <div className="w-full h-full flex items-center justify-center text-muted text-sm">
                       {isBn ? "কোনো ছবি নেই" : "No image"}
                     </div>
                   )}
                 </div>
                 <div className="p-4">
-                  <h2 className="font-semibold text-gray-800 mb-1.5 line-clamp-2">
+                  <h2 className="font-semibold text-body mb-1.5 line-clamp-2">
                     {title}
                   </h2>
-                  <p className="text-sm text-gray-500 line-clamp-3">
+                  <p className="text-sm text-muted line-clamp-3">
                     {excerpt}
                   </p>
                   {post.published_at && (
-                    <p className="text-xs text-gray-400 mt-2">
+                    <p className="text-xs text-muted mt-2">
                       {new Date(post.published_at).toLocaleDateString(
                         isBn ? "bn-BD" : "en-US",
                         {

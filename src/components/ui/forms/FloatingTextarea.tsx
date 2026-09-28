@@ -24,7 +24,7 @@ const FloatingTextarea = forwardRef<HTMLTextAreaElement, FloatingTextareaProps>(
       <div className="w-full">
         <div className="relative flex items-start">
           {icon && (
-            <div className="absolute left-3 top-3 text-gray-400 pointer-events-none z-10">
+            <div className="absolute left-3 top-3 text-muted pointer-events-none z-10">
               {icon}
             </div>
           )}
@@ -33,7 +33,7 @@ const FloatingTextarea = forwardRef<HTMLTextAreaElement, FloatingTextareaProps>(
             ref={ref}
             id={inputId}
             rows={rows}
-            className={`block pb-2 pt-3 w-full text-sm text-gray-900 bg-transparent rounded-lg border border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-amber-600 peer resize-y ${
+            className={`block pb-2 pt-3 w-full text-sm text-body bg-transparent rounded-lg border border-border appearance-none focus:outline-none focus:ring-0 focus:border-amber-600 peer resize-y ${
               error ? 'border-red-500 focus:border-red-500' : ''
             } ${icon ? 'pl-10' : 'pl-2.5'} ${rightElement ? 'pr-10' : 'pr-2.5'} ${className}`}
             placeholder=" "
@@ -44,12 +44,12 @@ const FloatingTextarea = forwardRef<HTMLTextAreaElement, FloatingTextareaProps>(
 
           <label
             htmlFor={inputId}
-            className={`absolute text-sm duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 pointer-events-none
+            className={`absolute text-sm duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-surface px-2 pointer-events-none
             peer-focus:px-2 peer-focus:text-amber-700
             peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-5
             peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4
             ${icon ? 'start-9 peer-placeholder-shown:start-9 peer-focus:start-2' : 'start-1'}
-            ${error ? 'text-red-500' : 'text-gray-500'}`}
+            ${error ? 'text-red-500' : 'text-muted'}`}
           >
             {label}
           </label>

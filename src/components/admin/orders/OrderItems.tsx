@@ -39,11 +39,11 @@ function AddProductPicker({ orderId, locale }: { orderId: string; locale: string
   };
 
   return (
-    <div className="mt-3 pt-3 border-t border-dashed border-gray-200">
+    <div className="mt-3 pt-3 border-t border-dashed border-border">
       {!selected ? (
         <div className="relative">
           <div className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+            <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted" />
             <input
               type="text"
               value={query}
@@ -51,13 +51,13 @@ function AddProductPicker({ orderId, locale }: { orderId: string; locale: string
               onFocus={() => setOpen(true)}
               onBlur={() => setTimeout(() => setOpen(false), 150)}
               placeholder={isBn ? "পণ্য খুঁজুন যোগ করতে..." : "Search product to add..."}
-              className="w-full pl-8 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-amber-500"
+              className="w-full pl-8 pr-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-amber-500"
             />
           </div>
           {open && query.trim().length >= 2 && (
-            <div className="absolute z-20 mt-1 w-full bg-white rounded-xl border border-gray-200 shadow-lg max-h-56 overflow-y-auto">
+            <div className="absolute z-20 mt-1 w-full bg-surface rounded-xl border border-border shadow-lg max-h-56 overflow-y-auto">
               {isFetching ? (
-                <div className="px-3 py-3 text-sm text-gray-400 text-center">{isBn ? "খুঁজছি..." : "Searching..."}</div>
+                <div className="px-3 py-3 text-sm text-muted text-center">{isBn ? "খুঁজছি..." : "Searching..."}</div>
               ) : results?.data?.length ? (
                 results.data.map(p => (
                   <button
@@ -65,34 +65,34 @@ function AddProductPicker({ orderId, locale }: { orderId: string; locale: string
                     type="button"
                     onMouseDown={e => e.preventDefault()}
                     onClick={() => { setSelected(p); setOpen(false); setQuery(""); }}
-                    className="w-full flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-amber-50 text-left transition-colors"
+                    className="w-full flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-amber-50 dark:hover:bg-amber-900/30 text-left transition-colors"
                   >
                     {p.images?.[0]?.image ? (
-                      <Image src={p.images[0].image} alt="" width={32} height={32} className="w-8 h-8 rounded-md object-cover border border-gray-100 shrink-0" />
+                      <Image src={p.images[0].image} alt="" width={32} height={32} className="w-8 h-8 rounded-md object-cover border border-border shrink-0" />
                     ) : (
-                      <div className="w-8 h-8 rounded-md border border-gray-100 bg-gray-50 flex items-center justify-center text-gray-300 text-xs shrink-0">—</div>
+                      <div className="w-8 h-8 rounded-md border border-border bg-background flex items-center justify-center text-muted text-xs shrink-0">—</div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <div className="truncate text-gray-800">{localName(p.name_bn, p.name_en, isBn)}</div>
-                      <div className="text-xs text-gray-400 font-mono">{p.sku}</div>
+                      <div className="truncate text-body">{localName(p.name_bn, p.name_en, isBn)}</div>
+                      <div className="text-xs text-muted font-mono">{p.sku}</div>
                     </div>
                     <div className="text-right shrink-0">
-                      <div className="text-xs font-bold text-amber-700">{formatAmount(p.effective_price, locale)}</div>
-                      <div className="text-[11px] text-gray-400">{isBn ? "স্টক" : "Stock"}: {formatNumber(parseFloat(p.stock_on_hand), locale)}</div>
+                      <div className="text-xs font-bold text-amber-700 dark:text-amber-400">{formatAmount(p.effective_price, locale)}</div>
+                      <div className="text-[11px] text-muted">{isBn ? "স্টক" : "Stock"}: {formatNumber(parseFloat(p.stock_on_hand), locale)}</div>
                     </div>
                   </button>
                 ))
               ) : (
-                <div className="px-3 py-3 text-sm text-gray-400 text-center">{isBn ? "কোনো পণ্য পাওয়া যায়নি" : "No products found"}</div>
+                <div className="px-3 py-3 text-sm text-muted text-center">{isBn ? "কোনো পণ্য পাওয়া যায়নি" : "No products found"}</div>
               )}
             </div>
           )}
         </div>
       ) : (
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="flex items-center gap-2 flex-1 min-w-[160px] px-3 py-2 bg-amber-50 rounded-lg text-sm">
+          <span className="flex items-center gap-2 flex-1 min-w-[160px] px-3 py-2 bg-amber-50 dark:bg-amber-900/30 rounded-lg text-sm">
             <span className="truncate">{localName(selected.name_bn, selected.name_en, isBn)}</span>
-            <button type="button" onClick={() => setSelected(null)} className="ml-auto text-gray-400 hover:text-gray-600 shrink-0">
+            <button type="button" onClick={() => setSelected(null)} className="ml-auto text-muted hover:text-muted shrink-0">
               <X className="w-3.5 h-3.5" />
             </button>
           </span>
@@ -101,7 +101,7 @@ function AddProductPicker({ orderId, locale }: { orderId: string; locale: string
             min="1"
             value={qty}
             onChange={e => setQty(e.target.value)}
-            className="w-20 px-2 py-2 text-sm border border-gray-200 rounded-lg text-center focus:outline-none focus:border-amber-500"
+            className="w-20 px-2 py-2 text-sm border border-border rounded-lg text-center focus:outline-none focus:border-amber-500"
           />
           <button
             type="button"
@@ -162,12 +162,12 @@ export default function OrderItems({ order }: Props) {
 
   return (
     <div className="card">
-      <h2 className="font-semibold text-gray-700 mb-4">{t("order.items")}</h2>
+      <h2 className="font-semibold text-muted mb-4">{t("order.items")}</h2>
 
       <div className="overflow-x-auto -mx-1 mb-1">
         <table className="w-full text-sm min-w-[420px]">
           <thead>
-            <tr className="text-xs text-gray-400 border-b border-gray-100">
+            <tr className="text-xs text-muted border-b border-border">
               <th className="text-left font-medium py-1.5 px-1 w-6">#</th>
               <th className="text-left font-medium py-1.5 px-1">{locale === "bn" ? "পণ্য" : "Product"}</th>
               <th className="text-center font-medium py-1.5 px-1">{locale === "bn" ? "পরিমাণ" : "Qty"}</th>
@@ -181,9 +181,9 @@ export default function OrderItems({ order }: Props) {
               const discounted = item.original_unit_price && parseFloat(item.original_unit_price) > parseFloat(item.unit_price);
               return (
                 <Fragment key={item.id}>
-                  <tr className="border-b border-gray-50 last:border-0 align-top">
-                    <td className="py-2 px-1 text-gray-400">{idx + 1}</td>
-                    <td className="py-2 px-1 text-gray-700">
+                  <tr className="border-b border-border last:border-0 align-top">
+                    <td className="py-2 px-1 text-muted">{idx + 1}</td>
+                    <td className="py-2 px-1 text-muted">
                       <div className="flex items-start gap-2">
                         {item.product_image ? (
                           <Image
@@ -191,16 +191,16 @@ export default function OrderItems({ order }: Props) {
                             alt=""
                             width={40}
                             height={40}
-                            className="w-10 h-10 rounded-lg object-cover border border-gray-100 shrink-0"
+                            className="w-10 h-10 rounded-lg object-cover border border-border shrink-0"
                           />
                         ) : (
-                          <div className="w-10 h-10 rounded-lg border border-gray-100 bg-gray-50 flex items-center justify-center text-gray-300 text-xs shrink-0">
+                          <div className="w-10 h-10 rounded-lg border border-border bg-background flex items-center justify-center text-muted text-xs shrink-0">
                             —
                           </div>
                         )}
                         <div>
                           {item.is_package && (
-                            <span className="inline-block text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full font-medium mb-1">
+                            <span className="inline-block text-xs bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 px-1.5 py-0.5 rounded-full font-medium mb-1">
                               🎁 {locale === "bn" ? "প্যাকেজ" : "Package"}
                             </span>
                           )}
@@ -216,18 +216,18 @@ export default function OrderItems({ order }: Props) {
                             min="1"
                             value={editQty}
                             onChange={e => setEditQty(e.target.value)}
-                            className="w-14 px-1.5 py-0.5 text-xs border border-amber-300 rounded focus:outline-none focus:ring-1 focus:ring-amber-400"
+                            className="w-14 px-1.5 py-0.5 text-xs border border-amber-300 dark:border-amber-700 rounded focus:outline-none focus:ring-1 focus:ring-amber-400"
                             autoFocus
                           />
-                          <button onClick={() => saveEdit(item.id)} disabled={saving} className="text-green-600 hover:text-green-700 disabled:opacity-40">
+                          <button onClick={() => saveEdit(item.id)} disabled={saving} className="text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-400 disabled:opacity-40">
                             <Check className="w-3.5 h-3.5" />
                           </button>
-                          <button onClick={() => setEditingId(null)} className="text-gray-400 hover:text-gray-600">
+                          <button onClick={() => setEditingId(null)} className="text-muted hover:text-muted">
                             <X className="w-3.5 h-3.5" />
                           </button>
                         </span>
                       ) : (
-                        <span className="font-bold text-gray-700">
+                        <span className="font-bold text-muted">
                           {formatNumber(Math.round(parseFloat(item.quantity)), locale)}
                         </span>
                       )}
@@ -235,14 +235,14 @@ export default function OrderItems({ order }: Props) {
                     <td className="py-2 px-1 text-right">
                       {discounted ? (
                         <>
-                          <span className="line-through text-gray-400 mr-1">{formatAmount(item.original_unit_price!, locale)}</span>
-                          <span className="text-gray-700">{formatAmount(item.unit_price, locale)}</span>
+                          <span className="line-through text-muted mr-1">{formatAmount(item.original_unit_price!, locale)}</span>
+                          <span className="text-muted">{formatAmount(item.unit_price, locale)}</span>
                         </>
                       ) : (
-                        <span className="text-gray-700">{formatAmount(item.unit_price, locale)}</span>
+                        <span className="text-muted">{formatAmount(item.unit_price, locale)}</span>
                       )}
                     </td>
-                    <td className="py-2 px-1 text-right font-bold text-gray-800">
+                    <td className="py-2 px-1 text-right font-bold text-body">
                       {formatAmount(item.line_total, locale)}
                     </td>
                     {canEditQty && editingId !== item.id && (
@@ -250,7 +250,7 @@ export default function OrderItems({ order }: Props) {
                         <div className="flex items-center gap-1.5 justify-end">
                           <button
                             onClick={() => startEdit(item.id, item.quantity)}
-                            className="text-gray-300 hover:text-amber-700"
+                            className="text-muted hover:text-amber-700 dark:hover:text-amber-400"
                             title={locale === "bn" ? "পরিমাণ সম্পাদনা করুন" : "Edit quantity"}
                           >
                             <Pencil className="w-3.5 h-3.5" />
@@ -258,7 +258,7 @@ export default function OrderItems({ order }: Props) {
                           {order.items.length > 1 && (
                             <button
                               onClick={() => setDeletingId(item.id)}
-                              className="text-gray-300 hover:text-red-600"
+                              className="text-muted hover:text-red-600 dark:hover:text-red-400"
                               title={locale === "bn" ? "পণ্য মুছুন" : "Remove item"}
                             >
                               <Trash2 className="w-3.5 h-3.5" />
@@ -270,18 +270,18 @@ export default function OrderItems({ order }: Props) {
                     {canEditQty && editingId === item.id && <td />}
                   </tr>
                   {item.is_package && item.package_items?.length > 0 && (
-                    <tr className="border-b border-gray-50 last:border-0">
+                    <tr className="border-b border-border last:border-0">
                       <td />
                       <td colSpan={canEditQty ? 4 : 3} className="pb-2 px-1">
-                        <div className="ml-1 pl-3 border-l-2 border-amber-100 space-y-1">
+                        <div className="ml-1 pl-3 border-l-2 border-amber-100 dark:border-amber-800 space-y-1">
                           {item.package_items.map((pi, i) => (
-                            <div key={i} className="flex items-center justify-between text-xs text-gray-500">
+                            <div key={i} className="flex items-center justify-between text-xs text-muted">
                               <span className="flex items-center gap-1.5">
                                 <span className="w-1 h-1 rounded-full bg-amber-300 shrink-0" />
                                 {localName(pi.component_name_bn, pi.component_name_en, locale === "bn")}
-                                <span className="text-gray-400 font-mono">{pi.component_sku}</span>
+                                <span className="text-muted font-mono">{pi.component_sku}</span>
                               </span>
-                              <span className="text-gray-400 shrink-0 font-bold">
+                              <span className="text-muted shrink-0 font-bold">
                                 ×{formatNumber(Math.round(parseFloat(pi.quantity)), locale)}
                               </span>
                             </div>
@@ -301,7 +301,7 @@ export default function OrderItems({ order }: Props) {
 
       <div className="space-y-1.5">
         <hr className="my-2" />
-        <div className="flex justify-between text-sm text-gray-500">
+        <div className="flex justify-between text-sm text-muted">
           <span>{locale === "bn" ? "পণ্য মূল্য" : "Product Total"}</span>
           <span className="font-bold">
             {formatAmount(
@@ -311,30 +311,30 @@ export default function OrderItems({ order }: Props) {
           </span>
         </div>
         {parseFloat(order.discount_amount) > 0 && (
-          <div className="flex justify-between text-sm text-green-600">
+          <div className="flex justify-between text-sm text-green-600 dark:text-green-400">
             <span>{locale === "bn" ? "ছাড়" : "Discount"}</span>
             <span className="font-bold">− {formatAmount(order.discount_amount, locale)}</span>
           </div>
         )}
-        <div className="flex justify-between text-sm text-gray-500">
+        <div className="flex justify-between text-sm text-muted">
           <span>{locale === "bn" ? "সাবটোটাল" : "Subtotal"}</span>
           <span className="font-bold">{formatAmount(order.subtotal, locale)}</span>
         </div>
         {parseFloat(order.delivery_charge) > 0 && (
-          <div className="flex justify-between text-sm text-gray-500">
+          <div className="flex justify-between text-sm text-muted">
             <span>{locale === "bn" ? "ডেলিভারি চার্জ" : "Delivery Charge"}</span>
             <span className="font-bold text-sm">{formatAmount(order.delivery_charge, locale)}</span>
           </div>
         )}
         {parseFloat(order.cashback_used || "0") > 0 && (
-          <div className="flex justify-between text-sm text-purple-600">
+          <div className="flex justify-between text-sm text-purple-600 dark:text-purple-400">
             <span>{locale === "bn" ? "ক্যাশব্যাক ব্যবহার" : "Cashback Used"}</span>
             <span className="font-bold">− {formatAmount(order.cashback_used, locale)}</span>
           </div>
         )}
         <div className="flex justify-between font-bold">
           <span>{t("order.total")}</span>
-          <span className="text-amber-700">
+          <span className="text-amber-700 dark:text-amber-400">
             {formatAmount(order.grand_total, locale)}
           </span>
         </div>

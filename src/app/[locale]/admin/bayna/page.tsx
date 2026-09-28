@@ -52,15 +52,15 @@ export default function BaynaBookingsPage() {
       header: isBn ? "গ্রাহক" : "Customer",
       accessor: b => (
         <div>
-          <p className="text-sm font-medium text-gray-800">{b.name}</p>
-          <p className="text-xs text-gray-400">{b.phone}</p>
+          <p className="text-sm font-medium text-body">{b.name}</p>
+          <p className="text-xs text-muted">{b.phone}</p>
         </div>
       ),
       exportValue: b => `${b.name} / ${b.phone}`,
     },
     {
       header: isBn ? "অনুষ্ঠানের তারিখ" : "Event Date",
-      accessor: b => <span className="text-sm text-gray-600">{formatDate(b.event_date, locale)}</span>,
+      accessor: b => <span className="text-sm text-muted">{formatDate(b.event_date, locale)}</span>,
       exportValue: b => b.event_date,
     },
     {
@@ -70,7 +70,7 @@ export default function BaynaBookingsPage() {
     },
     {
       header: isBn ? "তৈরি" : "Created",
-      accessor: b => <span className="text-xs text-gray-500">{formatDate(b.created_at, locale)}</span>,
+      accessor: b => <span className="text-xs text-muted">{formatDate(b.created_at, locale)}</span>,
       exportValue: b => b.created_at,
     },
   ];
@@ -127,7 +127,7 @@ export default function BaynaBookingsPage() {
           render: b => (
             <Link
               href={`/${locale}/admin/bayna/${b.id}`}
-              className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-blue-200 bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
+              className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
               title={isBn ? "দেখুন" : "View"}
             >
               <Eye className="w-3.5 h-3.5" />

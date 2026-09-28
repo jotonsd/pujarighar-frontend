@@ -9,7 +9,7 @@ export default function EditRolePage({ params }: { params: { id: string } }) {
   const role = roles.find(r => r.id === params.id);
 
   if (isLoading) return <Spinner />;
-  if (!role) return <p className="text-gray-400">Role not found</p>;
+  if (!role) return <p className="text-muted">Role not found</p>;
 
   return <RoleForm mode="edit" role={role} />;
 }

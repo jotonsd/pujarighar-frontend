@@ -30,11 +30,11 @@ export default async function DeleteAccountPage({ params }: Props) {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-10">
-      <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6">
+      <h1 className="text-2xl sm:text-3xl font-bold text-body mb-6">
         {isBn ? "পূজারিঘর — অ্যাকাউন্ট ও তথ্য মুছে ফেলুন" : "PujariGhar — Delete Your Account & Data"}
       </h1>
 
-      <div className="space-y-6 text-sm sm:text-base text-gray-600 leading-relaxed">
+      <div className="space-y-6 text-sm sm:text-base text-muted leading-relaxed">
         <p>
           {isBn
             ? "আপনি যদি আপনার পূজারিঘর অ্যাকাউন্ট এবং সংশ্লিষ্ট ব্যক্তিগত তথ্য মুছে ফেলতে চান, নিচের নির্দেশনা অনুসরণ করুন।"
@@ -42,14 +42,14 @@ export default async function DeleteAccountPage({ params }: Props) {
         </p>
 
         <section>
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">
+          <h2 className="text-lg font-semibold text-body mb-2">
             {isBn ? "কীভাবে অনুরোধ করবেন" : "How to Request Deletion"}
           </h2>
           <p>
             {isBn ? (
               <>
                 আমাদের সাপোর্ট ইমেইলে লিখুন{" "}
-                <a href={`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent("অ্যাকাউন্ট মুছে ফেলার অনুরোধ")}`} className="text-amber-700 underline">
+                <a href={`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent("অ্যাকাউন্ট মুছে ফেলার অনুরোধ")}`} className="text-amber-700 dark:text-amber-400 underline">
                   {SUPPORT_EMAIL}
                 </a>{" "}
                 — বিষয়ে লিখুন &ldquo;অ্যাকাউন্ট মুছে ফেলার অনুরোধ&rdquo; এবং মেইলে আপনার নিবন্ধিত ফোন নম্বর অথবা ইমেইল উল্লেখ করুন, যাতে আমরা আপনার অ্যাকাউন্ট শনাক্ত করতে পারি। আমরা যাচাই করার পর অনুরোধটি প্রক্রিয়া করব।
@@ -57,7 +57,7 @@ export default async function DeleteAccountPage({ params }: Props) {
             ) : (
               <>
                 Email our support team at{" "}
-                <a href={`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent("Account Deletion Request")}`} className="text-amber-700 underline">
+                <a href={`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent("Account Deletion Request")}`} className="text-amber-700 dark:text-amber-400 underline">
                   {SUPPORT_EMAIL}
                 </a>{" "}
                 with the subject &ldquo;Account Deletion Request,&rdquo; and include the phone number or email your account is registered under so we can identify it. We&apos;ll verify and process your request from there.
@@ -67,7 +67,7 @@ export default async function DeleteAccountPage({ params }: Props) {
         </section>
 
         <section>
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">
+          <h2 className="text-lg font-semibold text-body mb-2">
             {isBn ? "কী মুছে ফেলা হয়" : "What Gets Deleted"}
           </h2>
           <p>
@@ -78,7 +78,7 @@ export default async function DeleteAccountPage({ params }: Props) {
         </section>
 
         <section>
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">
+          <h2 className="text-lg font-semibold text-body mb-2">
             {isBn ? "কী সংরক্ষিত থাকতে পারে" : "What May Be Retained"}
           </h2>
           <p>
@@ -89,7 +89,7 @@ export default async function DeleteAccountPage({ params }: Props) {
         </section>
 
         <section>
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">
+          <h2 className="text-lg font-semibold text-body mb-2">
             {isBn ? "প্রক্রিয়াকরণের সময়" : "Processing Time"}
           </h2>
           <p>

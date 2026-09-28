@@ -72,34 +72,34 @@ export default function LedgerReportView({
       {isLoading ? (
         <TableSkeleton columns={4} rows={8} />
       ) : rows.length === 0 ? (
-        <p className="text-gray-400 text-sm">{isBn ? "কোনো তথ্য নেই" : "No data found"}</p>
+        <p className="text-muted text-sm">{isBn ? "কোনো তথ্য নেই" : "No data found"}</p>
       ) : (
         <div className="card p-0 overflow-hidden overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-amber-50 border-b border-amber-200">
+            <thead className="bg-amber-50 dark:bg-amber-900/30 border-b border-amber-200 dark:border-amber-800">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "তারিখ" : "Date"}</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "হিসাব" : "Account"}</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "বিবরণ" : "Description"}</th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "পরিমাণ" : "Amount"}</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">{isBn ? "তারিখ" : "Date"}</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">{isBn ? "হিসাব" : "Account"}</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">{isBn ? "বিবরণ" : "Description"}</th>
+                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">{isBn ? "পরিমাণ" : "Amount"}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {rows.map(r => (
-                <tr key={r.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-4 py-3 text-xs text-gray-500 whitespace-nowrap">{formatDate(r.date)}</td>
-                  <td className="px-4 py-3 text-gray-800">
+                <tr key={r.id} className="hover:bg-surface-alt transition-colors">
+                  <td className="px-4 py-3 text-xs text-muted whitespace-nowrap">{formatDate(r.date)}</td>
+                  <td className="px-4 py-3 text-body">
                     <div>{isBn ? r.account_name_bn : r.account_name_en}</div>
-                    <div className="text-[10px] text-gray-400 font-mono">{r.entry_number}</div>
+                    <div className="text-[10px] text-muted font-mono">{r.entry_number}</div>
                   </td>
-                  <td className="px-4 py-3 text-xs text-gray-600">{isBn ? r.description_bn : r.description_en}</td>
+                  <td className="px-4 py-3 text-xs text-muted">{isBn ? r.description_bn : r.description_en}</td>
                   <td className={`px-4 py-3 text-right text-xs font-bold ${amountColorClass}`}>{formatAmount(r.amount, locale, 2)}</td>
                 </tr>
               ))}
             </tbody>
-            <tfoot className="border-t-2 border-amber-200 bg-amber-50">
+            <tfoot className="border-t-2 border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/30">
               <tr>
-                <td colSpan={3} className="px-4 py-3 text-xs font-bold text-gray-700">{isBn ? "সর্বমোট" : "Total"}</td>
+                <td colSpan={3} className="px-4 py-3 text-xs font-bold text-muted">{isBn ? "সর্বমোট" : "Total"}</td>
                 <td className={`px-4 py-3 text-right text-xs font-bold ${amountColorClass}`}>{formatAmount(data?.total_amount ?? "0", locale, 2)}</td>
               </tr>
             </tfoot>

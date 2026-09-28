@@ -29,11 +29,11 @@ export default async function TermsOfServicePage({ params }: Props) {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-10">
-      <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6">
+      <h1 className="text-2xl sm:text-3xl font-bold text-body mb-6">
         {isBn ? "শর্তাবলী" : "Terms of Service"}
       </h1>
 
-      <div className="space-y-6 text-sm sm:text-base text-gray-600 leading-relaxed">
+      <div className="space-y-6 text-sm sm:text-base text-muted leading-relaxed">
         <p>
           {isBn
             ? "পূজারিঘর (PujariGhar) ওয়েবসাইট ব্যবহার বা আমাদের কাছ থেকে অর্ডার করার মাধ্যমে আপনি নিচের শর্তাবলীতে সম্মত হচ্ছেন।"
@@ -41,7 +41,7 @@ export default async function TermsOfServicePage({ params }: Props) {
         </p>
 
         <section>
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">
+          <h2 className="text-lg font-semibold text-body mb-2">
             {isBn ? "অর্ডার ও মূল্য" : "Orders & Pricing"}
           </h2>
           <p>
@@ -52,7 +52,7 @@ export default async function TermsOfServicePage({ params }: Props) {
         </section>
 
         <section>
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">
+          <h2 className="text-lg font-semibold text-body mb-2">
             {isBn ? "পেমেন্ট" : "Payment"}
           </h2>
           <p>
@@ -63,7 +63,7 @@ export default async function TermsOfServicePage({ params }: Props) {
         </section>
 
         <section>
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">
+          <h2 className="text-lg font-semibold text-body mb-2">
             {isBn ? "ডেলিভারি" : "Delivery"}
           </h2>
           <p>
@@ -74,7 +74,7 @@ export default async function TermsOfServicePage({ params }: Props) {
         </section>
 
         <section>
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">
+          <h2 className="text-lg font-semibold text-body mb-2">
             {isBn ? "পণ্যের তথ্য" : "Product Information"}
           </h2>
           <p>
@@ -85,7 +85,7 @@ export default async function TermsOfServicePage({ params }: Props) {
         </section>
 
         <section>
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">
+          <h2 className="text-lg font-semibold text-body mb-2">
             {isBn ? "দায়বদ্ধতার সীমাবদ্ধতা" : "Limitation of Liability"}
           </h2>
           <p>
@@ -96,7 +96,7 @@ export default async function TermsOfServicePage({ params }: Props) {
         </section>
 
         <section>
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">
+          <h2 className="text-lg font-semibold text-body mb-2">
             {isBn ? "শর্তাবলীর পরিবর্তন" : "Changes to These Terms"}
           </h2>
           <p>

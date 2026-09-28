@@ -81,12 +81,12 @@ function AddressModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 space-y-3">
+      <div className="bg-surface rounded-2xl shadow-xl w-full max-w-md p-6 space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-bold text-gray-800">
+          <h2 className="text-lg font-bold text-body">
             {editing ? (isBn ? "ঠিকানা সম্পাদনা" : "Edit Address") : (isBn ? "নতুন ঠিকানা যোগ করুন" : "Add New Address")}
           </h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600"><X className="w-5 h-5" /></button>
+          <button onClick={onClose} className="text-muted hover:text-body"><X className="w-5 h-5" /></button>
         </div>
         <form onSubmit={handleSubmit} className="space-y-3">
           <div className="grid grid-cols-2 gap-3">
@@ -169,7 +169,7 @@ export default function ShippingAddressesTab({ locale }: { locale: string }) {
   return (
     <div className="card space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="font-semibold text-gray-700 flex items-center gap-2">
+        <h2 className="font-semibold text-muted flex items-center gap-2">
           <MapPin className="w-4 h-4" />
           {isBn ? "শিপিং ঠিকানা" : "Shipping Addresses"}
         </h2>
@@ -180,19 +180,19 @@ export default function ShippingAddressesTab({ locale }: { locale: string }) {
       </div>
 
       {isLoading ? (
-        <p className="text-sm text-gray-400 text-center py-8">{isBn ? "লোড হচ্ছে..." : "Loading..."}</p>
+        <p className="text-sm text-muted text-center py-8">{isBn ? "লোড হচ্ছে..." : "Loading..."}</p>
       ) : addresses.length === 0 ? (
-        <p className="text-sm text-gray-400 text-center py-8">{isBn ? "কোনো ঠিকানা যোগ করা হয়নি" : "No addresses added yet"}</p>
+        <p className="text-sm text-muted text-center py-8">{isBn ? "কোনো ঠিকানা যোগ করা হয়নি" : "No addresses added yet"}</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {addresses.map(a => (
             <div
               key={a.id}
-              className={`rounded-xl border p-4 space-y-2 ${a.is_default ? "border-amber-300 bg-amber-50/50" : "border-gray-200"}`}
+              className={`rounded-xl border p-4 space-y-2 ${a.is_default ? "border-amber-300 bg-amber-50/50" : "border-border"}`}
             >
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="font-semibold text-gray-800 text-sm flex items-center gap-1.5">
+                  <p className="font-semibold text-body text-sm flex items-center gap-1.5">
                     {a.label || (isBn ? "ঠিকানা" : "Address")}
                     {a.is_default && (
                       <span className="inline-flex items-center gap-1 text-[10px] font-medium text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded-full">
@@ -201,11 +201,11 @@ export default function ShippingAddressesTab({ locale }: { locale: string }) {
                       </span>
                     )}
                   </p>
-                  <p className="text-xs text-gray-500 mt-0.5">{a.full_name_bn} • {a.phone}</p>
+                  <p className="text-xs text-muted mt-0.5">{a.full_name_bn} • {a.phone}</p>
                 </div>
               </div>
-              <p className="text-xs text-gray-600 leading-relaxed">{a.address_bn}</p>
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-muted leading-relaxed">{a.address_bn}</p>
+              <p className="text-xs text-muted">
                 {[a.thana, a.district, a.post_code].filter(Boolean).join(", ") || "—"}
               </p>
               <div className="flex items-center gap-2 pt-1">
@@ -220,7 +220,7 @@ export default function ShippingAddressesTab({ locale }: { locale: string }) {
                 )}
                 <button
                   onClick={() => openEdit(a)}
-                  className="ml-auto inline-flex items-center justify-center w-7 h-7 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50"
+                  className="ml-auto inline-flex items-center justify-center w-7 h-7 rounded-lg border border-border text-muted hover:bg-surface-alt"
                 >
                   <Pencil className="w-3.5 h-3.5" />
                 </button>

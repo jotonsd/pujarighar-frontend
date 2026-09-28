@@ -122,28 +122,28 @@ export default function StockAdjustPanel({ product }: Props) {
         <div className="flex items-center gap-3">
           {product.images?.[0]?.image ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={product.images[0].image} alt="" className="w-14 h-14 object-cover rounded-lg border border-gray-100 shrink-0" />
+            <img src={product.images[0].image} alt="" className="w-14 h-14 object-cover rounded-lg border border-border shrink-0" />
           ) : (
-            <div className="w-14 h-14 rounded-lg border border-gray-100 bg-gray-50 flex items-center justify-center text-gray-300 text-xs shrink-0">—</div>
+            <div className="w-14 h-14 rounded-lg border border-border bg-background flex items-center justify-center text-muted text-xs shrink-0">—</div>
           )}
-          <h2 className="font-semibold text-gray-700 text-2xl">
+          <h2 className="font-semibold text-muted text-2xl">
             {isBn ? product.name_bn : product.name_en}
           </h2>
         </div>
         <div className="text-right shrink-0">
-          <p className="text-3xl font-bold text-amber-700">
+          <p className="text-3xl font-bold text-amber-700 dark:text-amber-400">
             {stockData?.stock_on_hand
               ? formatNumber(parseFloat(stockData.stock_on_hand), locale)
               : "..."}
           </p>
-          <p className="text-gray-500 text-xs mt-0.5">
+          <p className="text-muted text-xs mt-0.5">
             {isBn ? "বর্তমান স্টক" : "Current stock"}
           </p>
         </div>
       </div>
 
       <div className="card space-y-3">
-        <h3 className="font-medium text-gray-700">
+        <h3 className="font-medium text-muted">
           {isBn ? "স্টক সমন্বয়" : "Stock Adjustment"}
         </h3>
         <div className="grid grid-cols-2 gap-3">
@@ -169,14 +169,14 @@ export default function StockAdjustPanel({ product }: Props) {
           />
 
           {isAdjustment && (
-            <div className="col-span-2 flex rounded-lg border border-gray-200 overflow-hidden">
+            <div className="col-span-2 flex rounded-lg border border-border overflow-hidden">
               <button
                 type="button"
                 onClick={() => setAdjForm(p => ({ ...p, direction: "ADD" }))}
                 className={`flex-1 py-2 text-sm font-medium transition-colors ${
                   adjForm.direction === "ADD"
                     ? "bg-green-600 text-white"
-                    : "bg-white text-gray-500 hover:bg-gray-50"
+                    : "bg-surface text-muted hover:bg-surface-alt"
                 }`}
               >
                 {isBn ? "স্টক যোগ" : "Add Stock"}
@@ -184,10 +184,10 @@ export default function StockAdjustPanel({ product }: Props) {
               <button
                 type="button"
                 onClick={() => setAdjForm(p => ({ ...p, direction: "DEDUCT" }))}
-                className={`flex-1 py-2 text-sm font-medium transition-colors border-l border-gray-200 ${
+                className={`flex-1 py-2 text-sm font-medium transition-colors border-l border-border ${
                   adjForm.direction === "DEDUCT"
                     ? "bg-red-600 text-white"
-                    : "bg-white text-gray-500 hover:bg-gray-50"
+                    : "bg-surface text-muted hover:bg-surface-alt"
                 }`}
               >
                 {isBn ? "স্টক বিয়োগ" : "Deduct Stock"}
@@ -270,19 +270,19 @@ export default function StockAdjustPanel({ product }: Props) {
 
               {/* Cost summary */}
               {adjForm.unit_cost && adjForm.quantity && (
-                <div className="col-span-2 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2 text-sm flex justify-between">
-                  <span className="text-gray-600">
+                <div className="col-span-2 bg-amber-50 dark:bg-amber-900/30 border border-amber-100 dark:border-amber-800 rounded-lg px-3 py-2 text-sm flex justify-between">
+                  <span className="text-muted">
                     {isPurchase
                       ? (isBn ? "মোট ক্রয় মূল্য" : "Total Purchase Cost")
                       : (isBn ? "মোট ফেরতের মূল্য" : "Total Return Value")}
                   </span>
-                  <span className="font-bold text-amber-700">
+                  <span className="font-bold text-amber-700 dark:text-amber-400">
                     {formatAmount(
                       (parseFloat(adjForm.unit_cost) * parseFloat(adjForm.quantity)).toString(),
                       locale,
                       2,
                     )}
-                    <span className="ml-1 text-xs font-normal text-gray-400">
+                    <span className="ml-1 text-xs font-normal text-muted">
                       {adjForm.payment_method === "CREDIT"
                         ? isBn ? "(বাকি)" : "(credit)"
                         : isBn ? "(নগদ)" : "(cash)"}
@@ -315,7 +315,7 @@ export default function StockAdjustPanel({ product }: Props) {
 
       {stockData?.movements && (
         <div className="card max-h-72 overflow-auto">
-          <h3 className="font-medium text-gray-700 mb-3">
+          <h3 className="font-medium text-muted mb-3">
             {isBn ? "সাম্প্রতিক মুভমেন্ট" : "Recent Movements"}
           </h3>
           {stockData.movements.map(m => {
@@ -324,7 +324,7 @@ export default function StockAdjustPanel({ product }: Props) {
             return (
               <div key={m.id} className="py-2 border-b last:border-0 text-sm">
                 {isEditing ? (
-                  <div className="space-y-2 bg-gray-50 rounded-lg p-2 -mx-1">
+                  <div className="space-y-2 bg-background rounded-lg p-2 -mx-1">
                     <div className="grid grid-cols-2 gap-2">
                       <FloatingInput
                         label={translations("product.quantity")}
@@ -377,7 +377,7 @@ export default function StockAdjustPanel({ product }: Props) {
                       </button>
                       <button
                         onClick={() => setEditingId(null)}
-                        className="flex-1 text-sm py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-100"
+                        className="flex-1 text-sm py-1.5 rounded-lg border border-border text-muted hover:bg-surface-alt"
                       >
                         {isBn ? "বাতিল" : "Cancel"}
                       </button>
@@ -386,26 +386,26 @@ export default function StockAdjustPanel({ product }: Props) {
                 ) : (
                   <>
                     <div className="flex justify-between items-start gap-2">
-                      <span className="text-gray-600">
+                      <span className="text-muted">
                         {isBn
                           ? ({ PURCHASE: "ক্রয়", SALE: "বিক্রয়", RETURN: "ফেরত", ADJUSTMENT: "সমন্বয়", SUPPLIER_RETURN: "সরবরাহকারীকে ফেরত" } as Record<string, string>)[m.movement_type] ?? m.movement_type
                           : ({ SUPPLIER_RETURN: "Return to Supplier" } as Record<string, string>)[m.movement_type] ?? m.movement_type}
                         {m.supplier_display && (
-                          <span className="ml-1 text-xs text-amber-700">— {m.supplier_display}</span>
+                          <span className="ml-1 text-xs text-amber-700 dark:text-amber-400">— {m.supplier_display}</span>
                         )}
                         {m.payment_method === "CREDIT" && (m.movement_type === "PURCHASE" || m.movement_type === "SUPPLIER_RETURN") && (
-                          <span className="ml-1 text-xs text-blue-500">{isBn ? "(বাকি)" : "(credit)"}</span>
+                          <span className="ml-1 text-xs text-blue-500 dark:text-blue-400">{isBn ? "(বাকি)" : "(credit)"}</span>
                         )}
                       </span>
                       <span className="flex items-center gap-2 shrink-0">
-                        <span className={Number(m.quantity) > 0 ? "text-green-600 font-bold" : "text-amber-700 font-bold"}>
+                        <span className={Number(m.quantity) > 0 ? "text-green-600 dark:text-green-400 font-bold" : "text-amber-700 dark:text-amber-400 font-bold"}>
                           {Number(m.quantity) > 0 ? "+" : ""}
                           {formatNumber(m.quantity, locale)}
                         </span>
                         {canEdit && (
                           <button
                             onClick={() => startEditMovement(m)}
-                            className="text-gray-400 hover:text-amber-700"
+                            className="text-muted hover:text-amber-700 dark:hover:text-amber-400"
                             title={isBn ? "সম্পাদনা করুন" : "Edit"}
                           >
                             <Pencil className="w-3.5 h-3.5" />
@@ -413,7 +413,7 @@ export default function StockAdjustPanel({ product }: Props) {
                         )}
                       </span>
                     </div>
-                    <div className="flex justify-between text-xs text-gray-400 mt-0.5">
+                    <div className="flex justify-between text-xs text-muted mt-0.5">
                       <span>
                         {new Date(m.created_at).toLocaleDateString(isBn ? "bn-BD" : "en-US", { day: "numeric", month: "short", year: "numeric" })}
                       </span>

@@ -73,19 +73,19 @@ export default function SalesSummaryPage() {
               },
             ].map(c => (
               <div key={c.label} className="card py-3">
-                <p className="text-xs text-gray-500 mb-1">{c.label}</p>
+                <p className="text-xs text-muted mb-1">{c.label}</p>
                 <p className={`text-xl font-bold ${c.color}`}>{c.value}</p>
               </div>
             ))}
           </div>
 
           {rows.length === 0 ? (
-            <p className="text-gray-400 text-sm">{locale === "bn" ? "কোনো তথ্য নেই" : "No data found"}</p>
+            <p className="text-muted text-sm">{locale === "bn" ? "কোনো তথ্য নেই" : "No data found"}</p>
           ) : (
             <div className="flex gap-3 items-start">
               {/* Bar chart */}
               <div className="card flex-1">
-                <h3 className="text-sm font-semibold text-gray-700 mb-4">
+                <h3 className="text-sm font-semibold text-muted mb-4">
                   {locale === "bn" ? "বিক্রয় চার্ট" : "Revenue Chart"}
                 </h3>
                 <div className="space-y-2">
@@ -93,8 +93,8 @@ export default function SalesSummaryPage() {
                     const pct = maxRev > 0 ? (Number(r.total_revenue) / maxRev) * 100 : 0;
                     return (
                       <div key={i} className="flex items-center gap-3">
-                        <span className="text-xs text-gray-500 w-20 shrink-0 text-right">{formatPeriod(r.period)}</span>
-                        <div className="flex-1 h-7 bg-gray-100 rounded-lg overflow-hidden">
+                        <span className="text-xs text-muted w-20 shrink-0 text-right">{formatPeriod(r.period)}</span>
+                        <div className="flex-1 h-7 bg-surface-alt rounded-lg overflow-hidden">
                           <div
                             className="h-full bg-amber-400 rounded-lg transition-all duration-300 flex items-center px-2"
                             style={{ width: `${Math.max(pct, 2)}%` }}
@@ -106,7 +106,7 @@ export default function SalesSummaryPage() {
                             )}
                           </div>
                         </div>
-                        <span className="text-xs font-bold text-gray-700 w-24 shrink-0">
+                        <span className="text-xs font-bold text-muted w-24 shrink-0">
                           {pct <= 25 ? formatAmount(r.total_revenue, locale, 0) : ""}
                         </span>
                       </div>
@@ -118,33 +118,33 @@ export default function SalesSummaryPage() {
               {/* Table */}
               <div className="card w-80 shrink-0 p-0 overflow-hidden">
                 <table className="w-full text-sm">
-                  <thead className="bg-amber-50 border-b border-amber-200">
+                  <thead className="bg-amber-50 dark:bg-amber-900/20 border-b border-amber-200 dark:border-amber-800">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700">
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 dark:text-amber-400">
                         {locale === "bn" ? "সময়কাল" : "Period"}
                       </th>
-                      <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700">
+                      <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 dark:text-amber-400">
                         {locale === "bn" ? "অর্ডার" : "Orders"}
                       </th>
-                      <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700">
+                      <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 dark:text-amber-400">
                         {locale === "bn" ? "বিক্রয়" : "Revenue"}
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-100">
+                  <tbody className="divide-y divide-border">
                     {rows.map((r, i) => (
-                      <tr key={i} className="hover:bg-gray-50 transition-colors">
-                        <td className="px-4 py-3 text-gray-700 text-xs">{formatPeriod(r.period)}</td>
-                        <td className="px-4 py-3 text-right text-xs text-gray-600">{formatNumber(r.order_count, locale)}</td>
-                        <td className="px-4 py-3 text-right text-xs font-bold text-amber-700">{formatAmount(r.total_revenue, locale, 0)}</td>
+                      <tr key={i} className="hover:bg-surface-alt transition-colors">
+                        <td className="px-4 py-3 text-muted text-xs">{formatPeriod(r.period)}</td>
+                        <td className="px-4 py-3 text-right text-xs text-muted">{formatNumber(r.order_count, locale)}</td>
+                        <td className="px-4 py-3 text-right text-xs font-bold text-amber-700 dark:text-amber-400">{formatAmount(r.total_revenue, locale, 0)}</td>
                       </tr>
                     ))}
                   </tbody>
-                  <tfoot className="border-t-2 border-amber-200 bg-amber-50">
+                  <tfoot className="border-t-2 border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20">
                     <tr>
-                      <td className="px-4 py-3 text-xs font-bold text-gray-700">{locale === "bn" ? "মোট" : "Total"}</td>
-                      <td className="px-4 py-3 text-right text-xs font-bold text-gray-800">{formatNumber(data.total_orders, locale)}</td>
-                      <td className="px-4 py-3 text-right text-xs font-bold text-gray-800">{formatAmount(data.total_revenue, locale, 0)}</td>
+                      <td className="px-4 py-3 text-xs font-bold text-body">{locale === "bn" ? "মোট" : "Total"}</td>
+                      <td className="px-4 py-3 text-right text-xs font-bold text-body">{formatNumber(data.total_orders, locale)}</td>
+                      <td className="px-4 py-3 text-right text-xs font-bold text-body">{formatAmount(data.total_revenue, locale, 0)}</td>
                     </tr>
                   </tfoot>
                 </table>

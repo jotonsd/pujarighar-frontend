@@ -152,27 +152,27 @@ export default function RoleForm({ mode, role }: Props) {
           />
         </div>
 
-        <div className="pt-2 border-t border-gray-100">
-          <h3 className="text-sm font-semibold text-gray-600 mb-3">
+        <div className="pt-2 border-t border-border">
+          <h3 className="text-sm font-semibold text-muted mb-3">
             {isBn ? "পারমিশন" : "Permissions"}
           </h3>
 
           {isLoading ? (
-            <p className="text-sm text-gray-400">{isBn ? "লোড হচ্ছে..." : "Loading..."}</p>
+            <p className="text-sm text-muted">{isBn ? "লোড হচ্ছে..." : "Loading..."}</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-gray-100">
-                    <th className="text-left py-2 pr-4 text-xs font-semibold text-gray-500 uppercase">
+                  <tr className="border-b border-border">
+                    <th className="text-left py-2 pr-4 text-xs font-semibold text-muted uppercase">
                       {isBn ? "মডিউল" : "Module"}
                     </th>
                     {ACTIONS.map(action => (
-                      <th key={action} className="text-center py-2 px-3 text-xs font-semibold text-gray-500 uppercase">
+                      <th key={action} className="text-center py-2 px-3 text-xs font-semibold text-muted uppercase">
                         {isBn ? ACTION_LABELS[action].bn : ACTION_LABELS[action].en}
                       </th>
                     ))}
-                    <th className="text-center py-2 px-3 text-xs font-semibold text-gray-500 uppercase">
+                    <th className="text-center py-2 px-3 text-xs font-semibold text-muted uppercase">
                       {isBn ? "সব নির্বাচন" : "Select All"}
                     </th>
                   </tr>
@@ -185,14 +185,14 @@ export default function RoleForm({ mode, role }: Props) {
                     if (rows.length === 0) return null;
                     return (
                       <>
-                        <tr key={`group-${group.en}`} className="bg-gray-100">
-                          <td colSpan={ACTIONS.length + 2} className="py-1.5 px-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                        <tr key={`group-${group.en}`} className="bg-surface-alt">
+                          <td colSpan={ACTIONS.length + 2} className="py-1.5 px-2 text-xs font-semibold text-muted uppercase tracking-wide">
                             {isBn ? group.bn : group.en}
                           </td>
                         </tr>
                         {rows.map(({ module, perms }) => (
                           <tr key={module}>
-                            <td className="py-2 pr-4 pl-2 text-gray-700 font-medium">
+                            <td className="py-2 pr-4 pl-2 text-muted font-medium">
                               {moduleLabel(perms[0], isBn)}
                             </td>
                             {ACTIONS.map(action => {
@@ -208,7 +208,7 @@ export default function RoleForm({ mode, role }: Props) {
                                       className="w-4 h-4 accent-amber-500 cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
                                     />
                                   ) : (
-                                    <span className="text-gray-200">—</span>
+                                    <span className="text-muted">—</span>
                                   )}
                                 </td>
                               );

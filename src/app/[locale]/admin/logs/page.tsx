@@ -118,7 +118,7 @@ export default function LogViewerPage() {
             type="button"
             onClick={() => refetch()}
             disabled={!!liveFile}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-gray-50 text-gray-600 border border-gray-200 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-background text-muted border border-border hover:bg-surface-alt disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isFetching ? "animate-spin" : ""}`} />
             {isBn ? "রিফ্রেশ" : "Refresh"}
@@ -128,9 +128,9 @@ export default function LogViewerPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-[220px_1fr] gap-3">
         {/* File list */}
-        <div className="bg-white rounded-lg shadow-sm p-2 h-[85vh] overflow-y-auto">
+        <div className="bg-surface rounded-lg shadow-sm p-2 h-[85vh] overflow-y-auto">
           {filesLoading ? (
-            <p className="text-xs text-gray-400 px-2 py-1.5">{isBn ? "লোড হচ্ছে..." : "Loading..."}</p>
+            <p className="text-xs text-muted px-2 py-1.5">{isBn ? "লোড হচ্ছে..." : "Loading..."}</p>
           ) : (
             <ul className="space-y-0.5">
               {files?.map(f => (
@@ -140,12 +140,12 @@ export default function LogViewerPage() {
                     onClick={() => setSelected(f.name)}
                     className={`w-full text-left px-2.5 py-2 rounded-md text-xs transition-colors ${
                       selected === f.name
-                        ? "bg-amber-50 text-amber-700 font-medium"
-                        : "text-gray-600 hover:bg-gray-50"
+                        ? "bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 font-medium"
+                        : "text-muted hover:bg-surface-alt"
                     }`}
                   >
                     <div className="truncate">{f.name}</div>
-                    <div className="text-[10px] text-gray-400 mt-0.5">{formatSize(f.size)}</div>
+                    <div className="text-[10px] text-muted mt-0.5">{formatSize(f.size)}</div>
                   </button>
                 </li>
               ))}
@@ -154,19 +154,19 @@ export default function LogViewerPage() {
         </div>
 
         {/* Content viewer */}
-        <div className="bg-white rounded-lg shadow-sm p-3 flex flex-col h-[85vh]">
+        <div className="bg-surface rounded-lg shadow-sm p-3 flex flex-col h-[85vh]">
           <div className="flex items-center gap-2 mb-2">
             <div className="relative flex-1">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted" />
               <input
                 type="text"
                 value={query}
                 onChange={e => setQuery(e.target.value)}
                 placeholder={isBn ? "লগে খুঁজুন..." : "Search in log..."}
-                className="w-full pl-8 pr-3 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-300 bg-gray-50"
+                className="w-full pl-8 pr-3 py-1.5 text-xs border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-300 bg-background"
               />
             </div>
-            <label className="flex items-center gap-1.5 text-xs text-gray-500 whitespace-nowrap px-2">
+            <label className="flex items-center gap-1.5 text-xs text-muted whitespace-nowrap px-2">
               <input
                 type="checkbox"
                 checked={autoRefresh}
@@ -175,7 +175,7 @@ export default function LogViewerPage() {
               />
               {isBn ? "লাইভ" : "Live"}
               {liveFile && (
-                <span className={`w-1.5 h-1.5 rounded-full ${connected ? "bg-green-500" : "bg-gray-300 animate-pulse"}`} />
+                <span className={`w-1.5 h-1.5 rounded-full ${connected ? "bg-green-500" : "bg-gray-300 dark:bg-gray-600 animate-pulse"}`} />
               )}
             </label>
           </div>
@@ -204,7 +204,7 @@ export default function LogViewerPage() {
               <button
                 type="button"
                 onClick={() => setActiveLevels(new Set())}
-                className="text-[10px] text-gray-400 hover:text-gray-600 underline ml-1"
+                className="text-[10px] text-muted hover:text-body underline ml-1"
               >
                 {isBn ? "মুছুন" : "clear"}
               </button>

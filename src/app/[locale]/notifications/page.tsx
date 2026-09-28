@@ -104,14 +104,14 @@ export default function NotificationsPage() {
                 onClick={() => handleFilterChange(f.key)}
                 className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium text-left transition-colors ${
                   filter === f.key
-                    ? "bg-amber-50 text-amber-700"
-                    : "text-gray-600 hover:bg-gray-50"
+                    ? "bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
+                    : "text-muted hover:bg-surface-alt"
                 }`}
               >
                 {f.icon}
                 <span className="flex-1">{isBn ? f.bn : f.en}</span>
                 {!!f.count && (
-                  <span className="bg-red-100 text-red-700 text-xs font-semibold px-1.5 py-0.5 rounded-full">
+                  <span className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 text-xs font-semibold px-1.5 py-0.5 rounded-full">
                     {f.count}
                   </span>
                 )}
@@ -122,13 +122,13 @@ export default function NotificationsPage() {
 
         {/* Right panel — list */}
         <div>
-          <div className="card divide-y divide-gray-50 p-0 overflow-hidden">
+          <div className="card divide-y divide-border p-0 overflow-hidden">
             {isLoading ? (
-              <p className="text-center text-sm text-gray-400 py-12">
+              <p className="text-center text-sm text-muted py-12">
                 {isBn ? "লোড হচ্ছে..." : "Loading..."}
               </p>
             ) : notifications.length === 0 ? (
-              <p className="text-center text-sm text-gray-400 py-12">
+              <p className="text-center text-sm text-muted py-12">
                 {isBn ? "কোনো নোটিফিকেশন নেই" : "No notifications"}
               </p>
             ) : (
@@ -138,26 +138,26 @@ export default function NotificationsPage() {
                   <div
                     key={n.id}
                     onClick={() => handleClick(n)}
-                    className={`px-4 py-3.5 transition-colors ${!n.is_read ? "bg-amber-50/50" : ""} ${link ? "cursor-pointer hover:bg-gray-50" : ""}`}
+                    className={`px-4 py-3.5 transition-colors ${!n.is_read ? "bg-amber-50/50" : ""} ${link ? "cursor-pointer hover:bg-surface-alt" : ""}`}
                   >
                     <div className="flex items-start gap-2.5">
                       {!n.is_read && (
                         <span className="mt-1.5 w-2 h-2 rounded-full bg-amber-600 shrink-0" />
                       )}
                       <div className="flex-1 min-w-0" style={{ paddingLeft: n.is_read ? "10px" : "0" }}>
-                        <p className="text-sm font-semibold text-gray-800 leading-snug">
+                        <p className="text-sm font-semibold text-body leading-snug">
                           {isBn ? n.title_bn : n.title_en}
                         </p>
                         <p
-                          className="text-sm text-gray-500 mt-0.5 leading-snug"
+                          className="text-sm text-muted mt-0.5 leading-snug"
                           dangerouslySetInnerHTML={{
                             __html: (isBn ? n.body_bn : n.body_en).replace(
                               /\*\*(.+?)\*\*/g,
-                              '<strong class="text-gray-800">$1</strong>',
+                              '<strong class="text-body">$1</strong>',
                             ),
                           }}
                         />
-                        <p className="text-xs text-gray-400 mt-1">{timeAgo(n.created_at)}</p>
+                        <p className="text-xs text-muted mt-1">{timeAgo(n.created_at)}</p>
                       </div>
                     </div>
                   </div>
@@ -171,17 +171,17 @@ export default function NotificationsPage() {
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page <= 1}
-                className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 disabled:opacity-40 hover:bg-gray-50"
+                className="px-3 py-1.5 text-sm rounded-lg border border-border disabled:opacity-40 hover:bg-surface-alt"
               >
                 {isBn ? "আগের" : "Prev"}
               </button>
-              <span className="text-sm text-gray-500">
+              <span className="text-sm text-muted">
                 {page} / {totalPages}
               </span>
               <button
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page >= totalPages}
-                className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 disabled:opacity-40 hover:bg-gray-50"
+                className="px-3 py-1.5 text-sm rounded-lg border border-border disabled:opacity-40 hover:bg-surface-alt"
               >
                 {isBn ? "পরের" : "Next"}
               </button>

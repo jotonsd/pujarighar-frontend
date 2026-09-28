@@ -29,7 +29,7 @@ export default function OrdersPage() {
       ) : (
         <>
           {!data?.data?.length && (
-            <p className="text-center text-gray-400 py-12">
+            <p className="text-center text-muted py-12">
               {t("common.noData")}
             </p>
           )}
@@ -41,16 +41,16 @@ export default function OrdersPage() {
                 className="card flex items-center justify-between hover:shadow-md transition-shadow"
               >
                 <div className="space-y-0.5">
-                  <p className="font-semibold text-gray-800">
+                  <p className="font-semibold text-body">
                     {order.order_number}
                   </p>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-muted">
                     {new Date(order.created_at).toLocaleDateString(
                       locale === "bn" ? "bn-BD" : "en-US",
                     )}
                   </p>
                   <div className="flex items-center gap-1.5 pt-0.5">
-                    <span className="text-xs text-gray-400">
+                    <span className="text-xs text-muted">
                       {order.payment_method === "COD" ? "💵" : "💳"}{" "}
                       {order.payment_method === "COD"
                         ? locale === "bn"
@@ -63,8 +63,8 @@ export default function OrdersPage() {
                     <span
                       className={`text-xs font-medium px-1.5 py-0.5 rounded-full ${
                         order.payment_status === "PAID"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-amber-100 text-amber-700"
+                          ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                          : "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
                       }`}
                     >
                       {order.payment_status === "PAID"

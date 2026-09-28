@@ -38,16 +38,16 @@ function CancelConfirmModal({
   const isBn = locale === "bn";
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 space-y-4">
+      <div className="bg-surface rounded-2xl shadow-xl w-full max-w-sm p-6 space-y-4">
         <div className="flex items-center gap-3">
           <span className="text-3xl">⚠️</span>
-          <h2 className="text-lg font-bold text-gray-800">
+          <h2 className="text-lg font-bold text-body">
             {isBn ? "অর্ডার বাতিল করবেন?" : "Cancel this order?"}
           </h2>
         </div>
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-muted">
           {isBn ? `অর্ডার নম্বর ` : `Order `}
-          <strong className="text-gray-700">{orderNumber}</strong>
+          <strong className="text-muted">{orderNumber}</strong>
           {isBn
             ? ` বাতিল করা হবে। এটি পূর্বাবস্থায় ফেরানো যাবে না।`
             : ` will be cancelled. This cannot be undone.`}
@@ -142,7 +142,7 @@ export default function OrderDetailPage({
           <div className="flex items-center gap-2">
             <button
               onClick={() => setShowInvoice(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-xs font-medium text-muted hover:bg-surface-alt transition-colors"
             >
               <FileText className="w-3.5 h-3.5" />
               {locale === "bn" ? "চালান" : "Invoice"}
@@ -155,16 +155,16 @@ export default function OrderDetailPage({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="lg:col-span-2 space-y-4">
           <div className="card">
-            <h2 className="font-semibold text-gray-700 mb-4">
+            <h2 className="font-semibold text-muted mb-4">
               {t("order.items")}
             </h2>
             <div className="space-y-3">
               {order.items.map(item => (
                 <div key={item.id} className="space-y-1.5">
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-700 flex items-center gap-1.5">
+                    <span className="text-muted flex items-center gap-1.5">
                       {item.is_package && (
-                        <span className="text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full font-medium">
+                        <span className="text-xs bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 px-1.5 py-0.5 rounded-full font-medium">
                           🎁
                         </span>
                       )}
@@ -173,7 +173,7 @@ export default function OrderDetailPage({
                         item.product_name_en,
                         locale === "bn",
                       )}
-                      <span className="text-gray-400 ml-1 font-bold">
+                      <span className="text-muted ml-1 font-bold">
                         ×
                         {formatNumber(
                           Math.round(parseFloat(item.quantity)),
@@ -184,7 +184,7 @@ export default function OrderDetailPage({
                     <span className="text-right shrink-0">
                       {item.original_unit_price && parseFloat(item.original_unit_price) > parseFloat(item.unit_price) ? (
                         <>
-                          <span className="block font-bold text-gray-800">
+                          <span className="block font-bold text-body">
                             {formatAmount(String(parseFloat(item.original_unit_price) * parseFloat(item.quantity)), locale)}
                           </span>
                           <span className="block text-xs text-green-600 font-bold">
@@ -201,13 +201,13 @@ export default function OrderDetailPage({
                       {item.package_items.map((pi, i) => (
                         <div
                           key={i}
-                          className="flex items-center gap-2 text-xs text-gray-500"
+                          className="flex items-center gap-2 text-xs text-muted"
                         >
-                          <span className="w-1 h-1 rounded-full bg-gray-300 shrink-0" />
+                          <span className="w-1 h-1 rounded-full bg-border shrink-0" />
                           {locale === "bn"
                             ? pi.component_name_bn
                             : pi.component_name_en}
-                          <span className="text-gray-400 font-bold">
+                          <span className="text-muted font-bold">
                             ×
                             {formatNumber(
                               Math.round(parseFloat(pi.quantity)),
@@ -221,7 +221,7 @@ export default function OrderDetailPage({
                 </div>
               ))}
               <hr className="my-2" />
-              <div className="flex justify-between text-sm text-gray-500">
+              <div className="flex justify-between text-sm text-muted">
                 <span>{locale === "bn" ? "সাবটোটাল" : "Subtotal"}</span>
                 <span className="font-bold">
                   {formatAmount(
@@ -237,7 +237,7 @@ export default function OrderDetailPage({
                 </div>
               )}
               {parseFloat(order.delivery_charge) > 0 && (
-                <div className="flex justify-between text-sm text-gray-500">
+                <div className="flex justify-between text-sm text-muted">
                   <span>{locale === "bn" ? "ডেলিভারি চার্জ" : "Delivery Charge"}</span>
                   <span className="font-bold">{formatAmount(order.delivery_charge, locale)}</span>
                 </div>
@@ -257,10 +257,10 @@ export default function OrderDetailPage({
             </div>
           </div>
           <div className="card">
-            <h2 className="font-semibold text-gray-700 mb-3">
+            <h2 className="font-semibold text-muted mb-3">
               {t("order.shipping")}
             </h2>
-            <div className="text-sm text-gray-600 space-y-1">
+            <div className="text-sm text-muted space-y-1">
               <p>
                 {localName(
                   order.shipping_name_bn,
@@ -334,7 +334,7 @@ export default function OrderDetailPage({
           )}
         </div>
         <div className="card h-fit">
-          <h2 className="font-semibold text-gray-700 mb-4">
+          <h2 className="font-semibold text-muted mb-4">
             {t("order.tracking")}
           </h2>
           <StatusTimeline
@@ -354,7 +354,7 @@ export default function OrderDetailPage({
                 : null
             }
           />
-          <p className="text-xs text-gray-400 text-center mt-2">
+          <p className="text-xs text-muted text-center mt-2">
             <a
               href={`/${locale}/orders/${order.id}/tracking`}
               className="text-amber-700 hover:underline"

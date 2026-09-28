@@ -90,7 +90,7 @@ export default function SlideForm({ editItem, onClose }: Props) {
 
   return (
     <div className="card mb-6 space-y-4">
-      <h2 className="font-semibold text-gray-700">
+      <h2 className="font-semibold text-muted">
         {editItem
           ? locale === "bn"
             ? "স্লাইড সম্পাদনা"
@@ -101,7 +101,7 @@ export default function SlideForm({ editItem, onClose }: Props) {
       </h2>
 
       <div>
-        <p className="text-xs text-gray-500 mb-2">
+        <p className="text-xs text-muted mb-2">
           {locale === "bn" ? "ছবি" : "Image"}
         </p>
         <div className="flex items-center gap-3">
@@ -110,7 +110,7 @@ export default function SlideForm({ editItem, onClose }: Props) {
             <img
               src={imagePreview}
               alt="Preview"
-              className="w-32 h-20 object-cover rounded-lg border border-gray-200"
+              className="w-32 h-20 object-cover rounded-lg border border-border"
             />
           )}
           <button
@@ -183,9 +183,9 @@ export default function SlideForm({ editItem, onClose }: Props) {
             type="color"
             value={form.bg_color}
             onChange={e => setForm(p => ({ ...p, bg_color: e.target.value }))}
-            className="w-10 h-10 rounded-lg border border-gray-200 cursor-pointer p-0.5"
+            className="w-10 h-10 rounded-lg border border-border cursor-pointer p-0.5"
           />
-          <span className="text-xs text-gray-400 font-mono">
+          <span className="text-xs text-muted font-mono">
             {form.bg_color}
           </span>
         </div>

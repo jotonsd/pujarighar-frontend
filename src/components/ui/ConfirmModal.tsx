@@ -25,13 +25,13 @@ export default function ConfirmModal({
 }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 space-y-4">
+      <div className="bg-surface rounded-2xl shadow-xl w-full max-w-sm p-6 space-y-4">
         <div className="flex items-center gap-3">
           <span className="text-3xl">{icon}</span>
-          <h2 className="text-lg font-bold text-gray-800">{title}</h2>
+          <h2 className="text-lg font-bold text-body">{title}</h2>
         </div>
         {description && (
-          <p className="text-sm text-gray-500">{description}</p>
+          <p className="text-sm text-muted">{description}</p>
         )}
         <div className="flex gap-3">
           <button

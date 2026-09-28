@@ -200,8 +200,8 @@ export default function EditProductPage({
           locale={locale}
         />
 
-        <div className="pt-2 border-t border-gray-100">
-          <h3 className="text-sm font-semibold text-gray-600 mb-3">
+        <div className="pt-2 border-t border-border">
+          <h3 className="text-sm font-semibold text-muted mb-3">
             {locale === "bn" ? "এসইও (ঐচ্ছিক)" : "SEO (optional)"}
           </h3>
           <div className="space-y-3">

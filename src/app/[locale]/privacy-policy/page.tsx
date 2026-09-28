@@ -29,11 +29,11 @@ export default async function PrivacyPolicyPage({ params }: Props) {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-10">
-      <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6">
+      <h1 className="text-2xl sm:text-3xl font-bold text-body mb-6">
         {isBn ? "গোপনীয়তা নীতি" : "Privacy Policy"}
       </h1>
 
-      <div className="space-y-6 text-sm sm:text-base text-gray-600 leading-relaxed">
+      <div className="space-y-6 text-sm sm:text-base text-muted leading-relaxed">
         <p>
           {isBn
             ? "পূজারিঘর (PujariGhar) আপনার ব্যক্তিগত তথ্যের গোপনীয়তা রক্ষায় প্রতিশ্রুতিবদ্ধ। এই নীতিতে আমরা কীভাবে আপনার তথ্য সংগ্রহ, ব্যবহার এবং সংরক্ষণ করি তা ব্যাখ্যা করা হয়েছে।"
@@ -41,7 +41,7 @@ export default async function PrivacyPolicyPage({ params }: Props) {
         </p>
 
         <section>
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">
+          <h2 className="text-lg font-semibold text-body mb-2">
             {isBn ? "আমরা যে তথ্য সংগ্রহ করি" : "Information We Collect"}
           </h2>
           <p>
@@ -52,7 +52,7 @@ export default async function PrivacyPolicyPage({ params }: Props) {
         </section>
 
         <section>
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">
+          <h2 className="text-lg font-semibold text-body mb-2">
             {isBn ? "তথ্যের ব্যবহার" : "How We Use Your Information"}
           </h2>
           <p>
@@ -63,7 +63,7 @@ export default async function PrivacyPolicyPage({ params }: Props) {
         </section>
 
         <section>
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">
+          <h2 className="text-lg font-semibold text-body mb-2">
             {isBn ? "তথ্যের সুরক্ষা" : "Data Security"}
           </h2>
           <p>
@@ -74,7 +74,7 @@ export default async function PrivacyPolicyPage({ params }: Props) {
         </section>
 
         <section>
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">
+          <h2 className="text-lg font-semibold text-body mb-2">
             {isBn ? "আপনার অধিকার" : "Your Rights"}
           </h2>
           <p>
@@ -85,7 +85,7 @@ export default async function PrivacyPolicyPage({ params }: Props) {
         </section>
 
         <section>
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">
+          <h2 className="text-lg font-semibold text-body mb-2">
             {isBn ? "যোগাযোগ" : "Contact Us"}
           </h2>
           <p>

@@ -76,14 +76,14 @@ export default function NewBlogPostPage() {
         </div>
 
         <div>
-          <p className="text-xs text-gray-500 mb-2">
+          <p className="text-xs text-muted mb-2">
             {locale === "bn" ? "কভার ছবি (ঐচ্ছিক)" : "Cover Image (optional)"}
           </p>
           <div className="flex items-center gap-3">
             {coverPreview && (
               <div className="relative">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={coverPreview} alt="Preview" className="w-24 h-16 object-cover rounded-lg border border-gray-200" />
+                <img src={coverPreview} alt="Preview" className="w-24 h-16 object-cover rounded-lg border border-border" />
                 <button
                   type="button"
                   onClick={() => { setCoverPreview(null); setCoverFile(null); }}
@@ -129,8 +129,8 @@ export default function NewBlogPostPage() {
           inactiveLabel={locale === "bn" ? "খসড়া" : "Draft"}
         />
 
-        <div className="pt-2 border-t border-gray-100">
-          <h3 className="text-sm font-semibold text-gray-600 mb-3">
+        <div className="pt-2 border-t border-border">
+          <h3 className="text-sm font-semibold text-muted mb-3">
             {locale === "bn" ? "এসইও (ঐচ্ছিক)" : "SEO (optional)"}
           </h3>
           <div className="space-y-3">

@@ -37,8 +37,8 @@ export default function UserList() {
   const toggle = (id: string, isActive: boolean) => isActive ? deactivate(id) : activate(id)
 
   const columns: Column<User>[] = [
-    { header: t('auth.email'), accessor: 'email', className: 'px-4 py-3 text-sm text-gray-800 font-medium', exportValue: u => u.email },
-    { header: t('auth.phone'), accessor: 'phone', className: 'px-4 py-3 text-sm text-gray-600', exportValue: u => u.phone },
+    { header: t('auth.email'), accessor: 'email', className: 'px-4 py-3 text-sm text-body font-medium', exportValue: u => u.email },
+    { header: t('auth.phone'), accessor: 'phone', className: 'px-4 py-3 text-sm text-muted', exportValue: u => u.phone },
     {
       header: 'Role',
       accessor: u => (
@@ -87,11 +87,11 @@ export default function UserList() {
 
       {data?.meta?.platform_counts && (
         <div className="flex gap-3 mb-4 flex-wrap">
-          <div className="px-4 py-2.5 rounded-lg bg-blue-50 border border-blue-100 text-sm text-blue-800">
+          <div className="px-4 py-2.5 rounded-lg bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 text-sm text-blue-800 dark:text-blue-400">
             <span className="font-semibold">{data.meta.platform_counts.mobile_app}</span>{' '}
             {locale === 'bn' ? 'জন অ্যাপ ব্যবহারকারী' : 'app users'}
           </div>
-          <div className="px-4 py-2.5 rounded-lg bg-gray-50 border border-gray-200 text-sm text-gray-700">
+          <div className="px-4 py-2.5 rounded-lg bg-background border border-border text-sm text-muted">
             <span className="font-semibold">{data.meta.platform_counts.website}</span>{' '}
             {locale === 'bn' ? 'জন ওয়েবসাইট ব্যবহারকারী' : 'website users'}
           </div>
@@ -127,7 +127,7 @@ export default function UserList() {
           label: t('common.edit'),
           render: u => (
             <Link href={`/${locale}/admin/users/${u.id}`}
-              className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors"
+              className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/40 transition-colors"
               title={t('common.edit')}>
               <Pencil className="w-3.5 h-3.5" />
             </Link>

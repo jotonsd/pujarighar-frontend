@@ -43,7 +43,7 @@ export default function SupplierOutstandingReportPage() {
           onClear={() => setSupplierId("")}
           options={suppliers.map(s => ({ value: s.id, label: isBn ? s.name_bn || s.name_en : s.name_en || s.name_bn }))}
         />
-        <label className="flex items-center gap-2 text-sm text-gray-600 px-1">
+        <label className="flex items-center gap-2 text-sm text-muted px-1">
           <input
             type="checkbox"
             checked={onlyOutstanding}
@@ -57,46 +57,46 @@ export default function SupplierOutstandingReportPage() {
       {isLoading ? (
         <TableSkeleton columns={4} rows={8} />
       ) : rows.length === 0 ? (
-        <p className="text-gray-400 text-sm">{isBn ? "কোনো তথ্য নেই" : "No data found"}</p>
+        <p className="text-muted text-sm">{isBn ? "কোনো তথ্য নেই" : "No data found"}</p>
       ) : (
         <div className="card p-0 overflow-hidden overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-amber-50 border-b border-amber-200">
+            <thead className="bg-amber-50 dark:bg-amber-900/30 border-b border-amber-200 dark:border-amber-800">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "সরবরাহকারী" : "Supplier"}</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "ফোন" : "Phone"}</th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "মোট ক্রেডিট" : "Total Credit"}</th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "পরিশোধ" : "Paid"}</th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "বকেয়া" : "Outstanding"}</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">{isBn ? "সরবরাহকারী" : "Supplier"}</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">{isBn ? "ফোন" : "Phone"}</th>
+                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">{isBn ? "মোট ক্রেডিট" : "Total Credit"}</th>
+                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">{isBn ? "পরিশোধ" : "Paid"}</th>
+                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">{isBn ? "বকেয়া" : "Outstanding"}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-border">
               {rows.map(s => {
                 const balance = parseFloat(s.total_balance || "0");
                 return (
-                  <tr key={s.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-3 text-gray-800">
+                  <tr key={s.id} className="hover:bg-surface-alt transition-colors">
+                    <td className="px-4 py-3 text-body">
                       <div className="font-medium">{isBn ? s.name_bn : s.name_en || s.name_bn}</div>
                       {!s.is_active && (
-                        <span className="text-[10px] text-gray-400">{isBn ? "নিষ্ক্রিয়" : "Inactive"}</span>
+                        <span className="text-[10px] text-muted">{isBn ? "নিষ্ক্রিয়" : "Inactive"}</span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-xs text-gray-600">{s.phone || "—"}</td>
-                    <td className="px-4 py-3 text-right text-xs text-blue-700 font-semibold">{formatAmount(s.total_credit, locale, 0)}</td>
-                    <td className="px-4 py-3 text-right text-xs text-green-700 font-semibold">{formatAmount(s.total_paid, locale, 0)}</td>
-                    <td className={`px-4 py-3 text-right text-xs font-bold ${balance > 0 ? "text-red-700" : "text-gray-400"}`}>
+                    <td className="px-4 py-3 text-xs text-muted">{s.phone || "—"}</td>
+                    <td className="px-4 py-3 text-right text-xs text-blue-700 dark:text-blue-400 font-semibold">{formatAmount(s.total_credit, locale, 0)}</td>
+                    <td className="px-4 py-3 text-right text-xs text-green-700 dark:text-green-400 font-semibold">{formatAmount(s.total_paid, locale, 0)}</td>
+                    <td className={`px-4 py-3 text-right text-xs font-bold ${balance > 0 ? "text-red-700 dark:text-red-400" : "text-muted"}`}>
                       {formatAmount(s.total_balance, locale, 0)}
                     </td>
                   </tr>
                 );
               })}
             </tbody>
-            <tfoot className="border-t-2 border-amber-200 bg-amber-50">
+            <tfoot className="border-t-2 border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/30">
               <tr>
-                <td colSpan={2} className="px-4 py-3 text-xs font-bold text-gray-700">{isBn ? "সর্বমোট" : "Total"}</td>
-                <td className="px-4 py-3 text-right text-xs font-bold text-gray-800">{formatAmount(totalCredit, locale, 0)}</td>
-                <td className="px-4 py-3 text-right text-xs font-bold text-gray-800">{formatAmount(totalPaid, locale, 0)}</td>
-                <td className={`px-4 py-3 text-right text-xs font-bold ${totalBalance > 0 ? "text-red-700" : "text-gray-800"}`}>
+                <td colSpan={2} className="px-4 py-3 text-xs font-bold text-muted">{isBn ? "সর্বমোট" : "Total"}</td>
+                <td className="px-4 py-3 text-right text-xs font-bold text-body">{formatAmount(totalCredit, locale, 0)}</td>
+                <td className="px-4 py-3 text-right text-xs font-bold text-body">{formatAmount(totalPaid, locale, 0)}</td>
+                <td className={`px-4 py-3 text-right text-xs font-bold ${totalBalance > 0 ? "text-red-700 dark:text-red-400" : "text-body"}`}>
                   {formatAmount(totalBalance, locale, 0)}
                 </td>
               </tr>

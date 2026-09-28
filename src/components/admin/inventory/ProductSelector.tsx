@@ -44,7 +44,7 @@ export default function ProductSelector({ selected, onSelect }: Props) {
 
   return (
     <div className="card p-0 overflow-hidden flex flex-col max-h-[70vh]">
-      <div className="px-4 pt-4 pb-3 border-b border-gray-100 shrink-0 space-y-2">
+      <div className="px-4 pt-4 pb-3 border-b border-border shrink-0 space-y-2">
         <FloatingInput
           label={locale === 'bn' ? 'পণ্য খুঁজুন (নাম বা SKU)' : 'Search product (name or SKU)'}
           value={search} onChange={e => { setSearch(e.target.value); resetToFirstPage() }}
@@ -92,29 +92,29 @@ export default function ProductSelector({ selected, onSelect }: Props) {
           <TableSkeleton columns={3} rows={8} />
         ) : (
           <table className="w-full text-sm">
-            <thead className="bg-amber-50 border-b border-amber-200 sticky top-0 z-10">
+            <thead className="bg-amber-50 dark:bg-amber-900/30 border-b border-amber-200 dark:border-amber-800 sticky top-0 z-10">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{t('product.name')}</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">SKU</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{t('product.stock')}</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">{t('product.name')}</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">SKU</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">{t('product.stock')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {products?.data?.map(p => (
                 <tr key={p.id} onClick={() => onSelect(p)}
-                  className={`cursor-pointer transition-colors ${selected?.id === p.id ? 'bg-amber-50' : 'hover:bg-gray-50'}`}>
-                  <td className="px-4 py-3 text-sm text-gray-800">
+                  className={`cursor-pointer transition-colors ${selected?.id === p.id ? 'bg-amber-50 dark:bg-amber-900/30' : 'hover:bg-surface-alt'}`}>
+                  <td className="px-4 py-3 text-sm text-body">
                     <div className="flex items-center gap-2.5">
                       {p.images?.[0]?.image ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={p.images[0].image} alt="" className="w-9 h-9 object-cover rounded-md border border-gray-100 shrink-0" />
+                        <img src={p.images[0].image} alt="" className="w-9 h-9 object-cover rounded-md border border-border shrink-0" />
                       ) : (
-                        <div className="w-9 h-9 rounded-md border border-gray-100 bg-gray-50 flex items-center justify-center text-gray-300 text-xs shrink-0">—</div>
+                        <div className="w-9 h-9 rounded-md border border-border bg-background flex items-center justify-center text-muted text-xs shrink-0">—</div>
                       )}
                       <span>{locale === 'bn' ? p.name_bn : p.name_en}</span>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-xs text-gray-400 font-mono">{p.sku}</td>
+                  <td className="px-4 py-3 text-xs text-muted font-mono">{p.sku}</td>
                   <td className="px-4 py-3">
                     <Badge className="font-bold" variant={Number(p.stock_on_hand) > 0 ? 'green' : 'red'}>
                       {formatNumber(parseFloat(p.stock_on_hand), locale)}
@@ -124,7 +124,7 @@ export default function ProductSelector({ selected, onSelect }: Props) {
               ))}
               {products?.data?.length === 0 && (
                 <tr>
-                  <td colSpan={3} className="px-4 py-8 text-center text-gray-400 text-sm">
+                  <td colSpan={3} className="px-4 py-8 text-center text-muted text-sm">
                     {locale === 'bn' ? 'কোনো পণ্য পাওয়া যায়নি' : 'No products found'}
                   </td>
                 </tr>
@@ -134,7 +134,7 @@ export default function ProductSelector({ selected, onSelect }: Props) {
         )}
       </div>
       {products && (products.pagination.total_pages ?? 1) > 1 && (
-        <div className="shrink-0 border-t border-gray-100 py-2 overflow-x-auto">
+        <div className="shrink-0 border-t border-border py-2 overflow-x-auto">
           <Pagination page={page} totalPages={products.pagination.total_pages ?? 1} onPageChange={setPage} />
         </div>
       )}

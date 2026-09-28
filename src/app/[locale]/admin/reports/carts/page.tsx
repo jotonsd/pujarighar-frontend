@@ -50,48 +50,48 @@ export default function CartReportPage() {
       {isLoading ? (
         <TableSkeleton columns={6} rows={8} />
       ) : rows.length === 0 ? (
-        <p className="text-gray-400 text-sm">{isBn ? "কোনো সক্রিয় কার্ট নেই" : "No active carts found"}</p>
+        <p className="text-muted text-sm">{isBn ? "কোনো সক্রিয় কার্ট নেই" : "No active carts found"}</p>
       ) : (
         <div className="card p-0 overflow-hidden overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-amber-50 border-b border-amber-200">
+            <thead className="bg-amber-50 dark:bg-amber-900/30 border-b border-amber-200 dark:border-amber-800">
               <tr>
                 <th className="w-8"></th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "গ্রাহক" : "Customer"}</th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "পণ্য" : "Products"}</th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "পরিমাণ" : "Quantity"}</th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "কার্ট মূল্য" : "Cart Value"}</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "সর্বশেষ কার্যকলাপ" : "Last Activity"}</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">{isBn ? "গ্রাহক" : "Customer"}</th>
+                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">{isBn ? "পণ্য" : "Products"}</th>
+                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">{isBn ? "পরিমাণ" : "Quantity"}</th>
+                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">{isBn ? "কার্ট মূল্য" : "Cart Value"}</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">{isBn ? "সর্বশেষ কার্যকলাপ" : "Last Activity"}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-border">
               {rows.map(r => (
                 <Fragment key={r.customer_id}>
                   <tr
                     onClick={() => toggle(r.customer_id)}
-                    className="hover:bg-gray-50 transition-colors cursor-pointer"
+                    className="hover:bg-surface-alt transition-colors cursor-pointer"
                   >
-                    <td className="pl-4 text-gray-400">
+                    <td className="pl-4 text-muted">
                       {expanded.has(r.customer_id) ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
                     </td>
-                    <td className="px-4 py-3 text-gray-800">
+                    <td className="px-4 py-3 text-body">
                       <div className="text-sm font-medium">{localName(r.name_bn, r.name_en, isBn) || "—"}</div>
-                      <div className="text-[11px] text-gray-400">{r.phone}{r.email ? ` · ${r.email}` : ""}</div>
+                      <div className="text-[11px] text-muted">{r.phone}{r.email ? ` · ${r.email}` : ""}</div>
                     </td>
-                    <td className="px-4 py-3 text-right text-xs text-gray-700">{r.item_count}</td>
-                    <td className="px-4 py-3 text-right text-xs text-gray-700">{r.total_quantity}</td>
-                    <td className="px-4 py-3 text-right text-xs font-bold text-amber-700">{formatAmount(r.cart_value, locale, 2)}</td>
-                    <td className="px-4 py-3 text-xs text-gray-500 whitespace-nowrap">
+                    <td className="px-4 py-3 text-right text-xs text-muted">{r.item_count}</td>
+                    <td className="px-4 py-3 text-right text-xs text-muted">{r.total_quantity}</td>
+                    <td className="px-4 py-3 text-right text-xs font-bold text-amber-700 dark:text-amber-400">{formatAmount(r.cart_value, locale, 2)}</td>
+                    <td className="px-4 py-3 text-xs text-muted whitespace-nowrap">
                       {r.last_activity ? formatDate(r.last_activity, locale) : "—"}
                     </td>
                   </tr>
                   {expanded.has(r.customer_id) && (
-                    <tr className="bg-gray-50">
+                    <tr className="bg-background">
                       <td></td>
                       <td colSpan={5} className="px-4 py-3">
                         <div className="space-y-1.5">
                           {r.items.map((it, i) => (
-                            <div key={i} className="flex items-center justify-between text-xs text-gray-600">
+                            <div key={i} className="flex items-center justify-between text-xs text-muted">
                               <span>{isBn ? it.product_name_bn : it.product_name_en} × {it.quantity}</span>
                               <span className="font-medium">{formatAmount(it.unit_price, locale, 2)}</span>
                             </div>
@@ -103,12 +103,12 @@ export default function CartReportPage() {
                 </Fragment>
               ))}
             </tbody>
-            <tfoot className="border-t-2 border-amber-200 bg-amber-50">
+            <tfoot className="border-t-2 border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/30">
               <tr>
-                <td colSpan={4} className="px-4 py-3 text-xs font-bold text-gray-700">
+                <td colSpan={4} className="px-4 py-3 text-xs font-bold text-muted">
                   {isBn ? "সর্বমোট" : "Total"} ({data?.total_carts ?? 0} {isBn ? "টি কার্ট" : "carts"})
                 </td>
-                <td className="px-4 py-3 text-right text-xs font-bold text-gray-800">{formatAmount(data?.total_value ?? "0", locale, 2)}</td>
+                <td className="px-4 py-3 text-right text-xs font-bold text-body">{formatAmount(data?.total_value ?? "0", locale, 2)}</td>
                 <td></td>
               </tr>
             </tfoot>

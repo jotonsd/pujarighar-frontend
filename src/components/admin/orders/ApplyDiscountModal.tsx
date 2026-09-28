@@ -27,16 +27,16 @@ export default function ApplyDiscountModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 space-y-4">
+      <div className="bg-surface rounded-2xl shadow-xl w-full max-w-sm p-6 space-y-4">
         <div className="flex items-center gap-3">
           <span className="text-3xl">🏷️</span>
-          <h2 className="text-lg font-bold text-gray-800">
+          <h2 className="text-lg font-bold text-body">
             {isBn ? 'ছাড় প্রয়োগ করুন' : 'Apply Discount'}
           </h2>
         </div>
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-muted">
           {isBn ? 'অর্ডার নম্বর ' : 'Order '}
-          <strong className="text-gray-700">{orderNumber}</strong>
+          <strong className="text-muted">{orderNumber}</strong>
         </p>
 
         <div className="flex gap-2">
@@ -47,8 +47,8 @@ export default function ApplyDiscountModal({
               onClick={() => setDiscountType(t)}
               className={`flex-1 py-2 rounded-xl text-sm font-medium border transition-colors ${
                 discountType === t
-                  ? 'bg-amber-50 border-amber-400 text-amber-700'
-                  : 'border-gray-200 text-gray-500 hover:border-gray-300'
+                  ? 'bg-amber-50 dark:bg-amber-900/30 border-amber-400 dark:border-amber-600 text-amber-700 dark:text-amber-400'
+                  : 'border-border text-muted hover:border-border'
               }`}
             >
               {t === 'PERCENTAGE' ? (isBn ? 'শতকরা (%)' : 'Percentage (%)') : (isBn ? 'নির্দিষ্ট পরিমাণ (৳)' : 'Flat Amount (৳)')}
@@ -63,16 +63,16 @@ export default function ApplyDiscountModal({
           value={value}
           onChange={e => setValue(e.target.value)}
           placeholder={discountType === 'PERCENTAGE' ? (isBn ? 'যেমনঃ ১০' : 'e.g. 10') : (isBn ? 'যেমনঃ ৫০' : 'e.g. 50')}
-          className="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-amber-500"
+          className="w-full px-3 py-2.5 rounded-xl border border-border text-sm focus:outline-none focus:border-amber-500"
         />
 
         {numValue > 0 && (
-          <div className="bg-gray-50 rounded-xl p-3 text-sm space-y-1">
-            <div className="flex justify-between text-gray-500">
+          <div className="bg-background rounded-xl p-3 text-sm space-y-1">
+            <div className="flex justify-between text-muted">
               <span>{isBn ? 'ছাড়' : 'Discount'}</span>
-              <span className="text-red-700">−৳{discountAmount.toLocaleString()}</span>
+              <span className="text-red-700 dark:text-red-400">−৳{discountAmount.toLocaleString()}</span>
             </div>
-            <div className="flex justify-between font-semibold text-gray-800">
+            <div className="flex justify-between font-semibold text-body">
               <span>{isBn ? 'নতুন সর্বমোট' : 'New Grand Total'}</span>
               <span>৳{newGrandTotal.toLocaleString()}</span>
             </div>

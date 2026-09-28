@@ -96,31 +96,31 @@ export default function BaynaBookingDetailPage({ params }: { params: { id: strin
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Left: Request Details */}
         <div className="card space-y-4">
-          <h2 className="font-semibold text-gray-700 text-sm uppercase tracking-wider">
+          <h2 className="font-semibold text-muted text-sm uppercase tracking-wider">
             {isBn ? "অনুরোধের তথ্য" : "Request Details"}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
             <div>
-              <p className="text-xs text-gray-400 mb-0.5">{isBn ? "নাম" : "Name"}</p>
-              <p className="text-gray-800 font-medium">{booking.name}</p>
+              <p className="text-xs text-muted mb-0.5">{isBn ? "নাম" : "Name"}</p>
+              <p className="text-body font-medium">{booking.name}</p>
             </div>
             <div>
-              <p className="text-xs text-gray-400 mb-0.5">{isBn ? "ফোন" : "Phone"}</p>
-              <p className="text-gray-800 font-medium">{booking.phone}</p>
+              <p className="text-xs text-muted mb-0.5">{isBn ? "ফোন" : "Phone"}</p>
+              <p className="text-body font-medium">{booking.phone}</p>
             </div>
             {booking.email && (
               <div>
-                <p className="text-xs text-gray-400 mb-0.5">{isBn ? "ইমেইল" : "Email"}</p>
-                <p className="text-gray-800">{booking.email}</p>
+                <p className="text-xs text-muted mb-0.5">{isBn ? "ইমেইল" : "Email"}</p>
+                <p className="text-body">{booking.email}</p>
               </div>
             )}
             <div>
-              <p className="text-xs text-gray-400 mb-0.5">{isBn ? "স্থান" : "Location"}</p>
-              <p className="text-gray-800">{booking.location}</p>
+              <p className="text-xs text-muted mb-0.5">{isBn ? "স্থান" : "Location"}</p>
+              <p className="text-body">{booking.location}</p>
             </div>
             <div className="sm:col-span-2">
               {!editingDate && (
-                <p className="text-xs text-gray-400 mb-0.5">{isBn ? "অনুষ্ঠানের তারিখ" : "Event Date"}</p>
+                <p className="text-xs text-muted mb-0.5">{isBn ? "অনুষ্ঠানের তারিখ" : "Event Date"}</p>
               )}
               {editingDate ? (
                 <div className="space-y-2">
@@ -140,12 +140,12 @@ export default function BaynaBookingDetailPage({ params }: { params: { id: strin
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
-                  <p className="text-gray-800 font-bold">{formatDate(eventDate, locale)}</p>
+                  <p className="text-body font-bold">{formatDate(eventDate, locale)}</p>
                   {canEdit && (
                     <button
                       onClick={() => setEditingDate(true)}
                       aria-label={isBn ? "তারিখ পরিবর্তন করুন" : "Edit date"}
-                      className="text-gray-400 hover:text-amber-700 transition-colors"
+                      className="text-muted hover:text-amber-700 dark:hover:text-amber-400 transition-colors"
                     >
                       <Pencil className="w-3.5 h-3.5" />
                     </button>
@@ -154,19 +154,19 @@ export default function BaynaBookingDetailPage({ params }: { params: { id: strin
               )}
             </div>
             <div>
-              <p className="text-xs text-gray-400 mb-0.5">{isBn ? "জমা দেওয়া হয়েছে" : "Submitted"}</p>
-              <p className="text-gray-800">{formatDate(booking.created_at, locale)}</p>
+              <p className="text-xs text-muted mb-0.5">{isBn ? "জমা দেওয়া হয়েছে" : "Submitted"}</p>
+              <p className="text-body">{formatDate(booking.created_at, locale)}</p>
             </div>
           </div>
           <div>
-            <p className="text-xs text-gray-400 mb-1">{isBn ? "বিবরণ" : "Description"}</p>
-            <p className="text-gray-700 whitespace-pre-wrap">{booking.description}</p>
+            <p className="text-xs text-muted mb-1">{isBn ? "বিবরণ" : "Description"}</p>
+            <p className="text-muted whitespace-pre-wrap">{booking.description}</p>
           </div>
         </div>
 
         {/* Right: Staff Management */}
         <div className="card space-y-4">
-          <h2 className="font-semibold text-gray-700 text-sm uppercase tracking-wider">
+          <h2 className="font-semibold text-muted text-sm uppercase tracking-wider">
             {isBn ? "স্ট্যাফ ব্যবস্থাপনা" : "Staff Management"}
           </h2>
           <FloatingSelect

@@ -58,29 +58,29 @@ function DeliveryPersonDropdown({
       <button
         type="button"
         onClick={() => setOpen(v => !v)}
-        className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl border border-gray-200 bg-white text-sm text-left hover:border-amber-400 focus:outline-none focus:border-amber-500 transition-colors"
+        className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl border border-border bg-surface text-sm text-left hover:border-amber-400 dark:hover:border-amber-600 focus:outline-none focus:border-amber-500 transition-colors"
       >
         {selected ? (
           <>
             <Avatar src={selected.profile?.avatar ?? null} name={selected.profile?.full_name_bn || selected.email} />
-            <span className="flex-1 truncate text-gray-800">
+            <span className="flex-1 truncate text-body">
               {selected.profile?.full_name_bn || selected.email}
             </span>
           </>
         ) : (
-          <span className="flex-1 text-gray-400">{label}</span>
+          <span className="flex-1 text-muted">{label}</span>
         )}
-        <ChevronDown className="w-4 h-4 text-gray-400 shrink-0" />
+        <ChevronDown className="w-4 h-4 text-muted shrink-0" />
       </button>
 
       {open && (
-        <div className="absolute z-30 mt-1 w-full bg-white rounded-xl border border-gray-200 shadow-lg max-h-52 overflow-y-auto">
+        <div className="absolute z-30 mt-1 w-full bg-surface rounded-xl border border-border shadow-lg max-h-52 overflow-y-auto">
           {persons.map(dp => (
             <button
               key={dp.id}
               type="button"
               onClick={() => { onChange(dp.id); setOpen(false) }}
-              className={`w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-amber-50 transition-colors ${dp.id === value ? 'bg-amber-50 text-amber-700' : 'text-gray-800'}`}
+              className={`w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-amber-50 dark:hover:bg-amber-900/30 transition-colors ${dp.id === value ? 'bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400' : 'text-body'}`}
             >
               <Avatar src={dp.profile?.avatar ?? null} name={dp.profile?.full_name_bn || dp.email} />
               <span className="flex-1 text-left truncate">
@@ -99,7 +99,7 @@ function Avatar({ src, name }: { src: string | null; name: string }) {
     // eslint-disable-next-line @next/next/no-img-element
     <img src={src} alt={name} referrerPolicy="no-referrer" className="w-5 h-5 rounded-full object-cover shrink-0" />
   ) : (
-    <div className="w-5 h-5 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center text-xs font-bold shrink-0">
+    <div className="w-5 h-5 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 flex items-center justify-center text-xs font-bold shrink-0">
       {name[0]?.toUpperCase()}
     </div>
   )
@@ -195,31 +195,31 @@ export default function OrderActions({ order, orderId }: Props) {
 
   return (
     <div className="card space-y-3">
-      <h2 className="font-semibold text-gray-700">{locale === 'bn' ? 'অ্যাকশন' : 'Actions'}</h2>
+      <h2 className="font-semibold text-muted">{locale === 'bn' ? 'অ্যাকশন' : 'Actions'}</h2>
 
       {hasAssignedPerson && (
-        <div className="bg-gray-50 rounded-xl p-3 text-sm flex items-center gap-2.5">
+        <div className="bg-background rounded-xl p-3 text-sm flex items-center gap-2.5">
           <Avatar
             src={order.delivery?.delivery_person_avatar ?? null}
             name={order.delivery?.delivery_person_name_bn || order.delivery?.delivery_person_name_en || order.delivery?.delivery_person_email || '?'}
           />
           <div className="min-w-0">
-            <p className="font-medium text-gray-700 truncate">
+            <p className="font-medium text-muted truncate">
               {locale === 'bn' ? 'ডেলিভারিম্যান নির্ধারিত: ' : 'Assigned to: '}
               {order.delivery?.delivery_person_name_bn || order.delivery?.delivery_person_name_en || order.delivery?.delivery_person_email}
             </p>
             {order.delivery?.delivery_person_phone && (
-              <p className="text-xs text-gray-500">{order.delivery.delivery_person_phone}</p>
+              <p className="text-xs text-muted">{order.delivery.delivery_person_phone}</p>
             )}
           </div>
         </div>
       )}
 
       {order.courier_consignment && (
-        <div className="bg-gray-50 rounded-xl p-3 text-sm space-y-1.5">
+        <div className="bg-background rounded-xl p-3 text-sm space-y-1.5">
           <div className="flex items-center justify-between">
-            <span className="flex items-center gap-1.5 font-medium text-gray-700">
-              <Truck className="w-4 h-4 text-amber-700" />
+            <span className="flex items-center gap-1.5 font-medium text-muted">
+              <Truck className="w-4 h-4 text-amber-700 dark:text-amber-400" />
               {order.courier_consignment.provider_name}
             </span>
             <button
@@ -228,39 +228,39 @@ export default function OrderActions({ order, orderId }: Props) {
                 () => refreshCourierStatus(orderId).unwrap(),
                 locale === 'bn' ? 'স্ট্যাটাস আপডেট হয়েছে' : 'Status refreshed',
               )}
-              className="inline-flex items-center gap-1 text-xs text-amber-700 hover:underline disabled:opacity-50"
+              className="inline-flex items-center gap-1 text-xs text-amber-700 dark:text-amber-400 hover:underline disabled:opacity-50"
             >
               <RefreshCw className={`w-3 h-3 ${refreshingCourier ? 'animate-spin' : ''}`} />
               {locale === 'bn' ? 'রিফ্রেশ' : 'Refresh'}
             </button>
           </div>
-          <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
-            <span>{locale === 'bn' ? 'ট্র্যাকিং কোড:' : 'Tracking code:'} <span className="font-mono text-gray-700">{order.courier_consignment.tracking_code || '—'}</span></span>
-            <span>{locale === 'bn' ? 'স্ট্যাটাস:' : 'Status:'} <span className="font-medium text-gray-700">{order.courier_consignment.status || '—'}</span></span>
+          <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted">
+            <span>{locale === 'bn' ? 'ট্র্যাকিং কোড:' : 'Tracking code:'} <span className="font-mono text-muted">{order.courier_consignment.tracking_code || '—'}</span></span>
+            <span>{locale === 'bn' ? 'স্ট্যাটাস:' : 'Status:'} <span className="font-medium text-muted">{order.courier_consignment.status || '—'}</span></span>
           </div>
           {order.courier_consignment.tracking_message && (
-            <p className="text-xs text-gray-500">{order.courier_consignment.tracking_message}</p>
+            <p className="text-xs text-muted">{order.courier_consignment.tracking_message}</p>
           )}
           {order.courier_consignment.tracking_url && (
             <a
               href={order.courier_consignment.tracking_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-xs text-amber-700 hover:underline"
+              className="inline-flex items-center gap-1 text-xs text-amber-700 dark:text-amber-400 hover:underline"
             >
               {locale === 'bn' ? 'কুরিয়ারে ট্র্যাক করুন' : 'Track on courier site'}
               <ExternalLink className="w-3 h-3" />
             </a>
           )}
           {!!order.courier_consignment.events?.length && (
-            <div className="pt-1.5 mt-1.5 border-t border-gray-200 space-y-1.5 max-h-40 overflow-y-auto">
-              <p className="text-[11px] font-medium text-gray-500">
+            <div className="pt-1.5 mt-1.5 border-t border-border space-y-1.5 max-h-40 overflow-y-auto">
+              <p className="text-[11px] font-medium text-muted">
                 {locale === 'bn' ? 'ওয়েবহুক লগ' : 'Webhook log'}
               </p>
               {order.courier_consignment.events.map(ev => (
                 <div key={ev.id} className="text-xs">
-                  <p className="text-gray-700">{ev.message || ev.status || '—'}</p>
-                  <p className="text-[11px] text-gray-400">
+                  <p className="text-muted">{ev.message || ev.status || '—'}</p>
+                  <p className="text-[11px] text-muted">
                     {new Date(ev.created_at).toLocaleString(locale === 'bn' ? 'bn-BD' : 'en-US')}
                     {' · '}{ev.source}
                   </p>
@@ -318,22 +318,22 @@ export default function OrderActions({ order, orderId }: Props) {
             </button>
             {showAssignDeliveryModal && (
               <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-                <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 space-y-4">
-                  <h2 className="text-lg font-bold text-gray-800">{t('order.assignDelivery')}</h2>
+                <div className="bg-surface rounded-2xl shadow-xl w-full max-w-md p-6 space-y-4">
+                  <h2 className="text-lg font-bold text-body">{t('order.assignDelivery')}</h2>
 
                   {activeProviders.length > 0 && (
-                    <div className="inline-flex rounded-lg border border-gray-200 p-0.5 w-fit">
+                    <div className="inline-flex rounded-lg border border-border p-0.5 w-fit">
                       <button
                         type="button"
                         onClick={() => setDeliveryMethod('internal')}
-                        className={`px-3 py-1 text-xs rounded-md transition-colors ${deliveryMethod === 'internal' ? 'bg-amber-50 text-amber-700 font-medium' : 'text-gray-500 hover:text-gray-700'}`}
+                        className={`px-3 py-1 text-xs rounded-md transition-colors ${deliveryMethod === 'internal' ? 'bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 font-medium' : 'text-muted hover:text-muted'}`}
                       >
                         {locale === 'bn' ? 'নিজস্ব ডেলিভারি' : 'Internal Delivery'}
                       </button>
                       <button
                         type="button"
                         onClick={() => setDeliveryMethod('courier')}
-                        className={`px-3 py-1 text-xs rounded-md transition-colors ${deliveryMethod === 'courier' ? 'bg-amber-50 text-amber-700 font-medium' : 'text-gray-500 hover:text-gray-700'}`}
+                        className={`px-3 py-1 text-xs rounded-md transition-colors ${deliveryMethod === 'courier' ? 'bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 font-medium' : 'text-muted hover:text-muted'}`}
                       >
                         <Truck className="w-3 h-3 inline mr-1" /> {locale === 'bn' ? 'কুরিয়ার' : 'Courier'}
                       </button>
@@ -346,7 +346,7 @@ export default function OrderActions({ order, orderId }: Props) {
                         <select
                           value={courierProviderId || activeProviders[0].id}
                           onChange={e => setCourierProviderId(e.target.value)}
-                          className="px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-amber-500"
+                          className="px-3 py-2.5 rounded-xl border border-border text-sm focus:outline-none focus:border-amber-500"
                         >
                           {activeProviders.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                         </select>
@@ -357,7 +357,7 @@ export default function OrderActions({ order, orderId }: Props) {
                         onChange={e => setCourierNote(e.target.value)}
                         placeholder={locale === 'bn' ? 'বিশেষ নির্দেশনা (ঐচ্ছিক)' : 'Special instruction (optional)'}
                         autoComplete="off"
-                        className="px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-amber-500"
+                        className="px-3 py-2.5 rounded-xl border border-border text-sm focus:outline-none focus:border-amber-500"
                       />
                       <div className="flex gap-3 pt-1">
                         <button disabled={loading} className="btn-primary flex-1"
@@ -393,7 +393,7 @@ export default function OrderActions({ order, orderId }: Props) {
                         onChange={e => setInternalNote(e.target.value)}
                         placeholder={locale === 'bn' ? 'বিশেষ নির্দেশনা (ঐচ্ছিক)' : 'Special note (optional)'}
                         autoComplete="off"
-                        className="px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-amber-500"
+                        className="px-3 py-2.5 rounded-xl border border-border text-sm focus:outline-none focus:border-amber-500"
                       />
                       <div className="flex gap-3 pt-1">
                         <button disabled={loading} className="btn-primary flex-1"
@@ -437,7 +437,7 @@ export default function OrderActions({ order, orderId }: Props) {
             </button>
             {showDeliverModal && (
               <ConfirmModal
-                icon={<CheckCircle2 className="w-6 h-6 text-green-500" />}
+                icon={<CheckCircle2 className="w-6 h-6 text-green-500 dark:text-green-400" />}
                 title={locale === 'bn' ? 'ডেলিভারি নিশ্চিত করুন?' : 'Confirm delivery?'}
                 description={locale === 'bn' ? 'পণ্যটি সফলভাবে গ্রাহকের কাছে পৌঁছে দেওয়া হয়েছে?' : 'Has the order been successfully delivered to the customer?'}
                 confirmLabel={locale === 'bn' ? 'হ্যাঁ, ডেলিভারি হয়েছে' : 'Yes, Delivered'}
@@ -482,7 +482,7 @@ export default function OrderActions({ order, orderId }: Props) {
             </button>
             {showReturnModal && (
               <ConfirmModal
-                icon={<Undo2 className="w-6 h-6 text-amber-500" />}
+                icon={<Undo2 className="w-6 h-6 text-amber-500 dark:text-amber-400" />}
                 title={locale === 'bn' ? 'ফেরত নিশ্চিত করুন?' : 'Confirm return?'}
                 description={locale === 'bn' ? 'এই অর্ডারটি ফেরত হিসেবে চিহ্নিত হবে।' : 'This order will be marked as returned.'}
                 confirmLabel={locale === 'bn' ? 'হ্যাঁ, ফেরত দিন' : 'Yes, Return'}

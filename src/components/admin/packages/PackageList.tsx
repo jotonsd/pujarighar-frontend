@@ -54,9 +54,9 @@ export default function PackageList() {
       header: locale === "bn" ? "ছবি" : "Image",
       accessor: p => p.images?.[0]?.image ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={p.images[0].image} alt="" className="w-12 h-12 object-cover rounded-lg border border-gray-100" />
+        <img src={p.images[0].image} alt="" className="w-12 h-12 object-cover rounded-lg border border-border" />
       ) : (
-        <div className="w-12 h-12 rounded-lg border border-gray-100 bg-gray-50 flex items-center justify-center text-gray-300 text-xs">
+        <div className="w-12 h-12 rounded-lg border border-border bg-background flex items-center justify-center text-muted text-xs">
           —
         </div>
       ),
@@ -66,10 +66,10 @@ export default function PackageList() {
       header: locale === "bn" ? "নাম" : "Name",
       accessor: p => (
         <div>
-          <p className="font-medium text-gray-800">
+          <p className="font-medium text-body">
             {locale === "bn" ? p.name_bn : p.name_en}
           </p>
-          <p className="text-xs text-gray-400 font-mono">{p.sku}</p>
+          <p className="text-xs text-muted font-mono">{p.sku}</p>
         </div>
       ),
       exportValue: p => (locale === "bn" ? p.name_bn : p.name_en),
@@ -77,7 +77,7 @@ export default function PackageList() {
     {
       header: locale === "bn" ? "উপাদান" : "Items",
       accessor: p => (
-        <span className="text-sm text-gray-600">
+        <span className="text-sm text-muted">
           {formatNumber(p.package_items?.length ?? 0, locale)}{" "}
           {locale === "bn" ? "টি পণ্য" : "products"}
         </span>
@@ -88,7 +88,7 @@ export default function PackageList() {
       header: locale === "bn" ? "ছাড়" : "Discount",
       accessor: p => (
         <span
-          className={`text-sm font-bold ${p.discount_type !== "NONE" ? "text-green-600" : "text-gray-400"}`}
+          className={`text-sm font-bold ${p.discount_type !== "NONE" ? "text-green-600 dark:text-green-400" : "text-muted"}`}
         >
           {discountLabel(p)}
         </span>
@@ -97,7 +97,7 @@ export default function PackageList() {
     {
       header: locale === "bn" ? "মূল্য" : "Price",
       accessor: p => (
-        <span className="font-bold text-amber-700">
+        <span className="font-bold text-amber-700 dark:text-amber-400">
           {formatAmount(p.unit_price, locale, 0)}
         </span>
       ),
@@ -153,7 +153,7 @@ export default function PackageList() {
             render: p => (
               <Link
                 href={`/${locale}/admin/packages/${p.id}/edit`}
-                className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors"
+                className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/40 transition-colors"
                 title={t("common.edit")}
               >
                 <Pencil className="w-3.5 h-3.5" />

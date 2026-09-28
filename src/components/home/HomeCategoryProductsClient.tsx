@@ -23,7 +23,7 @@ export default function HomeCategoryProductsClient({
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-2">
               <Layers className="w-5 h-5 text-amber-600" />
-              <h2 className="text-xl font-bold text-gray-800">
+              <h2 className="text-xl font-bold text-body">
                 {isBn ? category.name_bn : category.name_en}
               </h2>
             </div>

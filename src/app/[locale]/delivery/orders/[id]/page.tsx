@@ -152,11 +152,11 @@ const [showDeliverModal, setShowDeliverModal] = useState(false);
 
       <div className="grid grid-cols-1 gap-3">
         <div className="card">
-          <h2 className="font-semibold text-gray-700 mb-3">
+          <h2 className="font-semibold text-muted mb-3">
             {locale === "bn" ? "ডেলিভারি ঠিকানা" : "Delivery Address"}
           </h2>
-          <div className="text-sm text-gray-600 space-y-1">
-            <p className="font-medium text-gray-800">
+          <div className="text-sm text-muted space-y-1">
+            <p className="font-medium text-body">
               {localName(
                 order.shipping_name_bn,
                 order.shipping_name_en,
@@ -183,16 +183,16 @@ const [showDeliverModal, setShowDeliverModal] = useState(false);
           </div>
         </div>
         <div className="card">
-          <h2 className="font-semibold text-gray-700 mb-3">
+          <h2 className="font-semibold text-muted mb-3">
             {locale === "bn" ? "পণ্য" : "Items"}
           </h2>
           <div className="space-y-3">
             {order.items.map(item => (
               <div key={item.id}>
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-700 flex items-center gap-1.5">
+                  <span className="text-muted flex items-center gap-1.5">
                     {item.is_package && (
-                      <span className="text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full font-medium">
+                      <span className="text-xs bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 px-1.5 py-0.5 rounded-full font-medium">
                         🎁 {locale === "bn" ? "প্যাকেজ" : "Pkg"}
                       </span>
                     )}
@@ -201,7 +201,7 @@ const [showDeliverModal, setShowDeliverModal] = useState(false);
                       item.product_name_en,
                       locale === "bn",
                     )}
-                    <span className="text-gray-400">
+                    <span className="text-muted">
                       ×
                       {formatNumber(
                         Math.round(parseFloat(String(item.quantity))),
@@ -218,7 +218,7 @@ const [showDeliverModal, setShowDeliverModal] = useState(false);
                     {item.package_items.map((pi, i) => (
                       <div
                         key={i}
-                        className="flex items-center justify-between text-xs text-gray-500"
+                        className="flex items-center justify-between text-xs text-muted"
                       >
                         <span className="flex items-center gap-1.5">
                           <span className="w-1 h-1 rounded-full bg-amber-300 shrink-0" />
@@ -228,7 +228,7 @@ const [showDeliverModal, setShowDeliverModal] = useState(false);
                             locale === "bn",
                           )}
                         </span>
-                        <span className="text-gray-400 font-bold">
+                        <span className="text-muted font-bold">
                           ×
                           {formatNumber(
                             Math.round(
@@ -253,13 +253,13 @@ const [showDeliverModal, setShowDeliverModal] = useState(false);
           </div>
         </div>
         <div className="card">
-          <h2 className="font-semibold text-gray-700 mb-4">
+          <h2 className="font-semibold text-muted mb-4">
             {locale === "bn" ? "স্ট্যাটাস ইতিহাস" : "Status History"}
           </h2>
           {logs.length > 0 ? (
             <StatusTimeline logs={logs} locale={locale} />
           ) : (
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-muted">
               {locale === "bn" ? "কোনো ইতিহাস নেই" : "No history yet"}
             </p>
           )}

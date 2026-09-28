@@ -300,7 +300,7 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
         {/* ── Left: Basic info ── */}
         <div className="lg:col-span-2 space-y-4">
           <div className="card space-y-4">
-            <h2 className="font-semibold text-gray-700 text-sm uppercase tracking-wider">
+            <h2 className="font-semibold text-muted text-sm uppercase tracking-wider">
               {locale === "bn" ? "প্যাকেজ তথ্য" : "Package Info"}
             </h2>
             <div className="grid grid-cols-2 gap-3">
@@ -353,8 +353,8 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
               rows={2}
             />
 
-            <div className="pt-2 border-t border-gray-100">
-              <h3 className="text-sm font-semibold text-gray-600 mb-3">
+            <div className="pt-2 border-t border-border">
+              <h3 className="text-sm font-semibold text-muted mb-3">
                 {locale === "bn" ? "এসইও (ঐচ্ছিক)" : "SEO (optional)"}
               </h3>
               <div className="space-y-3">
@@ -376,7 +376,7 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
 
           {/* ── Product selector ── */}
           <div className="card space-y-4">
-            <h2 className="font-semibold text-gray-700 text-sm uppercase tracking-wider">
+            <h2 className="font-semibold text-muted text-sm uppercase tracking-wider">
               {locale === "bn" ? "প্যাকেজের পণ্য" : "Package Products"}
             </h2>
 
@@ -422,7 +422,7 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
 
             {/* Items list */}
             {items.length === 0 ? (
-              <p className="text-center text-gray-400 text-sm py-6 border border-dashed border-gray-200 rounded-lg">
+              <p className="text-center text-muted text-sm py-6 border border-dashed border-border rounded-lg">
                 {locale === "bn"
                   ? "উপরে পণ্য বেছে যোগ করুন"
                   : "Select products above to add"}
@@ -430,18 +430,18 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
             ) : (
               <div className="border rounded-lg overflow-hidden">
                 <table className="w-full text-sm">
-                  <thead className="bg-amber-50 border-b border-amber-200">
+                  <thead className="bg-amber-50 dark:bg-amber-900/30 border-b border-amber-200 dark:border-amber-800">
                     <tr>
-                      <th className="px-4 py-2.5 text-left text-xs font-semibold text-amber-700 uppercase">
+                      <th className="px-4 py-2.5 text-left text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase">
                         {locale === "bn" ? "পণ্য" : "Product"}
                       </th>
-                      <th className="px-4 py-2.5 text-right text-xs font-semibold text-amber-700 uppercase">
+                      <th className="px-4 py-2.5 text-right text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase">
                         {locale === "bn" ? "একক মূল্য" : "Unit Price"}
                       </th>
-                      <th className="px-4 py-2.5 text-center text-xs font-semibold text-amber-700 uppercase">
+                      <th className="px-4 py-2.5 text-center text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase">
                         {locale === "bn" ? "পরিমাণ" : "Qty"}
                       </th>
-                      <th className="px-4 py-2.5 text-right text-xs font-semibold text-amber-700 uppercase">
+                      <th className="px-4 py-2.5 text-right text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase">
                         {locale === "bn" ? "মোট" : "Total"}
                       </th>
                       <th className="px-4 py-2.5 w-10" />
@@ -449,18 +449,18 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
                   </thead>
                   <tbody className="divide-y divide-gray-100">
                     {items.map(item => (
-                      <tr key={item.component_id} className="hover:bg-gray-50">
+                      <tr key={item.component_id} className="hover:bg-surface-alt">
                         <td className="px-4 py-2.5">
-                          <p className="font-medium text-gray-800">
+                          <p className="font-medium text-body">
                             {locale === "bn"
                               ? item.component_name_bn
                               : item.component_name_en}
                           </p>
-                          <p className="text-xs text-gray-400 font-mono">
+                          <p className="text-xs text-muted font-mono">
                             {item.component_sku}
                           </p>
                         </td>
-                        <td className="px-4 py-2.5 text-right text-gray-600">
+                        <td className="px-4 py-2.5 text-right text-muted">
                           {formatAmount(item.unit_price || "0", locale, 0)}
                         </td>
                         <td className="px-4 py-2.5 text-center">
@@ -474,10 +474,10 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
                                 Number(e.target.value),
                               )
                             }
-                            className="w-16 text-center text-sm border border-gray-200 rounded-lg px-2 py-1 focus:outline-none focus:border-amber-500"
+                            className="w-16 text-center text-sm border border-border rounded-lg px-2 py-1 focus:outline-none focus:border-amber-500"
                           />
                         </td>
-                        <td className="px-4 py-2.5 text-right font-semibold text-amber-700">
+                        <td className="px-4 py-2.5 text-right font-semibold text-amber-700 dark:text-amber-400">
                           {formatAmount(
                             parseFloat(item.unit_price || "0") * item.quantity,
                             locale,
@@ -488,7 +488,7 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
                           <button
                             type="button"
                             onClick={() => removeItem(item.component_id)}
-                            className="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-amber-50 border border-amber-200 text-amber-500 hover:bg-amber-100 transition-colors"
+                            className="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 text-amber-500 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/40 transition-colors"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
@@ -496,15 +496,15 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
                       </tr>
                     ))}
                   </tbody>
-                  <tfoot className="bg-gray-50 border-t border-gray-200">
+                  <tfoot className="bg-background border-t border-border">
                     <tr>
                       <td
                         colSpan={3}
-                        className="px-4 py-2.5 text-sm font-semibold text-gray-700 text-right"
+                        className="px-4 py-2.5 text-sm font-semibold text-muted text-right"
                       >
                         {locale === "bn" ? "মূল মোট" : "Original Total"}
                       </td>
-                      <td className="px-4 py-2.5 text-right font-bold text-gray-800">
+                      <td className="px-4 py-2.5 text-right font-bold text-body">
                         {formatAmount(originalTotal, locale, 0)}
                       </td>
                       <td />
@@ -520,7 +520,7 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
         <div className="space-y-4">
           {/* Discount */}
           <div className="card space-y-4">
-            <h2 className="font-semibold text-gray-700 text-sm uppercase tracking-wider">
+            <h2 className="font-semibold text-muted text-sm uppercase tracking-wider">
               {locale === "bn" ? "ছাড়" : "Discount"}
             </h2>
             <FloatingSelect
@@ -569,16 +569,16 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
 
           {/* Price summary */}
           <div className="card space-y-3">
-            <h2 className="font-semibold text-gray-700 text-sm uppercase tracking-wider">
+            <h2 className="font-semibold text-muted text-sm uppercase tracking-wider">
               {locale === "bn" ? "মূল্য সারাংশ" : "Price Summary"}
             </h2>
             <div className="space-y-2 text-sm">
-              <div className="flex justify-between text-gray-600">
+              <div className="flex justify-between text-muted">
                 <span>{locale === "bn" ? "মূল মোট" : "Original"}</span>
                 <span>{formatAmount(originalTotal, locale, 0)}</span>
               </div>
               {form.discount_type !== "NONE" && (
-                <div className="flex justify-between text-green-600">
+                <div className="flex justify-between text-green-600 dark:text-green-400">
                   <span>{locale === "bn" ? "ছাড়" : "Discount"}</span>
                   <span>
                     −{" "}
@@ -588,11 +588,11 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
                   </span>
                 </div>
               )}
-              <div className="flex justify-between font-bold text-base border-t border-gray-100 pt-2">
+              <div className="flex justify-between font-bold text-base border-t border-border pt-2">
                 <span>
                   {locale === "bn" ? "চূড়ান্ত মূল্য" : "Final Price"}
                 </span>
-                <span className="text-amber-700">
+                <span className="text-amber-700 dark:text-amber-400">
                   {formatAmount(computedFinalPrice(), locale, 0)}
                 </span>
               </div>
@@ -601,7 +601,7 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
 
           {/* Image upload */}
           <div className="card space-y-3">
-            <h2 className="font-semibold text-gray-700 text-sm uppercase tracking-wider">
+            <h2 className="font-semibold text-muted text-sm uppercase tracking-wider">
               {locale === "bn" ? "ছবি" : "Image"}
             </h2>
 
@@ -614,7 +614,7 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
                     <img
                       src={img.image}
                       alt=""
-                      className="w-20 h-20 object-cover rounded-lg border border-gray-200"
+                      className="w-20 h-20 object-cover rounded-lg border border-border"
                     />
                     <button
                       type="button"
@@ -647,7 +647,7 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
                 <img
                   src={imagePreview}
                   alt="Preview"
-                  className="w-20 h-20 object-cover rounded-lg border border-amber-200"
+                  className="w-20 h-20 object-cover rounded-lg border border-amber-200 dark:border-amber-800"
                 />
                 <button
                   type="button"
@@ -692,9 +692,9 @@ export default function PackageForm({ package: pkg, mode }: PackageFormProps) {
                 onChange={e =>
                   setForm(p => ({ ...p, is_active: e.target.checked }))
                 }
-                className="w-4 h-4 rounded border-gray-300 text-amber-700 focus:ring-amber-500"
+                className="w-4 h-4 rounded border-border text-amber-700 dark:text-amber-400 focus:ring-amber-500"
               />
-              <span className="text-sm text-gray-700">
+              <span className="text-sm text-muted">
                 {t("common.active")}
               </span>
             </label>

@@ -18,18 +18,18 @@ export default function PaymentSuccessPage() {
     <div className="max-w-lg mx-auto px-4 py-20 text-center">
       <div className="card space-y-4">
         <p className="text-6xl">✅</p>
-        <h1 className="text-2xl font-bold text-gray-800">
+        <h1 className="text-2xl font-bold text-body">
           {isBn ? 'পেমেন্ট সফল হয়েছে!' : 'Payment Successful!'}
         </h1>
-        <p className="text-gray-600">
+        <p className="text-muted">
           {isBn
             ? 'আপনার পেমেন্ট গ্রহণ করা হয়েছে এবং অর্ডারটি নিশ্চিত করা হয়েছে।'
             : 'Your payment has been received and your order is confirmed.'}
         </p>
         {orderNumber && (
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-muted">
             {isBn ? 'অর্ডার নম্বর' : 'Order Number'}{': '}
-            <span className="font-bold text-gray-800">{orderNumber}</span>
+            <span className="font-bold text-body">{orderNumber}</span>
           </p>
         )}
         {orderId && (
@@ -42,7 +42,7 @@ export default function PaymentSuccessPage() {
             </Link>
           </div>
         )}
-        <Link href={`/${locale}/products`} className="block text-sm text-amber-700 hover:underline">
+        <Link href={`/${locale}/products`} className="block text-sm text-amber-700 dark:text-amber-400 hover:underline">
           {isBn ? 'কেনাকাটা চালিয়ে যান' : 'Continue Shopping'}
         </Link>
       </div>

@@ -129,7 +129,7 @@ export function ReusableTable<T>({
   const getSortIcon = (col: Column<T>) => {
     if (!col.sortable) return null
     const key = col.sortKey || (typeof col.accessor === 'string' ? String(col.accessor) : '')
-    if (sortKey !== key || sortDir === null) return <ArrowUpDown className="w-3.5 h-3.5 text-gray-400" />
+    if (sortKey !== key || sortDir === null) return <ArrowUpDown className="w-3.5 h-3.5 text-muted" />
     return sortDir === 'asc'
       ? <ArrowUp className="w-3.5 h-3.5 text-amber-700" />
       : <ArrowDown className="w-3.5 h-3.5 text-amber-700" />
@@ -215,7 +215,7 @@ export function ReusableTable<T>({
         title={action.label}
         className={
           action.className ||
-          'inline-flex items-center justify-center w-8 h-8 text-gray-600 bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors text-xs'
+          'inline-flex items-center justify-center w-8 h-8 text-muted bg-surface-alt border border-border rounded-lg hover:bg-surface-alt transition-colors text-xs'
         }
       >
         {action.icon ?? action.label}
@@ -225,13 +225,13 @@ export function ReusableTable<T>({
 
   if (data.length === 0) {
     return (
-      <div className="bg-white rounded-lg shadow-sm p-12 text-center">
+      <div className="bg-surface rounded-lg shadow-sm p-12 text-center">
         {emptyIcon && (
-          <div className="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400">
+          <div className="w-14 h-14 bg-surface-alt rounded-full flex items-center justify-center mx-auto mb-4 text-muted">
             {emptyIcon}
           </div>
         )}
-        <p className="text-gray-500 text-sm">{emptyMessage}</p>
+        <p className="text-muted text-sm">{emptyMessage}</p>
       </div>
     )
   }
@@ -240,8 +240,8 @@ export function ReusableTable<T>({
     <div className="space-y-3">
       {/* Bulk actions bar */}
       {enableSelection && selectedIds.length > 0 && (
-        <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 flex items-center justify-between">
-          <span className="text-sm text-amber-900">{selectedIds.length} selected</span>
+        <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg px-4 py-3 flex items-center justify-between">
+          <span className="text-sm text-amber-900 dark:text-amber-300">{selectedIds.length} selected</span>
           {onBulkDelete && (
             <button
               onClick={() => { onBulkDelete(selectedIds); setSelectedIds([]) }}
@@ -259,21 +259,21 @@ export function ReusableTable<T>({
         {data.map((row, rowIdx) => {
           const id = keyExtractor(row)
           return (
-            <div key={id} className="bg-white rounded-xl shadow-sm overflow-hidden">
-              <div className="divide-y divide-gray-100">
+            <div key={id} className="bg-surface rounded-xl shadow-sm overflow-hidden">
+              <div className="divide-y divide-border">
                 {columns.map((col, colIdx) => (
                   <div key={colIdx} className="flex items-start justify-between px-4 py-3 gap-3">
-                    <span className="text-xs font-medium text-gray-400 shrink-0 pt-0.5 w-28">
+                    <span className="text-xs font-medium text-muted shrink-0 pt-0.5 w-28">
                       {col.header}
                     </span>
-                    <span className="text-sm text-gray-800 text-right">
+                    <span className="text-sm text-body text-right">
                       {renderCell(col, row, rowIdx)}
                     </span>
                   </div>
                 ))}
               </div>
               {quickActions && quickActions.filter(a => !a.show || a.show(row)).length > 0 && (
-                <div className="px-4 py-3 border-t border-gray-100 flex items-center gap-2 justify-end bg-gray-50">
+                <div className="px-4 py-3 border-t border-border flex items-center gap-2 justify-end bg-surface-alt">
                   {quickActions
                     .filter(a => !a.show || a.show(row))
                     .map((a, i) => renderAction(a, row, i))}
@@ -285,10 +285,10 @@ export function ReusableTable<T>({
       </div>
 
       {/* Table — desktop only */}
-      <div className="hidden md:block bg-white rounded-lg shadow-sm overflow-hidden">
+      <div className="hidden md:block bg-surface rounded-lg shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-amber-50 border-b border-amber-200">
+            <thead className="bg-amber-50 dark:bg-amber-900/20 border-b border-amber-200 dark:border-amber-800">
               <tr>
                 {enableSelection && (
                   <th className="px-4 py-3 w-10">
@@ -297,7 +297,7 @@ export function ReusableTable<T>({
                       checked={isAllSelected}
                       ref={el => { if (el) el.indeterminate = isSomeSelected }}
                       onChange={handleSelectAll}
-                      className="w-4 h-4 rounded border-gray-300 text-amber-700 focus:ring-amber-500"
+                      className="w-4 h-4 rounded border-border text-amber-700 focus:ring-amber-500"
                     />
                   </th>
                 )}
@@ -309,7 +309,7 @@ export function ReusableTable<T>({
                     {col.sortable && enableSorting ? (
                       <button
                         onClick={() => handleSort(col)}
-                        className="flex items-center gap-1.5 hover:text-gray-900 transition-colors"
+                        className="flex items-center gap-1.5 hover:text-body transition-colors"
                       >
                         {col.header}
                         {getSortIcon(col)}
@@ -326,14 +326,14 @@ export function ReusableTable<T>({
                 )}
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-border">
               {data.map((row, rowIdx) => {
                 const id = keyExtractor(row)
                 const isSelected = selectedIds.includes(id)
                 return (
                   <tr
                     key={id}
-                    className={`transition-colors ${isSelected ? 'bg-amber-50' : 'hover:bg-gray-50'}`}
+                    className={`transition-colors ${isSelected ? 'bg-amber-50 dark:bg-amber-900/20' : 'hover:bg-surface-alt'}`}
                   >
                     {enableSelection && (
                       <td className="px-4 py-3">
@@ -341,14 +341,14 @@ export function ReusableTable<T>({
                           type="checkbox"
                           checked={isSelected}
                           onChange={() => handleSelectRow(id)}
-                          className="w-4 h-4 rounded border-gray-300 text-amber-700 focus:ring-amber-500"
+                          className="w-4 h-4 rounded border-border text-amber-700 focus:ring-amber-500"
                         />
                       </td>
                     )}
                     {columns.map((col, colIdx) => (
                       <td
                         key={colIdx}
-                        className={col.className || 'px-4 py-3 text-sm text-gray-700'}
+                        className={col.className || 'px-4 py-3 text-sm text-muted'}
                       >
                         {renderCell(col, row, rowIdx)}
                       </td>
@@ -372,34 +372,34 @@ export function ReusableTable<T>({
 
       {/* Pagination bar */}
       {onPageChange && (
-        <div className="bg-white rounded-lg shadow-sm px-4 py-3">
+        <div className="bg-surface rounded-lg shadow-sm px-4 py-3">
           <div className="flex items-center justify-between flex-wrap gap-3">
             {/* Left: info + per-page */}
             <div className="flex items-center gap-3 flex-wrap">
-              <span className="text-xs text-gray-500">
+              <span className="text-xs text-muted">
                 {isBn ? (
-                  <>পেজ <span className="font-bold text-gray-800">{n(totalPages)}</span> এর মধ্যে <span className="font-bold text-gray-800">{n(currentPage)}</span></>
+                  <>পেজ <span className="font-bold text-body">{n(totalPages)}</span> এর মধ্যে <span className="font-bold text-body">{n(currentPage)}</span></>
                 ) : (
-                  <>Page <span className="font-bold text-gray-800">{n(currentPage)}</span> of <span className="font-bold text-gray-800">{n(totalPages)}</span></>
+                  <>Page <span className="font-bold text-body">{n(currentPage)}</span> of <span className="font-bold text-body">{n(totalPages)}</span></>
                 )}
                 {totalRecords != null && (
-                  <> · <span className="font-bold text-gray-800">{n(totalRecords)}</span> {isBn ? 'রেকর্ড' : 'records'}</>
+                  <> · <span className="font-bold text-body">{n(totalRecords)}</span> {isBn ? 'রেকর্ড' : 'records'}</>
                 )}
               </span>
               {onLimitChange && (
                 <div className="flex items-center gap-1.5">
-                  <span className="text-xs text-gray-400">{isBn ? 'দেখাও' : 'Show'}</span>
+                  <span className="text-xs text-muted">{isBn ? 'দেখাও' : 'Show'}</span>
                   <div className="relative">
                     <select
                       value={limit}
                       onChange={e => onLimitChange(Number(e.target.value))}
-                      className="appearance-none text-xs font-bold bg-gray-50 border border-gray-200 text-gray-700 rounded-lg pl-2.5 pr-6 py-1.5 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-400 cursor-pointer hover:bg-amber-50 hover:border-amber-300 transition-colors"
+                      className="appearance-none text-xs font-bold bg-surface-alt border border-border text-muted rounded-lg pl-2.5 pr-6 py-1.5 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-400 cursor-pointer hover:bg-amber-50 dark:hover:bg-amber-900/20 hover:border-amber-300 transition-colors"
                     >
                       {PER_PAGE_OPTIONS.map(o => <option key={o} value={o}>{n(o)}</option>)}
                     </select>
-                    <ChevronDown className="absolute right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 text-gray-400 pointer-events-none" />
+                    <ChevronDown className="absolute right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 text-muted pointer-events-none" />
                   </div>
-                  <span className="text-xs text-gray-400">{isBn ? 'প্রতি পেজে' : 'per page'}</span>
+                  <span className="text-xs text-muted">{isBn ? 'প্রতি পেজে' : 'per page'}</span>
                 </div>
               )}
             </div>
@@ -410,24 +410,24 @@ export function ReusableTable<T>({
               <div className="relative" ref={exportRef}>
                 <button
                   onClick={() => setExportOpen(p => !p)}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-xs font-bold hover:bg-gray-50 transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-surface border border-border text-muted rounded-lg text-xs font-bold hover:bg-surface-alt transition-colors"
                 >
                   <FileDown className="w-3.5 h-3.5" />
                   {isBn ? 'এক্সপোর্ট' : 'Export'}
-                  <ChevronDown className="w-3 h-3 text-gray-400" />
+                  <ChevronDown className="w-3 h-3 text-muted" />
                 </button>
                 {exportOpen && (
-                  <div className="absolute right-0 bottom-full mb-1 w-44 bg-white border border-gray-200 rounded-lg shadow-lg z-30 overflow-hidden">
+                  <div className="absolute right-0 bottom-full mb-1 w-44 bg-surface border border-border rounded-lg shadow-lg z-30 overflow-hidden">
                     <button
                       onClick={handleExportCSV}
-                      className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                      className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm text-muted hover:bg-surface-alt transition-colors"
                     >
                       <FileText className="w-4 h-4 text-green-600" />
                       {isBn ? 'CSV হিসেবে' : 'Export as CSV'}
                     </button>
                     <button
                       onClick={handleExportExcel}
-                      className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                      className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm text-muted hover:bg-surface-alt transition-colors"
                     >
                       <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
                       {isBn ? 'Excel হিসেবে' : 'Export as Excel'}
@@ -439,18 +439,18 @@ export function ReusableTable<T>({
               {/* Page numbers */}
               {totalPages > 1 && (
                 <div className="flex items-center gap-1">
-                  <div className="w-px h-5 bg-gray-200 mr-1" />
+                  <div className="w-px h-5 bg-border mr-1" />
                   <button
                     onClick={() => onPageChange(currentPage - 1)}
                     disabled={currentPage <= 1}
-                    className="inline-flex items-center gap-1 px-2 py-1 bg-white border-2 border-gray-200 text-gray-700 rounded-lg text-xs font-bold hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    className="inline-flex items-center gap-1 px-2 py-1 bg-surface border-2 border-border text-muted rounded-lg text-xs font-bold hover:bg-surface-alt disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                   >
                     <ChevronLeft className="w-3.5 h-3.5" />
                     <span className="hidden sm:inline">{isBn ? 'আগে' : 'Prev'}</span>
                   </button>
                   {getPageNumbers().map((p, i) =>
                     p === '...' ? (
-                      <span key={i} className="px-1 text-gray-400 text-xs">…</span>
+                      <span key={i} className="px-1 text-muted text-xs">…</span>
                     ) : (
                       <button
                         key={i}
@@ -458,7 +458,7 @@ export function ReusableTable<T>({
                         className={`px-2.5 py-1 rounded-lg text-xs transition-colors ${
                           currentPage === p
                             ? 'bg-amber-600 text-white'
-                            : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50'
+                            : 'bg-surface border border-border text-muted hover:bg-surface-alt'
                         }`}
                       >
                         {n(p)}
@@ -468,7 +468,7 @@ export function ReusableTable<T>({
                   <button
                     onClick={() => onPageChange(currentPage + 1)}
                     disabled={currentPage >= totalPages}
-                    className="inline-flex items-center gap-1 px-2 py-1 bg-white border-2 border-gray-200 text-gray-700 rounded-lg text-xs font-bold hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    className="inline-flex items-center gap-1 px-2 py-1 bg-surface border-2 border-border text-muted rounded-lg text-xs font-bold hover:bg-surface-alt disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                   >
                     <span className="hidden sm:inline">{isBn ? 'পরে' : 'Next'}</span>
                     <ChevronRight className="w-3.5 h-3.5" />

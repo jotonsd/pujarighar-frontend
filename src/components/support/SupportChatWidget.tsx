@@ -61,13 +61,13 @@ function ProductResultCard({
           alt=""
           width={40}
           height={40}
-          className="w-10 h-10 rounded-lg object-cover border border-gray-100 shrink-0"
+          className="w-10 h-10 rounded-lg object-cover border border-border shrink-0"
         />
       ) : (
-        <div className="w-10 h-10 rounded-lg border border-gray-100 bg-gray-50 shrink-0" />
+        <div className="w-10 h-10 rounded-lg border border-border bg-surface-alt shrink-0" />
       )}
       <div className="flex-1 min-w-0">
-        <p className="text-xs font-medium text-gray-800 truncate">
+        <p className="text-xs font-medium text-body truncate">
           {localName(product.name_bn, product.name_en, isBn)}
         </p>
         <div className="flex items-center gap-1.5 mt-0.5">
@@ -75,7 +75,7 @@ function ProductResultCard({
             {formatAmount(product.price, locale)}
           </span>
           {product.original_price && (
-            <span className="text-[10px] text-gray-400 line-through">
+            <span className="text-[10px] text-muted line-through">
               {formatAmount(product.original_price, locale)}
             </span>
           )}
@@ -117,8 +117,8 @@ function OrderPreviewCard({
   return (
     <div className="border-t border-amber-100">
       {hasDeliveryInfo && (
-        <div className="px-3 py-2 bg-gray-50 border-b border-gray-100 text-xs text-gray-700 space-y-0.5">
-          <p className="font-semibold text-gray-800 mb-1">
+        <div className="px-3 py-2 bg-surface-alt border-b border-border text-xs text-muted space-y-0.5">
+          <p className="font-semibold text-body mb-1">
             {isBn ? "ডেলিভারি তথ্য" : "Delivery details"}
           </p>
           {order.customer_name && <p>{order.customer_name}</p>}
@@ -128,7 +128,7 @@ function OrderPreviewCard({
           )}
         </div>
       )}
-      <div className="divide-y divide-gray-50">
+      <div className="divide-y divide-border">
         {order.items.map((item, i) => (
           <div key={i} className="flex items-center gap-2.5 p-2">
             {item.image_url ? (
@@ -137,16 +137,16 @@ function OrderPreviewCard({
                 alt=""
                 width={40}
                 height={40}
-                className="w-10 h-10 rounded-lg object-cover border border-gray-100 shrink-0"
+                className="w-10 h-10 rounded-lg object-cover border border-border shrink-0"
               />
             ) : (
-              <div className="w-10 h-10 rounded-lg border border-gray-100 bg-gray-50 shrink-0" />
+              <div className="w-10 h-10 rounded-lg border border-border bg-surface-alt shrink-0" />
             )}
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-medium text-gray-800 truncate">
+              <p className="text-xs font-medium text-body truncate">
                 {localName(item.name_bn, item.name_en, isBn)}
               </p>
-              <p className="text-[11px] text-gray-400">
+              <p className="text-[11px] text-muted">
                 {item.quantity} × {formatAmount(item.unit_price, locale)}
                 {!item.in_stock && (
                   <span className="text-red-500 ml-1">{isBn ? "স্টক নেই" : "out of stock"}</span>
@@ -159,7 +159,7 @@ function OrderPreviewCard({
           </div>
         ))}
       </div>
-      <div className="px-3 py-2 bg-amber-50 text-xs text-gray-600 space-y-1">
+      <div className="px-3 py-2 bg-amber-50 text-xs text-muted space-y-1">
         <div className="flex justify-between">
           <span>{isBn ? "সাবটোটাল" : "Subtotal"}</span>
           <span>{formatAmount(order.subtotal, locale)}</span>
@@ -172,7 +172,7 @@ function OrderPreviewCard({
           <span>{isBn ? "সর্বমোট" : "Grand total"}</span>
           <span>{formatAmount(order.grand_total, locale)}</span>
         </div>
-        <p className="text-[11px] text-gray-400 pt-0.5">
+        <p className="text-[11px] text-muted pt-0.5">
           {isBn ? "পেমেন্ট: ক্যাশ অন ডেলিভারি" : "Payment: Cash on Delivery"}
         </p>
       </div>
@@ -209,7 +209,7 @@ function CandidateSelector({
   interactive: boolean;
 }) {
   return (
-    <div className="border-t border-amber-100 divide-y divide-gray-50">
+    <div className="border-t border-amber-100 divide-y divide-border">
       {candidates.map(c => (
         <button
           key={c.product_id}
@@ -224,13 +224,13 @@ function CandidateSelector({
               alt=""
               width={40}
               height={40}
-              className="w-10 h-10 rounded-lg object-cover border border-gray-100 shrink-0"
+              className="w-10 h-10 rounded-lg object-cover border border-border shrink-0"
             />
           ) : (
-            <div className="w-10 h-10 rounded-lg border border-gray-100 bg-gray-50 shrink-0" />
+            <div className="w-10 h-10 rounded-lg border border-border bg-surface-alt shrink-0" />
           )}
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-medium text-gray-800 truncate">
+            <p className="text-xs font-medium text-body truncate">
               {localName(c.name_bn, c.name_en, isBn)}
             </p>
             <p className="text-[11px] text-amber-700 font-bold">
@@ -558,10 +558,10 @@ export default function SupportChatWidget() {
 
       <div
         ref={listRef}
-        className="flex-1 overflow-y-auto px-3 py-4 space-y-3 bg-gray-50"
+        className="flex-1 overflow-y-auto px-3 py-4 space-y-3 bg-surface-alt"
       >
         {messages.length === 0 && (
-          <div className="text-center text-sm text-gray-400 mt-6 px-4">
+          <div className="text-center text-sm text-muted mt-6 px-4">
             {isBn
               ? "পণ্য, দাম, ছাড়, ডেলিভারি চার্জ, রেফারেল, ক্যাশব্যাক, যোগাযোগের তথ্য অথবা সরাসরি অর্ডার করতে যেকোনো প্রশ্ন করুন।"
               : "Ask anything about products, prices, discounts, delivery charges, referrals, cashback, how to reach us — or place an order directly."}
@@ -585,7 +585,7 @@ export default function SupportChatWidget() {
                   type="button"
                   onClick={() => sendMessage(q)}
                   disabled={isLoading}
-                  className="px-3 py-1.5 rounded-full border border-amber-200 bg-white text-amber-700 text-xs font-medium hover:bg-amber-50 transition-colors disabled:opacity-60"
+                  className="px-3 py-1.5 rounded-full border border-amber-200 bg-surface text-amber-700 text-xs font-medium hover:bg-amber-50 transition-colors disabled:opacity-60"
                 >
                   {q}
                 </button>
@@ -614,7 +614,7 @@ export default function SupportChatWidget() {
               <BrahmanAvatar size={28} />
             )}
             <div
-              className={`max-w-[75%] rounded-2xl text-sm overflow-hidden ${m.role === "user" ? "bg-amber-600 text-white whitespace-pre-wrap px-3 py-2" : "bg-white text-gray-800 border border-gray-100"}`}
+              className={`max-w-[75%] rounded-2xl text-sm overflow-hidden ${m.role === "user" ? "bg-amber-600 text-white whitespace-pre-wrap px-3 py-2" : "bg-surface text-body border border-border"}`}
             >
               {m.role === "user" ? (
                 m.text
@@ -628,7 +628,7 @@ export default function SupportChatWidget() {
                           type="button"
                           onClick={() => m.retryText && sendMessage(m.retryText)}
                           disabled={isLoading}
-                          className="mt-2 flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-amber-200 bg-white text-amber-700 text-xs font-medium hover:bg-amber-50 transition-colors disabled:opacity-60"
+                          className="mt-2 flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-amber-200 bg-surface text-amber-700 text-xs font-medium hover:bg-amber-50 transition-colors disabled:opacity-60"
                         >
                           <RefreshCw className="w-3.5 h-3.5" />
                           {isBn ? "আবার চেষ্টা করুন" : "Retry"}
@@ -638,7 +638,7 @@ export default function SupportChatWidget() {
                     )}
                   </div>
                   {!!m.products?.length && (
-                    <div className="border-t border-gray-100 divide-y divide-gray-50">
+                    <div className="border-t border-border divide-y divide-border">
                       {m.products.map((p, i) => (
                         <ProductResultCard
                           key={i}
@@ -678,7 +678,7 @@ export default function SupportChatWidget() {
         {isLoading && (
           <div className="flex items-start gap-2">
             <BrahmanAvatar size={28} />
-            <div className="bg-white border border-gray-100 rounded-2xl px-3 py-2.5 flex items-center gap-1">
+            <div className="bg-surface border border-border rounded-2xl px-3 py-2.5 flex items-center gap-1">
               <span
                 className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-bounce"
                 style={{ animationDelay: "0ms" }}
@@ -696,7 +696,7 @@ export default function SupportChatWidget() {
         )}
       </div>
 
-      <div className="flex items-end gap-2 p-3 border-t border-gray-100 shrink-0">
+      <div className="flex items-end gap-2 p-3 border-t border-border shrink-0">
         <textarea
           ref={inputRef}
           value={input}
@@ -710,7 +710,7 @@ export default function SupportChatWidget() {
           }}
           placeholder={isBn ? "টাইপ করুন..." : "Type here..."}
           rows={1}
-          className="flex-1 text-sm border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:border-amber-400 resize-none max-h-24 overflow-y-auto"
+          className="flex-1 text-sm border border-border rounded-xl px-3 py-2 focus:outline-none focus:border-amber-400 resize-none max-h-24 overflow-y-auto bg-surface"
         />
         <button
           onClick={handleSend}

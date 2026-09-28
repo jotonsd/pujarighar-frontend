@@ -49,7 +49,7 @@ export default function UserRolePanel({ user }: Props) {
         </button>
       </div>
       <div className="flex items-center justify-between">
-        <span className="text-sm text-gray-700">{user.is_active ? t('common.active') : t('common.inactive')}</span>
+        <span className="text-sm text-muted">{user.is_active ? t('common.active') : t('common.inactive')}</span>
         <button onClick={toggleActive} className={user.is_active ? 'btn-secondary text-sm' : 'btn-primary text-sm'}>
           {user.is_active ? t('common.inactive') : t('common.active')}
         </button>

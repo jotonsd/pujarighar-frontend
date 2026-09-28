@@ -31,12 +31,12 @@ export default function PageHeader({
   const resolvedBackLabel = backLabel ?? (locale === "bn" ? "পিছনে" : "Back");
 
   return (
-    <div className="bg-white rounded-lg shadow-sm px-5 py-3.5 mb-3">
+    <div className="bg-surface rounded-lg shadow-sm px-5 py-3.5 mb-3">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-lg font-bold text-gray-900">{title}</h1>
+          <h1 className="text-lg font-bold text-body">{title}</h1>
           {description && (
-            <p className="text-sm text-gray-500 mt-0.5">{description}</p>
+            <p className="text-sm text-muted mt-0.5">{description}</p>
           )}
         </div>
 
@@ -45,7 +45,7 @@ export default function PageHeader({
             <button
               type="button"
               onClick={() => (backHref ? router.push(backHref) : router.back())}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-gray-50 text-gray-600 border border-gray-200 hover:bg-gray-100 transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-surface-alt text-muted border border-border hover:bg-border transition-colors"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               {resolvedBackLabel}

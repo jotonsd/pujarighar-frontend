@@ -205,7 +205,7 @@ export default function ProductCard({
           )}
           </div>
         </div>
-        <h3 className="font-medium text-gray-800 mb-1 line-clamp-2 text-sm">
+        <h3 className="font-medium text-body mb-1 line-clamp-2 text-sm">
           {name}
         </h3>
         {/* {product.review_count > 0 && (
@@ -218,7 +218,7 @@ export default function ProductCard({
             <span className="text-xs text-gray-400">({product.review_count.toLocaleString(locale === 'bn' ? 'bn-BD' : 'en-US')})</span>
           </div>
         )} */}
-        <p className="text-xs text-gray-500 mb-2">SKU: {product.sku}</p>
+        <p className="text-xs text-muted mb-2">SKU: {product.sku}</p>
         <div className="flex items-center justify-between">
           <div>
             {product.active_discount_type && parseFloat(String(product.effective_price)) < parseFloat(String(product.unit_price)) ? (
@@ -226,7 +226,7 @@ export default function ProductCard({
                 <span className="text-amber-700 font-bold">
                   {formatAmount(product.effective_price, locale, 0)}
                 </span>
-                <span className="text-xs text-gray-500 line-through ml-1.5">
+                <span className="text-xs text-muted line-through ml-1.5">
                   {formatAmount(product.unit_price, locale, 0)}
                 </span>
               </>
@@ -236,7 +236,7 @@ export default function ProductCard({
               </span>
             )}
           </div>
-          <span className={`badge text-xs ${inStock ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+          <span className={`badge text-xs ${inStock ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"}`}>
             {locale === "bn" ? "স্টক" : "Stock"}
           </span>
         </div>
@@ -253,7 +253,7 @@ export default function ProductCard({
               >
                 −
               </button>
-              <span className="w-5 text-center text-xs font-bold text-gray-800 shrink-0">
+              <span className="w-5 text-center text-xs font-bold text-body shrink-0">
                 {formatNumber(qty, locale)}
               </span>
               <button
@@ -272,7 +272,7 @@ export default function ProductCard({
             className={`flex-1 h-6 rounded text-[10px] font-bold transition-colors ${
               inStock
                 ? "bg-amber-600 hover:bg-amber-600 active:bg-amber-700 text-white"
-                : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                : "bg-surface-alt text-muted cursor-not-allowed"
             }`}
           >
             {adding

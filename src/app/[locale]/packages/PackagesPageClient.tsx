@@ -90,7 +90,7 @@ export default function PackagesPageClient({ offerBanners }: { offerBanners?: Re
             className={`shrink-0 px-4 py-1.5 rounded-full text-sm font-medium border transition-colors ${
               selectedCategory === ""
                 ? "bg-amber-600 text-white border-amber-500"
-                : "bg-white text-gray-600 border-gray-200 hover:border-amber-400 hover:text-amber-700"
+                : "bg-surface text-muted border-border hover:border-amber-400 hover:text-amber-700"
             }`}
           >
             {isBn ? "সব" : "All"}
@@ -102,7 +102,7 @@ export default function PackagesPageClient({ offerBanners }: { offerBanners?: Re
               className={`shrink-0 px-4 py-1.5 rounded-full text-sm font-medium border transition-colors ${
                 selectedCategory === cat.id
                   ? "bg-amber-600 text-white border-amber-500"
-                  : "bg-white text-gray-600 border-gray-200 hover:border-amber-400 hover:text-amber-700"
+                  : "bg-surface text-muted border-border hover:border-amber-400 hover:text-amber-700"
               }`}
             >
               {isBn ? cat.name_bn : cat.name_en}
@@ -120,8 +120,8 @@ export default function PackagesPageClient({ offerBanners }: { offerBanners?: Re
       ) : (
         <>
           {allPackages.length === 0 && !isFetching ? (
-            <div className="text-center py-20 text-gray-400">
-              <Gift className="w-10 h-10 mx-auto mb-3 text-gray-300" />
+            <div className="text-center py-20 text-muted">
+              <Gift className="w-10 h-10 mx-auto mb-3 text-muted" />
               <p>{isBn ? "কোনো প্যাকেজ নেই" : "No packages available"}</p>
               {selectedCategory && (
                 <button

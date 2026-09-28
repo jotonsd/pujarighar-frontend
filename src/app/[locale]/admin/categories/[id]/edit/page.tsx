@@ -56,7 +56,7 @@ export default function EditCategorySeoPage({ params }: { params: { id: string }
   };
 
   if (isLoading) return <Spinner />;
-  if (!category) return <p className="text-gray-400">{isBn ? "কেটাগরি পাওয়া যায়নি" : "Category not found"}</p>;
+  if (!category) return <p className="text-muted">{isBn ? "কেটাগরি পাওয়া যায়নি" : "Category not found"}</p>;
 
   return (
     <div className="max-w-7xl">

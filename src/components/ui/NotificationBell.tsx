@@ -55,7 +55,7 @@ export default function NotificationBell({ isAdmin }: { isAdmin: boolean }) {
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen(o => !o)}
-        className="relative flex items-center justify-center text-gray-600 hover:text-amber-700 transition-colors"
+        className="relative flex items-center justify-center text-muted hover:text-amber-700 transition-colors"
         aria-label="Notifications"
       >
         <Bell className="w-5 h-5" />
@@ -69,13 +69,13 @@ export default function NotificationBell({ isAdmin }: { isAdmin: boolean }) {
       {open && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-2xl shadow-xl border border-gray-100 z-50 overflow-hidden">
+          <div className="absolute right-0 top-full mt-2 w-80 bg-surface rounded-2xl shadow-xl border border-border z-50 overflow-hidden">
             {/* Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-              <h3 className="text-sm font-bold text-gray-800">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+              <h3 className="text-sm font-bold text-body">
                 {isBn ? "নোটিফিকেশন" : "Notifications"}
                 {unread > 0 && (
-                  <span className="ml-2 bg-red-100 text-red-700 text-xs font-semibold px-1.5 py-0.5 rounded-full">
+                  <span className="ml-2 bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 text-xs font-semibold px-1.5 py-0.5 rounded-full">
                     {unread}
                   </span>
                 )}
@@ -91,9 +91,9 @@ export default function NotificationBell({ isAdmin }: { isAdmin: boolean }) {
             </div>
 
             {/* List */}
-            <div className="max-h-80 overflow-y-auto divide-y divide-gray-50">
+            <div className="max-h-80 overflow-y-auto divide-y divide-border">
               {notifications.length === 0 ? (
-                <p className="text-center text-sm text-gray-400 py-10">
+                <p className="text-center text-sm text-muted py-10">
                   {isBn ? "কোনো নোটিফিকেশন নেই" : "No notifications"}
                 </p>
               ) : (
@@ -101,24 +101,24 @@ export default function NotificationBell({ isAdmin }: { isAdmin: boolean }) {
                   <div
                     key={n.id}
                     onClick={() => !n.is_read && handleMarkOne(n.id)}
-                    className={`px-4 py-3 cursor-pointer hover:bg-gray-50 transition-colors ${!n.is_read ? "bg-amber-50/50" : ""}`}
+                    className={`px-4 py-3 cursor-pointer hover:bg-surface-alt transition-colors ${!n.is_read ? "bg-amber-50/50 dark:bg-amber-900/20" : ""}`}
                   >
                     <div className="flex items-start gap-2">
                       {!n.is_read && (
                         <span className="mt-1.5 w-2 h-2 rounded-full bg-amber-600 shrink-0" />
                       )}
                       <div className="flex-1 min-w-0" style={{ paddingLeft: n.is_read ? "10px" : "0" }}>
-                        <p className="text-xs font-semibold text-gray-800 leading-snug">
+                        <p className="text-xs font-semibold text-body leading-snug">
                           {isBn ? n.title_bn : n.title_en}
                         </p>
-                        <p className="text-xs text-gray-500 mt-0.5 leading-snug"
+                        <p className="text-xs text-muted mt-0.5 leading-snug"
                           dangerouslySetInnerHTML={{
                             __html: (isBn ? n.body_bn : n.body_en)
-                              .replace(/\*\*(.+?)\*\*/g, '<strong class="text-gray-800">$1</strong>')
+                              .replace(/\*\*(.+?)\*\*/g, '<strong class="text-body">$1</strong>')
                               .replace(/\n/g, '<br />')
                           }}
                         />
-                        <p className="text-[10px] text-gray-400 mt-1">{timeAgo(n.created_at)}</p>
+                        <p className="text-[10px] text-muted mt-1">{timeAgo(n.created_at)}</p>
                       </div>
                     </div>
                   </div>
@@ -130,7 +130,7 @@ export default function NotificationBell({ isAdmin }: { isAdmin: boolean }) {
             <Link
               href={`/${locale}/notifications`}
               onClick={() => setOpen(false)}
-              className="block text-center text-sm font-medium text-amber-700 hover:bg-amber-50 py-2.5 border-t border-gray-100 transition-colors"
+              className="block text-center text-sm font-medium text-amber-700 hover:bg-amber-50 dark:hover:bg-amber-900/20 py-2.5 border-t border-border transition-colors"
             >
               {isBn ? "সব দেখুন" : "View all"}
             </Link>

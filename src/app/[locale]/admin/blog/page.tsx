@@ -58,10 +58,10 @@ export default function BlogAdminPage() {
       accessor: post =>
         post.cover_image ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={post.cover_image} alt="" className="w-16 h-10 object-cover rounded-lg border border-gray-100" />
+          <img src={post.cover_image} alt="" className="w-16 h-10 object-cover rounded-lg border border-border" />
         ) : (
-          <div className="w-16 h-10 rounded-lg border border-gray-100 flex items-center justify-center bg-gray-50">
-            <span className="text-xs text-gray-300">—</span>
+          <div className="w-16 h-10 rounded-lg border border-border flex items-center justify-center bg-surface-alt">
+            <span className="text-xs text-muted">—</span>
           </div>
         ),
       className: "px-4 py-2 w-24",
@@ -70,15 +70,15 @@ export default function BlogAdminPage() {
       header: isBn ? "শিরোনাম" : "Title",
       accessor: post => (
         <div>
-          <p className="font-medium text-gray-800 text-sm">{isBn ? post.title_bn : post.title_en}</p>
-          <p className="text-xs text-gray-400">/{post.slug}</p>
+          <p className="font-medium text-body text-sm">{isBn ? post.title_bn : post.title_en}</p>
+          <p className="text-xs text-muted">/{post.slug}</p>
         </div>
       ),
     },
     {
       header: isBn ? "প্রকাশের তারিখ" : "Published",
       accessor: post => (
-        <span className="text-xs text-gray-500">
+        <span className="text-xs text-muted">
           {post.published_at ? new Date(post.published_at).toLocaleDateString() : "—"}
         </span>
       ),
@@ -103,13 +103,13 @@ export default function BlogAdminPage() {
       label: "Edit",
       icon: <Pencil className="w-3.5 h-3.5" />,
       onClick: post => router.push(`/${locale}/admin/blog/${post.id}/edit`),
-      className: "inline-flex items-center justify-center w-8 h-8 rounded-lg border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors",
+      className: "inline-flex items-center justify-center w-8 h-8 rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/40 transition-colors",
     },
     {
       label: "Delete",
       icon: <Trash2 className="w-3.5 h-3.5" />,
       onClick: post => setDeleteTarget(post.id),
-      className: "inline-flex items-center justify-center w-8 h-8 rounded-lg border border-red-200 bg-red-50 text-red-500 hover:bg-red-100 transition-colors",
+      className: "inline-flex items-center justify-center w-8 h-8 rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors",
     },
   ];
 

@@ -104,7 +104,7 @@ export default function PackageDetailClient({ id, offerBanners }: { id: string; 
         {/* Left — image */}
         <div>
           {pkg.images.length > 0 ? (
-            <div className="relative w-full h-80 rounded-xl overflow-hidden border border-gray-100">
+            <div className="relative w-full h-80 rounded-xl overflow-hidden border border-border">
               <Image
                 src={pkg.images[0].image}
                 alt={name}
@@ -124,10 +124,10 @@ export default function PackageDetailClient({ id, offerBanners }: { id: string; 
         {/* Right — info */}
         <div className="space-y-4">
           <div>
-            <span className="inline-block text-xs font-semibold bg-amber-100 text-amber-700 px-2.5 py-1 rounded-full mb-2">
+            <span className="inline-block text-xs font-semibold bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 px-2.5 py-1 rounded-full mb-2">
               {locale === "bn" ? "প্যাকেজ" : "Package"}
             </span>
-            <h1 className="text-2xl font-bold text-gray-800 leading-snug">
+            <h1 className="text-2xl font-bold text-body leading-snug">
               {name}
             </h1>
           </div>
@@ -138,14 +138,14 @@ export default function PackageDetailClient({ id, offerBanners }: { id: string; 
               {formatAmount(finalPrice, locale, 0)}
             </span>
             {hasDiscount && (
-              <span className="text-base text-gray-500 line-through mb-0.5">
+              <span className="text-base text-muted line-through mb-0.5">
                 {formatAmount(originalTotal, locale, 0)}
               </span>
             )}
           </div>
 
           {hasDiscount && (
-            <div className="inline-flex items-center gap-1.5 bg-green-50 text-green-700 text-sm font-bold px-3 py-1.5 rounded-lg border border-green-100">
+            <div className="inline-flex items-center gap-1.5 bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400 text-sm font-bold px-3 py-1.5 rounded-lg border border-green-100 dark:border-green-800">
               🎉{" "}
               {locale === "bn"
                 ? `${formatAmount(savings, locale, 0)} সাশ্রয়`
@@ -164,25 +164,25 @@ export default function PackageDetailClient({ id, offerBanners }: { id: string; 
 
           {/* Description */}
           {desc && (
-            <p className="text-gray-600 text-sm leading-relaxed whitespace-pre-line">{desc}</p>
+            <p className="text-muted text-sm leading-relaxed whitespace-pre-line">{desc}</p>
           )}
 
           {/* Add to cart */}
           {inStock && (
             <div className="flex items-center gap-3 pt-2">
-              <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden">
+              <div className="flex items-center border border-border rounded-lg overflow-hidden">
                 <button
                   onClick={() => setQty(Math.max(1, qty - 1))}
-                  className="px-3 py-2 hover:bg-gray-50 text-gray-600"
+                  className="px-3 py-2 hover:bg-surface-alt text-muted"
                 >
                   −
                 </button>
-                <span className="px-4 py-2 border-x border-gray-200 text-sm font-bold">
+                <span className="px-4 py-2 border-x border-border text-sm font-bold">
                   {formatNumber(qty, locale)}
                 </span>
                 <button
                   onClick={() => setQty(qty + 1)}
-                  className="px-3 py-2 hover:bg-gray-50 text-gray-600"
+                  className="px-3 py-2 hover:bg-surface-alt text-muted"
                 >
                   +
                 </button>
@@ -216,9 +216,9 @@ export default function PackageDetailClient({ id, offerBanners }: { id: string; 
       {/* Package items */}
       {pkg.package_items?.length > 0 && (
         <div className="mt-10">
-          <h2 className="text-lg font-bold text-gray-800 mb-4">
+          <h2 className="text-lg font-bold text-body mb-4">
             {locale === "bn" ? "প্যাকেজে যা আছে" : "What's in this package"}
-            <span className="ml-2 text-sm font-normal text-gray-500">
+            <span className="ml-2 text-sm font-normal text-muted">
               ({pkg.package_items.length}{" "}
               {locale === "bn" ? "টি পণ্য" : "items"})
             </span>
@@ -228,7 +228,7 @@ export default function PackageDetailClient({ id, offerBanners }: { id: string; 
             {pkg.package_items.map(item => (
               <div
                 key={item.id}
-                className="flex items-center gap-3 bg-white border border-gray-100 rounded-xl px-4 py-3 shadow-sm"
+                className="flex items-center gap-3 bg-surface border border-border rounded-xl px-4 py-3 shadow-sm"
               >
                 {item.component_image ? (
                   <Image
@@ -236,7 +236,7 @@ export default function PackageDetailClient({ id, offerBanners }: { id: string; 
                     alt=""
                     width={36}
                     height={36}
-                    className="w-9 h-9 rounded-lg object-cover border border-gray-100 shrink-0"
+                    className="w-9 h-9 rounded-lg object-cover border border-border shrink-0"
                   />
                 ) : (
                   <div className="w-9 h-9 rounded-lg bg-amber-50 flex items-center justify-center text-lg shrink-0">
@@ -244,16 +244,16 @@ export default function PackageDetailClient({ id, offerBanners }: { id: string; 
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-800 truncate">
+                  <p className="text-sm font-medium text-body truncate">
                     {locale === "bn"
                       ? item.component_name_bn
                       : item.component_name_en}
                   </p>
-                  <p className="text-xs text-gray-500 font-mono">
+                  <p className="text-xs text-muted font-mono">
                     {item.component_sku}
                   </p>
                 </div>
-                <span className="shrink-0 text-xs font-bold bg-amber-100 text-amber-700 px-2.5 py-1 rounded-full">
+                <span className="shrink-0 text-xs font-bold bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 px-2.5 py-1 rounded-full">
                   ×{formatNumber(Number(item.quantity), locale)}
                 </span>
               </div>

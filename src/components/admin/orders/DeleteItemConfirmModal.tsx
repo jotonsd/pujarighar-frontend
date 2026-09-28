@@ -12,15 +12,15 @@ export default function DeleteItemConfirmModal({
   const isBn = locale === 'bn'
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 space-y-4">
+      <div className="bg-surface rounded-2xl shadow-xl w-full max-w-sm p-6 space-y-4">
         <div className="flex items-center gap-3">
           <span className="text-3xl">⚠️</span>
-          <h2 className="text-lg font-bold text-gray-800">
+          <h2 className="text-lg font-bold text-body">
             {isBn ? 'পণ্য মুছে ফেলবেন?' : 'Remove this item?'}
           </h2>
         </div>
-        <p className="text-sm text-gray-500">
-          <strong className="text-gray-700">{productName}</strong>
+        <p className="text-sm text-muted">
+          <strong className="text-muted">{productName}</strong>
           {isBn ? ' অর্ডার থেকে মুছে ফেলা হবে। এটি পূর্বাবস্থায় ফেরানো যাবে না।' : ' will be removed from this order. This cannot be undone.'}
         </p>
         <div className="flex gap-3">

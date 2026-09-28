@@ -77,7 +77,7 @@ export default function HeroSliderClient({ slides }: { slides: HeroSlide[] }) {
                   {locale === "bn" ? slide.title_bn : slide.title_en}
                 </h1>
                 {(slide.subtitle_bn || slide.subtitle_en) && (
-                  <p className="text-gray-600 text-[11px] md:text-lg mb-5 md:mb-7 max-w-lg">
+                  <p className="text-muted text-[11px] md:text-lg mb-5 md:mb-7 max-w-lg">
                     {locale === "bn" ? slide.subtitle_bn : slide.subtitle_en}
                   </p>
                 )}

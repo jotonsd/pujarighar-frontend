@@ -105,7 +105,7 @@ export default function BrandsPage() {
 
       {showCreate && (
         <form onSubmit={handleCreate} className="card mb-4">
-          <h3 className="text-sm font-semibold text-gray-700 mb-3">
+          <h3 className="text-sm font-semibold text-muted mb-3">
             {isBn ? "নতুন ব্র্যান্ড" : "New Brand"}
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -145,25 +145,25 @@ export default function BrandsPage() {
       {isLoading ? (
         <TableSkeleton columns={4} rows={5} />
       ) : (
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+        <div className="bg-surface rounded-lg shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-amber-50 border-b border-amber-200">
+              <thead className="bg-amber-50 dark:bg-amber-900/30 border-b border-amber-200 dark:border-amber-800">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "নাম (বাংলা)" : "Name (BN)"}</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "নাম (ইংরেজি)" : "Name (EN)"}</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">Slug</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "স্ট্যাটাস" : "Status"}</th>
-                  {(isAdmin || canDelete) && <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "অ্যাকশন" : "Actions"}</th>}
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">{isBn ? "নাম (বাংলা)" : "Name (BN)"}</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">{isBn ? "নাম (ইংরেজি)" : "Name (EN)"}</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">Slug</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">{isBn ? "স্ট্যাটাস" : "Status"}</th>
+                  {(isAdmin || canDelete) && <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">{isBn ? "অ্যাকশন" : "Actions"}</th>}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-border">
                 {brands.map(brand => (
                   <>
-                    <tr key={brand.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-4 py-3 text-sm text-gray-800 font-medium">{brand.name_bn}</td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{brand.name_en}</td>
-                      <td className="px-4 py-3 font-mono text-xs text-gray-400">{brand.slug}</td>
+                    <tr key={brand.id} className="hover:bg-surface-alt transition-colors">
+                      <td className="px-4 py-3 text-sm text-body font-medium">{brand.name_bn}</td>
+                      <td className="px-4 py-3 text-sm text-muted">{brand.name_en}</td>
+                      <td className="px-4 py-3 font-mono text-xs text-muted">{brand.slug}</td>
                       <td className="px-4 py-3">
                         {isAdmin
                           ? <ToggleSwitch checked={brand.is_active} onChange={() => toggleActive(brand.id, brand.is_active)}
@@ -176,7 +176,7 @@ export default function BrandsPage() {
                             <button
                               onClick={() => editingId === brand.id ? setEditingId(null) : startEdit(brand)}
                               title={editingId === brand.id ? (isBn ? "বাতিল" : "Cancel") : (isBn ? "সম্পাদনা" : "Edit")}
-                              className={`inline-flex items-center justify-center w-8 h-8 rounded-lg border transition-colors ${editingId === brand.id ? "border-gray-200 bg-gray-100 text-gray-500 hover:bg-gray-200" : "border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100"}`}
+                              className={`inline-flex items-center justify-center w-8 h-8 rounded-lg border transition-colors ${editingId === brand.id ? "border-border bg-surface-alt text-muted hover:bg-border" : "border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/50"}`}
                             >
                               {editingId === brand.id ? <X className="w-3.5 h-3.5" /> : <Pencil className="w-3.5 h-3.5" />}
                             </button>
@@ -185,7 +185,7 @@ export default function BrandsPage() {
                             <button
                               onClick={() => handleDelete(brand.id)}
                               title={isBn ? "মুছুন" : "Delete"}
-                              className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-red-200 bg-red-50 text-red-500 hover:bg-red-100 transition-colors"
+                              className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/30 text-red-500 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
@@ -194,7 +194,7 @@ export default function BrandsPage() {
                       )}
                     </tr>
                     {editingId === brand.id && (
-                      <tr key={`edit-${brand.id}`} className="bg-amber-50">
+                      <tr key={`edit-${brand.id}`} className="bg-amber-50 dark:bg-amber-900/20">
                         <td colSpan={5} className="px-4 py-3">
                           <div className="flex items-end gap-3 flex-wrap">
                             <div className="w-48">
@@ -223,7 +223,7 @@ export default function BrandsPage() {
               </tbody>
             </table>
             {brands.length === 0 && (
-              <p className="text-center text-gray-400 py-8">
+              <p className="text-center text-muted py-8">
                 {isBn ? "কোনো ব্র্যান্ড নেই" : "No brands found"}
               </p>
             )}

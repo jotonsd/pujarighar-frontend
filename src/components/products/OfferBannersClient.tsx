@@ -77,11 +77,11 @@ export default function OfferBannersClient({ banners }: { banners: Banner[] }) {
               {banner.badge_text.replace(/\d+/g, n => formatNumber(n, locale))}
             </span>
           )}
-          <p className="font-bold text-gray-800 text-base leading-tight truncate">
+          <p className="font-bold text-body text-base leading-tight truncate">
             {title}
           </p>
           {subtitle && (
-            <p className="text-xs text-gray-500 mt-0.5 truncate">{subtitle}</p>
+            <p className="text-xs text-muted mt-0.5 truncate">{subtitle}</p>
           )}
         </div>
 

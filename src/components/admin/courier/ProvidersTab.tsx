@@ -27,9 +27,9 @@ function CopyButton({ value, isBn }: { value: string; isBn: boolean }) {
       type="button"
       onClick={handleCopy}
       title={isBn ? "কপি করুন" : "Copy"}
-      className="inline-flex items-center justify-center w-5 h-5 rounded text-gray-400 hover:text-amber-700 hover:bg-amber-100 transition-colors shrink-0"
+      className="inline-flex items-center justify-center w-5 h-5 rounded text-muted hover:text-amber-700 dark:hover:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/40 transition-colors shrink-0"
     >
-      {copied ? <Check className="w-3.5 h-3.5 text-green-600" /> : <Copy className="w-3.5 h-3.5" />}
+      {copied ? <Check className="w-3.5 h-3.5 text-green-600 dark:text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
     </button>
   );
 }
@@ -110,8 +110,8 @@ function ProviderCard({ provider, isBn, locale }: { provider: CourierProvider; i
     <div className="card space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="font-bold text-gray-800">{provider.name}</h3>
-          <p className="text-xs text-gray-500 font-mono">{provider.code} · {provider.base_url}</p>
+          <h3 className="font-bold text-body">{provider.name}</h3>
+          <p className="text-xs text-muted font-mono">{provider.code} · {provider.base_url}</p>
         </div>
         <ToggleSwitch
           checked={provider.is_active}
@@ -122,18 +122,18 @@ function ProviderCard({ provider, isBn, locale }: { provider: CourierProvider; i
       </div>
 
       {provider.is_active && !isPathao && (
-        <div className="flex items-center gap-2 text-sm bg-amber-50 rounded-lg px-3 py-2">
-          <span className="text-gray-600">{isBn ? "বর্তমান ব্যালেন্স:" : "Current balance:"}</span>
-          <span className="font-bold text-amber-700">
+        <div className="flex items-center gap-2 text-sm bg-amber-50 dark:bg-amber-900/30 rounded-lg px-3 py-2">
+          <span className="text-muted">{isBn ? "বর্তমান ব্যালেন্স:" : "Current balance:"}</span>
+          <span className="font-bold text-amber-700 dark:text-amber-400">
             {balanceLoading ? "..." : formatAmount(balance?.current_balance ?? 0, locale, 2)}
           </span>
-          <button onClick={() => refetchBalance()} className="ml-auto text-xs text-amber-700 hover:underline">
+          <button onClick={() => refetchBalance()} className="ml-auto text-xs text-amber-700 dark:text-amber-400 hover:underline">
             {isBn ? "রিফ্রেশ" : "Refresh"}
           </button>
         </div>
       )}
 
-      <div className="flex items-center gap-4 text-xs text-gray-500 flex-wrap">
+      <div className="flex items-center gap-4 text-xs text-muted flex-wrap">
         <span>{isBn ? (isPathao ? "ক্লায়েন্ট আইডি: " : "API কী: ") : (isPathao ? "Client ID: " : "API key: ")}{provider.has_api_key ? "✓" : "—"}</span>
         <span>{isBn ? (isPathao ? "ক্লায়েন্ট সিক্রেট: " : "সিক্রেট কী: ") : (isPathao ? "Client secret: " : "Secret key: ")}{provider.has_secret_key ? "✓" : "—"}</span>
         {isPathao && (
@@ -151,7 +151,7 @@ function ProviderCard({ provider, isBn, locale }: { provider: CourierProvider; i
           type="button"
           onClick={handleRegenerateSecret}
           disabled={regenerating}
-          className="text-amber-700 hover:underline disabled:opacity-50"
+          className="text-amber-700 dark:text-amber-400 hover:underline disabled:opacity-50"
         >
           {regenerating
             ? (isBn ? "তৈরি হচ্ছে..." : "Generating...")
@@ -160,19 +160,19 @@ function ProviderCard({ provider, isBn, locale }: { provider: CourierProvider; i
       </div>
 
       {revealedSecret && (
-        <div className="bg-green-50 border border-green-100 rounded-lg p-3 text-xs space-y-1">
-          <p className="font-semibold text-green-700">
+        <div className="bg-green-50 dark:bg-green-900/30 border border-green-100 dark:border-green-800 rounded-lg p-3 text-xs space-y-1">
+          <p className="font-semibold text-green-700 dark:text-green-400">
             {isPathao
               ? (isBn ? "নিচের তথ্য Pathao পোর্টালের Webhook Integration সেটিংসে যোগ করুন (Auth Token একবারই দেখানো হবে):" : "Add these to Pathao's Webhook Integration settings (Auth Token shown only once):")
               : (isBn ? "নিচের তথ্য Steadfast পোর্টালের Webhook Integration সেটিংসে \"Auth Token (Bearer)\" ফিল্ডে বসান (একবারই দেখানো হবে):" : "Paste this into Steadfast's Webhook Integration \"Auth Token (Bearer)\" field (shown only once):")}
           </p>
           <p className="flex items-center gap-1.5">
-            <span className="text-gray-500 shrink-0">Callback Url:</span>
+            <span className="text-muted shrink-0">Callback Url:</span>
             <span className="font-mono break-all">{WEBHOOK_URLS[provider.code as keyof typeof WEBHOOK_URLS] ?? WEBHOOK_URLS.STEADFAST}</span>
             <CopyButton value={WEBHOOK_URLS[provider.code as keyof typeof WEBHOOK_URLS] ?? WEBHOOK_URLS.STEADFAST} isBn={isBn} />
           </p>
           <p className="flex items-center gap-1.5">
-            <span className="text-gray-500 shrink-0">{isPathao ? "Secret:" : "Auth Token (Bearer):"}</span>
+            <span className="text-muted shrink-0">{isPathao ? "Secret:" : "Auth Token (Bearer):"}</span>
             <span className="font-mono break-all">{revealedSecret}</span>
             <CopyButton value={revealedSecret} isBn={isBn} />
           </p>
@@ -180,7 +180,7 @@ function ProviderCard({ provider, isBn, locale }: { provider: CourierProvider; i
       )}
 
       {isPathao && (
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-muted">
           {isBn
             ? "Pathao ওয়েবহুক যোগ করার সময় তাদের ড্যাশবোর্ডে যে ভেরিফিকেশন সিক্রেট দেখাবে, সেটি নিচে \"ভেরিফিকেশন সিক্রেট\" ফিল্ডে বসান — এটি ছাড়া তাদের ভেরিফিকেশন ধাপ ব্যর্থ হবে।"
             : "When adding the webhook in Pathao's dashboard, paste the verification secret it shows you into the \"Verification secret\" field below — without it, their verification step will fail."}
@@ -188,7 +188,7 @@ function ProviderCard({ provider, isBn, locale }: { provider: CourierProvider; i
       )}
 
       {editing ? (
-        <div className="space-y-3 pt-2 border-t border-gray-100">
+        <div className="space-y-3 pt-2 border-t border-border">
           <FloatingInput
             label={isPathao ? (isBn ? "ক্লায়েন্ট আইডি (নতুন হলে দিন)" : "Client ID (enter to change)") : (isBn ? "API কী (নতুন হলে দিন)" : "API Key (enter to change)")}
             type="password"
@@ -238,7 +238,7 @@ function ProviderCard({ provider, isBn, locale }: { provider: CourierProvider; i
           </div>
         </div>
       ) : (
-        <button onClick={() => setEditing(true)} className="text-sm text-amber-700 hover:underline">
+        <button onClick={() => setEditing(true)} className="text-sm text-amber-700 dark:text-amber-400 hover:underline">
           {isBn ? "কী পরিবর্তন করুন" : "Update credentials"}
         </button>
       )}
@@ -302,7 +302,7 @@ export default function ProvidersTab({ locale, isBn }: { locale: string; isBn: b
 
       {showNew && (
         <div className="card space-y-3 max-w-xl">
-          <h3 className="font-bold text-gray-800">{isBn ? "নতুন প্রোভাইডার" : "New Provider"}</h3>
+          <h3 className="font-bold text-body">{isBn ? "নতুন প্রোভাইডার" : "New Provider"}</h3>
           <FloatingSelect
             label={isBn ? "কুরিয়ার" : "Courier"}
             value={providerType}
@@ -348,9 +348,9 @@ export default function ProvidersTab({ locale, isBn }: { locale: string; isBn: b
       )}
 
       {isLoading ? (
-        <p className="text-sm text-gray-400">{isBn ? "লোড হচ্ছে..." : "Loading..."}</p>
+        <p className="text-sm text-muted">{isBn ? "লোড হচ্ছে..." : "Loading..."}</p>
       ) : providers.length === 0 && !showNew ? (
-        <p className="text-sm text-gray-400">{isBn ? "কোনো কুরিয়ার প্রোভাইডার যোগ করা হয়নি" : "No courier provider configured yet"}</p>
+        <p className="text-sm text-muted">{isBn ? "কোনো কুরিয়ার প্রোভাইডার যোগ করা হয়নি" : "No courier provider configured yet"}</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {providers.map(p => <ProviderCard key={p.id} provider={p} isBn={isBn} locale={locale} />)}

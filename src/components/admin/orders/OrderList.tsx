@@ -39,23 +39,23 @@ export default function OrderList() {
     { header: t('order.number'), accessor: o => <span className="font-mono text-sm">{o.order_number}</span>, exportValue: o => o.order_number },
     {
       header: locale === 'bn' ? 'গ্রাহক' : 'Customer',
-      accessor: o => <div><p className="text-sm font-medium text-gray-800">{localName(o.shipping_name_bn, o.shipping_name_en, locale === 'bn')}</p><p className="text-xs text-gray-400 flex items-center gap-1">{o.shipping_phone}{o.shipping_phone && <CopyButton value={o.shipping_phone} isBn={locale === 'bn'} />}</p></div>,
+      accessor: o => <div><p className="text-sm font-medium text-body">{localName(o.shipping_name_bn, o.shipping_name_en, locale === 'bn')}</p><p className="text-xs text-muted flex items-center gap-1">{o.shipping_phone}{o.shipping_phone && <CopyButton value={o.shipping_phone} isBn={locale === 'bn'} />}</p></div>,
       exportValue: o => `${o.shipping_name_en} / ${o.shipping_phone}`,
     },
     {
       header: t('order.total'),
-      accessor: o => <span className="font-bold text-amber-700">{formatAmount(o.grand_total, locale)}</span>,
+      accessor: o => <span className="font-bold text-amber-700 dark:text-amber-400">{formatAmount(o.grand_total, locale)}</span>,
       exportValue: o => o.grand_total,
     },
     {
       header: locale === 'bn' ? 'পেমেন্ট' : 'Payment',
       accessor: o => (
         <div className="space-y-1">
-          <div className="flex items-center gap-1 text-xs text-gray-500">
+          <div className="flex items-center gap-1 text-xs text-muted">
             <span>{o.payment_method === 'COD' ? '💵' : '💳'}</span>
             <span>{o.payment_method === 'COD' ? 'COD' : (locale === 'bn' ? 'অনলাইন' : 'Online')}</span>
           </div>
-          <span className={`text-xs font-medium px-1.5 py-0.5 rounded-full ${o.payment_status === 'PAID' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
+          <span className={`text-xs font-medium px-1.5 py-0.5 rounded-full ${o.payment_status === 'PAID' ? 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400' : 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400'}`}>
             {o.payment_status === 'PAID' ? (locale === 'bn' ? 'পেইড' : 'Paid') : (locale === 'bn' ? 'আনপেইড' : 'Unpaid')}
           </span>
         </div>
@@ -70,7 +70,7 @@ export default function OrderList() {
     },
     {
       header: locale === 'bn' ? 'তারিখ' : 'Date',
-      accessor: o => <span className="text-xs text-gray-500">{formatDate(o.created_at, locale)}</span>,
+      accessor: o => <span className="text-xs text-muted">{formatDate(o.created_at, locale)}</span>,
       exportValue: o => new Date(o.created_at).toLocaleDateString(),
     },
   ]
@@ -85,12 +85,12 @@ export default function OrderList() {
         actions={
           <div className="flex items-center gap-2">
             {activeCount > 0 && (
-              <button onClick={clearAll} className="flex items-center gap-1 text-xs text-red-500 hover:text-red-700">
+              <button onClick={clearAll} className="flex items-center gap-1 text-xs text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-400">
                 <X className="w-3.5 h-3.5" />{locale === 'bn' ? 'ক্লিয়ার' : 'Clear'}
               </button>
             )}
             <button onClick={() => setShowFilters(v => !v)}
-              className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-xs font-medium transition-colors ${showFilters || activeCount > 0 ? 'bg-amber-50 border-amber-400 text-amber-700' : 'bg-gray-50 border-gray-200 text-gray-600 hover:border-amber-300 hover:text-amber-700'}`}>
+              className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-xs font-medium transition-colors ${showFilters || activeCount > 0 ? 'bg-amber-50 dark:bg-amber-900/30 border-amber-400 dark:border-amber-600 text-amber-700 dark:text-amber-400' : 'bg-background border-border text-muted hover:border-amber-300 dark:hover:border-amber-700 hover:text-amber-700 dark:hover:text-amber-400'}`}>
               <Filter className="w-3.5 h-3.5" />
               {locale === 'bn' ? 'ফিল্টার' : 'Filter'}
               {activeCount > 0 && <span className="bg-amber-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center leading-none">{activeCount}</span>}
@@ -102,7 +102,7 @@ export default function OrderList() {
         <form
           onSubmit={e => { e.preventDefault(); handleSubmit() }}
           onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleSubmit() } }}
-          className="mb-5 p-4 bg-white rounded-2xl grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+          className="mb-5 p-4 bg-surface rounded-2xl grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
           <FloatingInput label={locale === 'bn' ? 'অর্ডার নম্বর' : 'Order Number'} value={draft.order_number} onChange={e => set('order_number')(e.target.value)} />
           <FloatingInput label={locale === 'bn' ? 'ফোন নম্বর' : 'Phone Number'} value={draft.phone} onChange={e => set('phone')(e.target.value)} />
           <FloatingInput label={locale === 'bn' ? 'নাম' : 'Name'} value={draft.name} onChange={e => set('name')(e.target.value)} />
@@ -130,7 +130,7 @@ export default function OrderList() {
           label: t('common.edit'),
           render: o => (
             <Link href={`/${locale}/admin/orders/${o.id}`}
-              className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-blue-200 bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
+              className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
               title={t('common.edit')}>
               <Eye className="w-3.5 h-3.5" />
             </Link>

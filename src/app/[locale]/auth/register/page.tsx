@@ -99,11 +99,11 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex bg-gray-50 lg:bg-transparent">
+    <div className="min-h-[calc(100vh-4rem)] flex bg-background lg:bg-transparent">
       {/* Left decorative panel — hidden on mobile */}
       <div className="hidden lg:flex lg:w-2/5 bg-gradient-to-br from-amber-500 to-amber-700 items-center justify-center relative overflow-hidden">
-        <div className="absolute w-72 h-72 rounded-full bg-white/10 -top-16 -left-16" />
-        <div className="absolute w-48 h-48 rounded-full bg-white/10 bottom-10 -right-10" />
+        <div className="absolute w-72 h-72 rounded-full bg-surface/10 -top-16 -left-16" />
+        <div className="absolute w-48 h-48 rounded-full bg-surface/10 bottom-10 -right-10" />
         <div className="absolute w-32 h-32 rounded-full bg-amber-400/40 top-1/2 left-1/3" />
 
         <div className="relative z-10 text-center px-10">
@@ -131,7 +131,7 @@ export default function RegisterPage() {
             ].map(item => (
               <span
                 key={item}
-                className="text-amber-50 text-sm font-medium bg-white/10 py-2 px-4 rounded-lg backdrop-blur-sm"
+                className="text-amber-50 text-sm font-medium bg-surface/10 py-2 px-4 rounded-lg backdrop-blur-sm"
               >
                 {item}
               </span>
@@ -141,8 +141,8 @@ export default function RegisterPage() {
       </div>
 
       {/* Right form panel */}
-      <div className="w-full lg:w-3/5 flex items-center justify-center px-4 py-8 sm:px-6 lg:px-12 bg-gray-50">
-        <div className="w-full max-w-md bg-white lg:bg-transparent p-6 sm:p-8 lg:p-0 rounded-2xl shadow-sm lg:shadow-none border border-gray-100 lg:border-none relative overflow-hidden">
+      <div className="w-full lg:w-3/5 flex items-center justify-center px-4 py-8 sm:px-6 lg:px-12 bg-background">
+        <div className="w-full max-w-md bg-surface lg:bg-transparent p-6 sm:p-8 lg:p-0 rounded-2xl shadow-sm lg:shadow-none border border-border lg:border-none relative overflow-hidden">
           {/* Mobile Top Accent */}
           <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-amber-500 to-amber-600 lg:hidden" />
 
@@ -160,10 +160,10 @@ export default function RegisterPage() {
           </div>
 
           <div className="mb-8 text-center lg:text-left">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-bold text-body tracking-tight">
               {isBn ? "নতুন অ্যাকাউন্ট তৈরি করুন" : "Create your account"}
             </h2>
-            <p className="text-sm text-gray-500 mt-2">
+            <p className="text-sm text-muted mt-2">
               {isBn
                 ? "নিচে আপনার তথ্য পূরণ করুন"
                 : "Fill in your details below to get started"}
@@ -187,7 +187,7 @@ export default function RegisterPage() {
               />
             </div>
 
-            <p className="text-xs text-gray-400 -mb-1">
+            <p className="text-xs text-muted -mb-1">
               {isBn ? "ইমেইল অথবা ফোন নম্বর — যেকোনো একটি দিন" : "Email or phone number — provide at least one"}
             </p>
 
@@ -242,23 +242,23 @@ export default function RegisterPage() {
           </form>
 
           <div className="mt-6 text-center text-sm">
-            <span className="text-gray-500">
+            <span className="text-muted">
               {isBn
                 ? "ইতিমধ্যে অ্যাকাউন্ট আছে?"
                 : "Already have an account?"}{" "}
             </span>
             <Link
               href={`/${locale}/auth/login`}
-              className="text-amber-700 hover:text-amber-700 font-semibold transition-colors hover:underline"
+              className="text-amber-700 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-400 font-semibold transition-colors hover:underline"
             >
               {isBn ? "লগইন করুন" : "Sign in"}
             </Link>
           </div>
 
-          <div className="mt-8 pt-5 border-t border-gray-100 lg:border-gray-200">
+          <div className="mt-8 pt-5 border-t border-border lg:border-border">
             <Link
               href={`/${locale}`}
-              className="flex items-center justify-center gap-2 text-sm font-medium text-gray-400 hover:text-gray-600 transition-colors"
+              className="flex items-center justify-center gap-2 text-sm font-medium text-muted hover:text-muted transition-colors"
             >
               <span>←</span>
               <span>{isBn ? "হোমে ফিরুন" : "Back to Home"}</span>

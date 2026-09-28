@@ -34,15 +34,15 @@ export default function SettingsTab({ isBn }: { isBn: boolean }) {
   if (loadingSettings || !settings) {
     return (
       <div className="space-y-3 max-w-lg">
-        {[1, 2].map(i => <div key={i} className="h-12 bg-gray-100 rounded-xl animate-pulse" />)}
+        {[1, 2].map(i => <div key={i} className="h-12 bg-surface-alt rounded-xl animate-pulse" />)}
       </div>
     );
   }
 
   return (
     <div className="space-y-4 max-w-lg">
-      <div className="bg-amber-50 border border-amber-100 rounded-xl p-3 text-xs text-gray-600 space-y-1.5 leading-relaxed">
-        <p className="font-semibold text-amber-700">
+      <div className="bg-amber-50 dark:bg-amber-900/30 border border-amber-100 dark:border-amber-800 rounded-xl p-3 text-xs text-muted space-y-1.5 leading-relaxed">
+        <p className="font-semibold text-amber-700 dark:text-amber-400">
           {isBn ? "BulkSMSBD থেকে সংগ্রহ করুন" : "Get these from BulkSMSBD"}
         </p>
         <p>
@@ -64,7 +64,7 @@ export default function SettingsTab({ isBn }: { isBn: boolean }) {
         onChange={f("sms_sender_id")}
         placeholder="8809XXXXXXXX"
       />
-      <p className="text-xs text-gray-400">
+      <p className="text-xs text-muted">
         {isBn
           ? "কনফিগার করা থাকলে, স্টাফ অর্ডার নিশ্চিত করলে গ্রাহককে স্বয়ংক্রিয়ভাবে একটি এসএমএস পাঠানো হবে।"
           : "Once configured, customers automatically receive an SMS when staff confirm their order."}

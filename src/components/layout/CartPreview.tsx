@@ -83,7 +83,7 @@ export default function CartPreview({ locale }: { locale: string }) {
         href={`/${locale}/cart`}
         onClick={() => setOpen(false)}
         aria-label={isBn ? "কার্ট" : "Cart"}
-        className="relative text-gray-600 hover:text-amber-700 block"
+        className="relative text-muted hover:text-amber-700 block"
       >
         <ShoppingCart className="w-5 h-5" />
         {count > 0 && (
@@ -94,13 +94,13 @@ export default function CartPreview({ locale }: { locale: string }) {
       </Link>
 
       {open && (
-        <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-80 max-w-[calc(100vw-1.5rem)] bg-white rounded-2xl shadow-xl border border-gray-100 z-50 overflow-hidden">
-          <div className="px-4 py-3 border-b border-gray-100">
-            <h3 className="text-sm font-bold text-gray-800 flex items-center gap-1.5">
+        <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-80 max-w-[calc(100vw-1.5rem)] bg-surface rounded-2xl shadow-xl border border-border z-50 overflow-hidden">
+          <div className="px-4 py-3 border-b border-border">
+            <h3 className="text-sm font-bold text-body flex items-center gap-1.5">
               <ShoppingCart className="w-4 h-4" />
               {isBn ? "আপনার কার্ট" : "Your Cart"}
               {count > 0 && (
-                <span className="ml-auto bg-amber-100 text-amber-700 text-xs font-semibold px-1.5 py-0.5 rounded-full">
+                <span className="ml-auto bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-xs font-semibold px-1.5 py-0.5 rounded-full">
                   {formatNumber(count, locale)}
                 </span>
               )}
@@ -108,23 +108,23 @@ export default function CartPreview({ locale }: { locale: string }) {
           </div>
 
           {items.length === 0 ? (
-            <p className="text-center text-sm text-gray-400 py-10">
+            <p className="text-center text-sm text-muted py-10">
               {isBn ? "কার্ট খালি" : "Your cart is empty"}
             </p>
           ) : (
             <>
-              <div className="max-h-72 overflow-y-auto divide-y divide-gray-50">
+              <div className="max-h-72 overflow-y-auto divide-y divide-border">
                 {items.map(item => (
                   <div key={item.id} className="flex items-center gap-2.5 px-4 py-2.5">
                     {item.image ? (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={item.image} alt="" className="w-11 h-11 object-cover rounded-lg border border-gray-100 shrink-0" />
+                      <img src={item.image} alt="" className="w-11 h-11 object-cover rounded-lg border border-border shrink-0" />
                     ) : (
-                      <div className="w-11 h-11 rounded-lg border border-gray-100 bg-amber-50 flex items-center justify-center text-lg shrink-0">🪔</div>
+                      <div className="w-11 h-11 rounded-lg border border-border bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center text-lg shrink-0">🪔</div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs font-medium text-gray-800 truncate">{item.name}</p>
-                      <p className="text-[11px] text-gray-400">
+                      <p className="text-xs font-medium text-body truncate">{item.name}</p>
+                      <p className="text-[11px] text-muted">
                         {formatNumber(item.quantity, locale)} × {formatAmount(item.unitPrice, locale, 0)}
                       </p>
                     </div>
@@ -135,8 +135,8 @@ export default function CartPreview({ locale }: { locale: string }) {
                 ))}
               </div>
 
-              <div className="px-4 py-3 border-t border-gray-100 space-y-2.5">
-                <div className="flex justify-between text-sm font-bold text-gray-800">
+              <div className="px-4 py-3 border-t border-border space-y-2.5">
+                <div className="flex justify-between text-sm font-bold text-body">
                   <span>{isBn ? "সাবটোটাল" : "Subtotal"}</span>
                   <span className="text-amber-700">{formatAmount(subtotal, locale, 0)}</span>
                 </div>

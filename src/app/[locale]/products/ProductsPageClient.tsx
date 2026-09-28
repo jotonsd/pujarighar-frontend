@@ -32,11 +32,11 @@ function CollapsibleSection({
         onClick={onToggle}
         className="flex items-center justify-between w-full group"
       >
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+        <p className="text-xs font-semibold text-muted uppercase tracking-wider">
           {label}
         </p>
         <ChevronDown
-          className={`w-3.5 h-3.5 text-gray-400 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+          className={`w-3.5 h-3.5 text-muted transition-transform duration-200 ${open ? "rotate-180" : ""}`}
         />
       </button>
       {open && <div className="mt-3">{children}</div>}
@@ -80,9 +80,9 @@ function PriceRangeInputs({
           placeholder={isBn ? "সর্বনিম্ন" : "Min"}
           onChange={e => setLocalMin(e.target.value === "" ? "" : Number(e.target.value))}
           onKeyDown={e => e.key === "Enter" && apply()}
-          className="w-full border border-gray-200 rounded-lg px-2.5 py-2 text-sm text-gray-700 focus:outline-none focus:ring-1 focus:ring-amber-400"
+          className="w-full border border-border rounded-lg px-2.5 py-2 text-sm text-muted focus:outline-none focus:ring-1 focus:ring-amber-400"
         />
-        <span className="text-gray-400 shrink-0">—</span>
+        <span className="text-muted shrink-0">—</span>
         <input
           type="number"
           min={0}
@@ -90,7 +90,7 @@ function PriceRangeInputs({
           placeholder={isBn ? "সর্বোচ্চ" : "Max"}
           onChange={e => setLocalMax(e.target.value === "" ? "" : Number(e.target.value))}
           onKeyDown={e => e.key === "Enter" && apply()}
-          className="w-full border border-gray-200 rounded-lg px-2.5 py-2 text-sm text-gray-700 focus:outline-none focus:ring-1 focus:ring-amber-400"
+          className="w-full border border-border rounded-lg px-2.5 py-2 text-sm text-muted focus:outline-none focus:ring-1 focus:ring-amber-400"
         />
       </div>
       <button
@@ -119,7 +119,7 @@ function PriceRangeSlider({
   return (
     <div>
       <div className="relative h-5 flex items-center">
-        <div className="absolute w-full h-1.5 bg-gray-200 rounded-full" />
+        <div className="absolute w-full h-1.5 bg-border rounded-full" />
         <div
           className="absolute h-1.5 bg-amber-400 rounded-full"
           style={{ left: `${minPct}%`, right: `${100 - maxPct}%` }}
@@ -382,7 +382,7 @@ export default function ProductsPageClient({
   const FilterPanel = () => (
     <div className="space-y-6">
       <div>
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+        <p className="text-xs font-semibold text-muted uppercase tracking-wider mb-3">
           {locale === "bn" ? "পণ্য খুঁজুন" : "Search"}
         </p>
         <FloatingInput
@@ -405,7 +405,7 @@ export default function ProductsPageClient({
         />
       </div>
       <div>
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+        <p className="text-xs font-semibold text-muted uppercase tracking-wider mb-3">
           {locale === "bn" ? "ট্যাগ" : "Tags"}
         </p>
         <div className="space-y-0.5">
@@ -421,14 +421,14 @@ export default function ProductsPageClient({
         {selectedBadges.length > 0 && (
           <button
             onClick={() => { setSelectedBadges([]); setPage(1); setAllProducts([]); }}
-            className="mt-2 text-xs text-amber-700 hover:underline"
+            className="mt-2 text-xs text-amber-700 dark:text-amber-400 hover:underline"
           >
             {locale === "bn" ? "বাতিল করুন" : "Clear"}
           </button>
         )}
       </div>
       <div>
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+        <p className="text-xs font-semibold text-muted uppercase tracking-wider mb-3">
           {locale === "bn" ? "সাজানো" : "Sort"}
         </p>
         <div className="space-y-2">
@@ -448,7 +448,7 @@ export default function ProductsPageClient({
                 onChange={() => { setSortOrder(opt.value); setPage(1); setAllProducts([]); }}
                 className="w-4 h-4 accent-amber-500 cursor-pointer"
               />
-              <span className="text-sm text-gray-700 group-hover:text-gray-900 flex items-center gap-1.5">
+              <span className="text-sm text-muted group-hover:text-body flex items-center gap-1.5">
                 {locale === "bn" ? opt.bn : opt.en}
                 {opt.value === "newest" && (
                   <span className="relative inline-flex w-3 h-3">
@@ -462,7 +462,7 @@ export default function ProductsPageClient({
           {sortOrder && (
             <button
               onClick={() => { setSortOrder(""); setPage(1); setAllProducts([]); }}
-              className="text-xs text-amber-700 hover:underline mt-1"
+              className="text-xs text-amber-700 dark:text-amber-400 hover:underline mt-1"
             >
               {locale === "bn" ? "বাতিল করুন" : "Clear"}
             </button>
@@ -470,7 +470,7 @@ export default function ProductsPageClient({
         </div>
       </div>
       <div>
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+        <p className="text-xs font-semibold text-muted uppercase tracking-wider mb-3">
           {locale === "bn" ? "মূল্য পরিসর" : "Price Range"}
         </p>
         <PriceRangeInputs
@@ -506,7 +506,7 @@ export default function ProductsPageClient({
         {categories.length > 0 && (
           <button
             onClick={() => { setCategories([]); setPage(1); setAllProducts([]); }}
-            className="mt-2 text-xs text-amber-700 hover:underline"
+            className="mt-2 text-xs text-amber-700 dark:text-amber-400 hover:underline"
           >
             {locale === "bn"
               ? `${categories.length}টি নির্বাচিত — মুছুন`
@@ -539,7 +539,7 @@ export default function ProductsPageClient({
           {selectedBrands.length > 0 && (
             <button
               onClick={() => { setSelectedBrands([]); setPage(1); setAllProducts([]); }}
-              className="mt-2 text-xs text-amber-700 hover:underline"
+              className="mt-2 text-xs text-amber-700 dark:text-amber-400 hover:underline"
             >
               {locale === "bn"
                 ? `${selectedBrands.length}টি নির্বাচিত — মুছুন`
@@ -551,7 +551,7 @@ export default function ProductsPageClient({
       {hasFilter && (
         <button
           onClick={resetFilters}
-          className="w-full flex items-center justify-center gap-2 py-2 text-sm text-red-500 hover:bg-red-50 rounded-lg border border-amber-100 transition-colors"
+          className="w-full flex items-center justify-center gap-2 py-2 text-sm text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg border border-amber-100 dark:border-amber-900 transition-colors"
         >
           <X className="w-3.5 h-3.5" />
           {locale === "bn" ? "ফিল্টার মুছুন" : "Clear Filters"}
@@ -568,14 +568,14 @@ export default function ProductsPageClient({
       >
         <SlidersHorizontal className="w-4 h-4" />
         {locale === "bn" ? "ফিল্টার" : "Filters"}
-        {hasFilter && <span className="w-2 h-2 rounded-full bg-white" />}
+        {hasFilter && <span className="w-2 h-2 rounded-full bg-surface" />}
       </button>
 
       {offerBanners}
 
       <div className="flex gap-3">
         <aside className="hidden lg:block w-56 shrink-0">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto overscroll-contain scrollbar-hide">
+          <div className="bg-surface rounded-xl shadow-sm border border-border p-5 sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto overscroll-contain scrollbar-hide">
             {isLoading && allProducts.length === 0 ? <FilterPanelSkeleton /> : <FilterPanel />}
           </div>
         </aside>
@@ -598,14 +598,14 @@ export default function ProductsPageClient({
                 document.addEventListener("click", suppressNextClick, { capture: true, once: true });
               }}
             />
-            <div className="fixed inset-y-0 left-0 w-72 bg-white z-50 lg:hidden overflow-y-auto overscroll-contain shadow-xl">
-              <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-                <span className="font-semibold text-gray-800">
+            <div className="fixed inset-y-0 left-0 w-72 bg-surface z-50 lg:hidden overflow-y-auto overscroll-contain shadow-xl">
+              <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+                <span className="font-semibold text-body">
                   {locale === "bn" ? "ফিল্টার" : "Filters"}
                 </span>
                 <button
                   onClick={() => setSidebarOpen(false)}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-muted hover:text-muted"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -644,13 +644,13 @@ export default function ProductsPageClient({
               </div>
 
               {!allProducts.length && !isFetching && (
-                <div className="text-center py-16 text-gray-400">
-                  <PackageSearch className="w-10 h-10 mx-auto mb-4 text-gray-300" />
+                <div className="text-center py-16 text-muted">
+                  <PackageSearch className="w-10 h-10 mx-auto mb-4 text-muted" />
                   <p>{locale === "bn" ? "কোনো পণ্য পাওয়া যায়নি" : "No products found"}</p>
                   {hasFilter && (
                     <button
                       onClick={resetFilters}
-                      className="mt-3 text-amber-700 hover:underline text-sm"
+                      className="mt-3 text-amber-700 dark:text-amber-400 hover:underline text-sm"
                     >
                       {locale === "bn" ? "ফিল্টার মুছুন" : "Clear filters"}
                     </button>

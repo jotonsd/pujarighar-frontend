@@ -19,23 +19,23 @@ export default function PaymentsTab({ isBn }: { isBn: boolean }) {
   const { data, isLoading, isError } = useGetCourierPaymentsQuery(activeProvider?.id ?? 0, { skip: !activeProvider });
 
   if (!activeProvider) {
-    return <p className="text-sm text-gray-400">{isBn ? "প্রথমে একটি সক্রিয় প্রোভাইডার যোগ করুন" : "Add an active provider first"}</p>;
+    return <p className="text-sm text-muted">{isBn ? "প্রথমে একটি সক্রিয় প্রোভাইডার যোগ করুন" : "Add an active provider first"}</p>;
   }
-  if (isLoading) return <p className="text-sm text-gray-400">{isBn ? "লোড হচ্ছে..." : "Loading..."}</p>;
-  if (isError) return <p className="text-sm text-red-500">{isBn ? "পেমেন্ট আনতে ব্যর্থ হয়েছে" : "Failed to load payments"}</p>;
+  if (isLoading) return <p className="text-sm text-muted">{isBn ? "লোড হচ্ছে..." : "Loading..."}</p>;
+  if (isError) return <p className="text-sm text-red-500 dark:text-red-400">{isBn ? "পেমেন্ট আনতে ব্যর্থ হয়েছে" : "Failed to load payments"}</p>;
 
   const rows = normalizeRows(data);
-  if (rows.length === 0) return <p className="text-sm text-gray-400">{isBn ? "কোনো পেমেন্ট নেই" : "No payments yet"}</p>;
+  if (rows.length === 0) return <p className="text-sm text-muted">{isBn ? "কোনো পেমেন্ট নেই" : "No payments yet"}</p>;
 
   const columns = Object.keys(rows[0]);
 
   return (
     <div className="card p-0 overflow-hidden overflow-x-auto">
       <table className="w-full text-sm">
-        <thead className="bg-amber-50 border-b border-amber-200">
+        <thead className="bg-amber-50 dark:bg-amber-900/30 border-b border-amber-200 dark:border-amber-800">
           <tr>
             {columns.map(col => (
-              <th key={col} className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider whitespace-nowrap">
+              <th key={col} className="px-4 py-3 text-left text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider whitespace-nowrap">
                 {col.replace(/_/g, " ")}
               </th>
             ))}
@@ -43,9 +43,9 @@ export default function PaymentsTab({ isBn }: { isBn: boolean }) {
         </thead>
         <tbody className="divide-y divide-gray-100">
           {rows.map((row, i) => (
-            <tr key={i} className="hover:bg-gray-50 transition-colors">
+            <tr key={i} className="hover:bg-surface-alt transition-colors">
               {columns.map(col => (
-                <td key={col} className="px-4 py-3 text-xs text-gray-700 whitespace-nowrap">
+                <td key={col} className="px-4 py-3 text-xs text-muted whitespace-nowrap">
                   {String(row[col] ?? "—")}
                 </td>
               ))}

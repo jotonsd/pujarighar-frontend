@@ -23,7 +23,7 @@ export default function InventoryPage() {
         {selected ? (
           <StockAdjustPanel product={selected} />
         ) : (
-          <div className="card flex items-center justify-center text-gray-400">
+          <div className="card flex items-center justify-center text-muted">
             {locale === "bn" ? "একটি পণ্য নির্বাচন করুন" : "Select a product"}
           </div>
         )}

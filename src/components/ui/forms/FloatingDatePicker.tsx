@@ -214,9 +214,9 @@ const FloatingDatePicker = forwardRef<HTMLDivElement, FloatingDatePickerProps>(
             onClick={() => !disabledStatus && handleDateClick(day)}
             disabled={disabledStatus}
             className={`h-10 rounded-lg text-sm font-semibold transition-all
-              ${disabledStatus ? 'text-gray-300 cursor-not-allowed' : 'cursor-pointer'}
+              ${disabledStatus ? 'text-muted cursor-not-allowed' : 'cursor-pointer'}
               ${selected ? 'bg-amber-600 text-white hover:bg-amber-700' : ''}
-              ${!selected && !disabledStatus ? 'text-gray-700 hover:bg-gray-100' : ''}
+              ${!selected && !disabledStatus ? 'text-muted hover:bg-surface-alt' : ''}
               ${isToday && !selected ? 'ring-2 ring-amber-400 ring-inset' : ''}`}
           >
             {day}
@@ -233,7 +233,7 @@ const FloatingDatePicker = forwardRef<HTMLDivElement, FloatingDatePickerProps>(
       return years
     }
 
-    const chevronSelectClass = `appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2210%22%20height%3D%226%22%20viewBox%3D%220%200%2010%206%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M1%201L5%205L9%201%22%20stroke%3D%22%234B5563%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%3C/svg%3E')] bg-[length:10px_6px] bg-[right_8px_center] bg-no-repeat pr-7 pl-3 py-1.5 border border-gray-300 rounded-lg text-sm font-semibold text-gray-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white cursor-pointer`
+    const chevronSelectClass = `appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2210%22%20height%3D%226%22%20viewBox%3D%220%200%2010%206%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M1%201L5%205L9%201%22%20stroke%3D%22%234B5563%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%3C/svg%3E')] bg-[length:10px_6px] bg-[right_8px_center] bg-no-repeat pr-7 pl-3 py-1.5 border border-border rounded-lg text-sm font-semibold text-body focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-surface cursor-pointer`
 
     return (
       <div className="relative" ref={containerRef}>
@@ -256,15 +256,15 @@ const FloatingDatePicker = forwardRef<HTMLDivElement, FloatingDatePickerProps>(
             data-lpignore="true"
             data-1p-ignore
             name={`${inputId}-no-autofill`}
-            className={`block px-2.5 pb-2 pt-3 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-0 focus:border-amber-600 peer cursor-pointer ${
+            className={`block px-2.5 pb-2 pt-3 w-full text-sm text-body bg-surface rounded-lg border border-border focus:outline-none focus:ring-0 focus:border-amber-600 peer cursor-pointer ${
               error ? 'border-red-500' : ''
             } ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}
           />
 
           <label
             htmlFor={inputId}
-            className={`absolute text-sm duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 pointer-events-none peer-focus:px-2 peer-focus:text-amber-700 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 start-1 ${
-              error ? 'text-red-500' : 'text-gray-500'
+            className={`absolute text-sm duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-surface px-2 pointer-events-none peer-focus:px-2 peer-focus:text-amber-700 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 start-1 ${
+              error ? 'text-red-500' : 'text-muted'
             }`}
           >
             {label}
@@ -275,7 +275,7 @@ const FloatingDatePicker = forwardRef<HTMLDivElement, FloatingDatePickerProps>(
               type="button"
               tabIndex={-1}
               onClick={e => { e.stopPropagation(); onChange?.(''); setIsOpen(false) }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-body transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
@@ -285,7 +285,7 @@ const FloatingDatePicker = forwardRef<HTMLDivElement, FloatingDatePickerProps>(
               tabIndex={-1}
               onClick={e => { e.stopPropagation(); if (!disabled) setIsOpen(!isOpen) }}
               disabled={disabled}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-body transition-colors"
             >
               <Calendar className="w-4 h-4" />
             </button>
@@ -299,7 +299,7 @@ const FloatingDatePicker = forwardRef<HTMLDivElement, FloatingDatePickerProps>(
           createPortal(
             <div
               ref={dropdownRef}
-              className="fixed bg-white rounded-xl shadow-2xl border border-gray-200 z-[1002] p-4 overflow-hidden"
+              className="fixed bg-surface rounded-xl shadow-2xl border border-border z-[1002] p-4 overflow-hidden"
               style={{
                 top: `${dropdownPosition.top}px`,
                 left: `${dropdownPosition.left}px`,
@@ -310,9 +310,9 @@ const FloatingDatePicker = forwardRef<HTMLDivElement, FloatingDatePickerProps>(
                 <button
                   type="button"
                   onClick={handlePrevMonth}
-                  className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
+                  className="p-1.5 hover:bg-surface-alt rounded-lg transition-colors"
                 >
-                  <ChevronLeft className="w-5 h-5 text-gray-600" />
+                  <ChevronLeft className="w-5 h-5 text-muted" />
                 </button>
 
                 <div className="flex items-center gap-1.5 flex-1 justify-center px-1">
@@ -340,15 +340,15 @@ const FloatingDatePicker = forwardRef<HTMLDivElement, FloatingDatePickerProps>(
                 <button
                   type="button"
                   onClick={handleNextMonth}
-                  className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
+                  className="p-1.5 hover:bg-surface-alt rounded-lg transition-colors"
                 >
-                  <ChevronRight className="w-5 h-5 text-gray-600" />
+                  <ChevronRight className="w-5 h-5 text-muted" />
                 </button>
               </div>
 
               <div className="grid grid-cols-7 gap-1 mb-2">
                 {dayNames.map(day => (
-                  <div key={day} className="text-center text-xs font-semibold text-gray-500 h-8 flex items-center justify-center">
+                  <div key={day} className="text-center text-xs font-semibold text-muted h-8 flex items-center justify-center">
                     {day}
                   </div>
                 ))}
@@ -357,13 +357,13 @@ const FloatingDatePicker = forwardRef<HTMLDivElement, FloatingDatePickerProps>(
               <div className="grid grid-cols-7 gap-1">{renderCalendar()}</div>
 
               {showTimePicker && (
-                <div className="mt-3 pt-3 border-t border-gray-100 flex items-center gap-3">
-                  <span className="text-xs font-semibold text-gray-500 whitespace-nowrap">Time</span>
+                <div className="mt-3 pt-3 border-t border-border flex items-center gap-3">
+                  <span className="text-xs font-semibold text-muted whitespace-nowrap">Time</span>
                   <input
                     type="time"
                     value={timeValue}
                     onChange={handleTimeChange}
-                    className="flex-1 px-3 py-1.5 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                    className="flex-1 px-3 py-1.5 border border-border rounded-lg text-sm text-body focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                   />
                   <button
                     type="button"

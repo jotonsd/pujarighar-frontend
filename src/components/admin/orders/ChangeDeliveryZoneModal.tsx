@@ -32,12 +32,12 @@ export default function ChangeDeliveryZoneModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 space-y-4">
+      <div className="bg-surface rounded-2xl shadow-xl w-full max-w-sm p-6 space-y-4">
         <div>
-          <h2 className="text-lg font-bold text-gray-800">
+          <h2 className="text-lg font-bold text-body">
             {isBn ? 'ডেলিভারি অঞ্চল পরিবর্তন' : 'Change Delivery Zone'}
           </h2>
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-muted mt-1">
             {isBn
               ? `অর্ডার ${orderNumber} — ডেলিভারি চার্জ ও মোট টাকা নতুন অঞ্চল অনুযায়ী আপডেট হবে।`
               : `Order ${orderNumber} — the delivery charge and total will be recalculated for the new zone.`}
@@ -52,8 +52,8 @@ export default function ChangeDeliveryZoneModal({
               onClick={() => setZone(o.value)}
               className={`w-full flex items-center justify-between rounded-xl border px-4 py-3 text-sm transition-colors ${
                 zone === o.value
-                  ? 'border-amber-500 bg-amber-50 text-amber-800 font-semibold'
-                  : 'border-gray-200 text-gray-700 hover:bg-gray-50'
+                  ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/30 text-amber-800 dark:text-amber-400 font-semibold'
+                  : 'border-border text-muted hover:bg-surface-alt'
               }`}
             >
               <span>{o.label}</span>

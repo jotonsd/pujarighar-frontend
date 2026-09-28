@@ -81,38 +81,38 @@ function BulkProductPicker({
       </div>
 
       {selected.size > 0 && (
-        <div className="flex items-center justify-between px-3 py-2 bg-amber-50 border border-amber-100 rounded-lg text-xs">
-          <span className="text-amber-700 font-semibold">
+        <div className="flex items-center justify-between px-3 py-2 bg-amber-50 dark:bg-amber-900/30 border border-amber-100 dark:border-amber-800 rounded-lg text-xs">
+          <span className="text-amber-700 dark:text-amber-400 font-semibold">
             {isBn ? `${selected.size}টি পণ্য নির্বাচিত` : `${selected.size} product(s) selected`}
           </span>
-          <button type="button" onClick={onClear} className="text-gray-400 hover:text-red-600 inline-flex items-center gap-1">
+          <button type="button" onClick={onClear} className="text-muted hover:text-red-600 dark:hover:text-red-400 inline-flex items-center gap-1">
             <X className="w-3 h-3" /> {isBn ? 'মুছুন' : 'Clear'}
           </button>
         </div>
       )}
 
-      <div className="border border-gray-100 rounded-lg max-h-64 overflow-y-auto divide-y divide-gray-50">
+      <div className="border border-border rounded-lg max-h-64 overflow-y-auto divide-y divide-gray-50">
         {isLoading ? (
-          <p className="text-center text-xs text-gray-400 py-6">{isBn ? 'লোড হচ্ছে...' : 'Loading...'}</p>
+          <p className="text-center text-xs text-muted py-6">{isBn ? 'লোড হচ্ছে...' : 'Loading...'}</p>
         ) : products?.data?.length ? (
           products.data.map(p => (
-            <label key={p.id} className="flex items-center gap-2.5 px-3 py-2 cursor-pointer hover:bg-gray-50">
+            <label key={p.id} className="flex items-center gap-2.5 px-3 py-2 cursor-pointer hover:bg-surface-alt">
               <Checkbox checked={selected.has(p.id)} onChange={() => onToggle(p.id)} label="" />
               {p.images?.[0]?.image ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={p.images[0].image} alt="" className="w-8 h-8 rounded-md object-cover border border-gray-100 shrink-0" />
+                <img src={p.images[0].image} alt="" className="w-8 h-8 rounded-md object-cover border border-border shrink-0" />
               ) : (
-                <div className="w-8 h-8 rounded-md border border-gray-100 bg-gray-50 shrink-0" />
+                <div className="w-8 h-8 rounded-md border border-border bg-background shrink-0" />
               )}
               <div className="flex-1 min-w-0">
-                <div className="truncate text-sm text-gray-700">{isBn ? p.name_bn : p.name_en}</div>
-                <div className="text-[11px] text-gray-400 font-mono">{p.sku}</div>
+                <div className="truncate text-sm text-muted">{isBn ? p.name_bn : p.name_en}</div>
+                <div className="text-[11px] text-muted font-mono">{p.sku}</div>
               </div>
-              <div className="text-xs font-semibold text-gray-600 shrink-0">{formatAmount(p.unit_price, locale)}</div>
+              <div className="text-xs font-semibold text-muted shrink-0">{formatAmount(p.unit_price, locale)}</div>
             </label>
           ))
         ) : (
-          <p className="text-center text-xs text-gray-400 py-6">{isBn ? 'কোনো পণ্য পাওয়া যায়নি' : 'No products found'}</p>
+          <p className="text-center text-xs text-muted py-6">{isBn ? 'কোনো পণ্য পাওয়া যায়নি' : 'No products found'}</p>
         )}
       </div>
 
@@ -208,19 +208,19 @@ export default function DiscountForm() {
   return (
     <div className="card space-y-3">
       <div className="flex items-center justify-between">
-        <h3 className="font-semibold text-gray-700">{isBn ? 'নতুন ডিসকাউন্ট' : 'New Discount'}</h3>
-        <div className="inline-flex rounded-lg border border-gray-200 p-0.5">
+        <h3 className="font-semibold text-muted">{isBn ? 'নতুন ডিসকাউন্ট' : 'New Discount'}</h3>
+        <div className="inline-flex rounded-lg border border-border p-0.5">
           <button
             type="button"
             onClick={() => setMode('single')}
-            className={`px-2.5 py-1 text-xs rounded-md transition-colors ${mode === 'single' ? 'bg-amber-50 text-amber-700 font-medium' : 'text-gray-500 hover:text-gray-700'}`}
+            className={`px-2.5 py-1 text-xs rounded-md transition-colors ${mode === 'single' ? 'bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 font-medium' : 'text-muted hover:text-muted'}`}
           >
             {isBn ? 'একক' : 'Single'}
           </button>
           <button
             type="button"
             onClick={() => setMode('bulk')}
-            className={`px-2.5 py-1 text-xs rounded-md transition-colors ${mode === 'bulk' ? 'bg-amber-50 text-amber-700 font-medium' : 'text-gray-500 hover:text-gray-700'}`}
+            className={`px-2.5 py-1 text-xs rounded-md transition-colors ${mode === 'bulk' ? 'bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 font-medium' : 'text-muted hover:text-muted'}`}
           >
             {isBn ? 'বাল্ক' : 'Bulk'}
           </button>
@@ -243,31 +243,31 @@ export default function DiscountForm() {
             />
 
             {selectedProduct && (
-              <div className="px-3 py-2 bg-gray-50 rounded-lg text-xs space-y-2">
+              <div className="px-3 py-2 bg-background rounded-lg text-xs space-y-2">
                 <div className="flex items-center gap-4">
                   <div>
-                    <p className="text-gray-400">{isBn ? 'ক্রয় মূল্য' : 'Purchase Price'}</p>
-                    <p className="font-semibold text-gray-700">{formatAmount(selectedProduct.cost_price, locale, 2)}</p>
+                    <p className="text-muted">{isBn ? 'ক্রয় মূল্য' : 'Purchase Price'}</p>
+                    <p className="font-semibold text-muted">{formatAmount(selectedProduct.cost_price, locale, 2)}</p>
                   </div>
                   <div>
-                    <p className="text-gray-400">{isBn ? 'বিক্রয় মূল্য' : 'Selling Price'}</p>
-                    <p className="font-semibold text-gray-700">{formatAmount(selectedProduct.unit_price, locale, 2)}</p>
+                    <p className="text-muted">{isBn ? 'বিক্রয় মূল্য' : 'Selling Price'}</p>
+                    <p className="font-semibold text-muted">{formatAmount(selectedProduct.unit_price, locale, 2)}</p>
                   </div>
                 </div>
 
                 {selectedProduct.active_discount_type && (
-                  <div className="flex items-center gap-4 pt-2 border-t border-gray-200">
+                  <div className="flex items-center gap-4 pt-2 border-t border-border">
                     <div>
-                      <p className="text-gray-400">{isBn ? 'বিদ্যমান ছাড়' : 'Existing Discount'}</p>
-                      <p className="font-semibold text-amber-700">
+                      <p className="text-muted">{isBn ? 'বিদ্যমান ছাড়' : 'Existing Discount'}</p>
+                      <p className="font-semibold text-amber-700 dark:text-amber-400">
                         {selectedProduct.active_discount_type === 'PERCENTAGE'
                           ? `${selectedProduct.active_discount_value}%`
                           : formatAmount(selectedProduct.active_discount_value ?? '0', locale, 2)}
                       </p>
                     </div>
                     <div>
-                      <p className="text-gray-400">{isBn ? 'বর্তমান মূল্য' : 'Current Price'}</p>
-                      <p className="font-semibold text-gray-700">{formatAmount(selectedProduct.effective_price, locale, 2)}</p>
+                      <p className="text-muted">{isBn ? 'বর্তমান মূল্য' : 'Current Price'}</p>
+                      <p className="font-semibold text-muted">{formatAmount(selectedProduct.effective_price, locale, 2)}</p>
                     </div>
                   </div>
                 )}
@@ -305,11 +305,11 @@ export default function DiscountForm() {
         />
 
         {mode === 'single' && selectedProduct && newPrice !== null && parseFloat(form.discount_value || '0') > 0 && (
-          <div className="flex items-center justify-between px-3 py-2 bg-green-50 border border-green-100 rounded-lg text-xs">
-            <span className="text-green-600">{isBn ? 'নতুন মূল্য হবে' : 'New price will be'}</span>
+          <div className="flex items-center justify-between px-3 py-2 bg-green-50 dark:bg-green-900/30 border border-green-100 dark:border-green-800 rounded-lg text-xs">
+            <span className="text-green-600 dark:text-green-400">{isBn ? 'নতুন মূল্য হবে' : 'New price will be'}</span>
             <span className="flex items-baseline gap-1.5">
-              <span className="font-bold text-green-700">{formatAmount(newPrice, locale, 2)}</span>
-              <span className="text-gray-400 line-through">{formatAmount(selectedProduct.unit_price, locale, 2)}</span>
+              <span className="font-bold text-green-700 dark:text-green-400">{formatAmount(newPrice, locale, 2)}</span>
+              <span className="text-muted line-through">{formatAmount(selectedProduct.unit_price, locale, 2)}</span>
             </span>
           </div>
         )}

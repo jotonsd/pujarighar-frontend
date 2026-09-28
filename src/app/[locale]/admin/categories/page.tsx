@@ -67,27 +67,27 @@ export default function CategoriesPage() {
       {isLoading ? (
         <TableSkeleton columns={6} rows={6} />
       ) : (
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+        <div className="bg-surface rounded-lg shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-amber-50 border-b border-amber-200">
+              <thead className="bg-amber-50 dark:bg-amber-900/20 border-b border-amber-200 dark:border-amber-800">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{locale === "bn" ? "ক্রম" : "Order"}</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{locale === "bn" ? "নাম (বাংলা)" : "Name (BN)"}</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{locale === "bn" ? "নাম (ইংরেজি)" : "Name (EN)"}</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">Slug</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">Status</th>
-                  {isAdmin && <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 uppercase tracking-wider">Actions</th>}
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">{locale === "bn" ? "ক্রম" : "Order"}</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">{locale === "bn" ? "নাম (বাংলা)" : "Name (BN)"}</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">{locale === "bn" ? "নাম (ইংরেজি)" : "Name (EN)"}</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">Slug</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">Status</th>
+                  {isAdmin && <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">Actions</th>}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-border">
                 {categories.map(cat => (
                   <>
-                    <tr key={cat.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-4 py-3 text-sm text-gray-500 font-mono">{cat.order}</td>
-                      <td className="px-4 py-3 text-sm text-gray-800 font-medium">{cat.name_bn}</td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{cat.name_en}</td>
-                      <td className="px-4 py-3 font-mono text-xs text-gray-400">{cat.slug}</td>
+                    <tr key={cat.id} className="hover:bg-surface-alt transition-colors">
+                      <td className="px-4 py-3 text-sm text-muted font-mono">{cat.order}</td>
+                      <td className="px-4 py-3 text-sm text-body font-medium">{cat.name_bn}</td>
+                      <td className="px-4 py-3 text-sm text-muted">{cat.name_en}</td>
+                      <td className="px-4 py-3 font-mono text-xs text-muted">{cat.slug}</td>
                       <td className="px-4 py-3">
                         {isAdmin
                           ? <ToggleSwitch checked={cat.is_active} onChange={() => toggleActive(cat.id, cat.is_active)}
@@ -100,13 +100,13 @@ export default function CategoriesPage() {
                             <button
                               onClick={() => editingId === cat.id ? setEditingId(null) : startEdit(cat)}
                               title={editingId === cat.id ? t("common.cancel") : t("common.edit")}
-                              className={`inline-flex items-center justify-center w-8 h-8 rounded-lg border transition-colors ${editingId === cat.id ? "border-gray-200 bg-gray-100 text-gray-500 hover:bg-gray-200" : "border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100"}`}>
+                              className={`inline-flex items-center justify-center w-8 h-8 rounded-lg border transition-colors ${editingId === cat.id ? "border-border bg-surface-alt text-muted hover:bg-border" : "border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/40"}`}>
                               {editingId === cat.id ? <X className="w-3.5 h-3.5" /> : <Pencil className="w-3.5 h-3.5" />}
                             </button>
                             <Link
                               href={`/${locale}/admin/categories/${cat.id}/edit`}
                               title={locale === "bn" ? "এসইও ও বিবরণ" : "SEO & Description"}
-                              className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-gray-200 bg-gray-50 text-gray-500 hover:bg-gray-100 transition-colors"
+                              className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-border bg-surface-alt text-muted hover:bg-border transition-colors"
                             >
                               <Search className="w-3.5 h-3.5" />
                             </Link>
@@ -115,7 +115,7 @@ export default function CategoriesPage() {
                       )}
                     </tr>
                     {editingId === cat.id && (
-                      <tr key={`edit-${cat.id}`} className="bg-amber-50">
+                      <tr key={`edit-${cat.id}`} className="bg-amber-50 dark:bg-amber-900/20">
                         <td colSpan={6} className="px-4 py-3">
                           <div className="flex items-end gap-3 flex-wrap">
                             <div className="w-24">
@@ -141,7 +141,7 @@ export default function CategoriesPage() {
                 ))}
               </tbody>
             </table>
-            {categories.length === 0 && <p className="text-center text-gray-400 py-8">{t("common.noData")}</p>}
+            {categories.length === 0 && <p className="text-center text-muted py-8">{t("common.noData")}</p>}
           </div>
         </div>
       )}

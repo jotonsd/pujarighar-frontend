@@ -107,7 +107,7 @@ export default function BannerForm({ editItem, onClose }: Props) {
 
   return (
     <div className="card mb-6 space-y-4">
-      <h2 className="font-semibold text-gray-700">
+      <h2 className="font-semibold text-muted">
         {editItem
           ? locale === "bn"
             ? "ব্যানার সম্পাদনা"
@@ -163,7 +163,7 @@ export default function BannerForm({ editItem, onClose }: Props) {
       </div>
 
       <div>
-        <p className="text-xs text-gray-500 mb-2">
+        <p className="text-xs text-muted mb-2">
           {locale === "bn" ? "পটভূমির রঙ" : "Background Color"}
         </p>
         <div className="flex items-center gap-2 flex-wrap">
@@ -172,7 +172,7 @@ export default function BannerForm({ editItem, onClose }: Props) {
               key={color}
               type="button"
               onClick={() => setForm(p => ({ ...p, bg_color: color }))}
-              className={`w-8 h-8 rounded-full border-2 transition-transform ${form.bg_color === color ? "border-amber-500 scale-110" : "border-gray-200"}`}
+              className={`w-8 h-8 rounded-full border-2 transition-transform ${form.bg_color === color ? "border-amber-500 scale-110" : "border-border"}`}
               style={{ backgroundColor: color }}
             />
           ))}
@@ -180,17 +180,17 @@ export default function BannerForm({ editItem, onClose }: Props) {
             type="color"
             value={form.bg_color}
             onChange={e => setForm(p => ({ ...p, bg_color: e.target.value }))}
-            className="w-8 h-8 rounded-full border border-gray-200 cursor-pointer p-0.5"
+            className="w-8 h-8 rounded-full border border-border cursor-pointer p-0.5"
             title="Custom color"
           />
-          <span className="text-xs text-gray-400 font-mono">
+          <span className="text-xs text-muted font-mono">
             {form.bg_color}
           </span>
         </div>
       </div>
 
       <div>
-        <p className="text-xs text-gray-500 mb-2">
+        <p className="text-xs text-muted mb-2">
           {locale === "bn" ? "ছবি (ঐচ্ছিক)" : "Image (optional)"}
         </p>
         <div className="flex items-center gap-3">
@@ -200,7 +200,7 @@ export default function BannerForm({ editItem, onClose }: Props) {
               <img
                 src={imagePreview}
                 alt="Preview"
-                className="w-20 h-12 object-cover rounded-lg border border-gray-200"
+                className="w-20 h-12 object-cover rounded-lg border border-border"
               />
               <button
                 type="button"

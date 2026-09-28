@@ -29,12 +29,12 @@ export default function MyBaynaBookingsPage() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-5 space-y-4">
-      <h1 className="text-xl font-bold text-gray-800">
+      <h1 className="text-xl font-bold text-body">
         {isBn ? "আমার বায়না" : "My Bayna Requests"}
       </h1>
 
       {bookings.length === 0 ? (
-        <div className="card text-center py-12 text-gray-400">
+        <div className="card text-center py-12 text-muted">
           {isBn ? "কোনো বায়না অনুরোধ নেই" : "No bayna requests yet"}
         </div>
       ) : (
@@ -42,19 +42,19 @@ export default function MyBaynaBookingsPage() {
           {bookings.map(b => (
             <div key={b.id} className="card space-y-2">
               <div className="flex items-center justify-between">
-                <span className="font-semibold text-gray-800">
+                <span className="font-semibold text-body">
                   {isBn ? SERVICE_LABELS[b.service_type]?.bn : SERVICE_LABELS[b.service_type]?.en}
                 </span>
                 <Badge variant={STATUS_BADGE[b.status].variant}>
                   {isBn ? STATUS_BADGE[b.status].bn : STATUS_BADGE[b.status].en}
                 </Badge>
               </div>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-muted">
                 {new Date(b.event_date).toLocaleDateString(isBn ? "bn-BD" : "en-US", {
                   year: "numeric", month: "long", day: "numeric",
                 })}
               </p>
-              <p className="text-sm text-gray-600 line-clamp-2">{b.description}</p>
+              <p className="text-sm text-muted line-clamp-2">{b.description}</p>
             </div>
           ))}
         </div>

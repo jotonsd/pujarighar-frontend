@@ -47,7 +47,7 @@ export default function OrderStatusCell({ order, locale }: { order: SalesOrder; 
           type="button"
           disabled={loading}
           onClick={() => doAction(() => confirmOrder(order.id).unwrap(), locale === 'bn' ? 'নিশ্চিত হয়েছে' : 'Confirmed')}
-          className="text-xs font-medium text-amber-700 hover:underline disabled:opacity-50"
+          className="text-xs font-medium text-amber-700 dark:text-amber-400 hover:underline disabled:opacity-50"
         >
           {locale === 'bn' ? 'নিশ্চিত করুন' : 'Confirm'}
         </button>
@@ -57,7 +57,7 @@ export default function OrderStatusCell({ order, locale }: { order: SalesOrder; 
           type="button"
           disabled={loading}
           onClick={() => doAction(() => pack(order.id).unwrap(), locale === 'bn' ? 'প্যাক হয়েছে' : 'Packed')}
-          className="text-xs font-medium text-amber-700 hover:underline disabled:opacity-50"
+          className="text-xs font-medium text-amber-700 dark:text-amber-400 hover:underline disabled:opacity-50"
         >
           {locale === 'bn' ? 'প্যাক করুন' : 'Pack'}
         </button>
@@ -67,7 +67,7 @@ export default function OrderStatusCell({ order, locale }: { order: SalesOrder; 
           type="button"
           disabled={loading}
           onClick={() => doAction(() => dispatchOrder(order.id).unwrap(), locale === 'bn' ? 'পথে বের হয়েছে' : 'On the way')}
-          className="text-xs font-medium text-amber-700 hover:underline disabled:opacity-50"
+          className="text-xs font-medium text-amber-700 dark:text-amber-400 hover:underline disabled:opacity-50"
         >
           {locale === 'bn' ? 'পথে বের করুন' : 'Dispatch'}
         </button>
@@ -78,13 +78,13 @@ export default function OrderStatusCell({ order, locale }: { order: SalesOrder; 
             type="button"
             disabled={loading}
             onClick={() => setShowDeliverModal(true)}
-            className="text-xs font-medium text-amber-700 hover:underline disabled:opacity-50"
+            className="text-xs font-medium text-amber-700 dark:text-amber-400 hover:underline disabled:opacity-50"
           >
             {locale === 'bn' ? 'ডেলিভারি সম্পন্ন' : 'Delivered'}
           </button>
           {showDeliverModal && (
             <ConfirmModal
-              icon={<CheckCircle2 className="w-6 h-6 text-green-500" />}
+              icon={<CheckCircle2 className="w-6 h-6 text-green-500 dark:text-green-400" />}
               title={locale === 'bn' ? 'ডেলিভারি নিশ্চিত করুন?' : 'Confirm delivery?'}
               description={locale === 'bn' ? 'পণ্যটি সফলভাবে গ্রাহকের কাছে পৌঁছে দেওয়া হয়েছে?' : 'Has the order been successfully delivered to the customer?'}
               confirmLabel={locale === 'bn' ? 'হ্যাঁ, ডেলিভারি হয়েছে' : 'Yes, Delivered'}

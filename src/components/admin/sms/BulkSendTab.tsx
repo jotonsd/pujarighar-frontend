@@ -83,42 +83,42 @@ export default function BulkSendTab({ isBn }: { isBn: boolean }) {
         />
 
         {selected.size > 0 && (
-          <div className="flex items-center justify-between px-3 py-2 mt-3 bg-amber-50 border border-amber-100 rounded-lg text-xs">
-            <span className="text-amber-700 font-semibold">
+          <div className="flex items-center justify-between px-3 py-2 mt-3 bg-amber-50 dark:bg-amber-900/30 border border-amber-100 dark:border-amber-800 rounded-lg text-xs">
+            <span className="text-amber-700 dark:text-amber-400 font-semibold">
               {isBn ? `${selected.size} জন নির্বাচিত` : `${selected.size} recipient(s) selected`}
             </span>
-            <button type="button" onClick={() => setSelected(new Set())} className="text-gray-400 hover:text-red-600 inline-flex items-center gap-1">
+            <button type="button" onClick={() => setSelected(new Set())} className="text-muted hover:text-red-600 dark:hover:text-red-400 inline-flex items-center gap-1">
               <X className="w-3 h-3" /> {isBn ? "মুছুন" : "Clear"}
             </button>
           </div>
         )}
 
-        <div className="border border-gray-100 rounded-lg mt-3 divide-y divide-gray-50">
-          <label className="flex items-center gap-2.5 px-3 py-2 bg-gray-50 cursor-pointer">
+        <div className="border border-border rounded-lg mt-3 divide-y divide-gray-50">
+          <label className="flex items-center gap-2.5 px-3 py-2 bg-background cursor-pointer">
             <Checkbox checked={allOnPageSelected} onChange={toggleAllOnPage} label="" />
-            <span className="text-xs font-semibold text-gray-500">
+            <span className="text-xs font-semibold text-muted">
               {isBn ? "এই পাতার সবাইকে নির্বাচন করুন" : "Select all on this page"}
             </span>
           </label>
 
           {isLoading ? (
-            <p className="text-center text-xs text-gray-400 py-6">{isBn ? "লোড হচ্ছে..." : "Loading..."}</p>
+            <p className="text-center text-xs text-muted py-6">{isBn ? "লোড হচ্ছে..." : "Loading..."}</p>
           ) : recipients.length ? (
             recipients.map(r => (
-              <label key={r.phone} className="flex items-center gap-2.5 px-3 py-2.5 cursor-pointer hover:bg-gray-50">
+              <label key={r.phone} className="flex items-center gap-2.5 px-3 py-2.5 cursor-pointer hover:bg-surface-alt">
                 <Checkbox checked={selected.has(r.phone)} onChange={() => toggle(r.phone)} label="" />
                 <div className="flex-1 min-w-0">
-                  <div className="truncate text-sm text-gray-700">{localName(r.name_bn, r.name_en, isBn) || "—"}</div>
-                  <div className="text-[11px] text-gray-400 font-mono">{r.phone}</div>
+                  <div className="truncate text-sm text-muted">{localName(r.name_bn, r.name_en, isBn) || "—"}</div>
+                  <div className="text-[11px] text-muted font-mono">{r.phone}</div>
                 </div>
-                <div className="text-right text-[11px] text-gray-400 shrink-0">
+                <div className="text-right text-[11px] text-muted shrink-0">
                   <div>{isBn ? `${r.order_count} অর্ডার` : `${r.order_count} order(s)`}</div>
                   {r.last_order_at && <div>{formatDate(r.last_order_at, locale)}</div>}
                 </div>
               </label>
             ))
           ) : (
-            <p className="text-center text-xs text-gray-400 py-6">{isBn ? "কোনো গ্রাহক পাওয়া যায়নি" : "No customers found"}</p>
+            <p className="text-center text-xs text-muted py-6">{isBn ? "কোনো গ্রাহক পাওয়া যায়নি" : "No customers found"}</p>
           )}
         </div>
 
@@ -137,7 +137,7 @@ export default function BulkSendTab({ isBn }: { isBn: boolean }) {
           onChange={e => setMessage(e.target.value)}
           rows={6}
         />
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-muted">
           {isBn
             ? `${message.length} অক্ষর · ${segments || 0} এসএমএস সেগমেন্ট / প্রাপক`
             : `${message.length} characters · ${segments || 0} SMS segment(s) per recipient`}
@@ -153,8 +153,8 @@ export default function BulkSendTab({ isBn }: { isBn: boolean }) {
             {isBn ? `${selected.size} জনকে পাঠান` : `Send to ${selected.size} recipient(s)`}
           </button>
         ) : (
-          <div className="border border-amber-200 bg-amber-50 rounded-lg p-3 space-y-2">
-            <p className="text-xs text-gray-700">
+          <div className="border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/30 rounded-lg p-3 space-y-2">
+            <p className="text-xs text-muted">
               {isBn
                 ? `আপনি ${selected.size} জন গ্রাহককে এই এসএমএস পাঠাতে যাচ্ছেন। এটি বাতিল করা যাবে না। নিশ্চিত?`
                 : `You're about to send this SMS to ${selected.size} recipient(s). This can't be undone. Confirm?`}

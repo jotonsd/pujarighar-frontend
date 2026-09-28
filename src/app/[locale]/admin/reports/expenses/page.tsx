@@ -11,7 +11,7 @@ export default function ExpenseReportPage() {
       descriptionBn="তারিখ বা হিসাব দিয়ে ব্যয়ের তালিকা দেখুন"
       descriptionEn="View expense entries filtered by date or account"
       accountType="EXPENSE"
-      amountColorClass="text-red-700"
+      amountColorClass="text-red-700 dark:text-red-400"
       useReportQuery={useGetExpenseReportQuery}
     />
   );

@@ -63,17 +63,17 @@ function WeightTierEditor({
   };
 
   return (
-    <div className="pt-2 border-t border-gray-100">
-      <p className="text-sm font-medium text-gray-700 mb-1">{title}</p>
-      <p className="text-xs text-gray-400 mb-2">
+    <div className="pt-2 border-t border-border">
+      <p className="text-sm font-medium text-muted mb-1">{title}</p>
+      <p className="text-xs text-muted mb-2">
         {isBn
           ? "ঐচ্ছিক — খালি রাখলে উপরের ফ্ল্যাট রেট প্রযোজ্য হবে। ওজন যত কেজি পর্যন্ত, সেই ব্র্যাকেটের চার্জ প্রযোজ্য হবে। সবচেয়ে ভারী ব্র্যাকেট এর চেয়ে বেশি ওজনের জন্যও প্রযোজ্য।"
           : "Optional — leave empty to keep using the flat rate above. Each row is \"up to this weight → this charge\"; the heaviest row also covers anything above it."}
       </p>
 
       {tiers.length > 0 && (
-        <div className="flex flex-wrap items-center gap-2 mb-3 p-2 bg-gray-50 rounded-lg">
-          <label className="flex items-center gap-1.5 text-xs text-gray-600 shrink-0">
+        <div className="flex flex-wrap items-center gap-2 mb-3 p-2 bg-surface-alt rounded-lg">
+          <label className="flex items-center gap-1.5 text-xs text-muted shrink-0">
             <input type="checkbox" checked={allSelected} onChange={toggleAll} />
             {isBn ? "সব নির্বাচন" : "Select all"}
           </label>
@@ -83,13 +83,13 @@ function WeightTierEditor({
             placeholder={isBn ? "পরিমাণ (৳)" : "Amount (৳)"}
             value={bulkAmount}
             onChange={e => setBulkAmount(e.target.value)}
-            className="w-24 text-xs border border-gray-200 rounded-lg px-2 py-1.5"
+            className="w-24 text-xs border border-border rounded-lg px-2 py-1.5"
           />
           <button
             type="button"
             onClick={() => applyBulk(1)}
             disabled={selected.size === 0 || !bulkAmount}
-            className="text-xs px-2.5 py-1.5 rounded-lg border border-green-200 bg-green-50 text-green-700 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="text-xs px-2.5 py-1.5 rounded-lg border border-green-200 bg-green-50 text-green-700 dark:border-green-800 dark:bg-green-900/30 dark:text-green-400 disabled:opacity-40 disabled:cursor-not-allowed"
           >
             + {isBn ? "বৃদ্ধি" : "Increase"}
           </button>
@@ -97,12 +97,12 @@ function WeightTierEditor({
             type="button"
             onClick={() => applyBulk(-1)}
             disabled={selected.size === 0 || !bulkAmount}
-            className="text-xs px-2.5 py-1.5 rounded-lg border border-red-200 bg-red-50 text-red-700 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="text-xs px-2.5 py-1.5 rounded-lg border border-red-200 bg-red-50 text-red-700 dark:border-red-800 dark:bg-red-900/30 dark:text-red-400 disabled:opacity-40 disabled:cursor-not-allowed"
           >
             − {isBn ? "হ্রাস" : "Decrease"}
           </button>
           {selected.size > 0 && (
-            <span className="text-xs text-gray-400">
+            <span className="text-xs text-muted">
               {selected.size} {isBn ? "টি নির্বাচিত" : "selected"}
             </span>
           )}
@@ -132,7 +132,7 @@ function WeightTierEditor({
             />
             <button
               onClick={() => removeRow(i)}
-              className="w-9 h-9 flex items-center justify-center rounded-lg border border-red-100 bg-red-50 text-red-400 hover:bg-red-100 transition-colors shrink-0"
+              className="w-9 h-9 flex items-center justify-center rounded-lg border border-red-100 bg-red-50 text-red-400 hover:bg-red-100 dark:border-red-800 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50 transition-colors shrink-0"
             >
               <Trash2 className="w-3.5 h-3.5" />
             </button>
@@ -209,11 +209,11 @@ export default function DeliveryChargesPage() {
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="card space-y-4">
-              <h2 className="font-semibold text-gray-700">
+              <h2 className="font-semibold text-muted">
                 {isBn ? "ঢাকার ভিতরে" : "Inside Dhaka"}
               </h2>
               <div>
-                <p className="text-xs text-gray-400 mb-1">
+                <p className="text-xs text-muted mb-1">
                   {isBn ? "ঢাকার জেলাসমূহ (Inside Dhaka)" : "Dhaka district"}
                 </p>
                 <FloatingInput
@@ -240,11 +240,11 @@ export default function DeliveryChargesPage() {
             </div>
 
             <div className="card space-y-4">
-              <h2 className="font-semibold text-gray-700">
+              <h2 className="font-semibold text-muted">
                 {isBn ? "ঢাকার বাইরে" : "Outside Dhaka"}
               </h2>
               <div>
-                <p className="text-xs text-gray-400 mb-1">
+                <p className="text-xs text-muted mb-1">
                   {isBn ? "ঢাকার বাইরের জেলাসমূহ" : "All other districts"}
                 </p>
                 <FloatingInput

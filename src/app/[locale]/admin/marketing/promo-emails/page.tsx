@@ -87,33 +87,33 @@ export default function PromoEmailsAdminPage() {
       label: "View",
       icon: <Eye className="w-3.5 h-3.5" />,
       onClick: setViewItem,
-      className: "inline-flex items-center justify-center w-8 h-8 rounded-lg border border-gray-200 bg-gray-50 text-gray-600 hover:bg-gray-100 transition-colors",
+      className: "inline-flex items-center justify-center w-8 h-8 rounded-lg border border-border bg-background text-muted hover:bg-surface-alt transition-colors",
     },
     {
       label: "Resend",
       icon: <RefreshCw className="w-3.5 h-3.5" />,
       onClick: setResendTarget,
-      className: "inline-flex items-center justify-center w-8 h-8 rounded-lg border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors",
+      className: "inline-flex items-center justify-center w-8 h-8 rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/50 transition-colors",
     },
   ];
 
   const columns: Column<PromoEmail>[] = [
     {
       header: isBn ? "ধরন" : "Type",
-      accessor: e => <span className="text-xs font-medium text-gray-700">{isBn ? TYPE_LABELS[e.email_type].bn : TYPE_LABELS[e.email_type].en}</span>,
+      accessor: e => <span className="text-xs font-medium text-muted">{isBn ? TYPE_LABELS[e.email_type].bn : TYPE_LABELS[e.email_type].en}</span>,
     },
     {
       header: isBn ? "বিষয়" : "Subject",
       accessor: e => (
         <div>
-          <p className="text-sm font-medium text-gray-800">{isBn ? e.subject_bn : e.subject_en}</p>
-          <p className="text-xs text-gray-400">{e.sent_by_name ?? "—"}</p>
+          <p className="text-sm font-medium text-body">{isBn ? e.subject_bn : e.subject_en}</p>
+          <p className="text-xs text-muted">{e.sent_by_name ?? "—"}</p>
         </div>
       ),
     },
     {
       header: isBn ? "প্রাপক" : "Recipients",
-      accessor: e => <span className="text-sm text-gray-600">{e.recipient_count}</span>,
+      accessor: e => <span className="text-sm text-muted">{e.recipient_count}</span>,
     },
     {
       header: isBn ? "স্ট্যাটাস" : "Status",
@@ -121,7 +121,7 @@ export default function PromoEmailsAdminPage() {
     },
     {
       header: isBn ? "তারিখ" : "Date",
-      accessor: e => <span className="text-xs text-gray-500">{new Date(e.created_at).toLocaleString(locale)}</span>,
+      accessor: e => <span className="text-xs text-muted">{new Date(e.created_at).toLocaleString(locale)}</span>,
     },
   ];
 
@@ -133,13 +133,13 @@ export default function PromoEmailsAdminPage() {
       />
 
       <div className="card mb-6 space-y-4">
-        <h2 className="font-semibold text-gray-700 flex items-center gap-2">
+        <h2 className="font-semibold text-muted flex items-center gap-2">
           <Mail className="w-4 h-4" />
           {isBn ? "নতুন ইমেইল কম্পোজ করুন" : "Compose New Email"}
         </h2>
 
         <div>
-          <label className="text-xs font-medium text-gray-500 mb-1.5 block">{isBn ? "ধরন" : "Type"}</label>
+          <label className="text-xs font-medium text-muted mb-1.5 block">{isBn ? "ধরন" : "Type"}</label>
           <div className="flex flex-wrap gap-2">
             {(Object.keys(TYPE_LABELS) as PromoEmailType[]).map(t => (
               <button
@@ -148,7 +148,7 @@ export default function PromoEmailsAdminPage() {
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
                   form.email_type === t
                     ? "bg-amber-600 text-white border-amber-500"
-                    : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50"
+                    : "bg-surface text-muted border-border hover:bg-surface-alt"
                 }`}
               >
                 {isBn ? TYPE_LABELS[t].bn : TYPE_LABELS[t].en}
@@ -156,7 +156,7 @@ export default function PromoEmailsAdminPage() {
             ))}
           </div>
           {audience !== undefined && (
-            <p className="text-xs text-gray-400 mt-1.5">
+            <p className="text-xs text-muted mt-1.5">
               {isBn
                 ? `এই ধরনের জন্য আনুমানিক ${audience.recipient_count} জন গ্রাহক ইমেইল পাবেন।`
                 : `Approximately ${audience.recipient_count} customers will receive this.`}
@@ -166,39 +166,39 @@ export default function PromoEmailsAdminPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
-            <label className="text-xs font-medium text-gray-500 mb-1.5 block">{isBn ? "বিষয় (বাংলা)" : "Subject (Bengali)"}</label>
+            <label className="text-xs font-medium text-muted mb-1.5 block">{isBn ? "বিষয় (বাংলা)" : "Subject (Bengali)"}</label>
             <input
               value={form.subject_bn}
               onChange={e => set("subject_bn", e.target.value)}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-400"
+              className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-400"
               placeholder={isBn ? "যেমনঃ নতুন পণ্য এসেছে!" : "e.g. New product launched!"}
             />
           </div>
           <div>
-            <label className="text-xs font-medium text-gray-500 mb-1.5 block">{isBn ? "বিষয় (ইংরেজি)" : "Subject (English)"}</label>
+            <label className="text-xs font-medium text-muted mb-1.5 block">{isBn ? "বিষয় (ইংরেজি)" : "Subject (English)"}</label>
             <input
               value={form.subject_en}
               onChange={e => set("subject_en", e.target.value)}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-400"
+              className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-400"
               placeholder="e.g. New product launched!"
             />
           </div>
           <div>
-            <label className="text-xs font-medium text-gray-500 mb-1.5 block">{isBn ? "বার্তা (বাংলা)" : "Message (Bengali)"}</label>
+            <label className="text-xs font-medium text-muted mb-1.5 block">{isBn ? "বার্তা (বাংলা)" : "Message (Bengali)"}</label>
             <textarea
               value={form.message_bn}
               onChange={e => set("message_bn", e.target.value)}
               rows={4}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-400 resize-none"
+              className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-400 resize-none"
             />
           </div>
           <div>
-            <label className="text-xs font-medium text-gray-500 mb-1.5 block">{isBn ? "বার্তা (ইংরেজি)" : "Message (English)"}</label>
+            <label className="text-xs font-medium text-muted mb-1.5 block">{isBn ? "বার্তা (ইংরেজি)" : "Message (English)"}</label>
             <textarea
               value={form.message_en}
               onChange={e => set("message_en", e.target.value)}
               rows={4}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-400 resize-none"
+              className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-400 resize-none"
             />
           </div>
         </div>
@@ -243,16 +243,16 @@ export default function PromoEmailsAdminPage() {
 
       {viewItem && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4" onClick={() => setViewItem(null)}>
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 space-y-4" onClick={e => e.stopPropagation()}>
+          <div className="bg-surface rounded-2xl shadow-xl w-full max-w-lg p-6 space-y-4" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+              <h2 className="text-lg font-bold text-body flex items-center gap-2">
                 <Mail className="w-5 h-5 text-amber-500" />
                 {isBn ? "ইমেইল বিস্তারিত" : "Email Details"}
               </h2>
               <Badge variant={STATUS_VARIANT[viewItem.status]}>{viewItem.status}</Badge>
             </div>
 
-            <div className="text-xs text-gray-400 flex items-center gap-3">
+            <div className="text-xs text-muted flex items-center gap-3">
               <span>{isBn ? TYPE_LABELS[viewItem.email_type].bn : TYPE_LABELS[viewItem.email_type].en}</span>
               <span>·</span>
               <span>{isBn ? "প্রাপক" : "Recipients"}: {viewItem.recipient_count}</span>
@@ -262,20 +262,20 @@ export default function PromoEmailsAdminPage() {
 
             <div className="space-y-3 max-h-[50vh] overflow-y-auto">
               <div>
-                <p className="text-xs font-semibold text-gray-500 mb-1">{isBn ? "বিষয় (বাংলা)" : "Subject (Bengali)"}</p>
-                <p className="text-sm text-gray-800 bg-gray-50 rounded-lg px-3 py-2">{viewItem.subject_bn}</p>
+                <p className="text-xs font-semibold text-muted mb-1">{isBn ? "বিষয় (বাংলা)" : "Subject (Bengali)"}</p>
+                <p className="text-sm text-body bg-background rounded-lg px-3 py-2">{viewItem.subject_bn}</p>
               </div>
               <div>
-                <p className="text-xs font-semibold text-gray-500 mb-1">{isBn ? "বিষয় (ইংরেজি)" : "Subject (English)"}</p>
-                <p className="text-sm text-gray-800 bg-gray-50 rounded-lg px-3 py-2">{viewItem.subject_en}</p>
+                <p className="text-xs font-semibold text-muted mb-1">{isBn ? "বিষয় (ইংরেজি)" : "Subject (English)"}</p>
+                <p className="text-sm text-body bg-background rounded-lg px-3 py-2">{viewItem.subject_en}</p>
               </div>
               <div>
-                <p className="text-xs font-semibold text-gray-500 mb-1">{isBn ? "বার্তা (বাংলা)" : "Message (Bengali)"}</p>
-                <p className="text-sm text-gray-700 bg-gray-50 rounded-lg px-3 py-2 whitespace-pre-wrap">{viewItem.message_bn}</p>
+                <p className="text-xs font-semibold text-muted mb-1">{isBn ? "বার্তা (বাংলা)" : "Message (Bengali)"}</p>
+                <p className="text-sm text-muted bg-background rounded-lg px-3 py-2 whitespace-pre-wrap">{viewItem.message_bn}</p>
               </div>
               <div>
-                <p className="text-xs font-semibold text-gray-500 mb-1">{isBn ? "বার্তা (ইংরেজি)" : "Message (English)"}</p>
-                <p className="text-sm text-gray-700 bg-gray-50 rounded-lg px-3 py-2 whitespace-pre-wrap">{viewItem.message_en}</p>
+                <p className="text-xs font-semibold text-muted mb-1">{isBn ? "বার্তা (ইংরেজি)" : "Message (English)"}</p>
+                <p className="text-sm text-muted bg-background rounded-lg px-3 py-2 whitespace-pre-wrap">{viewItem.message_en}</p>
               </div>
             </div>
 
@@ -289,7 +289,7 @@ export default function PromoEmailsAdminPage() {
               </button>
               <button
                 onClick={() => setViewItem(null)}
-                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2.5 rounded-xl transition-colors text-sm"
+                className="flex-1 bg-surface-alt hover:bg-border text-muted font-semibold py-2.5 rounded-xl transition-colors text-sm"
               >
                 {isBn ? "বন্ধ করুন" : "Close"}
               </button>

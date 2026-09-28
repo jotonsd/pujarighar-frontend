@@ -129,12 +129,12 @@ function LoginForm() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex bg-gray-50 lg:bg-transparent">
+    <div className="min-h-[calc(100vh-4rem)] flex bg-background lg:bg-transparent">
       {/* Left decorative panel — hidden on mobile */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-amber-500 to-amber-700 items-center justify-center relative overflow-hidden">
         {/* Decorative circles */}
-        <div className="absolute w-72 h-72 rounded-full bg-white/10 -top-16 -left-16" />
-        <div className="absolute w-48 h-48 rounded-full bg-white/10 bottom-10 -right-10" />
+        <div className="absolute w-72 h-72 rounded-full bg-surface/10 -top-16 -left-16" />
+        <div className="absolute w-48 h-48 rounded-full bg-surface/10 bottom-10 -right-10" />
         <div className="absolute w-32 h-32 rounded-full bg-amber-400/40 top-1/2 left-1/3" />
         <div className="relative z-10 text-center px-10">
           <div className="relative w-20 h-20 mx-auto mb-5">
@@ -157,9 +157,9 @@ function LoginForm() {
       </div>
 
       {/* Right form panel */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center px-4 py-8 sm:px-6 lg:px-12 bg-gray-50">
+      <div className="w-full lg:w-1/2 flex items-center justify-center px-4 py-8 sm:px-6 lg:px-12 bg-background">
         {/* Card wrapper for crisp appearance on mobile */}
-        <div className="w-full max-w-md bg-white lg:bg-transparent p-6 sm:p-8 lg:p-0 rounded-2xl shadow-sm lg:shadow-none border border-gray-100 lg:border-none relative overflow-hidden">
+        <div className="w-full max-w-md bg-surface lg:bg-transparent p-6 sm:p-8 lg:p-0 rounded-2xl shadow-sm lg:shadow-none border border-border lg:border-none relative overflow-hidden">
           {/* Subtle colorful top accent bar on mobile view to tie into the brand */}
           <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-amber-500 to-amber-600 lg:hidden" />
 
@@ -177,10 +177,10 @@ function LoginForm() {
           </div>
 
           <div className="mb-6 text-center lg:text-left">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-bold text-body tracking-tight">
               {isBn ? "লগইন করুন" : "Sign in"}
             </h2>
-            <p className="text-sm text-gray-500 mt-2">
+            <p className="text-sm text-muted mt-2">
               {isBn
                 ? "আপনার অ্যাকাউন্টে প্রবেশ করুন"
                 : "Enter your account details below"}
@@ -213,7 +213,7 @@ function LoginForm() {
                 />
                 <Link
                   href={`/${locale}/auth/forgot-password`}
-                  className="text-sm text-amber-700 hover:text-amber-700 font-medium hover:underline"
+                  className="text-sm text-amber-700 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-400 font-medium hover:underline"
                 >
                   {isBn ? "পাসওয়ার্ড ভুলে গেছেন?" : "Forgot password?"}
                 </Link>
@@ -237,11 +237,11 @@ function LoginForm() {
 
           {/* Divider */}
           <div className="mt-6 flex items-center gap-3">
-            <div className="flex-1 h-px bg-gray-200" />
-            <span className="text-xs text-gray-400 font-medium">
+            <div className="flex-1 h-px bg-border" />
+            <span className="text-xs text-muted font-medium">
               {isBn ? "অথবা" : "OR"}
             </span>
-            <div className="flex-1 h-px bg-gray-200" />
+            <div className="flex-1 h-px bg-border" />
           </div>
 
           {/* Social Sign-In */}
@@ -250,7 +250,7 @@ function LoginForm() {
               type="button"
               onClick={() => startGoogleLogin()}
               disabled={isGoogleLoading}
-              className="flex-1 flex items-center justify-center gap-2 py-3 px-4 border border-gray-300 rounded-xl bg-white hover:bg-gray-50 text-sm font-medium text-gray-700 transition-colors disabled:opacity-60 disabled:pointer-events-none"
+              className="flex-1 flex items-center justify-center gap-2 py-3 px-4 border border-border rounded-xl bg-surface hover:bg-surface-alt text-sm font-medium text-muted transition-colors disabled:opacity-60 disabled:pointer-events-none"
             >
               <svg
                 width="18"
@@ -288,7 +288,7 @@ function LoginForm() {
               type="button"
               onClick={startFacebookLogin}
               disabled={isFacebookLoading}
-              className="flex-1 flex items-center justify-center gap-2 py-3 px-4 border border-gray-300 rounded-xl bg-white hover:bg-gray-50 text-sm font-medium text-gray-700 transition-colors disabled:opacity-60 disabled:pointer-events-none"
+              className="flex-1 flex items-center justify-center gap-2 py-3 px-4 border border-border rounded-xl bg-surface hover:bg-surface-alt text-sm font-medium text-muted transition-colors disabled:opacity-60 disabled:pointer-events-none"
             >
               <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
                 <path
@@ -306,21 +306,21 @@ function LoginForm() {
           </div>
 
           <div className="mt-5 text-center text-sm">
-            <span className="text-gray-500">
+            <span className="text-muted">
               {isBn ? "অ্যাকাউন্ট নেই?" : "Don't have an account?"}{" "}
             </span>
             <Link
               href={`/${locale}/auth/register`}
-              className="text-amber-700 hover:text-amber-700 font-semibold transition-colors hover:underline"
+              className="text-amber-700 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-400 font-semibold transition-colors hover:underline"
             >
               {isBn ? "রেজিস্ট্রেশন করুন" : "Register"}
             </Link>
           </div>
 
-          <div className="mt-8 pt-5 border-t border-gray-100 lg:border-gray-200">
+          <div className="mt-8 pt-5 border-t border-border lg:border-border">
             <Link
               href={`/${locale}`}
-              className="flex items-center justify-center gap-2 text-sm font-medium text-gray-400 hover:text-gray-600 transition-colors"
+              className="flex items-center justify-center gap-2 text-sm font-medium text-muted hover:text-muted transition-colors"
             >
               <span>←</span>
               <span>{isBn ? "হোমে ফিরুন" : "Back to Home"}</span>

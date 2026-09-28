@@ -61,7 +61,7 @@ export default function PromoPushAdminPage() {
       label: "View",
       icon: <Eye className="w-3.5 h-3.5" />,
       onClick: setViewItem,
-      className: "inline-flex items-center justify-center w-8 h-8 rounded-lg border border-gray-200 bg-gray-50 text-gray-600 hover:bg-gray-100 transition-colors",
+      className: "inline-flex items-center justify-center w-8 h-8 rounded-lg border border-border bg-background text-muted hover:bg-surface-alt transition-colors",
     },
   ];
 
@@ -70,26 +70,26 @@ export default function PromoPushAdminPage() {
       header: isBn ? "শিরোনাম" : "Title",
       accessor: p => (
         <div>
-          <p className="text-sm font-medium text-gray-800">{isBn ? p.title_bn : p.title_en}</p>
-          <p className="text-xs text-gray-400">{p.sent_by ?? "—"}</p>
+          <p className="text-sm font-medium text-body">{isBn ? p.title_bn : p.title_en}</p>
+          <p className="text-xs text-muted">{p.sent_by ?? "—"}</p>
         </div>
       ),
     },
     {
       header: isBn ? "প্রাপক" : "Recipients",
-      accessor: p => <span className="text-sm text-gray-600">{p.recipient_count}</span>,
+      accessor: p => <span className="text-sm text-muted">{p.recipient_count}</span>,
     },
     {
       header: isBn ? "ডেলিভার হয়েছে" : "Delivered",
       accessor: p => (
-        <span className={`text-sm font-medium ${p.delivered_count > 0 ? "text-green-600" : "text-red-500"}`}>
+        <span className={`text-sm font-medium ${p.delivered_count > 0 ? "text-green-600 dark:text-green-400" : "text-red-500 dark:text-red-400"}`}>
           {p.delivered_count} / {p.recipient_count}
         </span>
       ),
     },
     {
       header: isBn ? "তারিখ" : "Date",
-      accessor: p => <span className="text-xs text-gray-500">{new Date(p.created_at).toLocaleString(locale)}</span>,
+      accessor: p => <span className="text-xs text-muted">{new Date(p.created_at).toLocaleString(locale)}</span>,
     },
   ];
 
@@ -105,52 +105,52 @@ export default function PromoPushAdminPage() {
       />
 
       <div className="card mb-6 space-y-4">
-        <h2 className="font-semibold text-gray-700 flex items-center gap-2">
+        <h2 className="font-semibold text-muted flex items-center gap-2">
           <BellRing className="w-4 h-4" />
           {isBn ? "নতুন নোটিফিকেশন কম্পোজ করুন" : "Compose New Notification"}
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
-            <label className="text-xs font-medium text-gray-500 mb-1.5 block">{isBn ? "শিরোনাম (বাংলা)" : "Title (Bengali)"}</label>
+            <label className="text-xs font-medium text-muted mb-1.5 block">{isBn ? "শিরোনাম (বাংলা)" : "Title (Bengali)"}</label>
             <input
               value={form.title_bn}
               onChange={e => set("title_bn", e.target.value)}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-400"
+              className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-400"
               placeholder={isBn ? "যেমনঃ দুর্গাপূজার অফার শুরু হয়েছে!" : "e.g. Durga Puja offer is live!"}
             />
           </div>
           <div>
-            <label className="text-xs font-medium text-gray-500 mb-1.5 block">{isBn ? "শিরোনাম (ইংরেজি)" : "Title (English)"}</label>
+            <label className="text-xs font-medium text-muted mb-1.5 block">{isBn ? "শিরোনাম (ইংরেজি)" : "Title (English)"}</label>
             <input
               value={form.title_en}
               onChange={e => set("title_en", e.target.value)}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-400"
+              className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-400"
               placeholder="e.g. Durga Puja offer is live!"
             />
           </div>
           <div>
-            <label className="text-xs font-medium text-gray-500 mb-1.5 block">{isBn ? "বার্তা (বাংলা)" : "Message (Bengali)"}</label>
+            <label className="text-xs font-medium text-muted mb-1.5 block">{isBn ? "বার্তা (বাংলা)" : "Message (Bengali)"}</label>
             <textarea
               value={form.body_bn}
               onChange={e => set("body_bn", e.target.value)}
               rows={3}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-400 resize-none"
+              className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-400 resize-none"
             />
           </div>
           <div>
-            <label className="text-xs font-medium text-gray-500 mb-1.5 block">{isBn ? "বার্তা (ইংরেজি)" : "Message (English)"}</label>
+            <label className="text-xs font-medium text-muted mb-1.5 block">{isBn ? "বার্তা (ইংরেজি)" : "Message (English)"}</label>
             <textarea
               value={form.body_en}
               onChange={e => set("body_en", e.target.value)}
               rows={3}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-400 resize-none"
+              className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-400 resize-none"
             />
           </div>
         </div>
 
         <div>
-          <label className="text-xs font-medium text-gray-500 mb-1.5 block">
+          <label className="text-xs font-medium text-muted mb-1.5 block">
             {isBn ? "বড় ছবি (ঐচ্ছিক)" : "Large image (optional)"}
           </label>
           <div className="flex items-center gap-3">
@@ -160,7 +160,7 @@ export default function PromoPushAdminPage() {
                 <img
                   src={imagePreview}
                   alt="Preview"
-                  className="w-24 h-12 object-cover rounded-lg border border-gray-200"
+                  className="w-24 h-12 object-cover rounded-lg border border-border"
                 />
                 <button
                   type="button"
@@ -191,14 +191,14 @@ export default function PromoPushAdminPage() {
               }}
             />
           </div>
-          <p className="text-xs text-gray-400 mt-1.5">
+          <p className="text-xs text-muted mt-1.5">
             {isBn
               ? "স্ট্যান্ডার্ড সাইজ: ১০২৪x৫১২ পিক্সেল (২:১ অনুপাত), ১ এমবি এর কম। না দিলে সাইটের লোগো দেখানো হবে।"
               : "Standard size: 1024×512px (2:1 ratio), under 1MB. Falls back to the site logo if not provided."}
           </p>
         </div>
 
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-muted">
           {isBn
             ? "শুধুমাত্র মোবাইল অ্যাপ ব্যবহারকারী গ্রাহকরাই এটি পাবেন — যাদের ফোনে অ্যাপ ইনস্টল করা নেই তারা পাবেন না।"
             : "Only reaches customers who have the mobile app installed — not the website audience."}
@@ -244,15 +244,15 @@ export default function PromoPushAdminPage() {
 
       {viewItem && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4" onClick={() => setViewItem(null)}>
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 space-y-4" onClick={e => e.stopPropagation()}>
+          <div className="bg-surface rounded-2xl shadow-xl w-full max-w-lg p-6 space-y-4" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+              <h2 className="text-lg font-bold text-body flex items-center gap-2">
                 <BellRing className="w-5 h-5 text-amber-500" />
                 {isBn ? "নোটিফিকেশন বিস্তারিত" : "Notification Details"}
               </h2>
             </div>
 
-            <div className="text-xs text-gray-400 flex items-center gap-3">
+            <div className="text-xs text-muted flex items-center gap-3">
               <span>{isBn ? "প্রাপক" : "Recipients"}: {viewItem.recipient_count}</span>
               <span>·</span>
               <span>{new Date(viewItem.created_at).toLocaleString(locale)}</span>
@@ -264,30 +264,30 @@ export default function PromoPushAdminPage() {
                 <img
                   src={viewItem.image_url}
                   alt=""
-                  className="w-full h-32 object-cover rounded-lg border border-gray-200"
+                  className="w-full h-32 object-cover rounded-lg border border-border"
                 />
               )}
               <div>
-                <p className="text-xs font-semibold text-gray-500 mb-1">{isBn ? "শিরোনাম (বাংলা)" : "Title (Bengali)"}</p>
-                <p className="text-sm text-gray-800 bg-gray-50 rounded-lg px-3 py-2">{viewItem.title_bn}</p>
+                <p className="text-xs font-semibold text-muted mb-1">{isBn ? "শিরোনাম (বাংলা)" : "Title (Bengali)"}</p>
+                <p className="text-sm text-body bg-background rounded-lg px-3 py-2">{viewItem.title_bn}</p>
               </div>
               <div>
-                <p className="text-xs font-semibold text-gray-500 mb-1">{isBn ? "শিরোনাম (ইংরেজি)" : "Title (English)"}</p>
-                <p className="text-sm text-gray-800 bg-gray-50 rounded-lg px-3 py-2">{viewItem.title_en}</p>
+                <p className="text-xs font-semibold text-muted mb-1">{isBn ? "শিরোনাম (ইংরেজি)" : "Title (English)"}</p>
+                <p className="text-sm text-body bg-background rounded-lg px-3 py-2">{viewItem.title_en}</p>
               </div>
               <div>
-                <p className="text-xs font-semibold text-gray-500 mb-1">{isBn ? "বার্তা (বাংলা)" : "Message (Bengali)"}</p>
-                <p className="text-sm text-gray-700 bg-gray-50 rounded-lg px-3 py-2 whitespace-pre-wrap">{viewItem.body_bn || "—"}</p>
+                <p className="text-xs font-semibold text-muted mb-1">{isBn ? "বার্তা (বাংলা)" : "Message (Bengali)"}</p>
+                <p className="text-sm text-muted bg-background rounded-lg px-3 py-2 whitespace-pre-wrap">{viewItem.body_bn || "—"}</p>
               </div>
               <div>
-                <p className="text-xs font-semibold text-gray-500 mb-1">{isBn ? "বার্তা (ইংরেজি)" : "Message (English)"}</p>
-                <p className="text-sm text-gray-700 bg-gray-50 rounded-lg px-3 py-2 whitespace-pre-wrap">{viewItem.body_en || "—"}</p>
+                <p className="text-xs font-semibold text-muted mb-1">{isBn ? "বার্তা (ইংরেজি)" : "Message (English)"}</p>
+                <p className="text-sm text-muted bg-background rounded-lg px-3 py-2 whitespace-pre-wrap">{viewItem.body_en || "—"}</p>
               </div>
             </div>
 
             <button
               onClick={() => setViewItem(null)}
-              className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2.5 rounded-xl transition-colors text-sm"
+              className="w-full bg-surface-alt hover:bg-border text-muted font-semibold py-2.5 rounded-xl transition-colors text-sm"
             >
               {isBn ? "বন্ধ করুন" : "Close"}
             </button>

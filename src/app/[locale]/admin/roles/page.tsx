@@ -43,7 +43,7 @@ export default function RolesAdminPage() {
       header: isBn ? "নাম" : "Name",
       accessor: role => (
         <div className="flex items-center gap-2">
-          <p className="font-medium text-gray-800 text-sm">{isBn ? role.name_bn : role.name_en}</p>
+          <p className="font-medium text-body text-sm">{isBn ? role.name_bn : role.name_en}</p>
           {role.is_system && (
             <Badge variant="blue">
               <ShieldCheck className="w-3 h-3 inline mr-1" />
@@ -57,29 +57,29 @@ export default function RolesAdminPage() {
       header: isBn ? "পারমিশন" : "Permissions",
       accessor: role => {
         if (role.is_system && role.code === "ADMIN") {
-          return <span className="text-xs text-gray-500">{isBn ? "সবকিছু" : "Everything"}</span>;
+          return <span className="text-xs text-muted">{isBn ? "সবকিছু" : "Everything"}</span>;
         }
         const modules = Array.from(new Set(
           role.permissions.map(p => (isBn ? p.label_bn : p.label_en).split(" — ")[0] ?? p.module),
         ));
         if (modules.length === 0) {
-          return <span className="text-xs text-gray-400">{isBn ? "কোনো পারমিশন নেই" : "No permissions"}</span>;
+          return <span className="text-xs text-muted">{isBn ? "কোনো পারমিশন নেই" : "No permissions"}</span>;
         }
         const shown = modules.slice(0, 3);
         const extra = modules.length - shown.length;
         return (
           <div className="flex flex-wrap gap-1">
             {shown.map(m => (
-              <span key={m} className="text-[11px] px-1.5 py-0.5 rounded bg-gray-100 text-gray-600">{m}</span>
+              <span key={m} className="text-[11px] px-1.5 py-0.5 rounded bg-surface-alt text-muted">{m}</span>
             ))}
-            {extra > 0 && <span className="text-[11px] px-1.5 py-0.5 rounded bg-gray-100 text-gray-500">+{extra}</span>}
+            {extra > 0 && <span className="text-[11px] px-1.5 py-0.5 rounded bg-surface-alt text-muted">+{extra}</span>}
           </div>
         );
       },
     },
     {
       header: isBn ? "ব্যবহারকারী" : "Users",
-      accessor: role => <span className="text-xs text-gray-500">{role.user_count ?? 0}</span>,
+      accessor: role => <span className="text-xs text-muted">{role.user_count ?? 0}</span>,
       className: "px-4 py-3 w-24",
     },
   ];
@@ -93,8 +93,8 @@ export default function RolesAdminPage() {
           title={role.is_system ? (isBn ? "দেখুন" : "View") : (isBn ? "সম্পাদনা" : "Edit")}
           className={
             role.is_system
-              ? "inline-flex items-center justify-center w-8 h-8 rounded-lg border border-gray-200 bg-gray-50 text-gray-500 hover:bg-gray-100 transition-colors"
-              : "inline-flex items-center justify-center w-8 h-8 rounded-lg border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors"
+              ? "inline-flex items-center justify-center w-8 h-8 rounded-lg border border-border bg-background text-muted hover:bg-surface-alt transition-colors"
+              : "inline-flex items-center justify-center w-8 h-8 rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/50 transition-colors"
           }
         >
           {role.is_system ? <Eye className="w-3.5 h-3.5" /> : <Pencil className="w-3.5 h-3.5" />}
@@ -108,7 +108,7 @@ export default function RolesAdminPage() {
           <button
             onClick={() => setDeleteTarget(role)}
             title={isBn ? "মুছুন" : "Delete"}
-            className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-red-200 bg-red-50 text-red-500 hover:bg-red-100 transition-colors"
+            className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/30 text-red-500 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors"
           >
             <Trash2 className="w-3.5 h-3.5" />
           </button>

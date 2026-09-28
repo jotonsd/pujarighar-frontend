@@ -99,7 +99,7 @@ function GeneralPanel({ settings, isBn }: { settings: SiteSettings; isBn: boolea
       {/* Logo & Favicon */}
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <p className="text-xs font-semibold text-gray-500 mb-2">{isBn ? "লোগো" : "Logo"}</p>
+          <p className="text-xs font-semibold text-muted mb-2">{isBn ? "লোগো" : "Logo"}</p>
           <ImageUpload
             existingImages={logoPrev ? [{ id: 'logo', image: logoPrev }] : []}
             onDeleteExisting={() => setLogoPrev(null)}
@@ -108,7 +108,7 @@ function GeneralPanel({ settings, isBn }: { settings: SiteSettings; isBn: boolea
           />
         </div>
         <div>
-          <p className="text-xs font-semibold text-gray-500 mb-2">{isBn ? "ফেভিকন" : "Favicon"}</p>
+          <p className="text-xs font-semibold text-muted mb-2">{isBn ? "ফেভিকন" : "Favicon"}</p>
           <ImageUpload
             existingImages={faviconPrev ? [{ id: 'favicon', image: faviconPrev }] : []}
             onDeleteExisting={() => setFaviconPrev(null)}
@@ -160,25 +160,25 @@ function InvoicePanel({ settings, isBn }: { settings: SiteSettings; isBn: boolea
             onClick={() => handleSelect(opt.value)}
             disabled={isLoading}
             className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl border-2 text-left transition-all ${
-              selected ? "border-amber-500 bg-amber-50" : "border-gray-200 hover:border-amber-300 hover:bg-gray-50"
+              selected ? "border-amber-500 bg-amber-50 dark:bg-amber-900/30" : "border-border hover:border-amber-300 hover:bg-surface-alt"
             }`}
           >
-            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${selected ? "border-amber-500" : "border-gray-300"}`}>
+            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${selected ? "border-amber-500" : "border-border"}`}>
               {selected && <div className="w-2.5 h-2.5 rounded-full bg-amber-600" />}
             </div>
             <div className="flex-1">
-              <p className={`font-semibold text-sm ${selected ? "text-amber-700" : "text-gray-800"}`}>{opt.label}</p>
-              <p className="text-xs text-gray-400 mt-0.5">{isBn ? opt.desc_bn : opt.desc_en}</p>
+              <p className={`font-semibold text-sm ${selected ? "text-amber-700 dark:text-amber-400" : "text-body"}`}>{opt.label}</p>
+              <p className="text-xs text-muted mt-0.5">{isBn ? opt.desc_bn : opt.desc_en}</p>
             </div>
             {selected && (
-              <span className="text-xs font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">
+              <span className="text-xs font-bold text-amber-700 dark:text-amber-400 bg-amber-100 dark:bg-amber-900/40 px-2 py-0.5 rounded-full">
                 {isBn ? "নির্বাচিত" : "Active"}
               </span>
             )}
           </button>
         );
       })}
-      <p className="text-xs text-gray-400 pt-1">
+      <p className="text-xs text-muted pt-1">
         {isBn
           ? "পরিবর্তন তাৎক্ষণিকভাবে কার্যকর — পরবর্তী চালান থেকে প্রযোজ্য।"
           : "Changes take effect immediately — applies from the next invoice."}
@@ -253,11 +253,11 @@ function MailPanel({ settings, isBn }: { settings: SiteSettings; isBn: boolean }
       <label className="flex items-center gap-3 cursor-pointer select-none">
         <div
           onClick={() => setForm(p => ({ ...p, email_use_tls: !p.email_use_tls }))}
-          className={`w-10 h-5 rounded-full transition-colors relative ${form.email_use_tls ? "bg-amber-600" : "bg-gray-200"}`}
+          className={`w-10 h-5 rounded-full transition-colors relative ${form.email_use_tls ? "bg-amber-600" : "bg-surface-alt"}`}
         >
           <span className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${form.email_use_tls ? "translate-x-5" : ""}`} />
         </div>
-        <span className="text-sm text-gray-700">{isBn ? "TLS সক্রিয় (সুপারিশকৃত)" : "Use TLS (recommended)"}</span>
+        <span className="text-sm text-muted">{isBn ? "TLS সক্রিয় (সুপারিশকৃত)" : "Use TLS (recommended)"}</span>
       </label>
       <button onClick={handleSave} disabled={isLoading} className="btn-primary">
         {isLoading ? (isBn ? "সংরক্ষণ হচ্ছে..." : "Saving...") : (isBn ? "সংরক্ষণ করুন" : "Save Changes")}
@@ -295,7 +295,7 @@ function ReferralPanel({ settings, isBn }: { settings: SiteSettings; isBn: boole
         value={amount}
         onChange={e => setAmount(e.target.value)}
       />
-      <p className="text-xs text-gray-400">
+      <p className="text-xs text-muted">
         {isBn
           ? "রেফারেল কোড দিয়ে সাইন আপ করা গ্রাহকের প্রথম অর্ডার সম্পন্ন হলে রেফারার এই পরিমাণ ক্যাশব্যাক পাবেন।"
           : "The referrer earns this amount as cashback once the referred customer's first order is completed."}
@@ -344,21 +344,21 @@ function FirstOrderDiscountPanel({ settings, isBn }: { settings: SiteSettings; i
           value={form.first_order_discount_percent}
           onChange={f("first_order_discount_percent")}
         />
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-muted">
           {isBn
             ? "একজন নিবন্ধিত গ্রাহক নিজে সাইট থেকে চেকআউট করে প্রথমবার অর্ডার দিলে সাবটোটালের ওপর স্বয়ংক্রিয়ভাবে এই হারে ছাড় প্রয়োগ হবে। ০ দিলে এই সুবিধা বন্ধ থাকবে। গেস্ট বা POS অর্ডারে প্রযোজ্য নয়।"
             : "Automatically applied to the subtotal when a registered customer checks out their own cart for the very first time. Set to 0 to disable. Doesn't apply to guest or POS orders."}
         </p>
       </div>
 
-      <div className="space-y-2 border-t border-gray-100 pt-4">
+      <div className="space-y-2 border-t border-border pt-4">
         <FloatingInput
           label={isBn ? "ফ্রি ডেলিভারি — সর্বনিম্ন সাবটোটাল (৳)" : "Free Delivery — Minimum Subtotal (৳)"}
           type="number" min="0" step="0.01"
           value={form.free_delivery_min_subtotal}
           onChange={f("free_delivery_min_subtotal")}
         />
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-muted">
           {isBn
             ? "অর্ডারের সাবটোটাল (অন্যান্য ছাড়ের পর) এই পরিমাণ বা তার বেশি হলে ডেলিভারি চার্জ সম্পূর্ণ মাফ হয়ে যাবে — ওয়েবসাইট, গেস্ট ও মোবাইল অ্যাপ, সব ধরনের চেকআউটে প্রযোজ্য। ০ দিলে বন্ধ থাকবে।"
             : "Delivery charge is waived entirely once the order subtotal (after other discounts) reaches this amount — applies to every checkout channel: website, guest, and mobile app. Set to 0 to disable."}
@@ -395,11 +395,11 @@ function PaymentMethodLogo({ method, isBn }: { method: PaymentMethod; isBn: bool
       onClick={() => inputRef.current?.click()}
       disabled={isLoading}
       title={isBn ? "লোগো পরিবর্তন করুন" : "Change logo"}
-      className="w-9 h-9 rounded-lg border border-gray-200 bg-white flex items-center justify-center overflow-hidden shrink-0 hover:border-amber-300 transition-colors"
+      className="w-9 h-9 rounded-lg border border-border bg-surface flex items-center justify-center overflow-hidden shrink-0 hover:border-amber-300 transition-colors"
     >
       {method.logo
         ? <img src={method.logo} alt={method.name_en} className="w-full h-full object-contain" />
-        : <ImagePlus className="w-4 h-4 text-gray-300" />}
+        : <ImagePlus className="w-4 h-4 text-muted" />}
       <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={handlePick} />
     </button>
   );
@@ -442,14 +442,14 @@ function PaymentMethodRow({ method, isBn }: { method: PaymentMethod; isBn: boole
   const chargeChanged = chargeType !== method.charge_type || chargeValue !== method.charge_value;
 
   return (
-    <div className="border border-gray-100 rounded-xl p-4 space-y-3">
+    <div className="border border-border rounded-xl p-4 space-y-3">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <PaymentMethodLogo method={method} isBn={isBn} />
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-gray-800 text-sm">{isBn ? method.name_bn : method.name_en}</span>
+            <span className="font-semibold text-body text-sm">{isBn ? method.name_bn : method.name_en}</span>
             {!method.is_integrated && (
-              <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 border border-amber-100">
+              <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-800">
                 {isBn ? "শীঘ্রই আসছে" : "Coming soon"}
               </span>
             )}
@@ -458,7 +458,7 @@ function PaymentMethodRow({ method, isBn }: { method: PaymentMethod; isBn: boole
         <button
           onClick={toggle}
           disabled={isLoading}
-          className={`w-10 h-5 rounded-full transition-colors relative shrink-0 ${method.is_enabled ? "bg-amber-600" : "bg-gray-200"} ${!method.is_integrated ? "opacity-50 cursor-not-allowed" : ""}`}
+          className={`w-10 h-5 rounded-full transition-colors relative shrink-0 ${method.is_enabled ? "bg-amber-600" : "bg-surface-alt"} ${!method.is_integrated ? "opacity-50 cursor-not-allowed" : ""}`}
         >
           <span className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${method.is_enabled ? "translate-x-5" : ""}`} />
         </button>
@@ -522,7 +522,7 @@ function AddPaymentMethodForm({ isBn, onDone }: { isBn: boolean; onDone: () => v
 
   return (
     <div className="border border-amber-200 bg-amber-50/50 rounded-xl p-4 space-y-3">
-      <p className="text-xs text-gray-500">
+      <p className="text-xs text-muted">
         {isBn
           ? "নতুন পদ্ধতি শুধু প্রি-কনফিগার হবে (নাম, লোগো) — চালু করার আগে এর গেটওয়ে ইন্টিগ্রেশন কোড লিখে দিতে হবে।"
           : "A newly added method is pre-configured only (name, logo) — its gateway integration still needs to be built in code before it can be enabled."}
@@ -546,7 +546,7 @@ function AddPaymentMethodForm({ isBn, onDone }: { isBn: boolean; onDone: () => v
         />
       </div>
       <div className="flex items-center gap-3">
-        <label className="text-xs text-gray-500 cursor-pointer inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-200 bg-white hover:border-amber-300">
+        <label className="text-xs text-muted cursor-pointer inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border bg-surface hover:border-amber-300">
           <ImagePlus className="w-3.5 h-3.5" />
           {logoFile ? logoFile.name : (isBn ? "লোগো বেছে নিন (ঐচ্ছিক)" : "Choose logo (optional)")}
           <input
@@ -559,7 +559,7 @@ function AddPaymentMethodForm({ isBn, onDone }: { isBn: boolean; onDone: () => v
         <button onClick={handleCreate} disabled={isLoading} className="btn-primary text-xs px-4 py-2">
           {isLoading ? (isBn ? "যোগ করা হচ্ছে..." : "Adding...") : (isBn ? "যোগ করুন" : "Add")}
         </button>
-        <button onClick={onDone} className="text-xs text-gray-400 hover:text-gray-600 px-2">
+        <button onClick={onDone} className="text-xs text-muted hover:text-body px-2">
           {isBn ? "বাতিল" : "Cancel"}
         </button>
       </div>
@@ -573,14 +573,14 @@ function PaymentMethodsPanel({ isBn }: { isBn: boolean }) {
 
   return (
     <div className="space-y-4">
-      <p className="text-xs text-gray-400">
+      <p className="text-xs text-muted">
         {isBn
           ? "কাস্টমার চেকআউটে কোন পেমেন্ট পদ্ধতি দেখবে তা নিয়ন্ত্রণ করুন — ওয়েবসাইট ও মোবাইল অ্যাপ উভয় জায়গায় প্রযোজ্য। যেসব পদ্ধতির গেটওয়ে এখনো ইন্টিগ্রেট করা হয়নি সেগুলো আগে থেকে কনফিগার করে রাখা যাবে, ইন্টিগ্রেশন সম্পন্ন হওয়ার সাথে সাথেই চালু করা যাবে।"
           : "Control which payment methods customers see at checkout — applies to both the website and the mobile app. Methods with no gateway integration yet can be pre-configured now and switched on the moment that integration is built."}
       </p>
       {isLoading ? (
         <div className="space-y-3">
-          {[1, 2, 3].map(i => <div key={i} className="h-20 bg-gray-100 rounded-xl animate-pulse" />)}
+          {[1, 2, 3].map(i => <div key={i} className="h-20 bg-surface-alt rounded-xl animate-pulse" />)}
         </div>
       ) : (
         <div className="space-y-3">
@@ -592,7 +592,7 @@ function PaymentMethodsPanel({ isBn }: { isBn: boolean }) {
       ) : (
         <button
           onClick={() => setShowAddForm(true)}
-          className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-dashed border-gray-300 text-sm text-gray-500 hover:border-amber-400 hover:text-amber-700 transition-colors"
+          className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-dashed border-border text-sm text-muted hover:border-amber-400 hover:text-amber-700 dark:hover:text-amber-400 transition-colors"
         >
           <Plus className="w-4 h-4" />
           {isBn ? "নতুন পেমেন্ট পদ্ধতি যোগ করুন" : "Add New Payment Method"}
@@ -636,8 +636,8 @@ function TelegramPanel({ settings, isBn }: { settings: SiteSettings; isBn: boole
 
   return (
     <div className="space-y-4">
-      <div className="bg-amber-50 border border-amber-100 rounded-xl p-3 text-xs text-gray-600 space-y-1.5 leading-relaxed">
-        <p className="font-semibold text-amber-700">
+      <div className="bg-amber-50 dark:bg-amber-900/30 border border-amber-100 dark:border-amber-800 rounded-xl p-3 text-xs text-muted space-y-1.5 leading-relaxed">
+        <p className="font-semibold text-amber-700 dark:text-amber-400">
           {isBn ? "সেটআপ করবেন যেভাবে" : "How to set this up"}
         </p>
         <p>
@@ -669,7 +669,7 @@ function TelegramPanel({ settings, isBn }: { settings: SiteSettings; isBn: boole
         onChange={f("telegram_chat_id")}
         placeholder="-1001234567890"
       />
-      <p className="text-xs text-gray-400">
+      <p className="text-xs text-muted">
         {isBn
           ? "কনফিগার করা থাকলে, নতুন অর্ডার, বাতিল ও ডেলিভারি হওয়া অর্ডারের নোটিফিকেশন ইমেইলের পাশাপাশি এই গ্রুপেও পাঠানো হবে।"
           : "Once configured, new-order, cancelled, and delivered notifications will be sent to this group alongside the existing admin emails."}
@@ -718,8 +718,8 @@ function AISupportPanel({ settings, isBn }: { settings: SiteSettings; isBn: bool
 
   return (
     <div className="space-y-4">
-      <div className="bg-amber-50 border border-amber-100 rounded-xl p-3 text-xs text-gray-600 space-y-1.5 leading-relaxed">
-        <p className="font-semibold text-amber-700">
+      <div className="bg-amber-50 dark:bg-amber-900/30 border border-amber-100 dark:border-amber-800 rounded-xl p-3 text-xs text-muted space-y-1.5 leading-relaxed">
+        <p className="font-semibold text-amber-700 dark:text-amber-400">
           {isBn ? "সেটআপ করবেন যেভাবে" : "How to set this up"}
         </p>
         <p>
@@ -746,23 +746,23 @@ function AISupportPanel({ settings, isBn }: { settings: SiteSettings; isBn: bool
         onChange={f("gemini_model")}
         placeholder="gemini-3.6-flash"
       />
-      <p className="text-xs text-gray-400">
+      <p className="text-xs text-muted">
         {isBn
           ? "মডেলের নাম পরিবর্তনযোগ্য রাখা হয়েছে যাতে Google নতুন ফ্রি-টিয়ার মডেল প্রকাশ করলে কোড পরিবর্তন ছাড়াই আপডেট করা যায়।"
           : "The model name is kept editable so it can be updated without a code change whenever Google releases a newer free-tier model."}
       </p>
 
-      <div className="border-t border-gray-100 pt-4">
+      <div className="border-t border-border pt-4">
         <label className="flex items-start gap-3 cursor-pointer select-none">
           <div
             onClick={() => setForm(p => ({ ...p, ai_ordering_enabled: !p.ai_ordering_enabled }))}
-            className={`mt-0.5 w-10 h-5 rounded-full transition-colors relative shrink-0 ${form.ai_ordering_enabled ? "bg-amber-600" : "bg-gray-200"}`}
+            className={`mt-0.5 w-10 h-5 rounded-full transition-colors relative shrink-0 ${form.ai_ordering_enabled ? "bg-amber-600" : "bg-surface-alt"}`}
           >
             <span className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${form.ai_ordering_enabled ? "translate-x-5" : ""}`} />
           </div>
           <div>
-            <span className="text-sm font-medium text-gray-700">{isBn ? "চ্যাট থেকে অর্ডার করার সুবিধা" : "Allow ordering through chat"}</span>
-            <p className="text-xs text-gray-400 mt-0.5">
+            <span className="text-sm font-medium text-muted">{isBn ? "চ্যাট থেকে অর্ডার করার সুবিধা" : "Allow ordering through chat"}</span>
+            <p className="text-xs text-muted mt-0.5">
               {isBn
                 ? "চালু থাকলে, গ্রাহকরা চ্যাট করেই বাস্তব অর্ডার (ক্যাশ অন ডেলিভারি) দিতে পারবেন — একাধিক পণ্যও একসাথে। স্টক তৎক্ষণাৎ কমে যাবে ও অন্যান্য অর্ডারের মতো পেন্ডিং অবস্থায় থাকবে, স্টাফের অনুমোদনের অপেক্ষায়। বাই ডিফল্ট বন্ধ থাকে।"
                 : "When on, customers can place real Cash-on-Delivery orders — including multiple products at once — directly in chat. Stock deducts immediately and the order lands as PENDING, awaiting staff confirmation like any other order. Off by default."}
@@ -828,8 +828,8 @@ function WhatsAppPanel({ settings, isBn }: { settings: SiteSettings; isBn: boole
 
   return (
     <div className="space-y-4">
-      <div className="bg-amber-50 border border-amber-100 rounded-xl p-3 text-xs text-gray-600 space-y-1.5 leading-relaxed">
-        <p className="font-semibold text-amber-700">
+      <div className="bg-amber-50 dark:bg-amber-900/30 border border-amber-100 dark:border-amber-800 rounded-xl p-3 text-xs text-muted space-y-1.5 leading-relaxed">
+        <p className="font-semibold text-amber-700 dark:text-amber-400">
           {isBn ? "সেটআপ করবেন যেভাবে" : "How to set this up"}
         </p>
         <p>
@@ -889,22 +889,22 @@ function WhatsAppPanel({ settings, isBn }: { settings: SiteSettings; isBn: boole
         placeholder="pujarighar_whatsapp_2026"
       />
 
-      <div className="bg-gray-50 border border-gray-100 rounded-xl p-3 space-y-1">
-        <p className="text-xs font-semibold text-gray-500">{isBn ? "কলব্যাক ইউআরএল" : "Callback URL"}</p>
-        <p className="text-xs font-mono text-gray-700 break-all">{callbackUrl}</p>
+      <div className="bg-surface-alt border border-border rounded-xl p-3 space-y-1">
+        <p className="text-xs font-semibold text-muted">{isBn ? "কলব্যাক ইউআরএল" : "Callback URL"}</p>
+        <p className="text-xs font-mono text-muted break-all">{callbackUrl}</p>
       </div>
 
-      <div className="border-t border-gray-100 pt-4">
+      <div className="border-t border-border pt-4">
         <label className="flex items-start gap-3 cursor-pointer select-none">
           <div
             onClick={() => setForm(p => ({ ...p, whatsapp_enabled: !p.whatsapp_enabled }))}
-            className={`mt-0.5 w-10 h-5 rounded-full transition-colors relative shrink-0 ${form.whatsapp_enabled ? "bg-amber-600" : "bg-gray-200"}`}
+            className={`mt-0.5 w-10 h-5 rounded-full transition-colors relative shrink-0 ${form.whatsapp_enabled ? "bg-amber-600" : "bg-surface-alt"}`}
           >
             <span className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${form.whatsapp_enabled ? "translate-x-5" : ""}`} />
           </div>
           <div>
-            <span className="text-sm font-medium text-gray-700">{isBn ? "হোয়াটসঅ্যাপ অটো-রিপ্লাই সক্রিয়" : "WhatsApp auto-reply enabled"}</span>
-            <p className="text-xs text-gray-400 mt-0.5">
+            <span className="text-sm font-medium text-muted">{isBn ? "হোয়াটসঅ্যাপ অটো-রিপ্লাই সক্রিয়" : "WhatsApp auto-reply enabled"}</span>
+            <p className="text-xs text-muted mt-0.5">
               {isBn
                 ? "চালু থাকলে, গ্রাহকরা হোয়াটসঅ্যাপে মেসেজ পাঠালে ব্রাহ্মণ AI স্বয়ংক্রিয়ভাবে উত্তর দেবে — ওয়েবসাইট চ্যাটের মতোই।"
                 : "When on, ব্রাহ্মণ AI automatically replies to customer WhatsApp messages — same logic as the website chat widget."}
@@ -939,7 +939,7 @@ export default function SettingsPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-[220px_1fr] gap-4">
         {/* Left menu */}
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-2 h-fit md:sticky md:top-20">
+        <div className="bg-surface rounded-xl border border-border shadow-sm p-2 h-fit md:sticky md:top-20">
           <nav className="flex md:flex-col gap-1 overflow-x-auto md:overflow-visible [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {MENU.map(item => (
               <button
@@ -947,8 +947,8 @@ export default function SettingsPage() {
                 onClick={() => setActive(item.id)}
                 className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-left transition-colors shrink-0 whitespace-nowrap ${
                   active === item.id
-                    ? "bg-amber-50 text-amber-700 font-semibold"
-                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-800"
+                    ? "bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 font-semibold"
+                    : "text-muted hover:bg-surface-alt hover:text-body"
                 }`}
               >
                 <span className="shrink-0">{item.icon}</span>
@@ -959,14 +959,14 @@ export default function SettingsPage() {
         </div>
 
         {/* Right content */}
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-          <h2 className="font-semibold text-gray-700 mb-5 pb-3 border-b border-gray-100">
+        <div className="bg-surface rounded-xl border border-border shadow-sm p-5">
+          <h2 className="font-semibold text-muted mb-5 pb-3 border-b border-border">
             {isBn ? activeMenu.label_bn : activeMenu.label_en}
           </h2>
 
           {isLoading ? (
             <div className="space-y-3">
-              {[1, 2, 3].map(i => <div key={i} className="h-12 bg-gray-100 rounded-xl animate-pulse" />)}
+              {[1, 2, 3].map(i => <div key={i} className="h-12 bg-surface-alt rounded-xl animate-pulse" />)}
             </div>
           ) : settings ? (
             <>

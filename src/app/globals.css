@@ -2,9 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Semantic color tokens (see tailwind.config.ts `theme.extend.colors`) —
+   the single source of truth for light/dark values. Use `bg-background`
+   (page bg) / `bg-surface` (card/white bg) / `bg-surface-alt` (secondary
+   bg, e.g. hover states, badges) / `text-body` (primary text) /
+   `text-muted` (secondary/tertiary text) / `border-border` instead of
+   hardcoding `bg-white`/`text-gray-900`/etc, so it adapts automatically
+   when `.dark` is toggled on <html> (via next-themes). */
+:root {
+  --background:  #f9fafb; /* gray-50 */
+  --surface:     #ffffff;
+  --surface-alt: #f3f4f6; /* gray-100 */
+  --body:        #111827; /* gray-900 */
+  --muted:       #6b7280; /* gray-500 */
+  --border:      #f3f4f6; /* gray-100 */
+}
+
+.dark {
+  --background:  #0a0a0c;
+  --surface:     #18181b;
+  --surface-alt: #27272a;
+  --body:        #f4f4f5;
+  --muted:       #a1a1aa;
+  --border:      #27272a;
+}
+
 @layer base {
   body {
-    @apply bg-gray-50 text-gray-900;
+    @apply bg-background text-body transition-colors duration-150;
   }
 }
 
@@ -22,7 +47,7 @@
 .shimmer {
   position: relative;
   overflow: hidden;
-  background: #f3f4f6;
+  background: var(--surface-alt);
 }
 
 .shimmer::after {
@@ -30,7 +55,7 @@
   position: absolute;
   inset: 0;
   transform: translateX(-100%);
-  background: linear-gradient(90deg, transparent, #e9eaec, transparent);
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
   animation: shimmer 1.5s infinite;
 }
 
@@ -116,11 +141,11 @@
 
 @layer components {
   .btn-primary {
-    @apply bg-amber-600 hover:bg-amber-600 text-white font-medium px-4 py-2 rounded-lg transition-colors;
+    @apply bg-amber-600 hover:bg-amber-700 dark:hover:bg-amber-500 text-white font-medium px-4 py-2 rounded-lg transition-colors;
   }
 
   .btn-secondary {
-    @apply bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium px-4 py-2 rounded-lg transition-colors;
+    @apply bg-surface-alt hover:bg-border text-body font-medium px-4 py-2 rounded-lg transition-colors;
   }
 
   .btn-danger {
@@ -128,11 +153,11 @@
   }
 
   .input-field {
-    @apply w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent;
+    @apply w-full bg-surface border border-border rounded-lg px-3 py-2 text-body focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent;
   }
 
   .card {
-    @apply bg-white rounded-xl shadow-sm border border-gray-100 p-6;
+    @apply bg-surface rounded-xl shadow-sm border border-border p-6;
   }
 
   .badge {

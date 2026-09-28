@@ -50,14 +50,14 @@ const STATUS_META: Record<string, { label_bn: string; label_en: string; color: s
 };
 
 const STATUS_BADGE: Record<string, string> = {
-  PENDING:    "bg-amber-50 text-amber-700 border-amber-100",
-  CONFIRMED:  "bg-blue-50 text-blue-700 border-blue-100",
-  PACKED:     "bg-purple-50 text-purple-700 border-purple-100",
-  ASSIGNED:   "bg-cyan-50 text-cyan-700 border-cyan-100",
-  ON_THE_WAY: "bg-orange-50 text-orange-700 border-orange-100",
-  DELIVERED:  "bg-green-50 text-green-700 border-green-100",
-  RETURNED:   "bg-red-50 text-red-700 border-red-100",
-  CANCELLED:  "bg-gray-50 text-gray-600 border-gray-200",
+  PENDING:    "bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border-amber-100 dark:border-amber-800",
+  CONFIRMED:  "bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-blue-100 dark:border-blue-800",
+  PACKED:     "bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 border-purple-100 dark:border-purple-800",
+  ASSIGNED:   "bg-cyan-50 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-400 border-cyan-100 dark:border-cyan-800",
+  ON_THE_WAY: "bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 border-orange-100 dark:border-orange-800",
+  DELIVERED:  "bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 border-green-100 dark:border-green-800",
+  RETURNED:   "bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 border-red-100 dark:border-red-800",
+  CANCELLED:  "bg-surface-alt text-muted border-border",
 };
 
 export default function DashboardPage() {
@@ -257,13 +257,13 @@ export default function DashboardPage() {
 
       {/* ── Row 3: Chart + Status ────────────────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-        <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+        <div className="lg:col-span-2 bg-surface rounded-2xl border border-border shadow-sm p-5">
           <div className="flex items-start justify-between mb-1">
             <div>
-              <h2 className="text-base font-bold text-gray-800">{isBn ? "মাসিক ওভারভিউ" : "Monthly Overview"}</h2>
-              <p className="text-xs text-gray-400 mt-0.5">{isBn ? "আয় বনাম খরচ" : "Income vs Expense"}</p>
+              <h2 className="text-base font-bold text-body">{isBn ? "মাসিক ওভারভিউ" : "Monthly Overview"}</h2>
+              <p className="text-xs text-muted mt-0.5">{isBn ? "আয় বনাম খরচ" : "Income vs Expense"}</p>
             </div>
-            <span className="text-sm font-semibold text-gray-400">{year}</span>
+            <span className="text-sm font-semibold text-muted">{year}</span>
           </div>
           {chartData.length > 0 ? (
             <ResponsiveContainer width="100%" height={260}>
@@ -278,12 +278,12 @@ export default function DashboardPage() {
               </LineChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-64 flex items-center justify-center text-gray-400 text-sm">{isBn ? "ডেটা নেই" : "No data yet"}</div>
+            <div className="h-64 flex items-center justify-center text-muted text-sm">{isBn ? "ডেটা নেই" : "No data yet"}</div>
           )}
         </div>
 
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-          <h2 className="text-base font-bold text-gray-800 mb-4">{isBn ? "অর্ডারের অবস্থা" : "Order Status"}</h2>
+        <div className="bg-surface rounded-2xl border border-border shadow-sm p-5">
+          <h2 className="text-base font-bold text-body mb-4">{isBn ? "অর্ডারের অবস্থা" : "Order Status"}</h2>
           <div className="space-y-4">
             {statusRows.map(row => {
               const meta = STATUS_META[row.status];
@@ -292,35 +292,35 @@ export default function DashboardPage() {
               return (
                 <div key={row.status}>
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm text-gray-700">{isBn ? meta.label_bn : meta.label_en}</span>
-                    <span className="text-sm font-bold text-gray-800">{formatNumber(row.count, locale)}</span>
+                    <span className="text-sm text-muted">{isBn ? meta.label_bn : meta.label_en}</span>
+                    <span className="text-sm font-bold text-body">{formatNumber(row.count, locale)}</span>
                   </div>
-                  <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="h-2 bg-surface-alt rounded-full overflow-hidden">
                     <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, backgroundColor: meta.color }} />
                   </div>
                 </div>
               );
             })}
             {statusRows.length === 0 && (
-              <p className="text-sm text-gray-400 text-center py-8">{isBn ? "কোনো অর্ডার নেই" : "No orders yet"}</p>
+              <p className="text-sm text-muted text-center py-8">{isBn ? "কোনো অর্ডার নেই" : "No orders yet"}</p>
             )}
           </div>
         </div>
       </div>
 
       {/* ── Row 3b: This month vs last month order count ─────────────────── */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+      <div className="bg-surface rounded-2xl border border-border shadow-sm p-5">
         <div className="flex items-start justify-between mb-1 flex-wrap gap-2">
           <div>
-            <h2 className="text-base font-bold text-gray-800">{isBn ? "এই মাস বনাম গত মাস" : "This Month vs Last Month"}</h2>
-            <p className="text-xs text-gray-400 mt-0.5">{isBn ? "দিন অনুযায়ী অর্ডার সংখ্যা" : "Order count by day of month"}</p>
+            <h2 className="text-base font-bold text-body">{isBn ? "এই মাস বনাম গত মাস" : "This Month vs Last Month"}</h2>
+            <p className="text-xs text-muted mt-0.5">{isBn ? "দিন অনুযায়ী অর্ডার সংখ্যা" : "Order count by day of month"}</p>
           </div>
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-100">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border border-amber-100 dark:border-amber-800">
               <span className="w-2 h-2 rounded-full bg-amber-600" />
               {thisMonthName}: {formatNumber(thisMonthOrderTotal, locale)}
             </span>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-50 text-gray-600 border border-gray-200">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-surface-alt text-muted border border-border">
               <span className="w-2 h-2 rounded-full bg-gray-400" />
               {lastMonthName}: {formatNumber(lastMonthOrderTotal, locale)}
             </span>
@@ -339,16 +339,16 @@ export default function DashboardPage() {
             </LineChart>
           </ResponsiveContainer>
         ) : (
-          <div className="h-56 flex items-center justify-center text-gray-400 text-sm">{isBn ? "ডেটা নেই" : "No data yet"}</div>
+          <div className="h-56 flex items-center justify-center text-muted text-sm">{isBn ? "ডেটা নেই" : "No data yet"}</div>
         )}
       </div>
 
       {/* ── Row 4: Recent orders + Top products ─────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
         {/* Recent orders */}
-        <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+        <div className="lg:col-span-2 bg-surface rounded-2xl border border-border shadow-sm p-5">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-base font-bold text-gray-800">{isBn ? "সাম্প্রতিক অর্ডার" : "Recent Orders"}</h2>
+            <h2 className="text-base font-bold text-body">{isBn ? "সাম্প্রতিক অর্ডার" : "Recent Orders"}</h2>
             <Link
               href={`/${locale}/admin/orders`}
               className="text-xs font-medium text-amber-700 hover:underline"
@@ -357,24 +357,24 @@ export default function DashboardPage() {
             </Link>
           </div>
           {(data?.recent_orders ?? []).length === 0 ? (
-            <p className="text-sm text-gray-400 text-center py-8">{isBn ? "কোনো অর্ডার নেই" : "No orders yet"}</p>
+            <p className="text-sm text-muted text-center py-8">{isBn ? "কোনো অর্ডার নেই" : "No orders yet"}</p>
           ) : (
             <div className="space-y-2">
               {(data?.recent_orders ?? []).map((order: RecentOrder) => {
                 const name = isBn ? (order.name_bn || order.name_en) : (order.name_en || order.name_bn);
                 const meta = STATUS_META[order.status];
-                const badge = STATUS_BADGE[order.status] ?? "bg-gray-50 text-gray-600 border-gray-200";
+                const badge = STATUS_BADGE[order.status] ?? "bg-surface-alt text-muted border-border";
                 const dateStr = new Date(order.created_at).toLocaleDateString(isBn ? "bn-BD" : "en-US", { month: "short", day: "numeric" });
                 return (
-                  <div key={order.id} className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
+                  <div key={order.id} className="flex items-center justify-between py-2 border-b border-border last:border-0">
                     <div className="flex items-center gap-3 min-w-0">
                       <div className="min-w-0">
-                        <p className="text-sm font-semibold text-gray-800 truncate">{order.order_number}</p>
-                        <p className="text-xs text-gray-400 truncate">{name} · {dateStr}</p>
+                        <p className="text-sm font-semibold text-body truncate">{order.order_number}</p>
+                        <p className="text-xs text-muted truncate">{name} · {dateStr}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-3 shrink-0">
-                      <span className="text-sm font-bold text-gray-800">{formatAmount(order.grand_total, locale, 0)}</span>
+                      <span className="text-sm font-bold text-body">{formatAmount(order.grand_total, locale, 0)}</span>
                       <span className={`text-xs font-medium px-2 py-0.5 rounded-full border ${badge}`}>
                         {isBn ? meta?.label_bn : meta?.label_en}
                       </span>
@@ -387,27 +387,27 @@ export default function DashboardPage() {
         </div>
 
         {/* Top products */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-          <h2 className="text-base font-bold text-gray-800 mb-4">{isBn ? "শীর্ষ পণ্য (আয়)" : "Top Products"}</h2>
+        <div className="bg-surface rounded-2xl border border-border shadow-sm p-5">
+          <h2 className="text-base font-bold text-body mb-4">{isBn ? "শীর্ষ পণ্য (আয়)" : "Top Products"}</h2>
           {(data?.top_products ?? []).length === 0 ? (
-            <p className="text-sm text-gray-400 text-center py-8">{isBn ? "কোনো বিক্রয় নেই" : "No sales yet"}</p>
+            <p className="text-sm text-muted text-center py-8">{isBn ? "কোনো বিক্রয় নেই" : "No sales yet"}</p>
           ) : (
             <div className="space-y-4">
               {(data?.top_products ?? []).map((p: TopProduct, idx: number) => {
                 const rev  = parseFloat(p.revenue);
                 const pct  = Math.round((rev / topRevenue) * 100);
                 const name = isBn ? p.name_bn : p.name_en;
-                const rankColors = ["text-amber-500", "text-gray-400", "text-orange-400", "text-gray-300", "text-gray-300"];
+                const rankColors = ["text-amber-500 dark:text-amber-400", "text-muted", "text-orange-400 dark:text-orange-300", "text-muted", "text-muted"];
                 return (
                   <div key={p.id}>
                     <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center gap-2 min-w-0">
                         <span className={`text-xs font-bold w-4 shrink-0 ${rankColors[idx]}`}>#{formatNumber(idx + 1, locale)}</span>
-                        <span className="text-sm text-gray-700 truncate">{name}</span>
+                        <span className="text-sm text-muted truncate">{name}</span>
                       </div>
-                      <span className="text-sm font-bold text-gray-800 shrink-0 ml-2">{formatAmount(p.revenue, locale, 0)}</span>
+                      <span className="text-sm font-bold text-body shrink-0 ml-2">{formatAmount(p.revenue, locale, 0)}</span>
                     </div>
-                    <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="h-1.5 bg-surface-alt rounded-full overflow-hidden">
                       <div className="h-full rounded-full bg-teal-500 transition-all" style={{ width: `${pct}%` }} />
                     </div>
                   </div>

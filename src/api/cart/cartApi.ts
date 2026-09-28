@@ -1,5 +1,21 @@
 import { baseApi } from '@/api/baseApi'
+import type { FetchBaseQueryError } from '@reduxjs/toolkit/query'
 import { Cart, SalesOrder } from '@/lib/types'
+
+export type PromoPreview = { code: string; discount_type: 'PERCENT' | 'FLAT'; discount_value: string }
+
+export const discountForPromo = (promo: PromoPreview, subtotal: number): number => {
+  const amount = promo.discount_type === 'PERCENT' ? subtotal * parseFloat(promo.discount_value) / 100 : parseFloat(promo.discount_value)
+  return Math.min(Math.max(amount, 0), subtotal)
+}
+
+export const promoErrorMessage = (err: unknown, isBn: boolean): string => {
+  const data = (err as FetchBaseQueryError)?.data as { errors?: { message_bn?: string; message_en?: string } | string } | undefined
+  if (data?.errors && typeof data.errors === 'object') {
+    return (isBn ? data.errors.message_bn : data.errors.message_en) ?? (isBn ? 'অবৈধ প্রোমো কোড' : 'Invalid promo code')
+  }
+  return isBn ? 'অবৈধ প্রোমো কোড' : 'Invalid promo code'
+}
 
 export const cartApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
@@ -40,10 +56,20 @@ export const cartApi = baseApi.injectEndpoints({
     // gateway_url/grand_total come back; SalesOrder's other fields are
     // absent until SSLCommerzService.confirm_payment actually creates it
     // (see CheckoutService.initiate_online_checkout's docstring for why).
-    checkout: build.mutation<Partial<SalesOrder> & { gateway_url?: string; grand_total?: string }, { payment_method: 'COD' | 'SSLCOMMERZ' | 'BKASH' | 'NAGAD' | 'STRIPE'; shipping_address_id?: string; delivery_zone?: 'inside' | 'outside' }>({
+    checkout: build.mutation<Partial<SalesOrder> & { gateway_url?: string; grand_total?: string }, { payment_method: 'COD' | 'SSLCOMMERZ' | 'BKASH' | 'NAGAD' | 'STRIPE'; shipping_address_id?: string; delivery_zone?: 'inside' | 'outside'; promo_code?: string }>({
       query: (body) => ({ url: '/api/cart/checkout/', method: 'POST', body }),
       transformResponse: (res: { data: Partial<SalesOrder> & { gateway_url?: string; grand_total?: string } }) => res.data,
       invalidatesTags: ['Cart', 'Orders'],
+    }),
+
+    // Registered customers only — validates a promo code against the
+    // website channel (no X-Client-Platform: mobile_app header sent) and
+    // the current user's order history, without redeeming it (see
+    // api.services.promo_service.redeem_promo_code — that only fires once
+    // an order is actually created).
+    previewPromoCode: build.mutation<{ code: string; discount_type: 'PERCENT' | 'FLAT'; discount_value: string }, { code: string }>({
+      query: (body) => ({ url: '/api/promo-codes/preview/', method: 'POST', body }),
+      transformResponse: (res: { data: { code: string; discount_type: 'PERCENT' | 'FLAT'; discount_value: string } }) => res.data,
     }),
 
   }),
@@ -57,4 +83,5 @@ export const {
   useRemoveCartItemMutation,
   useClearCartMutation,
   useCheckoutMutation,
+  usePreviewPromoCodeMutation,
 } = cartApi

@@ -23,7 +23,7 @@ function StarPicker({
           key={s}
           type="button"
           className={`text-2xl transition-colors ${
-            s <= (hover || value) ? "text-amber-400" : "text-gray-300"
+            s <= (hover || value) ? "text-amber-400" : "text-muted"
           }`}
           onMouseEnter={() => setHover(s)}
           onMouseLeave={() => setHover(0)}
@@ -57,11 +57,11 @@ function ReviewForm({
 
   if (existingReview || submitted) {
     return (
-      <div className="flex items-start gap-3 p-3 bg-green-50 border border-green-100 rounded-xl">
+      <div className="flex items-start gap-3 p-3 bg-green-50 border border-green-100 rounded-xl dark:bg-green-900/30 dark:border-green-900/50">
         <span className="text-green-500 text-lg shrink-0">✓</span>
         <div>
-          <p className="text-sm font-medium text-gray-700">{name}</p>
-          <p className="text-xs text-green-600 mt-0.5">
+          <p className="text-sm font-medium text-muted">{name}</p>
+          <p className="text-xs text-green-600 dark:text-green-400 mt-0.5">
             {isBn ? "রিভিউ দেওয়া হয়েছে" : "Review submitted"}
           </p>
           {(existingReview?.comment || submitted) && (
@@ -108,16 +108,16 @@ function ReviewForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="p-4 border border-gray-100 rounded-xl space-y-3 bg-gray-50"
+      className="p-4 border border-border rounded-xl space-y-3 bg-surface-alt"
     >
-      <p className="text-sm font-semibold text-gray-700">{name}</p>
+      <p className="text-sm font-semibold text-muted">{name}</p>
       <StarPicker value={rating} onChange={setRating} />
       <textarea
         value={comment}
         onChange={(e) => setComment(e.target.value)}
         rows={2}
         placeholder={isBn ? "মন্তব্য লিখুন (ঐচ্ছিক)" : "Write a comment (optional)"}
-        className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 resize-none focus:outline-none focus:ring-2 focus:ring-amber-400"
+        className="w-full text-sm border border-border rounded-lg px-3 py-2 resize-none focus:outline-none focus:ring-2 focus:ring-amber-400"
       />
       <button
         type="submit"
@@ -150,7 +150,7 @@ export default function OrderReviewSection({
 
   return (
     <div className="card mt-4">
-      <h2 className="font-semibold text-gray-700 mb-4">
+      <h2 className="font-semibold text-muted mb-4">
         {isBn ? "পণ্যের রিভিউ দিন" : "Review Your Products"}
       </h2>
       <div className="space-y-3">

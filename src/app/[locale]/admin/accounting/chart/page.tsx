@@ -116,7 +116,7 @@ export default function ChartOfAccountsPage() {
 
       {showCreate && (
         <form onSubmit={handleCreate} className="card mb-4">
-          <h3 className="text-sm font-semibold text-gray-700 mb-3">
+          <h3 className="text-sm font-semibold text-muted mb-3">
             {isBn ? "নতুন হিসাব" : "New Account"}
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
@@ -166,26 +166,26 @@ export default function ChartOfAccountsPage() {
       {isLoading ? (
         <TableSkeleton columns={6} rows={6} />
       ) : (
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+        <div className="bg-surface rounded-lg shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-amber-50 border-b border-amber-200">
+              <thead className="bg-amber-50 dark:bg-amber-900/20 border-b border-amber-200 dark:border-amber-800">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "কোড" : "Code"}</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "নাম (বাংলা)" : "Name (BN)"}</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "নাম (ইংরেজি)" : "Name (EN)"}</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "ধরন" : "Type"}</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "স্ট্যাটাস" : "Status"}</th>
-                  {canEdit && <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 uppercase tracking-wider">{isBn ? "অ্যাকশন" : "Actions"}</th>}
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">{isBn ? "কোড" : "Code"}</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">{isBn ? "নাম (বাংলা)" : "Name (BN)"}</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">{isBn ? "নাম (ইংরেজি)" : "Name (EN)"}</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">{isBn ? "ধরন" : "Type"}</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">{isBn ? "স্ট্যাটাস" : "Status"}</th>
+                  {canEdit && <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">{isBn ? "অ্যাকশন" : "Actions"}</th>}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-border">
                 {accounts.map(account => (
                   <>
-                    <tr key={account.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-4 py-3 font-mono text-xs text-gray-500">{account.code}</td>
-                      <td className="px-4 py-3 text-sm text-gray-800 font-medium">{account.name_bn}</td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{account.name_en}</td>
+                    <tr key={account.id} className="hover:bg-surface-alt transition-colors">
+                      <td className="px-4 py-3 font-mono text-xs text-muted">{account.code}</td>
+                      <td className="px-4 py-3 text-sm text-body font-medium">{account.name_bn}</td>
+                      <td className="px-4 py-3 text-sm text-muted">{account.name_en}</td>
                       <td className="px-4 py-3">
                         <Badge variant={TYPE_BADGE[account.account_type]}>{typeLabel(account.account_type)}</Badge>
                       </td>
@@ -200,7 +200,7 @@ export default function ChartOfAccountsPage() {
                           <button
                             onClick={() => editingId === account.id ? setEditingId(null) : startEdit(account)}
                             title={editingId === account.id ? (isBn ? "বাতিল" : "Cancel") : (isBn ? "সম্পাদনা" : "Edit")}
-                            className={`inline-flex items-center justify-center w-8 h-8 rounded-lg border transition-colors ${editingId === account.id ? "border-gray-200 bg-gray-100 text-gray-500 hover:bg-gray-200" : "border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100"}`}
+                            className={`inline-flex items-center justify-center w-8 h-8 rounded-lg border transition-colors ${editingId === account.id ? "border-border bg-surface-alt text-muted hover:bg-border" : "border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/40"}`}
                           >
                             {editingId === account.id ? <X className="w-3.5 h-3.5" /> : <Pencil className="w-3.5 h-3.5" />}
                           </button>
@@ -208,7 +208,7 @@ export default function ChartOfAccountsPage() {
                       )}
                     </tr>
                     {editingId === account.id && (
-                      <tr key={`edit-${account.id}`} className="bg-amber-50">
+                      <tr key={`edit-${account.id}`} className="bg-amber-50 dark:bg-amber-900/20">
                         <td colSpan={6} className="px-4 py-3">
                           <div className="flex items-end gap-3 flex-wrap">
                             <div className="w-48">
@@ -255,7 +255,7 @@ export default function ChartOfAccountsPage() {
               </tbody>
             </table>
             {accounts.length === 0 && (
-              <p className="text-center text-gray-400 py-8">
+              <p className="text-center text-muted py-8">
                 {isBn ? "কোনো হিসাব নেই" : "No accounts found"}
               </p>
             )}

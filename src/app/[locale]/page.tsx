@@ -115,17 +115,17 @@ export default async function HomePage({ params }: Props) {
 
       {/* Authentic products section */}
       <section>
-        <h2 className="text-xl font-bold text-gray-800 mb-5 text-center">
+        <h2 className="text-xl font-bold text-body mb-5 text-center">
           {locale === "bn" ? "কেন পূজারিঘর?" : "Why PujariGhar?"}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {features.map((f, i) => (
             <div key={i} className="card text-center">
               <f.icon className="w-10 h-10 mx-auto mb-4 text-amber-600" />
-              <h3 className="font-semibold text-gray-800 mb-2">
+              <h3 className="font-semibold text-body mb-2">
                 {locale === "bn" ? f.title_bn : f.title_en}
               </h3>
-              <p className="text-gray-500 text-sm">
+              <p className="text-muted text-sm">
                 {locale === "bn" ? f.desc_bn : f.desc_en}
               </p>
             </div>

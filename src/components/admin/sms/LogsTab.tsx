@@ -27,7 +27,7 @@ export default function LogsTab({ isBn }: { isBn: boolean }) {
   const columns: Column<SmsLogRow>[] = [
     {
       header: isBn ? "তারিখ" : "Date",
-      accessor: r => <span className="text-xs text-gray-500">{formatDate(r.created_at, locale)}</span>,
+      accessor: r => <span className="text-xs text-muted">{formatDate(r.created_at, locale)}</span>,
       exportValue: r => new Date(r.created_at).toLocaleString(),
     },
     {
@@ -42,7 +42,7 @@ export default function LogsTab({ isBn }: { isBn: boolean }) {
     },
     {
       header: isBn ? "বার্তা" : "Message",
-      accessor: r => <span className="text-xs text-gray-600 line-clamp-2 max-w-xs block">{r.message}</span>,
+      accessor: r => <span className="text-xs text-muted line-clamp-2 max-w-xs block">{r.message}</span>,
       exportValue: r => r.message,
     },
     {
@@ -65,7 +65,7 @@ export default function LogsTab({ isBn }: { isBn: boolean }) {
     },
     {
       header: isBn ? "প্রতিক্রিয়া" : "Response",
-      accessor: r => <span className="text-xs text-gray-400">{r.response_text || "—"}</span>,
+      accessor: r => <span className="text-xs text-muted">{r.response_text || "—"}</span>,
       exportValue: r => r.response_text,
     },
   ];

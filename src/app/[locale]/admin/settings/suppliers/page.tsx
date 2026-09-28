@@ -78,41 +78,41 @@ function PaymentModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl flex flex-col max-h-[90vh]">
+      <div className="bg-surface rounded-2xl shadow-xl w-full max-w-2xl flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
           <div>
-            <h2 className="font-bold text-gray-800 text-lg">{supplier.name_bn}</h2>
-            <p className="text-xs text-gray-400">{isBn ? "সরবরাহকারী পেমেন্ট" : "Supplier Payments"}</p>
+            <h2 className="font-bold text-body text-lg">{supplier.name_bn}</h2>
+            <p className="text-xs text-muted">{isBn ? "সরবরাহকারী পেমেন্ট" : "Supplier Payments"}</p>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+          <button onClick={onClose} className="text-muted hover:text-body">
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Summary cards — use fresh data from payments query */}
-        <div className="grid grid-cols-3 gap-3 px-6 py-4 border-b border-gray-100">
-          <div className="bg-blue-50 rounded-xl p-3 text-center">
-            <p className="text-xs text-blue-500 font-medium">{isBn ? "মোট ক্রেডিট ক্রয়" : "Total Credit"}</p>
-            <p className="text-base font-bold text-blue-700">{formatAmount(fresh.total_credit, locale, 0)}</p>
+        <div className="grid grid-cols-3 gap-3 px-6 py-4 border-b border-border">
+          <div className="bg-blue-50 dark:bg-blue-900/30 rounded-xl p-3 text-center">
+            <p className="text-xs text-blue-500 dark:text-blue-400 font-medium">{isBn ? "মোট ক্রেডিট ক্রয়" : "Total Credit"}</p>
+            <p className="text-base font-bold text-blue-700 dark:text-blue-400">{formatAmount(fresh.total_credit, locale, 0)}</p>
           </div>
-          <div className="bg-green-50 rounded-xl p-3 text-center">
-            <p className="text-xs text-green-500 font-medium">{isBn ? "মোট পরিশোধ" : "Total Paid"}</p>
-            <p className="text-base font-bold text-green-700">{formatAmount(fresh.total_paid, locale, 0)}</p>
+          <div className="bg-green-50 dark:bg-green-900/30 rounded-xl p-3 text-center">
+            <p className="text-xs text-green-500 dark:text-green-400 font-medium">{isBn ? "মোট পরিশোধ" : "Total Paid"}</p>
+            <p className="text-base font-bold text-green-700 dark:text-green-400">{formatAmount(fresh.total_paid, locale, 0)}</p>
           </div>
-          <div className={`rounded-xl p-3 text-center ${balance > 0 ? "bg-red-50" : "bg-gray-50"}`}>
-            <p className={`text-xs font-medium ${balance > 0 ? "text-red-500" : "text-gray-400"}`}>
+          <div className={`rounded-xl p-3 text-center ${balance > 0 ? "bg-red-50 dark:bg-red-900/30" : "bg-surface-alt"}`}>
+            <p className={`text-xs font-medium ${balance > 0 ? "text-red-500 dark:text-red-400" : "text-muted"}`}>
               {isBn ? "বাকি" : "Balance Due"}
             </p>
-            <p className={`text-base font-bold ${balance > 0 ? "text-red-700" : "text-gray-500"}`}>
+            <p className={`text-base font-bold ${balance > 0 ? "text-red-700 dark:text-red-400" : "text-muted"}`}>
               {formatAmount(fresh.total_balance, locale, 0)}
             </p>
           </div>
         </div>
 
         {/* Add payment form */}
-        <div className="px-6 py-4 border-b border-gray-100 space-y-3">
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+        <div className="px-6 py-4 border-b border-border space-y-3">
+          <p className="text-xs font-semibold text-muted uppercase tracking-wide">
             {isBn ? "নতুন পেমেন্ট" : "New Payment"}
           </p>
           <div className="grid grid-cols-2 gap-3">
@@ -145,17 +145,17 @@ function PaymentModal({
 
         {/* Payment history — below form, scrollable */}
         <div className="flex-1 overflow-y-auto px-6 py-4 min-h-0">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">
+          <p className="text-xs font-semibold text-muted uppercase tracking-wide mb-3">
             {isBn ? "পেমেন্ট ইতিহাস" : "Payment History"}
           </p>
           {isLoading ? (
-            <p className="text-sm text-gray-400 text-center py-6">{isBn ? "লোড হচ্ছে..." : "Loading..."}</p>
+            <p className="text-sm text-muted text-center py-6">{isBn ? "লোড হচ্ছে..." : "Loading..."}</p>
           ) : !data?.payments.length ? (
-            <p className="text-sm text-gray-400 text-center py-6">{isBn ? "কোনো পেমেন্ট নেই" : "No payments yet"}</p>
+            <p className="text-sm text-muted text-center py-6">{isBn ? "কোনো পেমেন্ট নেই" : "No payments yet"}</p>
           ) : (
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-xs text-gray-400 border-b border-gray-100">
+                <tr className="text-xs text-muted border-b border-border">
                   <th className="text-left pb-2">{isBn ? "তারিখ" : "Date"}</th>
                   <th className="text-right pb-2">{isBn ? "পরিমাণ" : "Amount"}</th>
                   <th className="text-left pb-2 pl-4">{isBn ? "নোট" : "Note"}</th>
@@ -164,16 +164,16 @@ function PaymentModal({
               </thead>
               <tbody>
                 {data.payments.map(p => (
-                  <tr key={p.id} className="border-b border-gray-50 hover:bg-gray-50">
-                    <td className="py-2.5 text-gray-600">{p.paid_date}</td>
-                    <td className="py-2.5 text-right font-semibold text-green-700">
+                  <tr key={p.id} className="border-b border-border hover:bg-surface-alt">
+                    <td className="py-2.5 text-muted">{p.paid_date}</td>
+                    <td className="py-2.5 text-right font-semibold text-green-700 dark:text-green-400">
                       {formatAmount(p.amount, locale, 0)}
                     </td>
-                    <td className="py-2.5 pl-4 text-gray-500 text-xs">{p.note || "—"}</td>
+                    <td className="py-2.5 pl-4 text-muted text-xs">{p.note || "—"}</td>
                     <td className="py-2.5 text-right">
                       <button
                         onClick={() => handleDelete(p)}
-                        className="text-gray-300 hover:text-red-500 transition-colors"
+                        className="text-muted hover:text-red-500 dark:hover:text-red-400 transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -182,9 +182,9 @@ function PaymentModal({
                 ))}
               </tbody>
               <tfoot>
-                <tr className="text-xs font-semibold text-gray-600 border-t border-gray-200">
+                <tr className="text-xs font-semibold text-muted border-t border-border">
                   <td className="pt-2">{isBn ? "মোট" : "Total"}</td>
-                  <td className="pt-2 text-right text-green-700">{formatAmount(paid, locale, 0)}</td>
+                  <td className="pt-2 text-right text-green-700 dark:text-green-400">{formatAmount(paid, locale, 0)}</td>
                   <td colSpan={2} />
                 </tr>
               </tfoot>
@@ -252,27 +252,27 @@ export default function SuppliersPage() {
       header: isBn ? "নাম" : "Name",
       accessor: (s) => (
         <div>
-          <p className="font-semibold text-gray-800">{s.name_bn}</p>
-          {s.name_en && <p className="text-xs text-gray-400">{s.name_en}</p>}
+          <p className="font-semibold text-body">{s.name_bn}</p>
+          {s.name_en && <p className="text-xs text-muted">{s.name_en}</p>}
         </div>
       ),
     },
     {
       header: isBn ? "ফোন" : "Phone",
       accessor: (s) => s.phone
-        ? <span className="text-gray-700">{s.phone}</span>
-        : <span className="text-gray-300">—</span>,
+        ? <span className="text-muted">{s.phone}</span>
+        : <span className="text-muted">—</span>,
     },
     {
       header: isBn ? "মোট ক্রেডিট" : "Total Credit",
       accessor: (s) => (
-        <span className="font-semibold text-blue-700">{formatAmount(s.total_credit, locale, 0)}</span>
+        <span className="font-semibold text-blue-700 dark:text-blue-400">{formatAmount(s.total_credit, locale, 0)}</span>
       ),
     },
     {
       header: isBn ? "পরিশোধ" : "Paid",
       accessor: (s) => (
-        <span className="font-semibold text-green-700">{formatAmount(s.total_paid, locale, 0)}</span>
+        <span className="font-semibold text-green-700 dark:text-green-400">{formatAmount(s.total_paid, locale, 0)}</span>
       ),
     },
     {
@@ -280,7 +280,7 @@ export default function SuppliersPage() {
       accessor: (s) => {
         const bal = parseFloat(s.total_balance || "0");
         return (
-          <span className={`font-bold ${bal > 0 ? "text-red-700" : "text-gray-400"}`}>
+          <span className={`font-bold ${bal > 0 ? "text-red-700 dark:text-red-400" : "text-muted"}`}>
             {formatAmount(s.total_balance, locale, 0)}
           </span>
         );
@@ -304,13 +304,13 @@ export default function SuppliersPage() {
       label: isBn ? "পেমেন্ট" : "Payment",
       icon: <Wallet className="w-3.5 h-3.5" />,
       onClick: (s) => setPaymentFor(s),
-      className: "inline-flex items-center justify-center w-8 h-8 rounded-lg border border-green-200 bg-green-50 text-green-600 hover:bg-green-100 transition-colors",
+      className: "inline-flex items-center justify-center w-8 h-8 rounded-lg border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900/50 transition-colors",
     },
     {
       label: isBn ? "সম্পাদনা" : "Edit",
       icon: <Pencil className="w-3.5 h-3.5" />,
       onClick: openEdit,
-      className: "inline-flex items-center justify-center w-8 h-8 rounded-lg border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors",
+      className: "inline-flex items-center justify-center w-8 h-8 rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/50 transition-colors",
     },
   ];
 
@@ -326,19 +326,19 @@ export default function SuppliersPage() {
       {/* Summary cards */}
       {suppliers.length > 0 && (
         <div className="grid grid-cols-3 gap-4 mb-6">
-          <div className="bg-blue-50 border border-blue-100 rounded-xl p-4">
-            <p className="text-xs text-blue-500 font-medium">{isBn ? "মোট ক্রেডিট ক্রয়" : "Total Credit Purchases"}</p>
-            <p className="text-xl font-bold text-blue-700 mt-1">{formatAmount(totalCredit, locale, 0)}</p>
+          <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 rounded-xl p-4">
+            <p className="text-xs text-blue-500 dark:text-blue-400 font-medium">{isBn ? "মোট ক্রেডিট ক্রয়" : "Total Credit Purchases"}</p>
+            <p className="text-xl font-bold text-blue-700 dark:text-blue-400 mt-1">{formatAmount(totalCredit, locale, 0)}</p>
           </div>
-          <div className="bg-green-50 border border-green-100 rounded-xl p-4">
-            <p className="text-xs text-green-500 font-medium">{isBn ? "মোট পরিশোধ" : "Total Paid"}</p>
-            <p className="text-xl font-bold text-green-700 mt-1">{formatAmount(totalPaid, locale, 0)}</p>
+          <div className="bg-green-50 dark:bg-green-900/30 border border-green-100 dark:border-green-800 rounded-xl p-4">
+            <p className="text-xs text-green-500 dark:text-green-400 font-medium">{isBn ? "মোট পরিশোধ" : "Total Paid"}</p>
+            <p className="text-xl font-bold text-green-700 dark:text-green-400 mt-1">{formatAmount(totalPaid, locale, 0)}</p>
           </div>
-          <div className={`border rounded-xl p-4 ${totalBalance > 0 ? "bg-red-50 border-red-100" : "bg-gray-50 border-gray-100"}`}>
-            <p className={`text-xs font-medium ${totalBalance > 0 ? "text-red-500" : "text-gray-400"}`}>
+          <div className={`border rounded-xl p-4 ${totalBalance > 0 ? "bg-red-50 dark:bg-red-900/30 border-red-100 dark:border-red-800" : "bg-surface-alt border-border"}`}>
+            <p className={`text-xs font-medium ${totalBalance > 0 ? "text-red-500 dark:text-red-400" : "text-muted"}`}>
               {isBn ? "মোট বাকি" : "Outstanding Balance"}
             </p>
-            <p className={`text-xl font-bold mt-1 ${totalBalance > 0 ? "text-red-700" : "text-gray-400"}`}>
+            <p className={`text-xl font-bold mt-1 ${totalBalance > 0 ? "text-red-700 dark:text-red-400" : "text-muted"}`}>
               {formatAmount(totalBalance, locale, 0)}
             </p>
           </div>
@@ -359,12 +359,12 @@ export default function SuppliersPage() {
       {/* Supplier create/edit modal */}
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 space-y-4">
+          <div className="bg-surface rounded-2xl shadow-xl w-full max-w-md p-6 space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="font-bold text-gray-800">
+              <h2 className="font-bold text-body">
                 {editing ? (isBn ? "সম্পাদনা করুন" : "Edit Supplier") : (isBn ? "নতুন সরবরাহকারী" : "New Supplier")}
               </h2>
-              <button onClick={close} className="text-gray-400 hover:text-gray-600"><X className="w-5 h-5" /></button>
+              <button onClick={close} className="text-muted hover:text-body"><X className="w-5 h-5" /></button>
             </div>
             <FloatingInput label={isBn ? "নাম (বাংলা) *" : "Name (Bangla) *"} value={form.name_bn ?? ""} onChange={f("name_bn")} />
             <FloatingInput label={isBn ? "নাম (ইংরেজি)" : "Name (English)"} value={form.name_en ?? ""} onChange={f("name_en")} />

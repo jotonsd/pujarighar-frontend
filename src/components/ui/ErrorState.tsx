@@ -27,11 +27,11 @@ export default function ErrorState({
       <div className="absolute -bottom-24 -left-24 w-72 h-72 rounded-full bg-amber-50 opacity-60 blur-3xl" aria-hidden="true" />
 
       <div className="relative text-center max-w-lg error-fade-in">
-        <p className="text-7xl sm:text-8xl font-extrabold text-gray-900 mb-3 tracking-tight">{code}</p>
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-3">
+        <p className="text-7xl sm:text-8xl font-extrabold text-body mb-3 tracking-tight">{code}</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-body mb-3">
           {isBn ? "ওহো! " : "Oops! "}{title}
         </h1>
-        <p className="text-base text-gray-500 mb-10 leading-relaxed">{message}</p>
+        <p className="text-base text-muted mb-10 leading-relaxed">{message}</p>
 
         <div className="flex items-center justify-center gap-3 mb-10">
           <Link
@@ -43,7 +43,7 @@ export default function ErrorState({
           </Link>
           <button
             onClick={() => router.back()}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-border text-sm font-semibold text-muted hover:bg-surface-alt hover:border-border transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             {isBn ? "ফিরে যান" : "Go Back"}

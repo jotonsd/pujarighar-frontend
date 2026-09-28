@@ -11,7 +11,7 @@ export default function IncomeReportPage() {
       descriptionBn="তারিখ বা হিসাব দিয়ে আয়ের তালিকা দেখুন"
       descriptionEn="View income entries filtered by date or account"
       accountType="REVENUE"
-      amountColorClass="text-green-600"
+      amountColorClass="text-green-600 dark:text-green-400"
       useReportQuery={useGetIncomeReportQuery}
     />
   );

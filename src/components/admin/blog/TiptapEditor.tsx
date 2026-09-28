@@ -28,7 +28,7 @@ function ToolbarButton({
       onClick={onClick}
       title={title}
       className={`inline-flex items-center justify-center w-8 h-8 rounded-md transition-colors ${
-        active ? "bg-amber-100 text-amber-700" : "text-gray-500 hover:bg-gray-100"
+        active ? "bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400" : "text-muted hover:bg-surface-alt"
       }`}
     >
       {children}
@@ -40,7 +40,7 @@ export default function TiptapEditor({ label, value, onChange }: Props) {
   const editor = useEditor({
     extensions: [
       StarterKit,
-      Link.configure({ openOnClick: false, HTMLAttributes: { class: "text-amber-700 underline" } }),
+      Link.configure({ openOnClick: false, HTMLAttributes: { class: "text-amber-700 dark:text-amber-400 underline" } }),
     ],
     content: value,
     immediatelyRender: false,
@@ -68,10 +68,10 @@ export default function TiptapEditor({ label, value, onChange }: Props) {
 
   return (
     <div>
-      <label className="block text-xs font-medium text-gray-500 mb-1.5">{label}</label>
-      <div className="border border-gray-200 rounded-xl overflow-hidden">
+      <label className="block text-xs font-medium text-muted mb-1.5">{label}</label>
+      <div className="border border-border rounded-xl overflow-hidden">
         {editor && (
-          <div className="flex items-center gap-0.5 border-b border-gray-100 px-1.5 py-1 bg-gray-50 flex-wrap">
+          <div className="flex items-center gap-0.5 border-b border-border px-1.5 py-1 bg-background flex-wrap">
             <ToolbarButton title="Bold" active={editor.isActive("bold")} onClick={() => editor.chain().focus().toggleBold().run()}>
               <Bold className="w-4 h-4" />
             </ToolbarButton>

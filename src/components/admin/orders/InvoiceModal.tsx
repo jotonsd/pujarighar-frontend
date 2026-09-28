@@ -103,16 +103,16 @@ export default function InvoiceModal({ orderId, orderNumber, onClose }: Props) {
 
   return (
     <div className="fixed inset-0 z-[1100] flex items-center justify-center bg-black/50 px-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl flex flex-col" style={{ height: '90vh' }}>
+      <div className="bg-surface rounded-2xl shadow-2xl w-full max-w-3xl flex flex-col" style={{ height: '90vh' }}>
 
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100 shrink-0 gap-3 flex-wrap">
-          <h2 className="font-semibold text-gray-800 shrink-0">
+        <div className="flex items-center justify-between px-5 py-3 border-b border-border shrink-0 gap-3 flex-wrap">
+          <h2 className="font-semibold text-body shrink-0">
             {isBn ? 'চালান' : 'Invoice'} — {orderNumber}
           </h2>
 
           {/* Page size selector */}
-          <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-0.5">
+          <div className="flex items-center gap-1 bg-surface-alt rounded-lg p-0.5">
             {PAGE_SIZES.map(s => (
               <button
                 key={s.value}
@@ -120,8 +120,8 @@ export default function InvoiceModal({ orderId, orderNumber, onClose }: Props) {
                 disabled={loading}
                 className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
                   pageSize === s.value
-                    ? 'bg-white text-amber-700 shadow-sm font-semibold'
-                    : 'text-gray-500 hover:text-gray-700'
+                    ? 'bg-surface text-amber-700 dark:text-amber-400 shadow-sm font-semibold'
+                    : 'text-muted hover:text-muted'
                 }`}
               >
                 {s.label}
@@ -133,7 +133,7 @@ export default function InvoiceModal({ orderId, orderNumber, onClose }: Props) {
             <button
               onClick={handlePrint}
               disabled={loading}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-40"
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-xs font-medium text-muted hover:bg-surface-alt transition-colors disabled:opacity-40"
             >
               <Printer className="w-3.5 h-3.5" />
               {isBn ? 'প্রিন্ট' : 'Print'}
@@ -148,17 +148,17 @@ export default function InvoiceModal({ orderId, orderNumber, onClose }: Props) {
                 : <Download className="w-3.5 h-3.5" />}
               {isBn ? 'ডাউনলোড' : 'Download'}
             </button>
-            <button onClick={onClose} className="text-gray-400 hover:text-gray-600 ml-1">
+            <button onClick={onClose} className="text-muted hover:text-muted ml-1">
               <X className="w-5 h-5" />
             </button>
           </div>
         </div>
 
         {/* PDF preview */}
-        <div className="flex-1 min-h-0 bg-gray-100 rounded-b-2xl overflow-hidden">
+        <div className="flex-1 min-h-0 bg-surface-alt rounded-b-2xl overflow-hidden">
           {loading ? (
             <div className="h-full flex items-center justify-center">
-              <Loader className="w-8 h-8 animate-spin text-amber-500" />
+              <Loader className="w-8 h-8 animate-spin text-amber-500 dark:text-amber-400" />
             </div>
           ) : pdfUrl ? (
             <iframe

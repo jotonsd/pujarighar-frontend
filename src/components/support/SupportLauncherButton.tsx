@@ -21,7 +21,7 @@ export default function SupportLauncherButton() {
       onClick={open}
       title={isBn ? "ব্রাহ্মণ AI" : "Brahman AI"}
       aria-label={isBn ? "ব্রাহ্মণ AI" : "Brahman AI"}
-      className="fixed bottom-4 right-4 sm:bottom-5 sm:right-5 z-50 flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white shadow-lg hover:scale-105 transition-transform"
+      className="fixed bottom-4 right-4 sm:bottom-5 sm:right-5 z-50 flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-surface shadow-lg hover:scale-105 transition-transform"
     >
       <span className="absolute inset-0 rounded-full bg-amber-600 animate-ping opacity-30" />
       <Image

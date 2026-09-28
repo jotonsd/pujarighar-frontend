@@ -75,10 +75,10 @@ export default function BaynaClient() {
       <div className="max-w-2xl mx-auto px-4 py-10">
         <div className="card text-center py-12 space-y-3">
           <BadgeCheck className="w-12 h-12 mx-auto text-green-600" />
-          <h1 className="text-lg font-bold text-gray-800">
+          <h1 className="text-lg font-bold text-body">
             {isBn ? "আপনার অনুরোধ জমা হয়েছে" : "Your request has been submitted"}
           </h1>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-muted">
             {isBn
               ? "আমরা শীঘ্রই আপনার দেওয়া ফোন নম্বরে যোগাযোগ করব।"
               : "We'll contact you soon on the phone number you provided."}
@@ -92,10 +92,10 @@ export default function BaynaClient() {
     <div className="max-w-2xl mx-auto px-4 py-5 space-y-4">
       <div className="card space-y-4">
         <div>
-          <h1 className="text-xl font-bold text-gray-800 mb-1">
+          <h1 className="text-xl font-bold text-body mb-1">
             {isBn ? "বায়না দিন" : "Request a Booking"}
           </h1>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-muted">
             {isBn
               ? "পূজারী, ঢাকি অথবা মূর্তির জন্য অনুরোধ জানান — আমরা যোগাযোগ করে বিস্তারিত আলোচনা করব।"
               : "Request a Pujari, Dhaki, or custom Murti — we'll reach out to confirm the details."}
@@ -104,7 +104,7 @@ export default function BaynaClient() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+            <p className="text-xs font-semibold text-muted uppercase tracking-wider mb-2">
               {isBn ? "সেবার ধরন" : "Service Type"}
             </p>
             <ServiceTypeSelector value={serviceType} onChange={setServiceType} locale={locale} />

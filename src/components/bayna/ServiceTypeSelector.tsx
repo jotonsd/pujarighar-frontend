@@ -27,7 +27,7 @@ export default function ServiceTypeSelector({
           className={`flex flex-col items-center gap-1.5 py-3 rounded-xl border-2 transition-colors ${
             value === s.value
               ? "border-amber-600 bg-amber-50 text-amber-700"
-              : "border-gray-200 text-gray-500 hover:border-gray-300"
+              : "border-border text-muted hover:border-border"
           }`}
         >
           <s.icon className="w-5 h-5" />

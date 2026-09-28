@@ -31,7 +31,7 @@ export default function TrialBalancePage() {
         </div>
         {tb && (
           <div className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold ${
-            balanced ? "bg-green-50 text-green-700 border border-green-200" : "bg-red-50 text-red-700 border border-red-200"
+            balanced ? "bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800" : "bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800"
           }`}>
             <span>{balanced ? "✓" : "✗"}</span>
             <span>
@@ -48,33 +48,33 @@ export default function TrialBalancePage() {
       {isLoading ? (
         <TableSkeleton columns={4} rows={6} />
       ) : tb ? (
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+        <div className="bg-surface rounded-lg shadow-sm overflow-hidden">
           <table className="w-full text-sm">
-            <thead className="bg-amber-50 border-b border-amber-200">
+            <thead className="bg-amber-50 dark:bg-amber-900/20 border-b border-amber-200 dark:border-amber-800">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">Code</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">{t("account")}</th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 uppercase tracking-wider">{t("debit")}</th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 uppercase tracking-wider">{t("credit")}</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">Code</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">{t("account")}</th>
+                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">{t("debit")}</th>
+                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">{t("credit")}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-border">
               {tb.rows.map((r, i) => (
-                <tr key={i} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-4 py-3 font-mono text-xs text-gray-500">{r.account.code}</td>
-                  <td className="px-4 py-3 text-sm text-gray-700">{locale === "bn" ? r.account.name_bn : r.account.name_en}</td>
+                <tr key={i} className="hover:bg-surface-alt transition-colors">
+                  <td className="px-4 py-3 font-mono text-xs text-muted">{r.account.code}</td>
+                  <td className="px-4 py-3 text-sm text-muted">{locale === "bn" ? r.account.name_bn : r.account.name_en}</td>
                   <td className="px-4 py-3 text-right text-sm">{Number(r.debit)  ? formatAmount(r.debit,  locale, 2) : "—"}</td>
                   <td className="px-4 py-3 text-right text-sm">{Number(r.credit) ? formatAmount(r.credit, locale, 2) : "—"}</td>
                 </tr>
               ))}
             </tbody>
-            <tfoot className="border-t-2 border-amber-200 bg-amber-50">
+            <tfoot className="border-t-2 border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20">
               <tr>
-                <td colSpan={2} className="px-4 py-3 text-xs font-bold text-gray-700 uppercase">
+                <td colSpan={2} className="px-4 py-3 text-xs font-bold text-body uppercase">
                   {locale === "bn" ? "মোট" : "Total"}
                 </td>
-                <td className="px-4 py-3 text-right text-sm font-bold text-gray-800">{formatAmount(totalDebit,  locale, 2)}</td>
-                <td className="px-4 py-3 text-right text-sm font-bold text-gray-800">{formatAmount(totalCredit, locale, 2)}</td>
+                <td className="px-4 py-3 text-right text-sm font-bold text-body">{formatAmount(totalDebit,  locale, 2)}</td>
+                <td className="px-4 py-3 text-right text-sm font-bold text-body">{formatAmount(totalCredit, locale, 2)}</td>
               </tr>
             </tfoot>
           </table>

@@ -42,7 +42,7 @@ export default function LedgerPage() {
     {
       header: locale === "bn" ? "তারিখ" : "Date",
       accessor: l => (
-        <span className="text-gray-500 text-xs">
+        <span className="text-muted text-xs">
           {formatDate(l.date, locale)}
         </span>
       ),
@@ -58,48 +58,48 @@ export default function LedgerPage() {
     {
       header: locale === "bn" ? "বিবরণ" : "Description",
       accessor: "description",
-      className: "px-4 py-3 text-sm text-gray-700",
+      className: "px-4 py-3 text-sm text-muted",
       exportValue: l => l.description,
     },
     {
       header: t("debit"),
       accessor: l => (
-        <span className="text-right block font-bold text-gray-800">
+        <span className="text-right block font-bold text-body">
           {Number(l.debit) ? (
             formatAmount(l.debit, locale, 2)
           ) : (
-            <span className="text-gray-300 font-normal">—</span>
+            <span className="text-muted font-normal">—</span>
           )}
         </span>
       ),
       headerClassName:
-        "px-4 py-3 text-right text-xs font-semibold text-amber-700 uppercase tracking-wider",
+        "px-4 py-3 text-right text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider",
       exportValue: l => Number(l.debit) || 0,
     },
     {
       header: t("credit"),
       accessor: l => (
-        <span className="text-right block font-bold text-gray-800">
+        <span className="text-right block font-bold text-body">
           {Number(l.credit) ? (
             formatAmount(l.credit, locale, 2)
           ) : (
-            <span className="text-gray-300 font-normal">—</span>
+            <span className="text-muted font-normal">—</span>
           )}
         </span>
       ),
       headerClassName:
-        "px-4 py-3 text-right text-xs font-semibold text-amber-700 uppercase tracking-wider",
+        "px-4 py-3 text-right text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider",
       exportValue: l => Number(l.credit) || 0,
     },
     {
       header: t("balance"),
       accessor: l => (
-        <span className="text-right block font-bold text-amber-700">
+        <span className="text-right block font-bold text-amber-700 dark:text-amber-400">
           {formatAmount(l.balance, locale, 2)}
         </span>
       ),
       headerClassName:
-        "px-4 py-3 text-right text-xs font-semibold text-amber-700 uppercase tracking-wider",
+        "px-4 py-3 text-right text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider",
       exportValue: l => Number(l.balance) || 0,
     },
   ];
@@ -148,14 +148,14 @@ export default function LedgerPage() {
       </div>
 
       {ledger && (
-        <div className="flex justify-between  font-bold text-sm text-gray-600 mb-3 px-1">
+        <div className="flex justify-between  font-bold text-sm text-muted mb-3 px-1">
           <span>
             {locale === "bn" ? "প্রারম্ভিক ব্যালেন্স" : "Opening Balance"}:{" "}
             <strong>{formatAmount(ledger.opening_balance, locale, 2)}</strong>
           </span>
           <span>
             {locale === "bn" ? "সমাপ্তি ব্যালেন্স" : "Closing Balance"}:{" "}
-            <strong className="text-amber-700">
+            <strong className="text-amber-700 dark:text-amber-400">
               {formatAmount(ledger.closing_balance, locale, 2)}
             </strong>
           </span>

@@ -25,6 +25,7 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
 import LanguageSwitcher from "./LanguageSwitcher";
+import ThemeToggle from "./ThemeToggle";
 
 // Fallback menu for unauthenticated (guest) users — not fetched from API
 const GUEST_MENU: NavItem[] = [
@@ -1015,6 +1016,7 @@ export default function Navbar() {
                 <Settings className="w-5 h-5" />
               </Link>
             )}
+            <ThemeToggle />
             <LanguageSwitcher />
             {currentUser && <NotificationBell isAdmin={role === "ADMIN"} />}
 

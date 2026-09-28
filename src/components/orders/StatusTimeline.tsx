@@ -35,7 +35,7 @@ export default function StatusTimeline({ logs, locale, deliveryInfo, courierTrac
 
           {/* Content */}
           <div className="pb-4">
-            <p className="font-medium text-gray-800 text-sm">
+            <p className="font-medium text-body text-sm">
               {isBn ? log.to_status_label : log.to_status_label_en}
             </p>
 
@@ -66,7 +66,7 @@ export default function StatusTimeline({ logs, locale, deliveryInfo, courierTrac
                     {(deliveryInfo.name_bn || deliveryInfo.name_en || "D")[0].toUpperCase()}
                   </div>
                 )}
-                <p className="text-xs text-gray-600">
+                <p className="text-xs text-muted">
                   {isBn
                     ? deliveryInfo.name_bn || deliveryInfo.name_en
                     : deliveryInfo.name_en || deliveryInfo.name_bn}{" "}
@@ -75,20 +75,20 @@ export default function StatusTimeline({ logs, locale, deliveryInfo, courierTrac
               </div>
             )}
 
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-muted">
               {new Date(log.changed_at).toLocaleString(
                 isBn ? "bn-BD" : "en-US",
               )}
             </p>
             {(log.note_bn || log.note_en) && (
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-muted mt-1">
                 {isBn ? log.note_bn : log.note_en}
               </p>
             )}
 
             {/* Delivered timestamp inline under DELIVERED entry */}
             {log.to_status === "DELIVERED" && deliveryInfo?.delivered_at && (
-              <p className="text-xs text-gray-400 mt-1">
+              <p className="text-xs text-muted mt-1">
                 {isBn ? "ডেলিভারি: " : "Delivered: "}
                 {fmt(deliveryInfo.delivered_at, locale)}
               </p>

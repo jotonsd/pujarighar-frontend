@@ -114,16 +114,16 @@ export default async function BlogDetailPage({ params }: Props) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
 
-      <nav className="text-xs text-gray-400 mb-4 flex items-center gap-1.5">
+      <nav className="text-xs text-muted mb-4 flex items-center gap-1.5">
         <Link href={`/${locale}`} className="hover:text-amber-700">{isBn ? "হোম" : "Home"}</Link>
         <span>/</span>
         <Link href={`/${locale}/blog`} className="hover:text-amber-700">{isBn ? "ব্লগ" : "Blog"}</Link>
         <span>/</span>
-        <span className="text-gray-500 truncate">{title}</span>
+        <span className="text-muted truncate">{title}</span>
       </nav>
 
       {post.cover_image && (
-        <div className="w-full rounded-2xl overflow-hidden mb-6 bg-gray-50">
+        <div className="w-full rounded-2xl overflow-hidden mb-6 bg-background">
           <Image
             src={post.cover_image}
             alt={title}
@@ -136,10 +136,10 @@ export default async function BlogDetailPage({ params }: Props) {
         </div>
       )}
 
-      <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-3">{title}</h1>
+      <h1 className="text-2xl sm:text-3xl font-bold text-body mb-3">{title}</h1>
 
       {post.published_at && (
-        <p className="text-xs text-gray-400 mb-3">
+        <p className="text-xs text-muted mb-3">
           {new Date(post.published_at).toLocaleDateString(isBn ? "bn-BD" : "en-US", {
             year: "numeric",
             month: "long",
@@ -153,7 +153,7 @@ export default async function BlogDetailPage({ params }: Props) {
       </div>
 
       <div
-        className="prose prose-sm sm:prose-base max-w-none rich-text text-gray-700"
+        className="prose prose-sm sm:prose-base max-w-none rich-text text-muted"
         dangerouslySetInnerHTML={{ __html: body }}
       />
     </div>

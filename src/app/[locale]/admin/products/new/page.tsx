@@ -147,7 +147,7 @@ export default function NewProductPage() {
               type="button"
               onClick={regenerateSku}
               title={locale === "bn" ? "পুনরায় তৈরি করুন" : "Regenerate SKU"}
-              className="h-10 w-10 shrink-0 flex items-center justify-center rounded-lg border border-gray-300 text-gray-500 hover:text-amber-700 hover:border-amber-400 transition-colors"
+              className="h-10 w-10 shrink-0 flex items-center justify-center rounded-lg border border-border text-muted hover:text-amber-700 hover:border-amber-400 transition-colors"
             >
               <RefreshCw className="w-4 h-4" />
             </button>
@@ -223,8 +223,8 @@ export default function NewProductPage() {
           locale={locale}
         />
 
-        <div className="pt-2 border-t border-gray-100">
-          <h3 className="text-sm font-semibold text-gray-600 mb-3">
+        <div className="pt-2 border-t border-border">
+          <h3 className="text-sm font-semibold text-muted mb-3">
             {locale === "bn" ? "এসইও (ঐচ্ছিক)" : "SEO (optional)"}
           </h3>
           <div className="space-y-3">

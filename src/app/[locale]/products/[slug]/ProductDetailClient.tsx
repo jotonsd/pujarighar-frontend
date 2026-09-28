@@ -116,7 +116,7 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <div className="space-y-3">
           {/* Main image */}
-          <div className="aspect-square bg-gray-100 rounded-xl overflow-hidden relative group">
+          <div className="aspect-square bg-surface-alt rounded-xl overflow-hidden relative group">
             {images.length > 0 ? (
               <>
                 <div
@@ -163,7 +163,7 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
                           aria-current={i === imgIdx}
                           className="w-6 h-6 flex items-center justify-center shrink-0"
                         >
-                          <span className={`w-2 h-2 rounded-full transition-colors ${i === imgIdx ? "bg-white" : "bg-white/40"}`} />
+                          <span className={`w-2 h-2 rounded-full transition-colors ${i === imgIdx ? "bg-surface" : "bg-surface/40"}`} />
                         </button>
                       ))}
                     </div>
@@ -189,7 +189,7 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
                   className={`relative w-16 h-16 rounded-lg overflow-hidden border-2 transition-colors shrink-0 ${
                     i === imgIdx
                       ? "border-amber-500"
-                      : "border-gray-200 hover:border-amber-300"
+                      : "border-border hover:border-amber-300"
                   }`}
                 >
                   <Image
@@ -205,17 +205,17 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
           )}
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-gray-800 mb-2">{name}</h1>
+          <h1 className="text-2xl font-bold text-body mb-2">{name}</h1>
           <div className="flex items-center gap-3 mb-4">
             {(product.brand_name_bn || product.brand_name_en) && (
-              <span className="text-xs font-semibold text-amber-700 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-full">
+              <span className="text-xs font-semibold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 px-2.5 py-1 rounded-full">
                 {localName(product.brand_name_bn ?? '', product.brand_name_en ?? '', locale === 'bn')}
               </span>
             )}
-            <p className="text-gray-500 text-sm">SKU: {product.sku}</p>
+            <p className="text-muted text-sm">SKU: {product.sku}</p>
           </div>
           <div className="flex items-center gap-2 flex-wrap mb-4">
-            <span className="text-3xl font-bold text-amber-700">
+            <span className="text-3xl font-bold text-amber-700 dark:text-amber-400">
               {formatAmount(
                 product.active_discount_type
                   ? product.effective_price
@@ -226,10 +226,10 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
             </span>
             {product.active_discount_type && (
               <>
-                <span className="text-sm text-gray-500 line-through">
+                <span className="text-sm text-muted line-through">
                   {formatAmount(product.unit_price, locale, 0)}
                 </span>
-                <span className="text-xs font-bold bg-red-100 text-red-700 px-1.5 py-0.5 rounded-full">
+                <span className="text-xs font-bold bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 px-1.5 py-0.5 rounded-full">
                   {product.active_discount_type === "PERCENTAGE"
                     ? `${formatNumber(Number(product.active_discount_value), locale)}% ${locale === "bn" ? "ছাড়" : "OFF"}`
                     : `${formatAmount(Number(product.active_discount_value), locale, 0)} ${locale === "bn" ? "ছাড়" : "OFF"}`}
@@ -247,7 +247,7 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
               <div className="flex items-center border rounded-lg overflow-hidden shrink-0">
                 <button
                   onClick={() => setQty(Math.max(1, qty - 1))}
-                  className="px-3 py-2 hover:bg-gray-50"
+                  className="px-3 py-2 hover:bg-surface-alt"
                 >
                   −
                 </button>
@@ -257,7 +257,7 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
                 <button
                   onClick={() => setQty(Math.min(maxStock, qty + 1))}
                   disabled={qty >= maxStock}
-                  className="px-3 py-2 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+                  className="px-3 py-2 hover:bg-surface-alt disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent"
                 >
                   +
                 </button>
@@ -265,7 +265,7 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
               <button
                 onClick={handleAddToCart}
                 disabled={adding}
-                className="btn-secondary bg-gray-200 hover:bg-gray-300 flex-1 min-w-[45%] md:min-w-0 font-bold"
+                className="btn-secondary bg-surface-alt hover:bg-border flex-1 min-w-[45%] md:min-w-0 font-bold"
               >
                 {adding ? t("common.loading") : t("product.addToCart")}
               </button>
@@ -285,7 +285,7 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
               </button>
             </div>
           )}
-          {desc && <p className="text-gray-600 mb-6 leading-relaxed whitespace-pre-line">{desc}</p>}
+          {desc && <p className="text-muted mb-6 leading-relaxed whitespace-pre-line">{desc}</p>}
         </div>
       </div>
       <ProductReviews productId={id} locale={locale} />

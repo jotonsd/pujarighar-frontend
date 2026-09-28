@@ -32,17 +32,17 @@ export default function ToggleSwitch({
         disabled={disabled}
         title={title}
         className={`relative inline-flex h-5 w-12 shrink-0 items-center rounded-full transition-colors ${
-          checked ? 'bg-amber-400' : 'bg-gray-300'
+          checked ? 'bg-amber-400' : 'bg-border'
         } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
       >
         <span
-          className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${
+          className={`inline-block h-3.5 w-3.5 transform rounded-full bg-surface transition-transform ${
             checked ? 'translate-x-7' : 'translate-x-1'
           }`}
         />
       </button>
       {hasLabel && (
-        <span className="text-sm text-gray-600 min-w-[80px]">
+        <span className="text-sm text-muted min-w-[80px]">
           {checked ? activeLabel : inactiveLabel}
         </span>
       )}

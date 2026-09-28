@@ -35,7 +35,7 @@ function ReplacementPicker({
   return (
     <div className="relative">
       <div className="relative">
-        <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+        <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted" />
         <input
           type="text"
           value={query}
@@ -43,13 +43,13 @@ function ReplacementPicker({
           onFocus={() => setOpen(true)}
           onBlur={() => setTimeout(() => setOpen(false), 150)}
           placeholder={isBn ? 'প্রতিস্থাপন পণ্য খুঁজুন...' : 'Search replacement product...'}
-          className="w-full pl-8 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-amber-500"
+          className="w-full pl-8 pr-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-amber-500"
         />
       </div>
       {open && query.trim().length >= 2 && (
-        <div className="absolute z-20 mt-1 w-full bg-white rounded-xl border border-gray-200 shadow-lg max-h-56 overflow-y-auto">
+        <div className="absolute z-20 mt-1 w-full bg-surface rounded-xl border border-border shadow-lg max-h-56 overflow-y-auto">
           {isFetching ? (
-            <div className="px-3 py-3 text-sm text-gray-400 text-center">{isBn ? 'খুঁজছি...' : 'Searching...'}</div>
+            <div className="px-3 py-3 text-sm text-muted text-center">{isBn ? 'খুঁজছি...' : 'Searching...'}</div>
           ) : results?.data?.length ? (
             results.data.map(p => (
               <button
@@ -57,25 +57,25 @@ function ReplacementPicker({
                 type="button"
                 onMouseDown={e => e.preventDefault()}
                 onClick={() => { onAdd(p); setOpen(false); setQuery('') }}
-                className="w-full flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-amber-50 text-left transition-colors"
+                className="w-full flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-amber-50 dark:hover:bg-amber-900/30 text-left transition-colors"
               >
                 {p.images?.[0]?.image ? (
-                  <Image src={p.images[0].image} alt="" width={32} height={32} className="w-8 h-8 rounded-md object-cover border border-gray-100 shrink-0" />
+                  <Image src={p.images[0].image} alt="" width={32} height={32} className="w-8 h-8 rounded-md object-cover border border-border shrink-0" />
                 ) : (
-                  <div className="w-8 h-8 rounded-md border border-gray-100 bg-gray-50 flex items-center justify-center text-gray-300 text-xs shrink-0">—</div>
+                  <div className="w-8 h-8 rounded-md border border-border bg-background flex items-center justify-center text-muted text-xs shrink-0">—</div>
                 )}
                 <div className="flex-1 min-w-0">
-                  <div className="truncate text-gray-800">{localName(p.name_bn, p.name_en, isBn)}</div>
-                  <div className="text-xs text-gray-400 font-mono">{p.sku}</div>
+                  <div className="truncate text-body">{localName(p.name_bn, p.name_en, isBn)}</div>
+                  <div className="text-xs text-muted font-mono">{p.sku}</div>
                 </div>
                 <div className="text-right shrink-0">
-                  <div className="text-xs font-bold text-amber-700">{formatAmount(p.effective_price, locale)}</div>
-                  <div className="text-[11px] text-gray-400">{isBn ? 'স্টক' : 'Stock'}: {formatNumber(parseFloat(p.stock_on_hand), locale)}</div>
+                  <div className="text-xs font-bold text-amber-700 dark:text-amber-400">{formatAmount(p.effective_price, locale)}</div>
+                  <div className="text-[11px] text-muted">{isBn ? 'স্টক' : 'Stock'}: {formatNumber(parseFloat(p.stock_on_hand), locale)}</div>
                 </div>
               </button>
             ))
           ) : (
-            <div className="px-3 py-3 text-sm text-gray-400 text-center">{isBn ? 'কোনো পণ্য পাওয়া যায়নি' : 'No products found'}</div>
+            <div className="px-3 py-3 text-sm text-muted text-center">{isBn ? 'কোনো পণ্য পাওয়া যায়নি' : 'No products found'}</div>
           )}
         </div>
       )}
@@ -171,14 +171,14 @@ export default function ExchangeModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-3xl p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+      <div className="bg-surface rounded-2xl shadow-xl w-full max-w-3xl p-6 space-y-4 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center gap-3">
           <span className="text-3xl">🔄</span>
           <div>
-            <h2 className="text-lg font-bold text-gray-800">
+            <h2 className="text-lg font-bold text-body">
               {isBn ? 'পণ্য বিনিময় করুন' : 'Exchange Products'}
             </h2>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-muted">
               {isBn ? 'যে পণ্যগুলো ফেরত নেওয়া হবে তা নির্বাচন করুন' : 'Select the item(s) being returned'}
             </p>
           </div>
@@ -186,13 +186,13 @@ export default function ExchangeModal({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <p className="text-sm font-medium text-gray-700">
+            <p className="text-sm font-medium text-muted">
               {isBn ? 'ফেরতযোগ্য পণ্য' : 'Item(s) being returned'}
             </p>
             {order.items.map(item => {
               const line = returnLines[item.id]
               return (
-                <div key={item.id} className={`flex items-center gap-3 p-2.5 rounded-xl border ${line.checked ? 'border-amber-300 bg-amber-50' : 'border-gray-200'}`}>
+                <div key={item.id} className={`flex items-center gap-3 p-2.5 rounded-xl border ${line.checked ? 'border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-900/30' : 'border-border'}`}>
                   <input
                     type="checkbox"
                     checked={line.checked}
@@ -200,10 +200,10 @@ export default function ExchangeModal({
                     className="w-4 h-4 accent-amber-600 shrink-0"
                   />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-700 truncate">
+                    <p className="text-sm font-medium text-muted truncate">
                       {isBn ? item.product_name_bn : item.product_name_en || item.product_name_bn}
                     </p>
-                    <p className="text-xs text-gray-400">
+                    <p className="text-xs text-muted">
                       {isBn ? 'অর্ডারকৃত:' : 'Ordered:'} {formatNumber(item.quantity, locale)} · {formatAmount(item.unit_price, locale, 2)} {isBn ? '/একক' : '/unit'}
                     </p>
                   </div>
@@ -215,7 +215,7 @@ export default function ExchangeModal({
                       step="0.001"
                       value={line.quantity}
                       onChange={e => setReturnQty(item.id, e.target.value)}
-                      className="w-20 px-2 py-1.5 rounded-lg border border-gray-200 text-sm text-right focus:outline-none focus:border-amber-500"
+                      className="w-20 px-2 py-1.5 rounded-lg border border-border text-sm text-right focus:outline-none focus:border-amber-500"
                     />
                   )}
                 </div>
@@ -223,8 +223,8 @@ export default function ExchangeModal({
             })}
           </div>
 
-          <div className="space-y-2 md:border-l md:border-gray-100 md:pl-4">
-            <p className="text-sm font-medium text-gray-700">
+          <div className="space-y-2 md:border-l md:border-border md:pl-4">
+            <p className="text-sm font-medium text-muted">
               {isBn ? 'প্রতিস্থাপন পণ্য' : 'Replacement product(s)'}
             </p>
             <ReplacementPicker locale={locale} onAdd={addReplacement} />
@@ -232,9 +232,9 @@ export default function ExchangeModal({
               <div className="space-y-2">
                 {replacementLines.map(l => (
                   <div key={l.product.id} className="flex items-center gap-2 flex-wrap">
-                    <span className="flex items-center gap-2 flex-1 min-w-[160px] px-3 py-2 bg-amber-50 rounded-lg text-sm">
+                    <span className="flex items-center gap-2 flex-1 min-w-[160px] px-3 py-2 bg-amber-50 dark:bg-amber-900/30 rounded-lg text-sm">
                       <span className="truncate">{localName(l.product.name_bn, l.product.name_en, isBn)}</span>
-                      <button type="button" onClick={() => removeReplacement(l.product.id)} className="ml-auto text-gray-400 hover:text-gray-600 shrink-0">
+                      <button type="button" onClick={() => removeReplacement(l.product.id)} className="ml-auto text-muted hover:text-muted shrink-0">
                         <X className="w-3.5 h-3.5" />
                       </button>
                     </span>
@@ -244,7 +244,7 @@ export default function ExchangeModal({
                       step="0.001"
                       value={l.quantity}
                       onChange={e => setReplacementQty(l.product.id, e.target.value)}
-                      className="w-20 px-2 py-2 text-sm border border-gray-200 rounded-lg text-center focus:outline-none focus:border-amber-500"
+                      className="w-20 px-2 py-2 text-sm border border-border rounded-lg text-center focus:outline-none focus:border-amber-500"
                     />
                   </div>
                 ))}
@@ -253,7 +253,7 @@ export default function ExchangeModal({
           </div>
         </div>
 
-        <label className="flex items-center gap-2 text-sm text-gray-600">
+        <label className="flex items-center gap-2 text-sm text-muted">
           <input
             type="checkbox"
             checked={deliveryChargeWaived}
@@ -263,8 +263,8 @@ export default function ExchangeModal({
           {isBn ? 'নতুন ডেলিভারি চার্জ মওকুফ করুন' : 'Waive delivery charge for the replacement'}
         </label>
 
-        <div className="pt-2 border-t border-gray-100 space-y-2">
-          <p className="text-sm font-medium text-gray-700">
+        <div className="pt-2 border-t border-border space-y-2">
+          <p className="text-sm font-medium text-muted">
             {isBn ? 'অতিরিক্ত ছাড় (ঐচ্ছিক)' : 'Extra discount (optional)'}
           </p>
           <div className="flex gap-2">
@@ -275,8 +275,8 @@ export default function ExchangeModal({
                 onClick={() => setDiscountType(t)}
                 className={`flex-1 py-2 rounded-xl text-xs font-medium border transition-colors ${
                   discountType === t
-                    ? 'bg-amber-50 border-amber-400 text-amber-700'
-                    : 'border-gray-200 text-gray-500 hover:border-gray-300'
+                    ? 'bg-amber-50 dark:bg-amber-900/30 border-amber-400 dark:border-amber-600 text-amber-700 dark:text-amber-400'
+                    : 'border-border text-muted hover:border-border'
                 }`}
               >
                 {t === 'PERCENTAGE' ? (isBn ? 'শতকরা (%)' : 'Percentage (%)') : (isBn ? 'নির্দিষ্ট পরিমাণ (৳)' : 'Flat Amount (৳)')}
@@ -290,7 +290,7 @@ export default function ExchangeModal({
             value={discountValue}
             onChange={e => setDiscountValue(e.target.value)}
             placeholder={discountType === 'PERCENTAGE' ? (isBn ? 'যেমনঃ ১০' : 'e.g. 10') : (isBn ? 'যেমনঃ ৫০' : 'e.g. 50')}
-            className="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-amber-500"
+            className="w-full px-3 py-2.5 rounded-xl border border-border text-sm focus:outline-none focus:border-amber-500"
           />
         </div>
 
@@ -299,26 +299,26 @@ export default function ExchangeModal({
           value={noteBn}
           onChange={e => setNoteBn(e.target.value)}
           placeholder={isBn ? 'নোট (ঐচ্ছিক)' : 'Note (optional)'}
-          className="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-amber-500"
+          className="w-full px-3 py-2.5 rounded-xl border border-border text-sm focus:outline-none focus:border-amber-500"
         />
 
         {(selectedReturns.length > 0 || replacementLines.length > 0) && (
-          <div className="bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-sm space-y-1">
-            <div className="flex justify-between text-gray-500">
+          <div className="bg-background border border-border rounded-lg px-3 py-2 text-sm space-y-1">
+            <div className="flex justify-between text-muted">
               <span>{isBn ? 'ফেরতের মূল্য (স্টোর ক্রেডিট/ক্যাশ)' : 'Returned value (store credit/cash)'}</span>
-              <span className="font-bold text-amber-700">{formatAmount(returnedValue.toString(), locale, 2)}</span>
+              <span className="font-bold text-amber-700 dark:text-amber-400">{formatAmount(returnedValue.toString(), locale, 2)}</span>
             </div>
-            <div className="flex justify-between text-gray-500">
+            <div className="flex justify-between text-muted">
               <span>{isBn ? 'প্রতিস্থাপনের মূল্য' : 'Replacement subtotal'}</span>
-              <span className="font-bold text-gray-700">{formatAmount(replacementSubtotal.toString(), locale, 2)}</span>
+              <span className="font-bold text-muted">{formatAmount(replacementSubtotal.toString(), locale, 2)}</span>
             </div>
             {discountAmount > 0 && (
-              <div className="flex justify-between text-green-700">
+              <div className="flex justify-between text-green-700 dark:text-green-400">
                 <span>{isBn ? 'ছাড়' : 'Discount'}</span>
                 <span>−{formatAmount(discountAmount.toString(), locale, 2)}</span>
               </div>
             )}
-            <p className="text-[11px] text-gray-400 pt-1">
+            <p className="text-[11px] text-muted pt-1">
               {isBn
                 ? 'ডেলিভারি চার্জ ও চূড়ান্ত পরিমাণ সার্ভারে গণনা হবে — উপরের হিসাব আনুমানিক।'
                 : 'Delivery charge and final amount are computed by the server — the above is an estimate.'}{' '}
