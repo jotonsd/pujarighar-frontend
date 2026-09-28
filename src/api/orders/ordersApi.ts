@@ -17,8 +17,8 @@ export interface RecentShipping {
 export const ordersApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
 
-    getOrders: build.query<OrderListResponse, { page?: number; page_size?: number; status?: string; payment_status?: string; order_number?: string; phone?: string; name?: string; from?: string; to?: string }>({
-      query: ({ page = 1, page_size, status = '', payment_status = '', order_number = '', phone = '', name = '', from = '', to = '' } = {}) => {
+    getOrders: build.query<OrderListResponse, { page?: number; page_size?: number; status?: string; payment_status?: string; order_number?: string; phone?: string; name?: string; source?: string; from?: string; to?: string }>({
+      query: ({ page = 1, page_size, status = '', payment_status = '', order_number = '', phone = '', name = '', source = '', from = '', to = '' } = {}) => {
         const p = new URLSearchParams({ page: String(page) })
         if (page_size)      p.set('page_size', String(page_size))
         if (status)         p.set('status', status)
@@ -26,6 +26,7 @@ export const ordersApi = baseApi.injectEndpoints({
         if (order_number)   p.set('order_number', order_number)
         if (phone)          p.set('phone', phone)
         if (name)           p.set('name', name)
+        if (source)         p.set('source', source)
         if (from)           p.set('from', from)
         if (to)             p.set('to', to)
         return `/api/orders/?${p}`

@@ -11,12 +11,19 @@ import CopyButton from '@/components/ui/CopyButton'
 import { FloatingDatePicker, FloatingInput, FloatingSelect } from '@/components/ui/forms'
 import PageHeader from '@/components/ui/PageHeader'
 import { ReusableTable, Column } from '@/components/ui/ReusableTable'
-import { OrderStatus, SalesOrder } from '@/lib/types'
+import { OrderSource, OrderStatus, SalesOrder } from '@/lib/types'
 import { formatAmount, formatDate, localName } from '@/utils/format'
 import { useGetOrdersQuery } from '@/api/orders/ordersApi'
 
 const STATUSES: OrderStatus[] = ['PENDING', 'CONFIRMED', 'PACKED', 'ASSIGNED', 'PICKED', 'ON_THE_WAY', 'DELIVERED', 'RETURNED', 'EXCHANGED', 'CANCELLED']
-const EMPTY = { status: '', payment_status: '', order_number: '', phone: '', name: '', from: '', to: '' }
+const SOURCES: OrderSource[] = ['WEBSITE', 'MOBILE_APP', 'AI_CHATBOT', 'POS']
+const SOURCE_LABELS: Record<OrderSource, { bn: string; en: string }> = {
+  WEBSITE: { bn: 'ওয়েবসাইট', en: 'Website' },
+  MOBILE_APP: { bn: 'মোবাইল অ্যাপ', en: 'Mobile App' },
+  AI_CHATBOT: { bn: 'ব্রাহ্মণ AI', en: 'Brahman AI' },
+  POS: { bn: 'POS', en: 'POS' },
+}
+const EMPTY = { status: '', payment_status: '', order_number: '', phone: '', name: '', source: '', from: '', to: '' }
 
 export default function OrderList() {
   const t      = useTranslations()
@@ -102,7 +109,7 @@ export default function OrderList() {
         <form
           onSubmit={e => { e.preventDefault(); handleSubmit() }}
           onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleSubmit() } }}
-          className="mb-5 p-4 bg-surface rounded-2xl grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+          className="mb-5 p-4 bg-surface rounded-2xl grid grid-cols-2 sm:grid-cols-3 gap-3">
           <FloatingInput label={locale === 'bn' ? 'অর্ডার নম্বর' : 'Order Number'} value={draft.order_number} onChange={e => set('order_number')(e.target.value)} />
           <FloatingInput label={locale === 'bn' ? 'ফোন নম্বর' : 'Phone Number'} value={draft.phone} onChange={e => set('phone')(e.target.value)} />
           <FloatingInput label={locale === 'bn' ? 'নাম' : 'Name'} value={draft.name} onChange={e => set('name')(e.target.value)} />
@@ -114,6 +121,10 @@ export default function OrderList() {
             <option value="">{t('common.all')}</option>
             <option value="PAID">{locale === 'bn' ? 'পেইড' : 'Paid'}</option>
             <option value="UNPAID">{locale === 'bn' ? 'আনপেইড' : 'Unpaid'}</option>
+          </FloatingSelect>
+          <FloatingSelect label={locale === 'bn' ? 'উৎস' : 'Source'} value={draft.source} onChange={set('source')}>
+            <option value="">{t('common.all')}</option>
+            {SOURCES.map(s => <option key={s} value={s}>{locale === 'bn' ? SOURCE_LABELS[s].bn : SOURCE_LABELS[s].en}</option>)}
           </FloatingSelect>
           <FloatingDatePicker label={locale === 'bn' ? 'শুরু তারিখ' : 'From Date'} value={draft.from} onChange={set('from')} clearable />
           <FloatingDatePicker label={locale === 'bn' ? 'শেষ তারিখ' : 'To Date'} value={draft.to} onChange={set('to')} clearable />
