@@ -60,7 +60,7 @@ function POSProductCard({
       disabled={!inStock}
       className={`text-left rounded-xl border transition-all p-2 ${
         inCart
-          ? "border-amber-400 bg-amber-50 ring-1 ring-amber-400"
+          ? "border-amber-400 dark:border-amber-600 bg-amber-50 dark:bg-amber-900/20 ring-1 ring-amber-400 dark:ring-amber-600"
           : inStock
             ? "border-border bg-surface hover:border-amber-300 hover:shadow-sm"
             : "border-border bg-background opacity-50 cursor-not-allowed"

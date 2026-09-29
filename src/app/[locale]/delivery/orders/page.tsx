@@ -140,7 +140,7 @@ export default function DeliveryOrdersPage() {
             render: o => (
               <Link
                 href={`/${locale}/delivery/orders/${o.id}`}
-                className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors"
+                className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/50 transition-colors"
                 title={locale === "bn" ? "দেখুন" : "View"}
               >
                 <Eye className="w-3.5 h-3.5" />

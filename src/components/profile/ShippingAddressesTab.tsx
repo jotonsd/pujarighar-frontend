@@ -188,7 +188,7 @@ export default function ShippingAddressesTab({ locale }: { locale: string }) {
           {addresses.map(a => (
             <div
               key={a.id}
-              className={`rounded-xl border p-4 space-y-2 ${a.is_default ? "border-amber-300 bg-amber-50/50" : "border-border"}`}
+              className={`rounded-xl border p-4 space-y-2 ${a.is_default ? "border-amber-300 dark:border-amber-700 bg-amber-50/50 dark:bg-amber-900/20" : "border-border"}`}
             >
               <div className="flex items-start justify-between">
                 <div>

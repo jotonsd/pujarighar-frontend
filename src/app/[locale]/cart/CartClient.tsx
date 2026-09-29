@@ -268,7 +268,7 @@ function PaymentMethodModal({
             <button
               key={m.code}
               onClick={() => onSelect(m.code as PaymentMethod)}
-              className="w-full flex items-center gap-3 p-4 rounded-xl border-2 border-border hover:border-amber-400 hover:bg-amber-50 transition-colors text-left"
+              className="w-full flex items-center gap-3 p-4 rounded-xl border-2 border-border hover:border-amber-400 dark:hover:border-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-colors text-left"
             >
               {m.logo ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -915,8 +915,8 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                         key={addr.id}
                         className={`flex items-start gap-2 p-3 rounded-xl border-2 cursor-pointer transition-colors ${
                           selectedAddressId === addr.id
-                            ? "border-amber-400 bg-amber-50"
-                            : "border-border hover:border-amber-200"
+                            ? "border-amber-400 dark:border-amber-600 bg-amber-50 dark:bg-amber-900/20"
+                            : "border-border hover:border-amber-200 dark:hover:border-amber-800"
                         }`}
                       >
                         <input

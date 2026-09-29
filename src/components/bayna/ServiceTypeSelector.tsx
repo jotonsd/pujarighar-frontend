@@ -26,7 +26,7 @@ export default function ServiceTypeSelector({
           onClick={() => onChange(s.value)}
           className={`flex flex-col items-center gap-1.5 py-3 rounded-xl border-2 transition-colors ${
             value === s.value
-              ? "border-amber-600 bg-amber-50 text-amber-700"
+              ? "border-amber-600 dark:border-amber-500 bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400"
               : "border-border text-muted hover:border-border"
           }`}
         >

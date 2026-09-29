@@ -173,7 +173,7 @@ function NavDropdown({
         onClick={() => (open ? closeAll() : handleEnter())}
         className={`flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-semibold whitespace-nowrap shrink-0 transition-colors ${
           isActive
-            ? "bg-amber-50 text-amber-700"
+            ? "bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400"
             : "text-muted hover:text-amber-700 hover:bg-surface-alt"
         }`}
       >
@@ -203,7 +203,7 @@ function NavDropdown({
                   <div
                     className={`flex items-center justify-between gap-2 px-4 py-2.5 text-xs cursor-default transition-colors ${
                       active || subActive
-                        ? "bg-amber-50 text-amber-700 font-medium"
+                        ? "bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 font-medium"
                         : "text-muted hover:bg-surface-alt hover:text-amber-700"
                     }`}
                   >
@@ -228,7 +228,7 @@ function NavDropdown({
                 onMouseEnter={() => setSubOpen(null)}
                 className={`flex items-center gap-2 px-4 py-2.5 text-xs transition-colors ${
                   active
-                    ? "bg-amber-50 text-amber-700 font-medium"
+                    ? "bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 font-medium"
                     : "text-muted hover:bg-surface-alt hover:text-amber-700"
                 }`}
               >
@@ -256,7 +256,7 @@ function NavDropdown({
                 onClick={closeAll}
                 className={`flex items-center gap-2 px-4 py-2.5 text-xs transition-colors ${
                   active
-                    ? "bg-amber-50 text-amber-700 font-medium"
+                    ? "bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 font-medium"
                     : "text-muted hover:bg-surface-alt hover:text-amber-700"
                 }`}
               >
@@ -296,7 +296,7 @@ function ProfileDropdown({
     <div className="relative flex items-center gap-1.5">
       {/* Cashback balance chip — always visible for customers */}
       {user.role.code === "CUSTOMER" && (
-        <span className="flex items-center gap-1 px-2 h-8 bg-amber-50 border border-amber-200 rounded-md text-xs font-bold text-amber-700 whitespace-nowrap">
+        <span className="flex items-center gap-1 px-2 h-8 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 rounded-md text-xs font-bold text-amber-700 dark:text-amber-400 whitespace-nowrap">
           {formatAmount(balance, locale, 0)}
         </span>
       )}
@@ -334,7 +334,7 @@ function ProfileDropdown({
               <p className="text-xs text-amber-500 font-medium mt-0.5">{isBn ? user.role.name_bn : user.role.name_en}</p>
               {user.role.code === "CUSTOMER" && (
                 <>
-                  <div className="mt-1.5 flex items-center gap-1.5 bg-amber-50 rounded-lg px-2 py-1.5">
+                  <div className="mt-1.5 flex items-center gap-1.5 bg-amber-50 dark:bg-amber-900/20 rounded-lg px-2 py-1.5">
                     <div>
                       <p className="text-[10px] text-amber-700 leading-none">
                         {isBn ? "ক্যাশব্যাক ব্যালেন্স" : "Cashback Balance"}
@@ -375,7 +375,7 @@ function ProfileDropdown({
             <Link
               href={`/${locale}/profile`}
               onClick={() => setOpen(false)}
-              className="flex items-center gap-2 px-4 py-2 text-sm text-muted hover:bg-amber-50 hover:text-amber-700 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 text-sm text-muted hover:bg-amber-50 dark:hover:bg-amber-900/30 hover:text-amber-700 dark:hover:text-amber-400 transition-colors"
             >
               <Cog className="w-4 h-4" /> {isBn ? "সেটিং" : "Settings"}
             </Link>
@@ -384,7 +384,7 @@ function ProfileDropdown({
               <Link
                 href={`/${locale}/admin/logs`}
                 onClick={() => setOpen(false)}
-                className="flex items-center gap-2 px-4 py-2 text-sm text-muted hover:bg-amber-50 hover:text-amber-700 transition-colors"
+                className="flex items-center gap-2 px-4 py-2 text-sm text-muted hover:bg-amber-50 dark:hover:bg-amber-900/30 hover:text-amber-700 dark:hover:text-amber-400 transition-colors"
               >
                 <ScrollText className="w-4 h-4" /> {isBn ? "লগ ভিউয়ার" : "Log Viewer"}
               </Link>
@@ -394,7 +394,7 @@ function ProfileDropdown({
               <Link
                 href={`/${locale}/orders`}
                 onClick={() => setOpen(false)}
-                className="flex items-center gap-2 px-4 py-2 text-sm text-muted hover:bg-amber-50 hover:text-amber-700 transition-colors"
+                className="flex items-center gap-2 px-4 py-2 text-sm text-muted hover:bg-amber-50 dark:hover:bg-amber-900/30 hover:text-amber-700 dark:hover:text-amber-400 transition-colors"
               >
                 <Package className="w-4 h-4" /> {t("nav.orders")}
               </Link>
@@ -464,7 +464,7 @@ function MobileMenu({
         onClick={onClose}
         className={`flex items-center gap-3 ${indent ? "pl-8 pr-4" : "px-4"} py-3 text-sm transition-colors ${
           active
-            ? "bg-amber-50 text-amber-700 font-medium"
+            ? "bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 font-medium"
             : "text-muted hover:bg-surface-alt"
         }`}
       >
@@ -652,7 +652,7 @@ function MobileMenu({
                 </p>
               </div>
               {currentUser.role.code === "CUSTOMER" && (
-                <div className="flex items-center gap-1.5 bg-amber-50 rounded-lg px-2.5 py-1.5">
+                <div className="flex items-center gap-1.5 bg-amber-50 dark:bg-amber-900/20 rounded-lg px-2.5 py-1.5">
                   <div>
                     <p className="text-[10px] text-amber-700">{locale === "bn" ? "ক্যাশব্যাক" : "Cashback Balance"}</p>
                     <p className="text-xs font-bold text-amber-700">{formatAmount(currentUser.profile?.cashback_balance ?? "0", locale, 0)}</p>
@@ -917,7 +917,7 @@ export default function Navbar() {
                   href={full}
                   className={`flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-semibold whitespace-nowrap shrink-0 transition-colors ${
                     active
-                      ? "bg-amber-50 text-amber-700"
+                      ? "bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400"
                       : "text-muted hover:text-amber-700 hover:bg-surface-alt"
                   }`}
                 >

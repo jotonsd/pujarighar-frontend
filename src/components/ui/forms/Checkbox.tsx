@@ -6,12 +6,12 @@ type Variant = 'amber' | 'red'
 
 const variants: Record<Variant, { active: string; input: string; ring: string }> = {
   amber: {
-    active: 'bg-amber-50 text-amber-700',
+    active: 'bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400',
     input:  'text-amber-500',
     ring:   'focus:ring-amber-400',
   },
   red: {
-    active: 'bg-red-50 text-red-700',
+    active: 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400',
     input:  'text-red-500',
     ring:   'focus:ring-red-400',
   },

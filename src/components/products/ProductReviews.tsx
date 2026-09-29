@@ -71,8 +71,8 @@ function AverageRating({ reviews, isBn }: { reviews: Review[]; isBn: boolean }) 
   if (reviews.length === 0) return null;
   const avg = reviews.reduce((s, r) => s + r.rating, 0) / reviews.length;
   return (
-    <div className="flex items-center gap-3 mb-4 p-4 bg-amber-50 border border-amber-100 rounded-xl">
-      <span className="text-4xl font-bold text-amber-700">
+    <div className="flex items-center gap-3 mb-4 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-900/40 rounded-xl">
+      <span className="text-4xl font-bold text-amber-700 dark:text-amber-400">
         {avg.toLocaleString(isBn ? "bn-BD" : "en-US", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
       </span>
       <div>
@@ -125,7 +125,7 @@ function WriteReviewForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-4 border border-amber-100 bg-amber-50 rounded-xl space-y-3">
+    <form onSubmit={handleSubmit} className="p-4 border border-amber-100 dark:border-amber-900/40 bg-amber-50 dark:bg-amber-900/20 rounded-xl space-y-3">
       <p className="text-sm font-semibold text-muted">
         {isBn ? "আপনার রিভিউ দিন" : "Write Your Review"}
       </p>

@@ -249,7 +249,7 @@ export default function ProductCard({
               <button
                 onClick={dec}
                 disabled={qty <= 1}
-                className="w-6 h-6 rounded bg-amber-50 hover:bg-amber-100 text-amber-700 font-bold text-sm flex items-center justify-center transition-colors shrink-0 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-amber-50"
+                className="w-6 h-6 rounded bg-amber-50 dark:bg-amber-900/30 hover:bg-amber-100 dark:hover:bg-amber-900/50 text-amber-700 dark:text-amber-400 font-bold text-sm flex items-center justify-center transition-colors shrink-0 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-amber-50 dark:disabled:hover:bg-amber-900/30"
               >
                 −
               </button>
@@ -260,7 +260,7 @@ export default function ProductCard({
                 onClick={inc}
                 disabled={qty >= maxStock}
                 title={qty >= maxStock ? (locale === "bn" ? "সর্বোচ্চ স্টক সীমা" : "Max stock reached") : undefined}
-                className="w-6 h-6 rounded bg-amber-50 hover:bg-amber-100 text-amber-700 font-bold text-sm flex items-center justify-center transition-colors shrink-0 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-amber-50"
+                className="w-6 h-6 rounded bg-amber-50 dark:bg-amber-900/30 hover:bg-amber-100 dark:hover:bg-amber-900/50 text-amber-700 dark:text-amber-400 font-bold text-sm flex items-center justify-center transition-colors shrink-0 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-amber-50 dark:disabled:hover:bg-amber-900/30"
               >
                 +
               </button>
