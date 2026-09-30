@@ -12,7 +12,7 @@ import { FloatingDatePicker, FloatingInput, FloatingSelect } from '@/components/
 import PageHeader from '@/components/ui/PageHeader'
 import { ReusableTable, Column } from '@/components/ui/ReusableTable'
 import { OrderSource, OrderStatus, SalesOrder } from '@/lib/types'
-import { formatAmount, formatDate, localName } from '@/utils/format'
+import { formatAmount, formatDateTime, localName } from '@/utils/format'
 import { useGetOrdersQuery } from '@/api/orders/ordersApi'
 
 const STATUSES: OrderStatus[] = ['PENDING', 'CONFIRMED', 'PACKED', 'ASSIGNED', 'PICKED', 'ON_THE_WAY', 'DELIVERED', 'RETURNED', 'EXCHANGED', 'CANCELLED']
@@ -77,8 +77,8 @@ export default function OrderList() {
     },
     {
       header: locale === 'bn' ? 'তারিখ' : 'Date',
-      accessor: o => <span className="text-xs text-muted">{formatDate(o.created_at, locale)}</span>,
-      exportValue: o => new Date(o.created_at).toLocaleDateString(),
+      accessor: o => <span className="text-xs text-muted whitespace-nowrap">{formatDateTime(o.created_at, locale)}</span>,
+      exportValue: o => new Date(o.created_at).toLocaleString(),
     },
   ]
 
