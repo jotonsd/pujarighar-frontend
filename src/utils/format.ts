@@ -59,3 +59,19 @@ export function formatDate(date: string | Date, locale: string): string {
     day: 'numeric',
   })
 }
+
+/**
+ * Same as formatDate but with the time of day appended — for reports/logs
+ * where when-in-the-day something happened matters, not just the date.
+ */
+export function formatDateTime(date: string | Date, locale: string): string {
+  const d = typeof date === 'string' ? new Date(date) : date
+  if (isNaN(d.getTime())) return ''
+  return d.toLocaleString(locale === 'bn' ? 'bn-BD' : 'en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  })
+}

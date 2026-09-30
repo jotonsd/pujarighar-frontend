@@ -4,7 +4,7 @@ import { useGetCartReportQuery } from "@/api/reports/reportsApi";
 import { FloatingInput } from "@/components/ui/forms";
 import PageHeader from "@/components/ui/PageHeader";
 import TableSkeleton from "@/components/ui/skeletons";
-import { formatAmount, formatDate, localName } from "@/utils/format";
+import { formatAmount, formatDateTime, localName } from "@/utils/format";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { useLocale } from "next-intl";
 import { Fragment, useState } from "react";
@@ -82,7 +82,7 @@ export default function CartReportPage() {
                     <td className="px-4 py-3 text-right text-xs text-muted">{r.total_quantity}</td>
                     <td className="px-4 py-3 text-right text-xs font-bold text-amber-700 dark:text-amber-400">{formatAmount(r.cart_value, locale, 2)}</td>
                     <td className="px-4 py-3 text-xs text-muted whitespace-nowrap">
-                      {r.last_activity ? formatDate(r.last_activity, locale) : "—"}
+                      {r.last_activity ? formatDateTime(r.last_activity, locale) : "—"}
                     </td>
                   </tr>
                   {expanded.has(r.customer_id) && (
