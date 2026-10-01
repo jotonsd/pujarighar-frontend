@@ -16,6 +16,7 @@ import {
 import { useGetDeliveryChargesQuery } from "@/api/deliveryCharges/deliveryChargesApi";
 import { useGetSiteSettingsQuery } from "@/api/settings/settingsApi";
 import { useGetPaymentMethodsQuery } from "@/api/paymentMethods/paymentMethodsApi";
+import { useHasActiveWebsitePromoQuery } from "@/api/promoCodes/promoCodesApi";
 import { useGuestCheckoutMutation } from "@/api/guest/guestApi";
 import {
   useCreateShippingAddressMutation,
@@ -492,6 +493,12 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
   const guestClear = useGuestCartStore(s => s.clear);
   const guestSubtotal = useGuestCartStore(s => s.subtotal);
   const guestDiscountAmount = useGuestCartStore(s => s.discountAmount);
+  // Only nudge guests toward logging in when there's actually a promo
+  // they'd be able to use — no point advertising a feature with nothing
+  // behind it right now.
+  const { data: hasActiveWebsitePromo } = useHasActiveWebsitePromoQuery(undefined, {
+    skip: isAuthenticated,
+  });
 
   const { data: cart, isLoading } = useGetCartQuery(undefined, {
     skip: !isAuthenticated,
@@ -1488,24 +1495,27 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                       promoErrorMessage/discountForPromo in cartApi.ts) —
                       guest checkout has no promo input at all, so point
                       guests at login instead of leaving them to wonder
-                      why there's no field for it. */}
-                  <p className="text-xs text-muted bg-surface-alt rounded-lg px-3 py-2">
-                    {locale === "bn" ? (
-                      <>
-                        প্রোমো কোড ব্যবহার করতে{" "}
-                        <Link href={`/${locale}/auth/login`} className="text-amber-600 font-medium hover:underline">
-                          লগইন করুন
-                        </Link>
-                      </>
-                    ) : (
-                      <>
-                        <Link href={`/${locale}/auth/login`} className="text-amber-600 font-medium hover:underline">
-                          Login
-                        </Link>{" "}
-                        to use a promo code
-                      </>
-                    )}
-                  </p>
+                      why there's no field for it. Only shown when there's
+                      actually an active website promo right now. */}
+                  {hasActiveWebsitePromo && (
+                    <p className="text-xs text-muted bg-surface-alt rounded-lg px-3 py-2">
+                      {locale === "bn" ? (
+                        <>
+                          প্রোমো কোড ব্যবহার করতে{" "}
+                          <Link href={`/${locale}/auth/login`} className="text-amber-600 font-medium hover:underline">
+                            লগইন করুন
+                          </Link>
+                        </>
+                      ) : (
+                        <>
+                          <Link href={`/${locale}/auth/login`} className="text-amber-600 font-medium hover:underline">
+                            Login
+                          </Link>{" "}
+                          to use a promo code
+                        </>
+                      )}
+                    </p>
+                  )}
                   <div className="flex justify-between font-bold text-sm text-muted">
                     <span>{locale === "bn" ? "সাবটোটাল" : "Subtotal"}</span>
                     <span>

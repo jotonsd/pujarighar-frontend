@@ -49,6 +49,13 @@ export const promoCodesApi = baseApi.injectEndpoints({
       transformResponse: (res: { data: PromoCode }) => res.data,
       invalidatesTags: ['PromoCodes'],
     }),
+    // Public, unauthenticated — used by guest checkout to decide whether to
+    // show a "login to use a promo code" nudge at all, without exposing any
+    // actual code (unlike getPromoCodes, which is admin-only).
+    hasActiveWebsitePromo: build.query<boolean, void>({
+      query: () => '/api/promo-codes/active-website/',
+      transformResponse: (res: { data: { has_active: boolean } }) => res.data.has_active,
+    }),
   }),
 })
 
@@ -56,4 +63,5 @@ export const {
   useGetPromoCodesQuery,
   useCreatePromoCodeMutation,
   useUpdatePromoCodeMutation,
+  useHasActiveWebsitePromoQuery,
 } = promoCodesApi
