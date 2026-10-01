@@ -526,6 +526,8 @@ export interface SalesOrder {
   grand_total: string
   cashback_used: string
   cashback_amount: string
+  promo_code_used: string
+  mobile_app_discount_amount: string
   notes_bn: string
   notes_en: string
   items: SalesOrderItem[]

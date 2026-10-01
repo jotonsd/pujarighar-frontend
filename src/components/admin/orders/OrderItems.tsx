@@ -316,6 +316,16 @@ export default function OrderItems({ order }: Props) {
             <span className="font-bold">− {formatAmount(order.discount_amount, locale)}</span>
           </div>
         )}
+        {order.promo_code_used && (
+          <div className="flex justify-between text-sm text-green-600 dark:text-green-400">
+            <span>
+              {locale === "bn" ? "প্রোমো কোড" : "Promo code"}
+              {" "}
+              <span className="font-mono font-bold">{order.promo_code_used}</span>
+            </span>
+            <span className="font-bold">− {formatAmount(order.mobile_app_discount_amount, locale)}</span>
+          </div>
+        )}
         <div className="flex justify-between text-sm text-muted">
           <span>{locale === "bn" ? "সাবটোটাল" : "Subtotal"}</span>
           <span className="font-bold">{formatAmount(order.subtotal, locale)}</span>
