@@ -1484,6 +1484,28 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                   ))}
                 </div>
                 <div className="mt-2 space-y-1.5">
+                  {/* Promo codes are registered-customers only (see
+                      promoErrorMessage/discountForPromo in cartApi.ts) —
+                      guest checkout has no promo input at all, so point
+                      guests at login instead of leaving them to wonder
+                      why there's no field for it. */}
+                  <p className="text-xs text-muted bg-surface-alt rounded-lg px-3 py-2">
+                    {locale === "bn" ? (
+                      <>
+                        প্রোমো কোড ব্যবহার করতে{" "}
+                        <Link href={`/${locale}/auth/login`} className="text-amber-600 font-medium hover:underline">
+                          লগইন করুন
+                        </Link>
+                      </>
+                    ) : (
+                      <>
+                        <Link href={`/${locale}/auth/login`} className="text-amber-600 font-medium hover:underline">
+                          Login
+                        </Link>{" "}
+                        to use a promo code
+                      </>
+                    )}
+                  </p>
                   <div className="flex justify-between font-bold text-sm text-muted">
                     <span>{locale === "bn" ? "সাবটোটাল" : "Subtotal"}</span>
                     <span>
