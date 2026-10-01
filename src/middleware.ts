@@ -13,6 +13,14 @@ const ADMIN_PATHS       = ['/admin']
 const DELIVERY_PATHS    = ['/delivery']
 const PROTECTED_PATHS   = ['/profile', '/orders', '/notifications']
 const MAINTENANCE_PATHS = ['/maintenance', '/auth/login']
+
+// Exact match or a real sub-path (`${p}/...`) — a plain `startsWith(p)`
+// would also match an unrelated sibling route that merely shares the same
+// string prefix (e.g. `/delivery` matching `/delivery-area`, a public page
+// that has nothing to do with the delivery portal).
+function matchesPath(pathname: string, prefixes: string[]): boolean {
+  return prefixes.some((p) => pathname === p || pathname.startsWith(`${p}/`))
+}
 // /orders/<id>/tracking is deliberately public — no-login order tracking
 // links shared via SMS/WhatsApp/email land here, and the backend endpoint
 // behind it (get_order_tracking) is AllowAny. Everything else under
@@ -109,7 +117,7 @@ export async function middleware(request: NextRequest) {
 
   // Protect customer routes
   if (
-    PROTECTED_PATHS.some((p) => pathWithoutLocale.startsWith(p)) &&
+    matchesPath(pathWithoutLocale, PROTECTED_PATHS) &&
     !PUBLIC_ORDER_PATH.test(pathWithoutLocale) &&
     !isLoggedIn
   ) {
@@ -124,12 +132,14 @@ export async function middleware(request: NextRequest) {
   // finer check now lives in the admin layout itself (AdminLayout.tsx),
   // which asks the backend directly with live data instead of trusting a
   // potentially-stale cookie snapshot.
-  if (ADMIN_PATHS.some((p) => pathWithoutLocale.startsWith(p)) && !isLoggedIn) {
+  if (matchesPath(pathWithoutLocale, ADMIN_PATHS) && !isLoggedIn) {
     return NextResponse.redirect(new URL(`/${locale}/auth/login`, request.url))
   }
 
-  // Protect delivery routes
-  if (DELIVERY_PATHS.some((p) => pathWithoutLocale.startsWith(p))) {
+  // Protect delivery routes — exact match or a real sub-path (`/delivery/...`),
+  // not just a shared string prefix, so e.g. `/delivery-area` (a public page)
+  // doesn't get caught by a naive `startsWith('/delivery')` check.
+  if (matchesPath(pathWithoutLocale, DELIVERY_PATHS)) {
     if (!isLoggedIn) {
       return NextResponse.redirect(new URL(`/${locale}/auth/login`, request.url))
     }
