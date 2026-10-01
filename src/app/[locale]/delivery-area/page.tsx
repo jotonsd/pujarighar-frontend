@@ -123,9 +123,9 @@ export default function DeliveryAreaPage({ params }: Props) {
   const totalDistricts = DHAKA_DIVISION.districts_bn.length + DIVISIONS.reduce((n, d) => n + d.districts_bn.length, 0);
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-10">
-      <div className="text-center mb-10">
-        <h1 className="text-2xl sm:text-3xl font-bold text-body mb-3">
+    <div className="max-w-5xl mx-auto px-4 pt-4 pb-10">
+      <div className="text-center mb-4">
+        <h1 className="text-2xl sm:text-3xl font-bold text-body mb-1.5">
           {isBn ? "আমাদের ডেলিভারি এলাকা" : "Our Delivery Area"}
         </h1>
         <p className="text-sm sm:text-base text-muted max-w-2xl mx-auto leading-relaxed">

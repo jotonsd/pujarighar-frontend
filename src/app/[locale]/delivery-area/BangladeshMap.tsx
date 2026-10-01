@@ -97,7 +97,7 @@ export default function BangladeshMap({ isBn, districtBn, divisionBn }: Props) {
 
   return (
     <div className="flex justify-center">
-      <div className="mx-auto mb-3 rounded-3xl bg-surface border border-border overflow-hidden p-4 w-full" style={{ maxWidth: 480 }}>
+      <div className="mx-auto mb-3 rounded-3xl bg-surface border border-border overflow-hidden p-4 w-full" style={{ maxWidth: 600 }}>
         <svg viewBox={bdMap.viewBox} className="w-full h-auto overflow-visible">
           <defs>
             <filter id="route-shadow" x="-20%" y="-20%" width="140%" height="140%">
@@ -128,6 +128,7 @@ export default function BangladeshMap({ isBn, districtBn, divisionBn }: Props) {
             />
           ))}
 
+
           {/* Flight-route-style hub lines — Dhaka to each division, drawn
               as a 3D "tube" (blurred dark shadow + solid base + a bright
               animated highlight down the middle) instead of a flat dashed
@@ -142,6 +143,7 @@ export default function BangladeshMap({ isBn, districtBn, divisionBn }: Props) {
               </g>
             );
           })}
+
           {hub && (
             <>
               <circle cx={hub.cx} cy={hub.cy} r="7" fill="#000000" opacity="0.2" filter="url(#route-shadow)" transform="translate(1, 1.5)" />
@@ -164,6 +166,22 @@ export default function BangladeshMap({ isBn, districtBn, divisionBn }: Props) {
             />
           ))}
 
+          {/* Per-district name — small, non-bold, sits right at each
+              district's own centroid so the map reads like a real atlas
+              instead of only naming the 8 divisions. */}
+          {bdMap.districts.map(d => (
+            <text
+              key={`label-${d.name}`}
+              x={d.cx}
+              y={d.cy}
+              textAnchor="middle"
+              className="fill-gray-800 pointer-events-none select-none"
+              style={{ fontSize: 10, paintOrder: "stroke", stroke: "#fff", strokeWidth: 2.4, strokeLinejoin: "round" }}
+            >
+              {isBn ? (districtBn[normalize(d.name)] ?? d.name) : d.name}
+            </text>
+          ))}
+
           {divisionLabels.map(l => (
             <text
               key={l.name}
@@ -181,6 +199,18 @@ export default function BangladeshMap({ isBn, districtBn, divisionBn }: Props) {
               right on the hovered district with its name on a label above
               it, instead of a generic map pin or a fixed badge elsewhere
               on the page. */}
+          {hovered && hub && !hovered.isDhaka && (
+            <path
+              d={arcPath(hub.cx, hub.cy, hovered.x, hovered.y)}
+              fill="none"
+              stroke="#6b7280"
+              strokeOpacity={0.8}
+              strokeWidth={1.4}
+              strokeLinecap="round"
+              style={{ pointerEvents: "none" }}
+            />
+          )}
+
           {hovered && (
             <g style={{ pointerEvents: "none" }}>
               <foreignObject x={hovered.x - 130} y={hovered.y - 50} width="260" height="30" style={{ overflow: "visible" }}>
