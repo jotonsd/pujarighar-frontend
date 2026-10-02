@@ -26,15 +26,15 @@ export default async function AppPromoBanner() {
               <Image
                 src="/assets/app-screens/shop-screenshot.png"
                 alt=""
-                width={180}
-                height={400}
+                width={247}
+                height={550}
                 className="absolute top-0 right-0 w-28 h-auto rounded-xl ring-2 ring-white/30 rotate-6 drop-shadow-[0_12px_16px_rgba(0,0,0,0.55)]"
               />
               <Image
                 src="/assets/app-screens/home-screenshot.png"
                 alt={bn ? "পূজারিঘর অ্যাপের স্ক্রিনশট" : "PujariGhar app screenshot"}
-                width={180}
-                height={400}
+                width={247}
+                height={550}
                 className="absolute bottom-0 left-0 w-28 h-auto rounded-xl ring-2 ring-white/30 -rotate-6 drop-shadow-[0_16px_20px_rgba(0,0,0,0.55)]"
               />
             </div>
