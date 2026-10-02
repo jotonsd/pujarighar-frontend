@@ -49,9 +49,11 @@ export default async function AppPromoBanner() {
                 {bn ? "পূজারিঘর অ্যাপ ইনস্টল করুন" : "Install the PujariGhar App"}
               </h2>
               <p className="text-sm sm:text-base text-white/90 mb-4 max-w-md">
-                {bn
-                  ? "অ্যাপ থেকে প্রথম অর্ডারে ব্যবহার করুন নিচের প্রোমো কোডটি এবং পান ফ্ল্যাট ১০% ছাড়।"
-                  : "Use the promo code below on your first app order and get a flat 10% discount."}
+                {bn ? (
+                  <>অ্যাপ থেকে প্রথম অর্ডারে ব্যবহার করুন নিচের প্রোমো কোডটি এবং পান ফ্ল্যাট <span className="text-3xl sm:text-4xl font-extrabold text-white">১০%</span> ছাড়।</>
+                ) : (
+                  <>Use the promo code below on your first app order and get a flat <span className="text-3xl sm:text-4xl font-extrabold text-white">10%</span> discount.</>
+                )}
               </p>
               <div className="inline-flex items-center gap-2 bg-white rounded-xl px-4 py-2.5 mb-5">
                 <span className="text-xs text-muted">{bn ? "প্রোমো কোড" : "Promo code"}</span>
