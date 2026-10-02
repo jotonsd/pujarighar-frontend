@@ -38,7 +38,7 @@ function generateSku(name: string): string {
 // regenerate (via regenerateSku) before saving.
 function suggestDuplicateSku(sourceSku: string): string {
   const suffix = Math.floor(10 + Math.random() * 90);
-  return `${sourceSku}-COPY${suffix}`;
+  return `${sourceSku}-${suffix}`;
 }
 
 async function urlToFile(url: string, filename: string): Promise<File> {

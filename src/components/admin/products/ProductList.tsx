@@ -147,6 +147,7 @@ export default function ProductList() {
           label: locale === 'bn' ? 'কপি করুন' : 'Duplicate',
           render: p => (
             <Link href={`/${locale}/admin/products/new?duplicateFrom=${p.id}`}
+              target="_blank" rel="noopener noreferrer"
               className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-border bg-surface text-muted hover:text-amber-700 hover:border-amber-400 transition-colors"
               title={locale === 'bn' ? 'কপি করুন' : 'Duplicate'}>
               <Copy className="w-3.5 h-3.5" />
