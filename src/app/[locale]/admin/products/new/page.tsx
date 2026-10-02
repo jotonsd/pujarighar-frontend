@@ -42,7 +42,10 @@ function suggestDuplicateSku(sourceSku: string): string {
 }
 
 async function urlToFile(url: string, filename: string): Promise<File> {
-  const res = await fetch(url);
+  // Routed through our own same-origin proxy — production serves /media/
+  // directly from nginx with no CORS headers, so a direct cross-origin
+  // fetch() of the image URL would be silently blocked by the browser.
+  const res = await fetch(`/api/image-proxy?url=${encodeURIComponent(url)}`);
   const blob = await res.blob();
   return new File([blob], filename, { type: blob.type || "image/jpeg" });
 }
@@ -125,8 +128,14 @@ export default function NewProductPage() {
         setDuplicateImageFiles(files);
         setPendingFiles(files);
       } catch {
-        // Source images failed to fetch (e.g. CORS/network) — not fatal,
-        // the admin can just upload images fresh.
+        // Source images failed to carry over — not fatal (the admin can
+        // just upload fresh ones), but silently leaving the picker empty
+        // with no explanation is confusing, so surface it.
+        toast.error(
+          locale === "bn"
+            ? "মূল পণ্যের ছবি আনা যায়নি, আবার আপলোড করুন"
+            : "Couldn't carry over the original images — please upload again",
+        );
       } finally {
         setImagesReady(true);
       }
