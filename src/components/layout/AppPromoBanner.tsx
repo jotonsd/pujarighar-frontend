@@ -5,7 +5,7 @@ import { Smartphone } from "lucide-react";
 import CopyButton from "@/components/ui/CopyButton";
 
 const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.pujarighar.pujarighar_app";
-const APP_PROMO_CODE = "APPNEWU10";
+const APP_PROMO_CODE = "APPNEWU";
 
 export default async function AppPromoBanner() {
   const locale = await getLocale();
@@ -50,9 +50,9 @@ export default async function AppPromoBanner() {
               </h2>
               <p className="text-sm sm:text-base text-white/90 mb-4 max-w-md">
                 {bn ? (
-                  <>অ্যাপ থেকে প্রথম অর্ডারে ব্যবহার করুন নিচের প্রোমো কোডটি এবং পান ফ্ল্যাট <span className="text-3xl sm:text-4xl font-extrabold text-white">১০%</span> ছাড়।</>
+                  <>অ্যাপ থেকে প্রথম অর্ডারে ব্যবহার করুন নিচের প্রোমো কোডটি এবং পান ফ্ল্যাট <span className="text-4xl sm:text-5xl font-black text-yellow-300">১০%</span> ছাড়।</>
                 ) : (
-                  <>Use the promo code below on your first app order and get a flat <span className="text-3xl sm:text-4xl font-extrabold text-white">10%</span> discount.</>
+                  <>Use the promo code below on your first app order and get a flat <span className="text-4xl sm:text-5xl font-black text-yellow-300">10%</span> discount.</>
                 )}
               </p>
               <div className="inline-flex items-center gap-2 bg-white rounded-xl px-4 py-2.5 mb-5">
