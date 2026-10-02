@@ -5,6 +5,7 @@ import { useGetCategoriesQuery } from "@/api/categories/categoriesApi";
 import {
     useAddProductImagesMutation,
     useCreateProductMutation,
+    useGetProductQuery,
 } from "@/api/products/productsApi";
 import {
     FloatingInput,
@@ -19,8 +20,8 @@ import { toast } from "@/store/toastStore";
 import { getErrorMessage, getFieldErrors } from "@/utils/apiError";
 import { RefreshCw } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
 function generateSku(name: string): string {
   const prefix = name
@@ -30,6 +31,20 @@ function generateSku(name: string): string {
     .padEnd(3, "X");
   const suffix = Math.floor(1000 + Math.random() * 9000);
   return `PG-${prefix}-${suffix}`;
+}
+
+// A duplicated product can't keep the source's SKU (DB-unique) — suggest a
+// clearly-derived variant instead, which the admin can still edit or
+// regenerate (via regenerateSku) before saving.
+function suggestDuplicateSku(sourceSku: string): string {
+  const suffix = Math.floor(10 + Math.random() * 90);
+  return `${sourceSku}-COPY${suffix}`;
+}
+
+async function urlToFile(url: string, filename: string): Promise<File> {
+  const res = await fetch(url);
+  const blob = await res.blob();
+  return new File([blob], filename, { type: blob.type || "image/jpeg" });
 }
 
 export default function NewProductPage() {
@@ -64,6 +79,59 @@ export default function NewProductPage() {
   const { data: brands = [] } = useGetBrandsQuery();
   const [createProduct, { isLoading }] = useCreateProductMutation();
   const [addImages] = useAddProductImagesMutation();
+
+  // Duplicate-from-existing-product flow: /admin/products/new?duplicateFrom=<id>
+  const duplicateFromId = useSearchParams().get("duplicateFrom");
+  const { data: sourceProduct } = useGetProductQuery(duplicateFromId!, { skip: !duplicateFromId });
+  const [duplicateImageFiles, setDuplicateImageFiles] = useState<File[]>([]);
+  // Images carry over as actual re-uploadable files (fetched from the source
+  // product's existing image URLs) — there's no "copy by reference" on the
+  // backend, only upload-new/delete-existing. We delay rendering ImageUpload
+  // until this is settled so its initialFiles seed is correct on first mount.
+  const [imagesReady, setImagesReady] = useState(!duplicateFromId);
+
+  useEffect(() => {
+    if (!sourceProduct) return;
+    skuManualRef.current = true;
+    setForm({
+      name_bn: sourceProduct.name_bn,
+      name_en: sourceProduct.name_en,
+      description_bn: sourceProduct.description_bn ?? "",
+      description_en: sourceProduct.description_en ?? "",
+      sku: suggestDuplicateSku(sourceProduct.sku),
+      category: String(sourceProduct.category ?? ""),
+      brand: sourceProduct.brand ? String(sourceProduct.brand) : "",
+      unit_bn: sourceProduct.unit_bn ?? "পিস",
+      unit_en: sourceProduct.unit_en ?? "piece",
+      weight_kg: sourceProduct.weight_kg != null ? String(sourceProduct.weight_kg) : "",
+      seo_title_bn: sourceProduct.seo_title_bn ?? "",
+      seo_title_en: sourceProduct.seo_title_en ?? "",
+      meta_description_bn: sourceProduct.meta_description_bn ?? "",
+      meta_description_en: sourceProduct.meta_description_en ?? "",
+      focus_keyword: sourceProduct.focus_keyword ?? "",
+      // Not carried over — a canonical URL must point to one real product;
+      // copying it would make the duplicate claim the original's URL.
+      canonical_url: "",
+      badges: sourceProduct.badges ?? [],
+    });
+
+    (async () => {
+      try {
+        const files = await Promise.all(
+          (sourceProduct.images ?? []).map((img, i) =>
+            urlToFile(img.image, `duplicate-${i + 1}.jpg`),
+          ),
+        );
+        setDuplicateImageFiles(files);
+        setPendingFiles(files);
+      } catch {
+        // Source images failed to fetch (e.g. CORS/network) — not fatal,
+        // the admin can just upload images fresh.
+      } finally {
+        setImagesReady(true);
+      }
+    })();
+  }, [sourceProduct]);
 
   const handleCreate = async () => {
     setFieldErrors({});
@@ -109,8 +177,12 @@ export default function NewProductPage() {
   return (
     <div className="max-w-7xl">
       <PageHeader
-        title={`${t("common.create")} ${t("product.title")}`}
-        description={locale === 'bn' ? 'ক্যাটালগে নতুন পণ্য যোগ করুন' : 'Add a new product to your catalog'}
+        title={duplicateFromId ? (locale === 'bn' ? 'পণ্য কপি করুন' : 'Duplicate Product') : `${t("common.create")} ${t("product.title")}`}
+        description={
+          duplicateFromId
+            ? (locale === 'bn' ? 'তথ্য পূরণ করা আছে — প্রয়োজন অনুযায়ী পরিবর্তন করুন' : 'Pre-filled from the original — edit anything before saving')
+            : (locale === 'bn' ? 'ক্যাটালগে নতুন পণ্য যোগ করুন' : 'Add a new product to your catalog')
+        }
         showBack
       />
       <div className="card space-y-4">
@@ -243,10 +315,17 @@ export default function NewProductPage() {
           </div>
         </div>
 
-        <ImageUpload
-          onFilesChange={setPendingFiles}
-          maxImages={5}
-        />
+        {imagesReady ? (
+          <ImageUpload
+            onFilesChange={setPendingFiles}
+            maxImages={5}
+            initialFiles={duplicateImageFiles}
+          />
+        ) : (
+          <p className="text-sm text-muted">
+            {locale === "bn" ? "ছবি লোড হচ্ছে..." : "Loading images..."}
+          </p>
+        )}
 
         <div className="flex gap-3">
           <button

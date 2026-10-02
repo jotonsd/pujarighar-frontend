@@ -16,6 +16,11 @@ interface Props {
   onDeleteExisting?: (imageId: string) => void
   onFilesChange: (files: File[]) => void
   maxImages?: number
+  // Seeds the picker with already-selected files (e.g. carried over from a
+  // duplicated product) — only read on first mount, so the caller should
+  // delay rendering this component until these are ready (see
+  // products/new/page.tsx's duplicate-from flow).
+  initialFiles?: File[]
 }
 
 export default function ImageUpload({
@@ -23,13 +28,14 @@ export default function ImageUpload({
   onDeleteExisting,
   onFilesChange,
   maxImages = 5,
+  initialFiles,
 }: Props) {
   const locale   = useLocale()
   const isBn     = locale === 'bn'
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const [pendingFiles, setPendingFiles] = useState<File[]>([])
-  const [previewUrls, setPreviewUrls]   = useState<string[]>([])
+  const [pendingFiles, setPendingFiles] = useState<File[]>(initialFiles ?? [])
+  const [previewUrls, setPreviewUrls]   = useState<string[]>(() => (initialFiles ?? []).map(f => URL.createObjectURL(f)))
   const [dragging, setDragging]         = useState(false)
 
   const totalCount = existingImages.length + pendingFiles.length

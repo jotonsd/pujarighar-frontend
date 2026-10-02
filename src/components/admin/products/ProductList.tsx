@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Pencil } from 'lucide-react'
+import { Copy, Pencil } from 'lucide-react'
 import Badge from '@/components/ui/Badge'
 import ToggleSwitch from '@/components/ui/forms/ToggleSwitch'
 import PageHeader from '@/components/ui/PageHeader'
@@ -141,6 +141,15 @@ export default function ProductList() {
               className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/40 transition-colors"
               title={t('common.edit')}>
               <Pencil className="w-3.5 h-3.5" />
+            </Link>
+          ),
+        }, {
+          label: locale === 'bn' ? 'কপি করুন' : 'Duplicate',
+          render: p => (
+            <Link href={`/${locale}/admin/products/new?duplicateFrom=${p.id}`}
+              className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-border bg-surface text-muted hover:text-amber-700 hover:border-amber-400 transition-colors"
+              title={locale === 'bn' ? 'কপি করুন' : 'Duplicate'}>
+              <Copy className="w-3.5 h-3.5" />
             </Link>
           ),
         }] : []} />
