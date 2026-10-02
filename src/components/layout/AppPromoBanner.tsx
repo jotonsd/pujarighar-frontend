@@ -21,7 +21,25 @@ export default async function AppPromoBanner() {
       <div className="max-w-7xl mx-auto px-4 pb-10">
         <div className="rounded-3xl bg-gradient-to-br from-amber-500 via-orange-500 to-amber-600 overflow-hidden">
           <div className="flex flex-col sm:flex-row items-center gap-8 px-6 py-8 sm:px-10 sm:py-10">
-            {/* Left: app pitch + promo code */}
+            {/* Left: collage of two app screenshots */}
+            <div className="shrink-0 hidden sm:block relative w-44 h-52">
+              <Image
+                src="/assets/app-screens/shop-screenshot.png"
+                alt=""
+                width={180}
+                height={400}
+                className="absolute top-0 right-0 w-28 h-auto rounded-xl ring-2 ring-white/30 rotate-6 drop-shadow-[0_12px_16px_rgba(0,0,0,0.55)]"
+              />
+              <Image
+                src="/assets/app-screens/home-screenshot.png"
+                alt={bn ? "পূজারিঘর অ্যাপের স্ক্রিনশট" : "PujariGhar app screenshot"}
+                width={180}
+                height={400}
+                className="absolute bottom-0 left-0 w-28 h-auto rounded-xl ring-2 ring-white/30 -rotate-6 drop-shadow-[0_16px_20px_rgba(0,0,0,0.55)]"
+              />
+            </div>
+
+            {/* Middle: app pitch + promo code */}
             <div className="flex-1 text-center sm:text-left">
               <div className="inline-flex items-center gap-2 bg-white/15 text-white text-xs font-semibold px-3 py-1 rounded-full mb-3">
                 <Smartphone className="w-3.5 h-3.5" />
@@ -32,8 +50,8 @@ export default async function AppPromoBanner() {
               </h2>
               <p className="text-sm sm:text-base text-white/90 mb-4 max-w-md">
                 {bn
-                  ? "অ্যাপ থেকে প্রথম অর্ডারে ব্যবহার করুন নিচের প্রোমো কোডটি এবং পান বিশেষ ছাড়।"
-                  : "Use the promo code below on your first app order and get a special discount."}
+                  ? "অ্যাপ থেকে প্রথম অর্ডারে ব্যবহার করুন নিচের প্রোমো কোডটি এবং পান ফ্ল্যাট ১০% ছাড়।"
+                  : "Use the promo code below on your first app order and get a flat 10% discount."}
               </p>
               <div className="inline-flex items-center gap-2 bg-white rounded-xl px-4 py-2.5 mb-5">
                 <span className="text-xs text-muted">{bn ? "প্রোমো কোড" : "Promo code"}</span>

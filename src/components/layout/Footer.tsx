@@ -7,7 +7,9 @@ import FooterOrderLink from "./FooterOrderLink";
 async function fetchSettings() {
   try {
     const base = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
-    const res = await fetch(`${base}/api/settings/`, { next: { revalidate: 60 } });
+    const res = await fetch(`${base}/api/settings/`, {
+      next: { revalidate: 60 },
+    });
     if (!res.ok) return null;
     const json = await res.json();
     return json.data ?? null;
@@ -27,7 +29,9 @@ async function fetchCategories(): Promise<FooterCategory[]> {
     const base = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
     // Categories are already returned sorted by their admin-managed `order`
     // (sequence) field — just take the first 5.
-    const res = await fetch(`${base}/api/categories/`, { next: { revalidate: 300 } });
+    const res = await fetch(`${base}/api/categories/`, {
+      next: { revalidate: 300 },
+    });
     if (!res.ok) return [];
     const json = await res.json();
     return (json.data ?? []).slice(0, 5);
@@ -44,13 +48,13 @@ export default async function Footer() {
   const categories = await fetchCategories();
 
   const companyName = bn
-    ? (settings?.company_name_bn || "পূজারিঘর")
-    : (settings?.company_name_en || "PujariGhar");
-  const phone   = settings?.contact_phone || "+880 1700-000000";
-  const email   = settings?.contact_email || "pujarigharbd@gmail.com";
+    ? settings?.company_name_bn || "পূজারিঘর"
+    : settings?.company_name_en || "PujariGhar";
+  const phone = settings?.contact_phone || "+880 1700-000000";
+  const email = settings?.contact_email || "pujarigharbd@gmail.com";
   const address = bn
-    ? (settings?.address_bn || "ঢাকা, বাংলাদেশ")
-    : (settings?.address_en || "Dhaka, Bangladesh");
+    ? settings?.address_bn || "ঢাকা, বাংলাদেশ"
+    : settings?.address_en || "Dhaka, Bangladesh";
   const logoSrc = settings?.logo || "/assets/logo/pujarighar.png";
 
   return (
@@ -62,7 +66,13 @@ export default async function Footer() {
           <div className="lg:col-span-1">
             <div className="mb-4">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <Image src={logoSrc} alt={companyName} width={113} height={48} className="h-12 w-auto object-contain brightness-0 invert" />
+              <Image
+                src={logoSrc}
+                alt={companyName}
+                width={113}
+                height={48}
+                className="h-12 w-auto object-contain brightness-0 invert"
+              />
             </div>
             <p className="text-sm text-gray-400 leading-relaxed mb-5">
               {bn
@@ -76,7 +86,12 @@ export default async function Footer() {
                   label: "Facebook",
                   href: "https://www.facebook.com/pujarighar/",
                   icon: (
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
                       <path d="M22 12.06C22 6.51 17.52 2 12 2S2 6.51 2 12.06c0 5 3.66 9.15 8.44 9.94v-7.03H7.9v-2.91h2.54V9.84c0-2.5 1.49-3.89 3.78-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.87h2.78l-.45 2.91h-2.33V22c4.78-.79 8.44-4.94 8.44-9.94z" />
                     </svg>
                   ),
@@ -85,7 +100,12 @@ export default async function Footer() {
                   label: "Instagram",
                   href: "#",
                   icon: (
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
                       <path d="M12 2c2.72 0 3.06.01 4.12.06 1.07.05 1.79.22 2.43.46.66.25 1.21.6 1.76 1.15.5.49.86 1.01 1.15 1.76.24.64.41 1.36.46 2.43.05 1.06.06 1.4.06 4.12s-.01 3.06-.06 4.12c-.05 1.07-.22 1.79-.46 2.43-.25.66-.6 1.21-1.15 1.76-.49.5-1.01.86-1.76 1.15-.64.24-1.36.41-2.43.46-1.06.05-1.4.06-4.12.06s-3.06-.01-4.12-.06c-1.07-.05-1.79-.22-2.43-.46-.66-.25-1.21-.6-1.76-1.15-.5-.49-.86-1.01-1.15-1.76-.24-.64-.41-1.36-.46-2.43C2.01 15.06 2 14.72 2 12s.01-3.06.06-4.12c.05-1.07.22-1.79.46-2.43.25-.66.6-1.21 1.15-1.76.49-.5 1.01-.86 1.76-1.15.64-.24 1.36-.41 2.43-.46C8.94 2.01 9.28 2 12 2zm0 5a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 8.2a3.2 3.2 0 1 1 0-6.4 3.2 3.2 0 0 1 0 6.4zm5.4-9a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4z" />
                     </svg>
                   ),
@@ -94,7 +114,12 @@ export default async function Footer() {
                   label: "YouTube",
                   href: "https://www.youtube.com/@pujarigharbd",
                   icon: (
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
                       <path d="M21.8 8.001s-.2-1.4-.8-2c-.77-.8-1.63-.8-2.03-.86C16.1 5 12 5 12 5h-.01s-4.1 0-6.97.15c-.4.05-1.26.06-2.03.86-.6.6-.8 2-.8 2S2 9.6 2 11.2v1.6c0 1.6.2 3.2.2 3.2s.2 1.4.8 2c.77.8 1.78.78 2.23.86C6.9 19 12 19 12 19s4.1 0 6.97-.15c.4-.06 1.26-.06 2.03-.86.6-.6.8-2 .8-2s.2-1.6.2-3.2v-1.6c0-1.6-.2-3.2-.2-3.2zM9.96 14.5v-5l5.4 2.5-5.4 2.5z" />
                     </svg>
                   ),
@@ -121,15 +146,38 @@ export default async function Footer() {
             </h3>
             <ul className="space-y-2.5">
               {[
-                { href: `/${locale}`,          label_bn: "হোম",          label_en: "Home" },
-                { href: `/${locale}/products`, label_bn: "পণ্য",          label_en: "Products" },
-                { href: `/${locale}/packages`, label_bn: "প্যাকেজ",       label_en: "Packages" },
-                { href: `/${locale}/cart`,     label_bn: "কার্ট",          label_en: "Cart" },
-                { href: `/${locale}/track`,    label_bn: "অর্ডার ট্র্যাক", label_en: "Track Order" },
-                { href: `/${locale}/delivery-area`, label_bn: "ডেলিভারি এলাকা", label_en: "Delivery Area" },
+                { href: `/${locale}`, label_bn: "হোম", label_en: "Home" },
+                {
+                  href: `/${locale}/products`,
+                  label_bn: "পণ্য",
+                  label_en: "Products",
+                },
+                {
+                  href: `/${locale}/packages`,
+                  label_bn: "প্যাকেজ",
+                  label_en: "Packages",
+                },
+                {
+                  href: `/${locale}/cart`,
+                  label_bn: "কার্ট",
+                  label_en: "Cart",
+                },
+                {
+                  href: `/${locale}/track`,
+                  label_bn: "অর্ডার ট্র্যাক",
+                  label_en: "Track Order",
+                },
+                {
+                  href: `/${locale}/delivery-area`,
+                  label_bn: "ডেলিভারি এলাকা",
+                  label_en: "Delivery Area",
+                },
               ].map(l => (
                 <li key={l.href}>
-                  <Link href={l.href} className="text-sm text-gray-400 hover:text-amber-400 transition-colors">
+                  <Link
+                    href={l.href}
+                    className="text-sm text-gray-400 hover:text-amber-400 transition-colors"
+                  >
                     {bn ? l.label_bn : l.label_en}
                   </Link>
                 </li>
@@ -146,7 +194,10 @@ export default async function Footer() {
             <ul className="space-y-2.5">
               {categories.map(cat => (
                 <li key={cat.slug}>
-                  <Link href={`/${locale}/products?category=${cat.slug}`} className="text-sm text-gray-400 hover:text-amber-400 transition-colors">
+                  <Link
+                    href={`/${locale}/products?category=${cat.slug}`}
+                    className="text-sm text-gray-400 hover:text-amber-400 transition-colors"
+                  >
                     {bn ? cat.name_bn : cat.name_en}
                   </Link>
                 </li>
@@ -169,18 +220,28 @@ export default async function Footer() {
               {phone && (
                 <li className="flex items-center gap-2.5 text-sm text-gray-400">
                   <Phone className="w-4 h-4 shrink-0" />
-                  <a href={`tel:${phone}`} className="hover:text-amber-400 transition-colors">{phone}</a>
+                  <a
+                    href={`tel:${phone}`}
+                    className="hover:text-amber-400 transition-colors"
+                  >
+                    {phone}
+                  </a>
                 </li>
               )}
               {email && (
                 <li className="flex items-center gap-2.5 text-sm text-gray-400">
                   <Mail className="w-4 h-4 shrink-0" />
-                  <a href={`mailto:${email}`} className="hover:text-amber-400 transition-colors">{email}</a>
+                  <a
+                    href={`mailto:${email}`}
+                    className="hover:text-amber-400 transition-colors"
+                  >
+                    {email}
+                  </a>
                 </li>
               )}
               <li className="pt-1">
                 <p className="text-sm text-gray-400 mb-2">
-                  {bn ? "পূজারিঘর অ্যাপ নিন" : "Get Pujarighar App"}
+                  {bn ? "পূজারিঘর অ্যাপ" : "Get Pujarighar App"}
                 </p>
                 <a
                   href="https://play.google.com/store/apps/details?id=com.pujarighar.pujarighar_app"
@@ -190,7 +251,11 @@ export default async function Footer() {
                 >
                   <Image
                     src="/assets/badges/google-play-badge.png"
-                    alt={bn ? "গুগল প্লে স্টোর থেকে অ্যাপ ডাউনলোড করুন" : "Get it on Google Play"}
+                    alt={
+                      bn
+                        ? "গুগল প্লে স্টোর থেকে অ্যাপ ডাউনলোড করুন"
+                        : "Get it on Google Play"
+                    }
                     width={135}
                     height={40}
                     className="h-10 w-auto"
@@ -210,30 +275,54 @@ export default async function Footer() {
             {bn ? "সর্বস্বত্ব সংরক্ষিত।" : "All rights reserved."}
           </p>
           <div className="flex items-center gap-3 text-xs text-gray-400">
-            <Link href={`/${locale}/privacy-policy`} className="hover:text-amber-400 transition-colors">
+            <Link
+              href={`/${locale}/privacy-policy`}
+              className="hover:text-amber-400 transition-colors"
+            >
               {bn ? "গোপনীয়তা নীতি" : "Privacy Policy"}
             </Link>
-            <Link href={`/${locale}/terms-of-service`} className="hover:text-amber-400 transition-colors">
+            <Link
+              href={`/${locale}/terms-of-service`}
+              className="hover:text-amber-400 transition-colors"
+            >
               {bn ? "শর্তাবলী" : "Terms of Service"}
             </Link>
-            <Link href={`/${locale}/return-policy`} className="hover:text-amber-400 transition-colors">
+            <Link
+              href={`/${locale}/return-policy`}
+              className="hover:text-amber-400 transition-colors"
+            >
               {bn ? "রিটার্ন নীতি" : "Return Policy"}
             </Link>
-            <Link href={`/${locale}/faq`} className="hover:text-amber-400 transition-colors">
+            <Link
+              href={`/${locale}/faq`}
+              className="hover:text-amber-400 transition-colors"
+            >
               {bn ? "সচরাচর জিজ্ঞাসা" : "FAQ"}
             </Link>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-xs text-gray-400">{bn ? "পেমেন্ট:" : "Payment:"}</span>
+            <span className="text-xs text-gray-400">
+              {bn ? "পেমেন্ট:" : "Payment:"}
+            </span>
             {[
-              { src: "/assets/payments/bkash.png",     alt: "bKash",      width: 20 },
-              { src: "/assets/payments/nagad.webp",     alt: "Nagad",      width: 20 },
-              { src: "/assets/payments/visa.png",       alt: "Visa",       width: 36 },
-              { src: "/assets/payments/mastercard.png", alt: "Mastercard", width: 33 },
-              { src: "/assets/payments/amex.webp",      alt: "Amex",       width: 32 },
+              { src: "/assets/payments/bkash.png", alt: "bKash", width: 20 },
+              { src: "/assets/payments/nagad.webp", alt: "Nagad", width: 20 },
+              { src: "/assets/payments/visa.png", alt: "Visa", width: 36 },
+              {
+                src: "/assets/payments/mastercard.png",
+                alt: "Mastercard",
+                width: 33,
+              },
+              { src: "/assets/payments/amex.webp", alt: "Amex", width: 32 },
             ].map(pm => (
               <div key={pm.alt} className="flex items-center justify-center">
-                <Image src={pm.src} alt={pm.alt} width={pm.width} height={20} className="h-5 w-auto object-contain" />
+                <Image
+                  src={pm.src}
+                  alt={pm.alt}
+                  width={pm.width}
+                  height={20}
+                  className="h-5 w-auto object-contain"
+                />
               </div>
             ))}
           </div>
