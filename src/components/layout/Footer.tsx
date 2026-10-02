@@ -178,6 +178,25 @@ export default async function Footer() {
                   <a href={`mailto:${email}`} className="hover:text-amber-400 transition-colors">{email}</a>
                 </li>
               )}
+              <li className="pt-1">
+                <p className="text-sm text-gray-400 mb-2">
+                  {bn ? "পূজারিঘর অ্যাপ নিন" : "Get Pujarighar App"}
+                </p>
+                <a
+                  href="https://play.google.com/store/apps/details?id=com.pujarighar.pujarighar_app"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block"
+                >
+                  <Image
+                    src="/assets/badges/google-play-badge.png"
+                    alt={bn ? "গুগল প্লে স্টোর থেকে অ্যাপ ডাউনলোড করুন" : "Get it on Google Play"}
+                    width={135}
+                    height={40}
+                    className="h-10 w-auto"
+                  />
+                </a>
+              </li>
             </ul>
           </div>
         </div>
