@@ -36,7 +36,17 @@ export default function UserList() {
 
   const toggle = (id: string, isActive: boolean) => isActive ? deactivate(id) : activate(id)
 
+  const nameFor = (u: User) =>
+    (isBn ? u.profile?.full_name_bn || u.profile?.full_name_en : u.profile?.full_name_en || u.profile?.full_name_bn)
+    || '—'
+
   const columns: Column<User>[] = [
+    {
+      header: locale === 'bn' ? 'নাম' : 'Name',
+      accessor: u => nameFor(u),
+      className: 'px-4 py-3 text-sm text-body font-medium',
+      exportValue: nameFor,
+    },
     { header: t('auth.email'), accessor: 'email', className: 'px-4 py-3 text-sm text-body font-medium', exportValue: u => u.email },
     { header: t('auth.phone'), accessor: 'phone', className: 'px-4 py-3 text-sm text-muted', exportValue: u => u.phone },
     {

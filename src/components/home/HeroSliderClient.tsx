@@ -40,9 +40,8 @@ export default function HeroSliderClient({ slides }: { slides: HeroSlide[] }) {
                   sizes="100vw"
                   className="object-cover"
                 />
-                {/* Overlay for text */}
                 {(slide.title_bn || slide.title_en) && (
-                  <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent flex flex-col justify-end md:justify-center px-5 md:px-10 pb-8 md:pb-0">
+                  <div className="absolute inset-0 flex flex-col justify-end md:justify-center px-5 md:px-10 pb-8 md:pb-0">
                     <h1 className="text-sm md:text-4xl font-bold text-white mb-1 md:mb-2 drop-shadow leading-snug line-clamp-2">
                       {locale === "bn" ? slide.title_bn : slide.title_en}
                     </h1>
