@@ -4,7 +4,7 @@ import type { MetadataRoute } from "next";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pujarighar.com";
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8020";
 
-const STATIC_PATHS = ["", "/products", "/packages", "/blog", "/faq", "/track", "/delivery-area", "/privacy-policy", "/terms-of-service", "/return-policy"];
+const STATIC_PATHS = ["", "/products", "/packages", "/blog", "/faq", "/track", "/delivery-area", "/privacy-policy", "/terms-of-service", "/return-policy", "/data-deletion"];
 
 interface SitemapProduct {
   id: string;
