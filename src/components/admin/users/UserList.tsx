@@ -18,6 +18,15 @@ const SYSTEM_ROLE_VARIANTS: Record<string, 'blue' | 'yellow' | 'orange' | 'green
   ADMIN: 'blue', WAREHOUSE: 'yellow', DELIVERY: 'orange', CUSTOMER: 'green',
 }
 
+const SIGNUP_PROVIDER_VARIANTS: Record<string, 'blue' | 'gray' | 'green'> = {
+  GOOGLE: 'blue', FACEBOOK: 'blue', MANUAL: 'gray',
+}
+const SIGNUP_PROVIDER_LABELS: Record<string, { bn: string; en: string }> = {
+  MANUAL: { bn: 'সাধারণ', en: 'Manual' },
+  GOOGLE: { bn: 'Google', en: 'Google' },
+  FACEBOOK: { bn: 'Facebook', en: 'Facebook' },
+}
+
 export default function UserList() {
   const t      = useTranslations()
   const locale = useLocale()
@@ -68,6 +77,15 @@ export default function UserList() {
         </Badge>
       ),
       exportValue: u => u.registered_via === 'MOBILE_APP' ? 'App' : 'Website',
+    },
+    {
+      header: locale === 'bn' ? 'সাইনআপ' : 'Signup',
+      accessor: u => (
+        <Badge variant={SIGNUP_PROVIDER_VARIANTS[u.signup_provider] || 'gray'}>
+          {SIGNUP_PROVIDER_LABELS[u.signup_provider]?.[isBn ? 'bn' : 'en'] ?? u.signup_provider}
+        </Badge>
+      ),
+      exportValue: u => u.signup_provider,
     },
     {
       header: locale === 'bn' ? 'স্ট্যাটাস' : 'Status',

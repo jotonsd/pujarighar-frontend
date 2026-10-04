@@ -119,6 +119,7 @@ export interface User {
   date_joined: string
   referral_code: string
   registered_via: 'WEBSITE' | 'MOBILE_APP'
+  signup_provider: 'MANUAL' | 'GOOGLE' | 'FACEBOOK'
   profile: Profile
   nav_menu?: NavItem[]
   permissions?: string[]
