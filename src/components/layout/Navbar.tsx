@@ -816,14 +816,16 @@ export default function Navbar() {
   };
 
   const handleLogout = async () => {
-    try {
-      const Cookies = (await import("js-cookie")).default;
-      await logoutMutation({ refresh: Cookies.get("refresh_token") ?? "" }).unwrap();
-    } catch {}
     // logout() itself resets the RTK Query cache (see authStore.ts) so the
-    // Navbar doesn't keep rendering the previous user's stale data.
+    // Navbar stops rendering the previous user's cashback/avatar instantly —
+    // this must run before the network call below, not after, or the UI
+    // stays stale for the length of that round-trip.
+    const refreshToken = Cookies.get("refresh_token") ?? "";
     logout();
     router.push(`/${locale}`);
+    try {
+      await logoutMutation({ refresh: refreshToken }).unwrap();
+    } catch {}
   };
 
   const handleMobileSearch = (q: string) => {
