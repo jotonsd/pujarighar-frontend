@@ -48,6 +48,7 @@ jobs:
           NEXT_PUBLIC_GA_ID: ${{ env.GA_ID }}
           NEXT_PUBLIC_DEFAULT_LOCALE: ${{ secrets.NEXT_PUBLIC_DEFAULT_LOCALE }}
           NEXT_PUBLIC_GOOGLE_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_GOOGLE_CLIENT_ID }}
+          NEXT_PUBLIC_FACEBOOK_APP_ID: ${{ secrets.NEXT_PUBLIC_FACEBOOK_APP_ID }}
 
       - name: Assemble standalone deploy package
         run: |

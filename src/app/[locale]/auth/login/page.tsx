@@ -283,7 +283,6 @@ function LoginForm() {
               </span>
             </button>
 
-            {/* Facebook login temporarily disabled until app verification is complete
             <button
               type="button"
               onClick={startFacebookLogin}
@@ -302,7 +301,6 @@ function LoginForm() {
                   : "Facebook"}
               </span>
             </button>
-            */}
           </div>
 
           <div className="mt-5 text-center text-sm">
