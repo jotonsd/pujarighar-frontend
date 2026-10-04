@@ -83,6 +83,10 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} className={locale === "en" ? poppins.className : hindSiliguri.className}>
       <head>
+        {/* Facebook domain verification (Meta Business Manager > Business
+            settings > Domains > pujarighar.com) — server-rendered, not
+            JS-injected, so Meta's scraper can find it per their requirement. */}
+        <meta name="facebook-domain-verification" content="vlaqrgeorcjyxvjuqd6ul3v3idaoaw" />
         <link rel="preconnect" href={API_ORIGIN} />
         <link rel="dns-prefetch" href={API_ORIGIN} />
         {organizationSchema && (
