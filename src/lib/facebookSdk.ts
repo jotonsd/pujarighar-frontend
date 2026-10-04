@@ -48,12 +48,11 @@ export function facebookLogin(): Promise<string> {
           reject(new Error('Facebook login cancelled or failed'))
         }
       },
-      // Uses a standard Consumer Facebook app (not "...for Business" —
-      // that product can't grant 'email' at all, confirmed the hard way).
-      // Backend still falls back to keying the account on the Facebook user
-      // id if a given user denies the email permission — see
-      // auth_views.facebook_login / _oauth_login_or_create.
-      { scope: 'email,public_profile' },
+      // Deliberately just 'public_profile', no 'email' — keeps setup/review
+      // simple. The backend keys the account on the Facebook user id
+      // instead (see auth_views.facebook_login / _oauth_login_or_create),
+      // which already works end-to-end without needing an email at all.
+      { scope: 'public_profile' },
     )
   })
 }
