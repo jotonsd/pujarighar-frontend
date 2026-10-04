@@ -178,16 +178,21 @@ export default function SlideForm({ editItem, onClose }: Props) {
           onChange={f("cta_link")}
           placeholder="/bn/products"
         />
-        <div className="flex items-center gap-2">
-          <input
-            type="color"
-            value={form.bg_color}
-            onChange={e => setForm(p => ({ ...p, bg_color: e.target.value }))}
-            className="w-10 h-10 rounded-lg border border-border cursor-pointer p-0.5"
-          />
-          <span className="text-xs text-muted font-mono">
-            {form.bg_color}
-          </span>
+        <div className="flex flex-col gap-1">
+          <label className="text-xs text-muted">
+            {locale === "bn" ? "CTA বাটন রঙ" : "CTA Button Color"}
+          </label>
+          <div className="flex items-center gap-2">
+            <input
+              type="color"
+              value={form.bg_color}
+              onChange={e => setForm(p => ({ ...p, bg_color: e.target.value }))}
+              className="w-10 h-10 rounded-lg border border-border cursor-pointer p-0.5"
+            />
+            <span className="text-xs text-muted font-mono">
+              {form.bg_color}
+            </span>
+          </div>
         </div>
         <FloatingInput
           label={locale === "bn" ? "ক্রম" : "Order"}

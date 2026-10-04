@@ -57,6 +57,7 @@ export default function HeroSliderClient({ slides }: { slides: HeroSlide[] }) {
                         <Link
                           href={slide.cta_link}
                           className="btn-primary self-start px-4 py-2 md:px-6 md:py-2.5 text-sm md:text-base"
+                          style={slide.bg_color ? { backgroundColor: slide.bg_color } : undefined}
                         >
                           {locale === "bn"
                             ? slide.cta_label_bn
@@ -70,7 +71,7 @@ export default function HeroSliderClient({ slides }: { slides: HeroSlide[] }) {
               /* Text-only slide */
               <div
                 className="w-full h-48 md:h-96 flex flex-col items-center justify-center text-center px-5 md:px-6"
-                style={{ backgroundColor: slide.bg_color || "#FFF7ED" }}
+                style={{ backgroundColor: "#FFF7ED" }}
               >
                 <h1 className="text-base md:text-4xl font-bold text-amber-800 mb-2 md:mb-3 leading-snug line-clamp-2">
                   {locale === "bn" ? slide.title_bn : slide.title_en}
@@ -85,6 +86,7 @@ export default function HeroSliderClient({ slides }: { slides: HeroSlide[] }) {
                     <Link
                       href={slide.cta_link}
                       className="btn-primary px-6 py-2.5 md:px-8 md:py-3 text-sm md:text-base"
+                      style={slide.bg_color ? { backgroundColor: slide.bg_color } : undefined}
                     >
                       {locale === "bn"
                         ? slide.cta_label_bn
