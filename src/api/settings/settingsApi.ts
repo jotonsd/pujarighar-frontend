@@ -13,6 +13,8 @@ export interface SiteSettings {
   logo:                string | null
   favicon:             string | null
   free_delivery_min_subtotal?: string
+  google_login_enabled?:      boolean
+  facebook_login_enabled?:    boolean
   email_host?:               string
   email_port?:               number
   email_host_user?:          string

@@ -54,6 +54,8 @@ function GeneralPanel({ settings, isBn }: { settings: SiteSettings; isBn: boolea
     contact_email:   settings.contact_email,
     address_bn:      settings.address_bn,
     address_en:      settings.address_en,
+    google_login_enabled:   settings.google_login_enabled ?? true,
+    facebook_login_enabled: settings.facebook_login_enabled ?? true,
   });
   const [logoFiles,    setLogoFiles]    = useState<File[]>([]);
   const [faviconFiles, setFaviconFiles] = useState<File[]>([]);
@@ -68,6 +70,8 @@ function GeneralPanel({ settings, isBn }: { settings: SiteSettings; isBn: boolea
       contact_email:   settings.contact_email,
       address_bn:      settings.address_bn,
       address_en:      settings.address_en,
+      google_login_enabled:   settings.google_login_enabled ?? true,
+      facebook_login_enabled: settings.facebook_login_enabled ?? true,
     });
     setLogoPrev(settings.logo);
     setFaviconPrev(settings.favicon);
@@ -82,7 +86,7 @@ function GeneralPanel({ settings, isBn }: { settings: SiteSettings; isBn: boolea
   const handleSave = async () => {
     try {
       const fd = new FormData();
-      Object.entries(form).forEach(([k, v]) => fd.append(k, v));
+      Object.entries(form).forEach(([k, v]) => fd.append(k, String(v)));
       if (logoFiles[0])    fd.append("logo",    logoFiles[0]);
       if (faviconFiles[0]) fd.append("favicon", faviconFiles[0]);
       await update(fd).unwrap();
@@ -129,6 +133,43 @@ function GeneralPanel({ settings, isBn }: { settings: SiteSettings; isBn: boolea
         <FloatingTextarea label={isBn ? "ঠিকানা (বাংলা)" : "Address (Bangla)"} value={form.address_bn} onChange={f("address_bn")} rows={3} />
         <FloatingTextarea label={isBn ? "ঠিকানা (ইংরেজি)" : "Address (English)"} value={form.address_en} onChange={f("address_en")} rows={3} />
       </div>
+
+      <div className="border-t border-border pt-4 space-y-3">
+        <p className="text-xs font-semibold text-muted">{isBn ? "লগইন পদ্ধতি" : "Login Methods"}</p>
+        <label className="flex items-start gap-3 cursor-pointer select-none">
+          <div
+            onClick={() => setForm(p => ({ ...p, google_login_enabled: !p.google_login_enabled }))}
+            className={`mt-0.5 w-10 h-5 rounded-full transition-colors relative shrink-0 ${form.google_login_enabled ? "bg-amber-600" : "bg-surface-alt"}`}
+          >
+            <span className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${form.google_login_enabled ? "translate-x-5" : ""}`} />
+          </div>
+          <div>
+            <span className="text-sm font-medium text-muted">{isBn ? "Google দিয়ে লগইন/নিবন্ধন" : "Google login/register"}</span>
+            <p className="text-xs text-muted mt-0.5">
+              {isBn
+                ? "বন্ধ করলে ওয়েবসাইটে Google বাটন আর দেখা যাবে না।"
+                : "When off, the Google button is hidden on the website."}
+            </p>
+          </div>
+        </label>
+        <label className="flex items-start gap-3 cursor-pointer select-none">
+          <div
+            onClick={() => setForm(p => ({ ...p, facebook_login_enabled: !p.facebook_login_enabled }))}
+            className={`mt-0.5 w-10 h-5 rounded-full transition-colors relative shrink-0 ${form.facebook_login_enabled ? "bg-amber-600" : "bg-surface-alt"}`}
+          >
+            <span className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${form.facebook_login_enabled ? "translate-x-5" : ""}`} />
+          </div>
+          <div>
+            <span className="text-sm font-medium text-muted">{isBn ? "Facebook দিয়ে লগইন/নিবন্ধন" : "Facebook login/register"}</span>
+            <p className="text-xs text-muted mt-0.5">
+              {isBn
+                ? "বন্ধ করলে ওয়েবসাইটে Facebook বাটন আর দেখা যাবে না।"
+                : "When off, the Facebook button is hidden on the website."}
+            </p>
+          </div>
+        </label>
+      </div>
+
       <button onClick={handleSave} disabled={isLoading} className="btn-primary">
         {isLoading ? (isBn ? "সংরক্ষণ হচ্ছে..." : "Saving...") : (isBn ? "সংরক্ষণ করুন" : "Save Changes")}
       </button>
