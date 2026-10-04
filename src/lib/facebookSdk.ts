@@ -48,7 +48,12 @@ export function facebookLogin(): Promise<string> {
           reject(new Error('Facebook login cancelled or failed'))
         }
       },
-      { scope: 'email,public_profile' },
+      // 'email' deliberately omitted — this app uses Facebook Login for
+      // Business, which can only grant business-asset-scoped permissions,
+      // not a user's personal email (requesting it gets rejected outright
+      // as an "Invalid Scope"). Accounts are keyed on the Facebook user id
+      // instead — see backend auth_views.facebook_login.
+      { scope: 'public_profile' },
     )
   })
 }

@@ -74,13 +74,23 @@ jobs:
             ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ env.DEPLOY_PATH }}/
 
       - name: Restart app via PM2
+        # Single SSH session (not two back-to-back connections) — opening a
+        # second connection immediately after the first was intermittently
+        # getting reset during the SSH handshake ("kex_exchange_identification:
+        # Connection reset by peer"), likely a connection-rate limit/throttle
+        # on the VPS (e.g. sshd MaxStartups or fail2ban) — which failed the
+        # whole deploy job even though the restart itself had already
+        # succeeded. A retry is also added as a second line of defense for
+        # any other transient SSH blip.
         run: |
-          ssh -p ${{ secrets.SSH_PORT }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
-            ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} \
-            "pm2 restart ${{ env.PM2_NAME }} || PORT=${{ env.PM2_PORT }} pm2 start ${{ env.DEPLOY_PATH }}/server.js --name ${{ env.PM2_NAME }}"
-          ssh -p ${{ secrets.SSH_PORT }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
-            ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} \
-            "pm2 save"
+          for attempt in 1 2 3; do
+            ssh -p ${{ secrets.SSH_PORT }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
+              ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} \
+              "pm2 restart ${{ env.PM2_NAME }} || PORT=${{ env.PM2_PORT }} pm2 start ${{ env.DEPLOY_PATH }}/server.js --name ${{ env.PM2_NAME }}; pm2 save" \
+              && break
+            echo "SSH attempt $attempt failed, retrying in 5s..."
+            sleep 5
+          done
 
       - name: Cleanup
         if: always()
