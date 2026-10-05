@@ -115,10 +115,14 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
   };
 
   const hasMany = images.length > 1;
+  // Auto-advancing would wander off the selected color's photos into
+  // another color's — only auto-slide for plain multi-image products with
+  // no color selection to preserve.
+  const autoSlideEnabled = hasMany && colors.length === 0;
 
   // Auto-slide — must be before early returns
   useEffect(() => {
-    if (!hasMany) return;
+    if (!autoSlideEnabled) return;
     timerRef.current = setInterval(
       () => setImgIdx(i => (i + 1) % images.length),
       4000,
@@ -126,11 +130,12 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [hasMany, images.length]);
+  }, [autoSlideEnabled, images.length]);
 
   const goTo = (idx: number) => {
     setImgIdx(idx);
     if (timerRef.current) clearInterval(timerRef.current);
+    if (!autoSlideEnabled) return;
     timerRef.current = setInterval(
       () => setImgIdx(i => (i + 1) % images.length),
       4000,

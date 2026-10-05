@@ -34,6 +34,11 @@ export default function ProductCard({
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const images = product.images ?? [];
   const hasMany = images.length > 1;
+  // Distinct (bn,en) color pairs — same dedup key as the product detail
+  // page, so the count shown here always matches the picker there.
+  const colorCount = new Set(
+    images.filter(img => img.color_bn || img.color_en).map(img => `${img.color_bn}\u0000${img.color_en}`),
+  ).size;
 
   useEffect(() => {
     if (!hasMany) return;
@@ -83,7 +88,7 @@ export default function ProductCard({
     setQty(q => Math.min(maxStock, q + 1));
   };
 
-  const hasColors = (product.images ?? []).some(img => img.color_bn || img.color_en);
+  const hasColors = colorCount > 0;
 
   const handleAddToCart = async (e: React.MouseEvent) => {
     // Products with color variants need the picker on the detail page —
@@ -214,6 +219,11 @@ export default function ProductCard({
         <h3 className="font-medium text-body mb-1 line-clamp-2 text-sm">
           {name}
         </h3>
+        {hasColors && (
+          <p className="text-[11px] text-amber-700 font-medium mb-1">
+            {locale === "bn" ? `${formatNumber(colorCount, locale)}টি রঙে উপলব্ধ` : `Available in ${colorCount} colors`}
+          </p>
+        )}
         {/* {product.review_count > 0 && (
           <div className="flex items-center gap-1 mb-1.5">
             <span className="flex gap-0.5">
