@@ -124,13 +124,18 @@ function LoginForm() {
     } catch (err: unknown) {
       const e = err as {
         data?: {
-          errors?: { details?: { message_bn?: string; message_en?: string } };
+          errors?: {
+            message_bn?: string[];
+            message_en?: string[];
+            details?: { message_bn?: string; message_en?: string };
+          };
         };
       };
+      const errors = e.data?.errors;
       toast.error(
         isBn
-          ? (e.data?.errors?.details?.message_bn ?? "লগইন ব্যর্থ হয়েছে")
-          : (e.data?.errors?.details?.message_en ?? "Login failed"),
+          ? (errors?.message_bn?.[0] ?? errors?.details?.message_bn ?? "লগইন ব্যর্থ হয়েছে")
+          : (errors?.message_en?.[0] ?? errors?.details?.message_en ?? "Login failed"),
       );
     }
   };

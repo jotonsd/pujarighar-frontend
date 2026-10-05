@@ -46,6 +46,18 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
   );
   const colorLabel = (c: { bn: string; en: string }) => (locale === "bn" ? c.bn || c.en : c.en || c.bn);
 
+  // Pre-select the first color (and jump the gallery to its photos) once
+  // the product loads, so the customer isn't forced to click a pill for
+  // the common case of just wanting the default option — they can still
+  // switch colors, this just removes the extra required tap.
+  useEffect(() => {
+    if (colors.length === 0 || selectedColor) return;
+    setSelectedColor(colors[0]);
+    const firstIdx = images.findIndex(img => img.color_bn === colors[0].bn && img.color_en === colors[0].en);
+    if (firstIdx >= 0) setImgIdx(firstIdx);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product?.id]);
+
   const handleBuyNow = async () => {
     await handleAddToCart();
     router.push(`/${locale}/cart`);
@@ -86,13 +98,18 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
     } catch (err: unknown) {
       const e = err as {
         data?: {
-          errors?: { details?: { message_bn?: string; message_en?: string } };
+          errors?: {
+            message_bn?: string;
+            message_en?: string;
+            details?: { message_bn?: string; message_en?: string };
+          };
         };
       };
+      const errors = e.data?.errors;
       toast.error(
         locale === "bn"
-          ? (e.data?.errors?.details?.message_bn ?? "ত্রুটি")
-          : (e.data?.errors?.details?.message_en ?? "Error"),
+          ? (errors?.message_bn ?? errors?.details?.message_bn ?? "ত্রুটি")
+          : (errors?.message_en ?? errors?.details?.message_en ?? "Error"),
       );
     }
   };

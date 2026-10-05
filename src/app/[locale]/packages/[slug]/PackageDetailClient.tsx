@@ -65,13 +65,18 @@ export default function PackageDetailClient({ id, offerBanners }: { id: string; 
     } catch (err: unknown) {
       const e = err as {
         data?: {
-          errors?: { details?: { message_bn?: string; message_en?: string } };
+          errors?: {
+            message_bn?: string;
+            message_en?: string;
+            details?: { message_bn?: string; message_en?: string };
+          };
         };
       };
+      const errors = e.data?.errors;
       toast.error(
         locale === "bn"
-          ? (e.data?.errors?.details?.message_bn ?? "ত্রুটি")
-          : (e.data?.errors?.details?.message_en ?? "Error"),
+          ? (errors?.message_bn ?? errors?.details?.message_bn ?? "ত্রুটি")
+          : (errors?.message_en ?? errors?.details?.message_en ?? "Error"),
       );
     }
   };
