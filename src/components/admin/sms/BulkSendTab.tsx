@@ -93,33 +93,35 @@ export default function BulkSendTab({ isBn }: { isBn: boolean }) {
           </div>
         )}
 
-        <div className="border border-border rounded-lg mt-3 divide-y divide-gray-50">
-          <label className="flex items-center gap-2.5 px-3 py-2 bg-background cursor-pointer">
+        <div className="border border-border rounded-lg mt-3">
+          <label className="flex items-center gap-2.5 px-3 py-2 bg-background border-b border-border cursor-pointer">
             <Checkbox checked={allOnPageSelected} onChange={toggleAllOnPage} label="" />
             <span className="text-xs font-semibold text-muted">
               {isBn ? "এই পাতার সবাইকে নির্বাচন করুন" : "Select all on this page"}
             </span>
           </label>
 
-          {isLoading ? (
-            <p className="text-center text-xs text-muted py-6">{isBn ? "লোড হচ্ছে..." : "Loading..."}</p>
-          ) : recipients.length ? (
-            recipients.map(r => (
-              <label key={r.phone} className="flex items-center gap-2.5 px-3 py-2.5 cursor-pointer hover:bg-surface-alt">
-                <Checkbox checked={selected.has(r.phone)} onChange={() => toggle(r.phone)} label="" />
-                <div className="flex-1 min-w-0">
-                  <div className="truncate text-sm text-muted">{localName(r.name_bn, r.name_en, isBn) || "—"}</div>
-                  <div className="text-[11px] text-muted font-mono">{r.phone}</div>
-                </div>
-                <div className="text-right text-[11px] text-muted shrink-0">
-                  <div>{isBn ? `${r.order_count} অর্ডার` : `${r.order_count} order(s)`}</div>
-                  {r.last_order_at && <div>{formatDate(r.last_order_at, locale)}</div>}
-                </div>
-              </label>
-            ))
-          ) : (
-            <p className="text-center text-xs text-muted py-6">{isBn ? "কোনো গ্রাহক পাওয়া যায়নি" : "No customers found"}</p>
-          )}
+          <div className="max-h-[420px] overflow-y-auto divide-y divide-gray-50">
+            {isLoading ? (
+              <p className="text-center text-xs text-muted py-6">{isBn ? "লোড হচ্ছে..." : "Loading..."}</p>
+            ) : recipients.length ? (
+              recipients.map(r => (
+                <label key={r.phone} className="flex items-center gap-2.5 px-3 py-2.5 cursor-pointer hover:bg-surface-alt">
+                  <Checkbox checked={selected.has(r.phone)} onChange={() => toggle(r.phone)} label="" />
+                  <div className="flex-1 min-w-0">
+                    <div className="truncate text-sm text-muted">{localName(r.name_bn, r.name_en, isBn) || "—"}</div>
+                    <div className="text-[11px] text-muted font-mono">{r.phone}</div>
+                  </div>
+                  <div className="text-right text-[11px] text-muted shrink-0">
+                    <div>{isBn ? `${r.order_count} অর্ডার` : `${r.order_count} order(s)`}</div>
+                    {r.last_order_at && <div>{formatDate(r.last_order_at, locale)}</div>}
+                  </div>
+                </label>
+              ))
+            ) : (
+              <p className="text-center text-xs text-muted py-6">{isBn ? "কোনো গ্রাহক পাওয়া যায়নি" : "No customers found"}</p>
+            )}
+          </div>
         </div>
 
         {data && (data.pagination.total_pages ?? 1) > 1 && (
