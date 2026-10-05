@@ -83,7 +83,7 @@ export default function ProductCard({
     setQty(q => Math.min(maxStock, q + 1));
   };
 
-  const hasColors = (product.images ?? []).some(img => img.color_label);
+  const hasColors = (product.images ?? []).some(img => img.color_bn || img.color_en);
 
   const handleAddToCart = async (e: React.MouseEvent) => {
     // Products with color variants need the picker on the detail page —

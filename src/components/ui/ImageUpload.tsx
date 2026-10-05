@@ -9,7 +9,13 @@ export interface ExistingImage {
   image: string
   alt_en?: string
   alt_bn?: string
-  color_label?: string
+  color_bn?: string
+  color_en?: string
+}
+
+export interface PendingColor {
+  bn: string
+  en: string
 }
 
 interface Props {
@@ -22,19 +28,19 @@ interface Props {
   // delay rendering this component until these are ready (see
   // products/new/page.tsx's duplicate-from flow).
   initialFiles?: File[]
-  // Shows a small color-label text input under every thumbnail (existing
-  // and pending) — used only by the product add/edit pages. Leaving this
-  // off (every other call site: site settings logo/favicon) changes
-  // nothing about the component's behavior.
+  // Shows small bn/en color-label text inputs under every thumbnail
+  // (existing and pending) — used only by the product add/edit pages.
+  // Leaving this off (every other call site: site settings logo/favicon)
+  // changes nothing about the component's behavior.
   colorTagging?: boolean
   // Fired when an EXISTING image's color label changes (on blur) — the
   // caller is expected to persist it via its own update mutation, since
   // that image is already uploaded.
-  onColorChange?: (imageId: string, color: string) => void
+  onColorChange?: (imageId: string, color: PendingColor) => void
   // Fired whenever the PENDING files' colors change, index-aligned with
   // the files passed to onFilesChange — the caller sends these alongside
   // the files on upload, since pending images don't exist server-side yet.
-  onPendingColorsChange?: (colors: string[]) => void
+  onPendingColorsChange?: (colors: PendingColor[]) => void
 }
 
 export default function ImageUpload({
@@ -53,16 +59,28 @@ export default function ImageUpload({
 
   const [pendingFiles, setPendingFiles] = useState<File[]>(initialFiles ?? [])
   const [previewUrls, setPreviewUrls]   = useState<string[]>(() => (initialFiles ?? []).map(f => URL.createObjectURL(f)))
-  const [pendingColors, setPendingColors] = useState<string[]>(() => (initialFiles ?? []).map(() => ''))
+  const [pendingColors, setPendingColors] = useState<PendingColor[]>(() => (initialFiles ?? []).map(() => ({ bn: '', en: '' })))
   const [dragging, setDragging]         = useState(false)
 
-  const setPendingColorAt = (index: number, color: string) => {
+  const setPendingColorAt = (index: number, field: 'bn' | 'en', value: string) => {
     setPendingColors(prev => {
       const next = [...prev]
-      next[index] = color
+      next[index] = { ...next[index], [field]: value }
       onPendingColorsChange?.(next)
       return next
     })
+  }
+
+  // Local edit buffer for EXISTING images' colors, keyed by image id —
+  // tracked separately from the `existingImages` prop so editing bn then en
+  // (two blurs in a row) composes correctly instead of each blur firing
+  // onColorChange with a stale value for the field it didn't touch (the
+  // prop only updates once the caller's mutation round-trips).
+  const [existingColorEdits, setExistingColorEdits] = useState<Record<string, PendingColor>>({})
+  const colorOf = (img: ExistingImage): PendingColor =>
+    existingColorEdits[img.id] ?? { bn: img.color_bn ?? '', en: img.color_en ?? '' }
+  const setExistingColorAt = (img: ExistingImage, field: 'bn' | 'en', value: string) => {
+    setExistingColorEdits(prev => ({ ...prev, [img.id]: { ...colorOf(img), [field]: value } }))
   }
 
   const totalCount = existingImages.length + pendingFiles.length
@@ -83,7 +101,7 @@ export default function ImageUpload({
     })
     setPreviewUrls(prev => [...prev, ...urls])
     setPendingColors(prev => {
-      const next = [...prev, ...batch.map(() => '')]
+      const next = [...prev, ...batch.map(() => ({ bn: '', en: '' }))]
       onPendingColorsChange?.(next)
       return next
     })
@@ -221,13 +239,24 @@ export default function ImageUpload({
                   )}
                 </div>
                 {colorTagging && (
-                  <input
-                    type="text"
-                    defaultValue={img.color_label ?? ''}
-                    placeholder={isBn ? 'রঙ' : 'Color'}
-                    onBlur={e => onColorChange?.(img.id, e.target.value)}
-                    className="w-24 text-[11px] px-1.5 py-1 rounded border border-border bg-background text-body"
-                  />
+                  <div className="w-24 space-y-1">
+                    <input
+                      type="text"
+                      value={colorOf(img).bn}
+                      placeholder={isBn ? 'রঙ (বাংলা)' : 'Color (Bangla)'}
+                      onChange={e => setExistingColorAt(img, 'bn', e.target.value)}
+                      onBlur={() => onColorChange?.(img.id, colorOf(img))}
+                      className="w-24 text-[11px] px-1.5 py-1 rounded border border-border bg-background text-body"
+                    />
+                    <input
+                      type="text"
+                      value={colorOf(img).en}
+                      placeholder={isBn ? 'রঙ (ইংরেজি)' : 'Color (English)'}
+                      onChange={e => setExistingColorAt(img, 'en', e.target.value)}
+                      onBlur={() => onColorChange?.(img.id, colorOf(img))}
+                      className="w-24 text-[11px] px-1.5 py-1 rounded border border-border bg-background text-body"
+                    />
+                  </div>
                 )}
               </div>
             ))}
@@ -250,13 +279,22 @@ export default function ImageUpload({
                   </span>
                 </div>
                 {colorTagging && (
-                  <input
-                    type="text"
-                    value={pendingColors[i] ?? ''}
-                    placeholder={isBn ? 'রঙ' : 'Color'}
-                    onChange={e => setPendingColorAt(i, e.target.value)}
-                    className="w-24 text-[11px] px-1.5 py-1 rounded border border-border bg-background text-body"
-                  />
+                  <div className="w-24 space-y-1">
+                    <input
+                      type="text"
+                      value={pendingColors[i]?.bn ?? ''}
+                      placeholder={isBn ? 'রঙ (বাংলা)' : 'Color (Bangla)'}
+                      onChange={e => setPendingColorAt(i, 'bn', e.target.value)}
+                      className="w-24 text-[11px] px-1.5 py-1 rounded border border-border bg-background text-body"
+                    />
+                    <input
+                      type="text"
+                      value={pendingColors[i]?.en ?? ''}
+                      placeholder={isBn ? 'রঙ (ইংরেজি)' : 'Color (English)'}
+                      onChange={e => setPendingColorAt(i, 'en', e.target.value)}
+                      className="w-24 text-[11px] px-1.5 py-1 rounded border border-border bg-background text-body"
+                    />
+                  </div>
                 )}
               </div>
             ))}

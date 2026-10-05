@@ -23,7 +23,7 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
   const router = useRouter();
   const [qty, setQty] = useState(1);
   const [imgIdx, setImgIdx] = useState(0);
-  const [selectedColor, setSelectedColor] = useState<string | null>(null);
+  const [selectedColor, setSelectedColor] = useState<{ bn: string; en: string } | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const { isAuthenticated } = useAuthStore();
@@ -34,7 +34,17 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
   const [addToCart, { isLoading: adding }] = useAddToCartMutation();
 
   const images = product?.images ?? [];
-  const colors = Array.from(new Set(images.map(img => img.color_label).filter(Boolean)));
+  // Distinct (bn,en) color pairs — dedup keyed on the pair, not just one
+  // language, so a product can't end up with two pills that happen to
+  // share an English label but differ in Bangla (or vice versa).
+  const colors = Array.from(
+    new Map(
+      images
+        .filter(img => img.color_bn || img.color_en)
+        .map(img => [`${img.color_bn}\u0000${img.color_en}`, { bn: img.color_bn, en: img.color_en }]),
+    ).values(),
+  );
+  const colorLabel = (c: { bn: string; en: string }) => (locale === "bn" ? c.bn || c.en : c.en || c.bn);
 
   const handleBuyNow = async () => {
     await handleAddToCart();
@@ -58,7 +68,8 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
         is_package:          false,
         package_items:       [],
         weight_kg:           product.weight_kg,
-        color:               selectedColor ?? "",
+        color_bn:            selectedColor?.bn ?? "",
+        color_en:            selectedColor?.en ?? "",
       });
       toast.success(locale === "bn" ? "কার্টে যোগ হয়েছে" : "Added to cart");
       return;
@@ -67,7 +78,8 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
       const cart = await addToCart({
         product_id: product.id,
         quantity: qty.toFixed(3),
-        color: selectedColor ?? "",
+        color_bn: selectedColor?.bn ?? "",
+        color_en: selectedColor?.en ?? "",
       }).unwrap();
       setItemCount(cart.item_count);
       toast.success(locale === "bn" ? "কার্টে যোগ হয়েছে" : "Added to cart");
@@ -260,20 +272,20 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
               <div className="flex flex-wrap gap-2">
                 {colors.map(color => (
                   <button
-                    key={color}
+                    key={`${color.bn}\u0000${color.en}`}
                     type="button"
                     onClick={() => {
                       setSelectedColor(color);
-                      const firstIdx = images.findIndex(img => img.color_label === color);
+                      const firstIdx = images.findIndex(img => img.color_bn === color.bn && img.color_en === color.en);
                       if (firstIdx >= 0) goTo(firstIdx);
                     }}
                     className={`px-3.5 py-1.5 rounded-full border text-sm font-medium transition-colors ${
-                      selectedColor === color
+                      selectedColor?.bn === color.bn && selectedColor?.en === color.en
                         ? "border-amber-500 bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400"
                         : "border-border text-muted hover:border-amber-300"
                     }`}
                   >
-                    {color}
+                    {colorLabel(color)}
                   </button>
                 ))}
               </div>

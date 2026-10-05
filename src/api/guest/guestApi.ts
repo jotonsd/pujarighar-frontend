@@ -1,7 +1,7 @@
 import { baseApi } from '@/api/baseApi'
 
 interface GuestCheckoutPayload {
-  items: { product_id: string; quantity: string }[]
+  items: { product_id: string; quantity: string; color_bn?: string; color_en?: string }[]
   name_bn: string
   phone: string
   address_bn: string

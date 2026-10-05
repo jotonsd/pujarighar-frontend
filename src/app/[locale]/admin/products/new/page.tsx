@@ -13,7 +13,7 @@ import {
     FloatingTextarea,
 } from "@/components/ui/forms";
 import BadgePicker from "@/components/admin/products/BadgePicker";
-import ImageUpload from "@/components/ui/ImageUpload";
+import ImageUpload, { PendingColor } from "@/components/ui/ImageUpload";
 import PageHeader from "@/components/ui/PageHeader";
 import { ProductBadge } from "@/lib/types";
 import { toast } from "@/store/toastStore";
@@ -75,7 +75,7 @@ export default function NewProductPage() {
     badges: [] as ProductBadge[],
   });
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
-  const [pendingColors, setPendingColors] = useState<string[]>([]);
+  const [pendingColors, setPendingColors] = useState<PendingColor[]>([]);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const skuManualRef = useRef(false);
 
@@ -148,7 +148,12 @@ export default function NewProductPage() {
     try {
       const product = await createProduct(form).unwrap();
       if (pendingFiles.length > 0) {
-        await addImages({ productId: product.id, files: pendingFiles, colors: pendingColors }).unwrap();
+        await addImages({
+          productId: product.id,
+          files: pendingFiles,
+          colorsBn: pendingColors.map(c => c.bn),
+          colorsEn: pendingColors.map(c => c.en),
+        }).unwrap();
       }
       toast.success(locale === "bn" ? "পণ্য তৈরি হয়েছে" : "Product created");
       router.push(`/${locale}/admin/products`);

@@ -543,7 +543,8 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
     id: string;
     name: string;
     isGuest: boolean;
-    color?: string;
+    colorBn?: string;
+    colorEn?: string;
   } | null>(null);
   const [showAddAddressModal, setShowAddAddressModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
@@ -662,7 +663,8 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
         items: guestItems.map(i => ({
           product_id: i.product_id,
           quantity: i.quantity.toFixed(3),
-          color: i.color ?? "",
+          color_bn: i.color_bn ?? "",
+          color_en: i.color_en ?? "",
         })),
         ...form,
         payment_method: paymentMethod,
@@ -783,6 +785,11 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                         <div className="flex-1 min-w-0">
                           <p className="font-medium text-body text-sm truncate">
                             {name}
+                            {(item.color_bn || item.color_en) && (
+                              <span className="ml-1.5 text-[11px] font-normal text-muted">
+                                ({locale === "bn" ? (item.color_bn || item.color_en) : (item.color_en || item.color_bn)})
+                              </span>
+                            )}
                           </p>
                           <p className="text-xs text-muted flex items-center gap-1">
                             {item.original_unit_price &&
@@ -1252,8 +1259,9 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                 const total = (
                   parseFloat(item.unit_price) * item.quantity
                 ).toFixed(2);
+                const itemColor = locale === "bn" ? (item.color_bn || item.color_en) : (item.color_en || item.color_bn);
                 return (
-                  <div key={`${item.product_id}:${item.color ?? ""}`} className="px-4 py-3 space-y-2">
+                  <div key={`${item.product_id}:${item.color_bn ?? ""}:${item.color_en ?? ""}`} className="px-4 py-3 space-y-2">
                     <div className="flex items-center gap-3">
                       <div className="w-11 h-11 rounded-lg overflow-hidden bg-amber-50 shrink-0 flex items-center justify-center">
                         {item.image ? (
@@ -1272,9 +1280,9 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                       <div className="flex-1 min-w-0">
                         <p className="font-medium text-body text-sm truncate">
                           {name}
-                          {item.color && (
+                          {itemColor && (
                             <span className="ml-1.5 text-[11px] font-normal text-muted">
-                              ({item.color})
+                              ({itemColor})
                             </span>
                           )}
                         </p>
@@ -1308,13 +1316,15 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                               ? guestUpdateQty(
                                   item.product_id,
                                   item.quantity - 1,
-                                  item.color,
+                                  item.color_bn,
+                                  item.color_en,
                                 )
                               : setRemoveTarget({
                                   id: item.product_id,
                                   name,
                                   isGuest: true,
-                                  color: item.color,
+                                  colorBn: item.color_bn,
+                                  colorEn: item.color_en,
                                 })
                           }
                           className="w-6 h-6 bg-amber-100 rounded text-amber-700 text-sm flex items-center justify-center hover:bg-amber-200"
@@ -1329,7 +1339,8 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                             guestUpdateQty(
                               item.product_id,
                               Math.min(item.quantity + 1, item.stock),
-                              item.color,
+                              item.color_bn,
+                              item.color_en,
                             )
                           }
                           className="w-6 h-6 bg-amber-100 rounded text-amber-700 text-sm flex items-center justify-center hover:bg-amber-200"
@@ -1347,7 +1358,8 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                               id: item.product_id,
                               name,
                               isGuest: true,
-                              color: item.color,
+                              colorBn: item.color_bn,
+                              colorEn: item.color_en,
                             })
                           }
                           className="text-xs text-red-400 hover:text-red-700"
@@ -1595,7 +1607,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
           locale={locale}
           productName={removeTarget.name}
           onConfirm={() => {
-            guestRemove(removeTarget.id, removeTarget.color);
+            guestRemove(removeTarget.id, removeTarget.colorBn, removeTarget.colorEn);
             setRemoveTarget(null);
           }}
           onCancel={() => setRemoveTarget(null)}

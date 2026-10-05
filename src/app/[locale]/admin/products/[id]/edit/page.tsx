@@ -10,7 +10,7 @@ import {
   useUpdateProductMutation,
 } from "@/api/products/productsApi";
 import BadgePicker from "@/components/admin/products/BadgePicker";
-import ImageUpload from "@/components/ui/ImageUpload";
+import ImageUpload, { PendingColor } from "@/components/ui/ImageUpload";
 import {
   FloatingInput,
   FloatingSelect,
@@ -64,7 +64,7 @@ export default function EditProductPage({
   });
 
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
-  const [pendingColors, setPendingColors] = useState<string[]>([]);
+  const [pendingColors, setPendingColors] = useState<PendingColor[]>([]);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -96,7 +96,12 @@ export default function EditProductPage({
     try {
       await updateProduct({ id: params.id, ...form }).unwrap();
       if (pendingFiles.length > 0) {
-        await addImages({ productId: params.id, files: pendingFiles, colors: pendingColors }).unwrap();
+        await addImages({
+          productId: params.id,
+          files: pendingFiles,
+          colorsBn: pendingColors.map(c => c.bn),
+          colorsEn: pendingColors.map(c => c.en),
+        }).unwrap();
       }
       toast.success(locale === "bn" ? "পণ্য আপডেট হয়েছে" : "Product updated");
       router.push(`/${locale}/admin/products`);
@@ -229,7 +234,7 @@ export default function EditProductPage({
           onFilesChange={setPendingFiles}
           maxImages={5}
           colorTagging
-          onColorChange={(imageId, color_label) => updateImage({ productId: params.id, imageId, color_label })}
+          onColorChange={(imageId, color) => updateImage({ productId: params.id, imageId, color_bn: color.bn, color_en: color.en })}
           onPendingColorsChange={setPendingColors}
         />
 

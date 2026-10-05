@@ -67,13 +67,15 @@ export const productsApi = baseApi.injectEndpoints({
       invalidatesTags: ['Products'],
     }),
 
-    addProductImages: build.mutation<ProductImage[], { productId: string; files: File[]; colors?: string[] }>({
-      query: ({ productId, files, colors }) => {
+    addProductImages: build.mutation<ProductImage[], { productId: string; files: File[]; colorsBn?: string[]; colorsEn?: string[] }>({
+      query: ({ productId, files, colorsBn, colorsEn }) => {
         const fd = new FormData()
         files.forEach(f => fd.append('images', f))
-        // Index-aligned with `images` — one 'colors' field per file, same
-        // order, so the backend can zip them (see add_product_image view).
-        files.forEach((_, i) => fd.append('colors', colors?.[i] ?? ''))
+        // Index-aligned with `images` — one 'colors_bn'/'colors_en' field
+        // per file, same order, so the backend can zip them (see
+        // add_product_image view).
+        files.forEach((_, i) => fd.append('colors_bn', colorsBn?.[i] ?? ''))
+        files.forEach((_, i) => fd.append('colors_en', colorsEn?.[i] ?? ''))
         return { url: `/api/products/${productId}/images/`, method: 'POST', body: fd, formData: true }
       },
       transformResponse: (res: { data: ProductImage[] }) => res.data,
@@ -88,11 +90,11 @@ export const productsApi = baseApi.injectEndpoints({
       invalidatesTags: (_r, _e, { productId }) => [{ type: 'Product', id: productId }],
     }),
 
-    updateProductImage: build.mutation<ProductImage, { productId: string; imageId: string; color_label: string }>({
-      query: ({ productId, imageId, color_label }) => ({
+    updateProductImage: build.mutation<ProductImage, { productId: string; imageId: string; color_bn?: string; color_en?: string }>({
+      query: ({ productId, imageId, color_bn, color_en }) => ({
         url: `/api/products/${productId}/images/${imageId}/`,
         method: 'PATCH',
-        body: { color_label },
+        body: { color_bn, color_en },
       }),
       transformResponse: (res: { data: ProductImage }) => res.data,
       invalidatesTags: (_r, _e, { productId }) => [{ type: 'Product', id: productId }],

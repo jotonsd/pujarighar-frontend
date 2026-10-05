@@ -215,9 +215,9 @@ export default function OrderItems({ order }: Props) {
                           )}
                           <div>
                             {localName(item.product_name_bn, item.product_name_en, locale === "bn")}
-                            {item.color && (
+                            {(item.color_bn || item.color_en) && (
                               <span className="ml-1.5 text-xs font-medium text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-1.5 py-0.5 rounded-full">
-                                {item.color}
+                                {localName(item.color_bn, item.color_en, locale === "bn")}
                               </span>
                             )}
                           </div>

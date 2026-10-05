@@ -19,19 +19,23 @@ export interface GuestCartItem {
   package_items:       GuestCartPackageItem[]
   image?:              string
   weight_kg?:          string | null
-  color?:              string
+  color_bn?:           string
+  color_en?:           string
 }
 
 interface GuestCartState {
   items:          GuestCartItem[]
   addItem:        (item: Omit<GuestCartItem, 'quantity'>, qty?: number) => void
-  updateQty:      (product_id: string, quantity: number, color?: string) => void
-  removeItem:     (product_id: string, color?: string) => void
+  updateQty:      (product_id: string, quantity: number, colorBn?: string, colorEn?: string) => void
+  removeItem:     (product_id: string, colorBn?: string, colorEn?: string) => void
   clear:          () => void
   totalItems:     () => number
   subtotal:       () => number
   discountAmount: () => number
 }
+
+const sameColor = (a: GuestCartItem, bBn?: string, bEn?: string) =>
+  (a.color_bn ?? '') === (bBn ?? '') && (a.color_en ?? '') === (bEn ?? '')
 
 export const useGuestCartStore = create<GuestCartState>()(
   persist(
@@ -40,7 +44,7 @@ export const useGuestCartStore = create<GuestCartState>()(
 
       addItem(item, qty = 1) {
         set((s) => {
-          const existing = s.items.find((i) => i.product_id === item.product_id && (i.color ?? '') === (item.color ?? ''))
+          const existing = s.items.find((i) => i.product_id === item.product_id && sameColor(i, item.color_bn, item.color_en))
           if (existing) {
             return {
               items: s.items.map((i) =>
@@ -54,20 +58,20 @@ export const useGuestCartStore = create<GuestCartState>()(
         })
       },
 
-      updateQty(product_id, quantity, color = '') {
+      updateQty(product_id, quantity, colorBn = '', colorEn = '') {
         if (quantity <= 0) {
-          get().removeItem(product_id, color)
+          get().removeItem(product_id, colorBn, colorEn)
           return
         }
         set((s) => ({
           items: s.items.map((i) =>
-            i.product_id === product_id && (i.color ?? '') === color ? { ...i, quantity } : i,
+            i.product_id === product_id && sameColor(i, colorBn, colorEn) ? { ...i, quantity } : i,
           ),
         }))
       },
 
-      removeItem(product_id, color = '') {
-        set((s) => ({ items: s.items.filter((i) => !(i.product_id === product_id && (i.color ?? '') === color)) }))
+      removeItem(product_id, colorBn = '', colorEn = '') {
+        set((s) => ({ items: s.items.filter((i) => !(i.product_id === product_id && sameColor(i, colorBn, colorEn))) }))
       },
 
       clear() { set({ items: [] }) },
