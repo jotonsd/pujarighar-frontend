@@ -26,6 +26,17 @@ const nextConfig = {
       },
     ];
   },
+  // Short, brandable link for SMS/social sharing — pujarighar.com/app
+  // redirects straight to the Play Store listing.
+  async redirects() {
+    return [
+      {
+        source: "/app",
+        destination: "https://play.google.com/store/apps/details?id=com.pujarighar.pujarighar_app",
+        permanent: false,
+      },
+    ];
+  },
   images: {
     remotePatterns: [
       { protocol: "http", hostname: "localhost", port: "8020" },
