@@ -34,11 +34,18 @@ export default function ProductCard({
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const images = product.images ?? [];
   const hasMany = images.length > 1;
-  // Distinct (bn,en) color pairs — same dedup key as the product detail
-  // page, so the count shown here always matches the picker there.
-  const colorCount = new Set(
-    images.filter(img => img.color_bn || img.color_en).map(img => `${img.color_bn}\u0000${img.color_en}`),
-  ).size;
+  // Distinct (bn,en) color pairs — same dedup key/logic as the product
+  // detail page's picker.
+  const colors = Array.from(
+    new Map(
+      images
+        .filter(img => img.color_bn || img.color_en)
+        .map(img => [`${img.color_bn}\u0000${img.color_en}`, { bn: img.color_bn, en: img.color_en }]),
+    ).values(),
+  );
+  const colorLabel = (c: { bn: string; en: string }) => (locale === "bn" ? c.bn || c.en : c.en || c.bn);
+  const [selectedColor, setSelectedColor] = useState<{ bn: string; en: string } | null>(null);
+  const activeColor = selectedColor ?? colors[0] ?? null;
 
   useEffect(() => {
     if (!hasMany) return;
@@ -88,13 +95,17 @@ export default function ProductCard({
     setQty(q => Math.min(maxStock, q + 1));
   };
 
-  const hasColors = colorCount > 0;
+  const hasColors = colors.length > 0;
+
+  const selectColor = (e: React.MouseEvent, color: { bn: string; en: string }) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setSelectedColor(color);
+    const firstIdx = images.findIndex(img => img.color_bn === color.bn && img.color_en === color.en);
+    if (firstIdx >= 0) setImgIdx(firstIdx);
+  };
 
   const handleAddToCart = async (e: React.MouseEvent) => {
-    // Products with color variants need the picker on the detail page —
-    // there's no room for one in the card, so let this click fall through
-    // to the card's own Link instead of instant-adding an unspecified color.
-    if (hasColors) return;
     e.preventDefault();
     e.stopPropagation();
     if (!inStock || adding) return;
@@ -113,6 +124,8 @@ export default function ProductCard({
           package_items:       [],
           image:               product.images?.[0]?.image,
           weight_kg:           product.weight_kg,
+          color_bn:            activeColor?.bn ?? "",
+          color_en:            activeColor?.en ?? "",
         },
         qty,
       );
@@ -126,6 +139,8 @@ export default function ProductCard({
       const cart = await addToCart({
         product_id: product.id,
         quantity: qty.toFixed(3),
+        color_bn: activeColor?.bn ?? "",
+        color_en: activeColor?.en ?? "",
       }).unwrap();
       setItemCount(cart.item_count);
       toast.success(locale === "bn" ? "কার্টে যোগ হয়েছে" : "Added to cart");
@@ -219,11 +234,6 @@ export default function ProductCard({
         <h3 className="font-medium text-body mb-1 line-clamp-2 text-sm">
           {name}
         </h3>
-        {hasColors && (
-          <p className="text-[11px] text-amber-700 font-medium mb-1">
-            {locale === "bn" ? `${formatNumber(colorCount, locale)}টি রঙে উপলব্ধ` : `Available in ${colorCount} colors`}
-          </p>
-        )}
         {/* {product.review_count > 0 && (
           <div className="flex items-center gap-1 mb-1.5">
             <span className="flex gap-0.5">
@@ -259,6 +269,26 @@ export default function ProductCard({
       </Link>
 
       <div className="px-3 pb-3">
+        {hasColors && (
+          <div className="flex flex-wrap gap-1 mb-1.5">
+            {colors.map(color => {
+              const selected = activeColor?.bn === color.bn && activeColor?.en === color.en;
+              return (
+                <button
+                  key={`${color.bn}\u0000${color.en}`}
+                  onClick={e => selectColor(e, color)}
+                  className={`px-1.5 py-0.5 rounded text-[9px] font-semibold border transition-colors leading-none ${
+                    selected
+                      ? "border-amber-500 bg-amber-50 text-amber-700"
+                      : "border-border text-muted hover:border-amber-300"
+                  }`}
+                >
+                  {colorLabel(color)}
+                </button>
+              );
+            })}
+          </div>
+        )}
         <div className="flex items-center gap-1">
           {inStock && (
             <>
