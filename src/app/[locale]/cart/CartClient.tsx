@@ -543,6 +543,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
     id: string;
     name: string;
     isGuest: boolean;
+    color?: string;
   } | null>(null);
   const [showAddAddressModal, setShowAddAddressModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
@@ -661,6 +662,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
         items: guestItems.map(i => ({
           product_id: i.product_id,
           quantity: i.quantity.toFixed(3),
+          color: i.color ?? "",
         })),
         ...form,
         payment_method: paymentMethod,
@@ -1251,7 +1253,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                   parseFloat(item.unit_price) * item.quantity
                 ).toFixed(2);
                 return (
-                  <div key={item.product_id} className="px-4 py-3 space-y-2">
+                  <div key={`${item.product_id}:${item.color ?? ""}`} className="px-4 py-3 space-y-2">
                     <div className="flex items-center gap-3">
                       <div className="w-11 h-11 rounded-lg overflow-hidden bg-amber-50 shrink-0 flex items-center justify-center">
                         {item.image ? (
@@ -1270,6 +1272,11 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                       <div className="flex-1 min-w-0">
                         <p className="font-medium text-body text-sm truncate">
                           {name}
+                          {item.color && (
+                            <span className="ml-1.5 text-[11px] font-normal text-muted">
+                              ({item.color})
+                            </span>
+                          )}
                         </p>
                         <p className="text-xs text-muted flex items-center gap-1">
                           {parseFloat(item.original_unit_price) >
@@ -1301,11 +1308,13 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                               ? guestUpdateQty(
                                   item.product_id,
                                   item.quantity - 1,
+                                  item.color,
                                 )
                               : setRemoveTarget({
                                   id: item.product_id,
                                   name,
                                   isGuest: true,
+                                  color: item.color,
                                 })
                           }
                           className="w-6 h-6 bg-amber-100 rounded text-amber-700 text-sm flex items-center justify-center hover:bg-amber-200"
@@ -1320,6 +1329,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                             guestUpdateQty(
                               item.product_id,
                               Math.min(item.quantity + 1, item.stock),
+                              item.color,
                             )
                           }
                           className="w-6 h-6 bg-amber-100 rounded text-amber-700 text-sm flex items-center justify-center hover:bg-amber-200"
@@ -1337,6 +1347,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                               id: item.product_id,
                               name,
                               isGuest: true,
+                              color: item.color,
                             })
                           }
                           className="text-xs text-red-400 hover:text-red-700"
@@ -1584,7 +1595,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
           locale={locale}
           productName={removeTarget.name}
           onConfirm={() => {
-            guestRemove(removeTarget.id);
+            guestRemove(removeTarget.id, removeTarget.color);
             setRemoveTarget(null);
           }}
           onCancel={() => setRemoveTarget(null)}

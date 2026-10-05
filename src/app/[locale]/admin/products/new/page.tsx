@@ -75,6 +75,7 @@ export default function NewProductPage() {
     badges: [] as ProductBadge[],
   });
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
+  const [pendingColors, setPendingColors] = useState<string[]>([]);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const skuManualRef = useRef(false);
 
@@ -147,7 +148,7 @@ export default function NewProductPage() {
     try {
       const product = await createProduct(form).unwrap();
       if (pendingFiles.length > 0) {
-        await addImages({ productId: product.id, files: pendingFiles }).unwrap();
+        await addImages({ productId: product.id, files: pendingFiles, colors: pendingColors }).unwrap();
       }
       toast.success(locale === "bn" ? "পণ্য তৈরি হয়েছে" : "Product created");
       router.push(`/${locale}/admin/products`);
@@ -329,6 +330,8 @@ export default function NewProductPage() {
             onFilesChange={setPendingFiles}
             maxImages={5}
             initialFiles={duplicateImageFiles}
+            colorTagging
+            onPendingColorsChange={setPendingColors}
           />
         ) : (
           <p className="text-sm text-muted">

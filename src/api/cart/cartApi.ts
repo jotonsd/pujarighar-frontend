@@ -26,7 +26,7 @@ export const cartApi = baseApi.injectEndpoints({
       providesTags: ['Cart'],
     }),
 
-    addToCart: build.mutation<Cart, { product_id: string; quantity: string }>({
+    addToCart: build.mutation<Cart, { product_id: string; quantity: string; color?: string }>({
       query: (body) => ({ url: '/api/cart/items/', method: 'POST', body }),
       transformResponse: (res: { data: Cart }) => res.data,
       invalidatesTags: ['Cart'],

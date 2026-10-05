@@ -23,6 +23,7 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
   const router = useRouter();
   const [qty, setQty] = useState(1);
   const [imgIdx, setImgIdx] = useState(0);
+  const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const { isAuthenticated } = useAuthStore();
@@ -32,6 +33,9 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
   const { data: product, isLoading } = useGetProductQuery(id);
   const [addToCart, { isLoading: adding }] = useAddToCartMutation();
 
+  const images = product?.images ?? [];
+  const colors = Array.from(new Set(images.map(img => img.color_label).filter(Boolean)));
+
   const handleBuyNow = async () => {
     await handleAddToCart();
     router.push(`/${locale}/cart`);
@@ -39,6 +43,10 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
 
   const handleAddToCart = async () => {
     if (!product) return;
+    if (colors.length > 0 && !selectedColor) {
+      toast.error(locale === "bn" ? "অনুগ্রহ করে একটি রঙ নির্বাচন করুন" : "Please select a color");
+      return;
+    }
     if (!isAuthenticated) {
       guestAddItem({
         product_id:          product.id,
@@ -50,6 +58,7 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
         is_package:          false,
         package_items:       [],
         weight_kg:           product.weight_kg,
+        color:               selectedColor ?? "",
       });
       toast.success(locale === "bn" ? "কার্টে যোগ হয়েছে" : "Added to cart");
       return;
@@ -58,6 +67,7 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
       const cart = await addToCart({
         product_id: product.id,
         quantity: qty.toFixed(3),
+        color: selectedColor ?? "",
       }).unwrap();
       setItemCount(cart.item_count);
       toast.success(locale === "bn" ? "কার্টে যোগ হয়েছে" : "Added to cart");
@@ -75,7 +85,6 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
     }
   };
 
-  const images = product?.images ?? [];
   const hasMany = images.length > 1;
 
   // Auto-slide — must be before early returns
@@ -242,6 +251,34 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
               <Badge variant="red">{t("product.outOfStock")}</Badge>
             )}
           </div>
+          {colors.length > 0 && (
+            <div className="mb-5">
+              <p className="text-sm font-semibold text-body mb-2">
+                {locale === "bn" ? "রঙ নির্বাচন করুন" : "Select Color"}
+                {!selectedColor && <span className="text-red-500"> *</span>}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {colors.map(color => (
+                  <button
+                    key={color}
+                    type="button"
+                    onClick={() => {
+                      setSelectedColor(color);
+                      const firstIdx = images.findIndex(img => img.color_label === color);
+                      if (firstIdx >= 0) goTo(firstIdx);
+                    }}
+                    className={`px-3.5 py-1.5 rounded-full border text-sm font-medium transition-colors ${
+                      selectedColor === color
+                        ? "border-amber-500 bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400"
+                        : "border-border text-muted hover:border-amber-300"
+                    }`}
+                  >
+                    {color}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
           {inStock && (
             <div className="flex flex-wrap md:flex-nowrap items-stretch gap-3 mb-6">
               <div className="flex items-center border rounded-lg overflow-hidden shrink-0">

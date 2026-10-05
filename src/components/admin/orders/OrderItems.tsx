@@ -18,6 +18,7 @@ function AddProductPicker({ orderId, locale }: { orderId: string; locale: string
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<Product | null>(null);
   const [qty, setQty] = useState("1");
+  const [color, setColor] = useState("");
   const [addItem, { isLoading: adding }] = useAddOrderItemMutation();
 
   const { data: results, isFetching } = useGetProductsQuery(
@@ -28,11 +29,12 @@ function AddProductPicker({ orderId, locale }: { orderId: string; locale: string
   const handleAdd = async () => {
     if (!selected || !qty || Number(qty) <= 0) return;
     try {
-      await addItem({ id: orderId, product_id: selected.id, quantity: Number(qty) }).unwrap();
+      await addItem({ id: orderId, product_id: selected.id, quantity: Number(qty), color }).unwrap();
       toast.success(isBn ? "পণ্য যোগ হয়েছে" : "Product added");
       setSelected(null);
       setQuery("");
       setQty("1");
+      setColor("");
     } catch (err: unknown) {
       toast.error(getErrorMessage(err, locale));
     }
@@ -102,6 +104,13 @@ function AddProductPicker({ orderId, locale }: { orderId: string; locale: string
             value={qty}
             onChange={e => setQty(e.target.value)}
             className="w-20 px-2 py-2 text-sm border border-border rounded-lg text-center focus:outline-none focus:border-amber-500"
+          />
+          <input
+            type="text"
+            value={color}
+            onChange={e => setColor(e.target.value)}
+            placeholder={isBn ? "রঙ (ঐচ্ছিক)" : "Color (optional)"}
+            className="w-32 px-2 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-amber-500"
           />
           <button
             type="button"
@@ -204,7 +213,14 @@ export default function OrderItems({ order }: Props) {
                               🎁 {locale === "bn" ? "প্যাকেজ" : "Package"}
                             </span>
                           )}
-                          <div>{localName(item.product_name_bn, item.product_name_en, locale === "bn")}</div>
+                          <div>
+                            {localName(item.product_name_bn, item.product_name_en, locale === "bn")}
+                            {item.color && (
+                              <span className="ml-1.5 text-xs font-medium text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-1.5 py-0.5 rounded-full">
+                                {item.color}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </td>

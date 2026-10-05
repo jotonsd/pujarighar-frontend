@@ -162,6 +162,7 @@ export interface ProductImage {
   alt_bn: string
   alt_en: string
   order: number
+  color_label: string
 }
 
 export interface PackageItem {
@@ -380,6 +381,7 @@ export interface CartItem {
   product: string
   product_name_bn: string
   product_name_en: string
+  color: string
   unit_price: string
   original_unit_price: string
   quantity: string
@@ -450,6 +452,7 @@ export interface SalesOrderItem {
   product_name_bn: string
   product_name_en: string
   product_image: string | null
+  color: string
   original_unit_price: string | null
   unit_price: string
   quantity: string

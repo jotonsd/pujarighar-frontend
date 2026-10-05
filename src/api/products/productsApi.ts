@@ -67,10 +67,13 @@ export const productsApi = baseApi.injectEndpoints({
       invalidatesTags: ['Products'],
     }),
 
-    addProductImages: build.mutation<ProductImage[], { productId: string; files: File[] }>({
-      query: ({ productId, files }) => {
+    addProductImages: build.mutation<ProductImage[], { productId: string; files: File[]; colors?: string[] }>({
+      query: ({ productId, files, colors }) => {
         const fd = new FormData()
         files.forEach(f => fd.append('images', f))
+        // Index-aligned with `images` — one 'colors' field per file, same
+        // order, so the backend can zip them (see add_product_image view).
+        files.forEach((_, i) => fd.append('colors', colors?.[i] ?? ''))
         return { url: `/api/products/${productId}/images/`, method: 'POST', body: fd, formData: true }
       },
       transformResponse: (res: { data: ProductImage[] }) => res.data,
@@ -82,6 +85,16 @@ export const productsApi = baseApi.injectEndpoints({
         url: `/api/products/${productId}/images/${imageId}/`,
         method: 'DELETE',
       }),
+      invalidatesTags: (_r, _e, { productId }) => [{ type: 'Product', id: productId }],
+    }),
+
+    updateProductImage: build.mutation<ProductImage, { productId: string; imageId: string; color_label: string }>({
+      query: ({ productId, imageId, color_label }) => ({
+        url: `/api/products/${productId}/images/${imageId}/`,
+        method: 'PATCH',
+        body: { color_label },
+      }),
+      transformResponse: (res: { data: ProductImage }) => res.data,
       invalidatesTags: (_r, _e, { productId }) => [{ type: 'Product', id: productId }],
     }),
 
@@ -144,6 +157,7 @@ export const {
   useDeleteProductMutation,
   useAddProductImagesMutation,
   useDeleteProductImageMutation,
+  useUpdateProductImageMutation,
   useGetPackageItemsQuery,
   useAddPackageItemMutation,
   useDeletePackageItemMutation,

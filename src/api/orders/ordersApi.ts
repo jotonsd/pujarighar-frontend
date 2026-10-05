@@ -171,8 +171,8 @@ export const ordersApi = baseApi.injectEndpoints({
       invalidatesTags: (_r, _e, { id }) => ['Orders', { type: 'Order', id }],
     }),
 
-    addOrderItem: build.mutation<SalesOrder, { id: string; product_id: string; quantity: number }>({
-      query: ({ id, product_id, quantity }) => ({ url: `/api/orders/${id}/items/add/`, method: 'POST', body: { product_id, quantity } }),
+    addOrderItem: build.mutation<SalesOrder, { id: string; product_id: string; quantity: number; color?: string }>({
+      query: ({ id, product_id, quantity, color }) => ({ url: `/api/orders/${id}/items/add/`, method: 'POST', body: { product_id, quantity, color } }),
       transformResponse: (res: { data: SalesOrder }) => res.data,
       invalidatesTags: (_r, _e, { id }) => ['Orders', { type: 'Order', id }],
     }),

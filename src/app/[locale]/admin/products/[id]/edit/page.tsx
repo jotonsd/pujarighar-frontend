@@ -6,6 +6,7 @@ import {
   useAddProductImagesMutation,
   useDeleteProductImageMutation,
   useGetProductQuery,
+  useUpdateProductImageMutation,
   useUpdateProductMutation,
 } from "@/api/products/productsApi";
 import BadgePicker from "@/components/admin/products/BadgePicker";
@@ -40,6 +41,7 @@ export default function EditProductPage({
   const [updateProduct, { isLoading: saving }] = useUpdateProductMutation();
   const [addImages]   = useAddProductImagesMutation();
   const [deleteImage] = useDeleteProductImageMutation();
+  const [updateImage] = useUpdateProductImageMutation();
 
   const [form, setForm] = useState({
     name_bn: "",
@@ -62,6 +64,7 @@ export default function EditProductPage({
   });
 
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
+  const [pendingColors, setPendingColors] = useState<string[]>([]);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -93,7 +96,7 @@ export default function EditProductPage({
     try {
       await updateProduct({ id: params.id, ...form }).unwrap();
       if (pendingFiles.length > 0) {
-        await addImages({ productId: params.id, files: pendingFiles }).unwrap();
+        await addImages({ productId: params.id, files: pendingFiles, colors: pendingColors }).unwrap();
       }
       toast.success(locale === "bn" ? "পণ্য আপডেট হয়েছে" : "Product updated");
       router.push(`/${locale}/admin/products`);
@@ -225,6 +228,9 @@ export default function EditProductPage({
           onDeleteExisting={imageId => deleteImage({ productId: params.id, imageId })}
           onFilesChange={setPendingFiles}
           maxImages={5}
+          colorTagging
+          onColorChange={(imageId, color_label) => updateImage({ productId: params.id, imageId, color_label })}
+          onPendingColorsChange={setPendingColors}
         />
 
         <div className="flex gap-3">

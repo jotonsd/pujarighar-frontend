@@ -9,6 +9,7 @@ export interface ExistingImage {
   image: string
   alt_en?: string
   alt_bn?: string
+  color_label?: string
 }
 
 interface Props {
@@ -21,6 +22,19 @@ interface Props {
   // delay rendering this component until these are ready (see
   // products/new/page.tsx's duplicate-from flow).
   initialFiles?: File[]
+  // Shows a small color-label text input under every thumbnail (existing
+  // and pending) — used only by the product add/edit pages. Leaving this
+  // off (every other call site: site settings logo/favicon) changes
+  // nothing about the component's behavior.
+  colorTagging?: boolean
+  // Fired when an EXISTING image's color label changes (on blur) — the
+  // caller is expected to persist it via its own update mutation, since
+  // that image is already uploaded.
+  onColorChange?: (imageId: string, color: string) => void
+  // Fired whenever the PENDING files' colors change, index-aligned with
+  // the files passed to onFilesChange — the caller sends these alongside
+  // the files on upload, since pending images don't exist server-side yet.
+  onPendingColorsChange?: (colors: string[]) => void
 }
 
 export default function ImageUpload({
@@ -29,6 +43,9 @@ export default function ImageUpload({
   onFilesChange,
   maxImages = 5,
   initialFiles,
+  colorTagging = false,
+  onColorChange,
+  onPendingColorsChange,
 }: Props) {
   const locale   = useLocale()
   const isBn     = locale === 'bn'
@@ -36,7 +53,17 @@ export default function ImageUpload({
 
   const [pendingFiles, setPendingFiles] = useState<File[]>(initialFiles ?? [])
   const [previewUrls, setPreviewUrls]   = useState<string[]>(() => (initialFiles ?? []).map(f => URL.createObjectURL(f)))
+  const [pendingColors, setPendingColors] = useState<string[]>(() => (initialFiles ?? []).map(() => ''))
   const [dragging, setDragging]         = useState(false)
+
+  const setPendingColorAt = (index: number, color: string) => {
+    setPendingColors(prev => {
+      const next = [...prev]
+      next[index] = color
+      onPendingColorsChange?.(next)
+      return next
+    })
+  }
 
   const totalCount = existingImages.length + pendingFiles.length
   const remaining  = maxImages - totalCount
@@ -55,7 +82,12 @@ export default function ImageUpload({
       return next
     })
     setPreviewUrls(prev => [...prev, ...urls])
-  }, [existingImages.length, pendingFiles.length, maxImages, onFilesChange])
+    setPendingColors(prev => {
+      const next = [...prev, ...batch.map(() => '')]
+      onPendingColorsChange?.(next)
+      return next
+    })
+  }, [existingImages.length, pendingFiles.length, maxImages, onFilesChange, onPendingColorsChange])
 
   const removePending = (index: number) => {
     URL.revokeObjectURL(previewUrls[index])
@@ -65,6 +97,11 @@ export default function ImageUpload({
       return next
     })
     setPreviewUrls(prev => prev.filter((_, i) => i !== index))
+    setPendingColors(prev => {
+      const next = prev.filter((_, i) => i !== index)
+      onPendingColorsChange?.(next)
+      return next
+    })
   }
 
   const onDrop = useCallback((e: React.DragEvent) => {
@@ -169,36 +206,58 @@ export default function ImageUpload({
           <div className="flex flex-wrap gap-3">
             {/* Existing images */}
             {existingImages.map((img, i) => (
-              <div key={img.id} className="relative group w-24 h-24 rounded-lg overflow-hidden border border-border bg-surface shadow-sm shrink-0">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={img.image} alt={img.alt_en || `Image ${i + 1}`} className="w-full h-full object-cover" />
-                {onDeleteExisting && (
-                  <button
-                    type="button"
-                    onClick={() => onDeleteExisting(img.id)}
-                    className="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
+              <div key={img.id} className="shrink-0 space-y-1">
+                <div className="relative group w-24 h-24 rounded-lg overflow-hidden border border-border bg-surface shadow-sm">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={img.image} alt={img.alt_en || `Image ${i + 1}`} className="w-full h-full object-cover" />
+                  {onDeleteExisting && (
+                    <button
+                      type="button"
+                      onClick={() => onDeleteExisting(img.id)}
+                      className="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  )}
+                </div>
+                {colorTagging && (
+                  <input
+                    type="text"
+                    defaultValue={img.color_label ?? ''}
+                    placeholder={isBn ? 'রঙ' : 'Color'}
+                    onBlur={e => onColorChange?.(img.id, e.target.value)}
+                    className="w-24 text-[11px] px-1.5 py-1 rounded border border-border bg-background text-body"
+                  />
                 )}
               </div>
             ))}
 
             {/* Pending images */}
             {previewUrls.map((url, i) => (
-              <div key={`p-${i}`} className="relative group w-24 h-24 rounded-lg overflow-hidden border-2 border-amber-300 bg-surface shadow-sm shrink-0">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={url} alt={`Preview ${i + 1}`} className="w-full h-full object-cover" />
-                <button
-                  type="button"
-                  onClick={() => removePending(i)}
-                  className="absolute top-1 right-1 w-5 h-5 bg-amber-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow"
-                >
-                  <X className="w-3 h-3" />
-                </button>
-                <span className="absolute bottom-0 inset-x-0 bg-amber-600/80 text-white text-[10px] text-center py-0.5">
-                  {isBn ? 'নতুন' : 'New'}
-                </span>
+              <div key={`p-${i}`} className="shrink-0 space-y-1">
+                <div className="relative group w-24 h-24 rounded-lg overflow-hidden border-2 border-amber-300 bg-surface shadow-sm">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={url} alt={`Preview ${i + 1}`} className="w-full h-full object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => removePending(i)}
+                    className="absolute top-1 right-1 w-5 h-5 bg-amber-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                  <span className="absolute bottom-0 inset-x-0 bg-amber-600/80 text-white text-[10px] text-center py-0.5">
+                    {isBn ? 'নতুন' : 'New'}
+                  </span>
+                </div>
+                {colorTagging && (
+                  <input
+                    type="text"
+                    value={pendingColors[i] ?? ''}
+                    placeholder={isBn ? 'রঙ' : 'Color'}
+                    onChange={e => setPendingColorAt(i, e.target.value)}
+                    className="w-24 text-[11px] px-1.5 py-1 rounded border border-border bg-background text-body"
+                  />
+                )}
               </div>
             ))}
 

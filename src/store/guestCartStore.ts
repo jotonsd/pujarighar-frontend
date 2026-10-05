@@ -19,13 +19,14 @@ export interface GuestCartItem {
   package_items:       GuestCartPackageItem[]
   image?:              string
   weight_kg?:          string | null
+  color?:              string
 }
 
 interface GuestCartState {
   items:          GuestCartItem[]
   addItem:        (item: Omit<GuestCartItem, 'quantity'>, qty?: number) => void
-  updateQty:      (product_id: string, quantity: number) => void
-  removeItem:     (product_id: string) => void
+  updateQty:      (product_id: string, quantity: number, color?: string) => void
+  removeItem:     (product_id: string, color?: string) => void
   clear:          () => void
   totalItems:     () => number
   subtotal:       () => number
@@ -39,11 +40,11 @@ export const useGuestCartStore = create<GuestCartState>()(
 
       addItem(item, qty = 1) {
         set((s) => {
-          const existing = s.items.find((i) => i.product_id === item.product_id)
+          const existing = s.items.find((i) => i.product_id === item.product_id && (i.color ?? '') === (item.color ?? ''))
           if (existing) {
             return {
               items: s.items.map((i) =>
-                i.product_id === item.product_id
+                i === existing
                   ? { ...i, quantity: Math.min(i.quantity + qty, i.stock) }
                   : i,
               ),
@@ -53,20 +54,20 @@ export const useGuestCartStore = create<GuestCartState>()(
         })
       },
 
-      updateQty(product_id, quantity) {
+      updateQty(product_id, quantity, color = '') {
         if (quantity <= 0) {
-          get().removeItem(product_id)
+          get().removeItem(product_id, color)
           return
         }
         set((s) => ({
           items: s.items.map((i) =>
-            i.product_id === product_id ? { ...i, quantity } : i,
+            i.product_id === product_id && (i.color ?? '') === color ? { ...i, quantity } : i,
           ),
         }))
       },
 
-      removeItem(product_id) {
-        set((s) => ({ items: s.items.filter((i) => i.product_id !== product_id) }))
+      removeItem(product_id, color = '') {
+        set((s) => ({ items: s.items.filter((i) => !(i.product_id === product_id && (i.color ?? '') === color)) }))
       },
 
       clear() { set({ items: [] }) },
