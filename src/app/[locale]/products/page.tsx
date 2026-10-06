@@ -1,4 +1,5 @@
 import OfferBanners from "@/components/products/OfferBanners";
+import ShopAppQrCard from "@/components/products/ShopAppQrCard";
 import { Brand, Category, Product } from "@/lib/types";
 import type { Metadata } from "next";
 import ProductsPageClient from "./ProductsPageClient";
@@ -158,6 +159,7 @@ export default async function ProductsPage({ params, searchParams }: Props) {
         initialCategories={categories}
         initialBrands={brands}
         offerBanners={<OfferBanners />}
+        appQrCard={<ShopAppQrCard />}
       />
       {selectedCategory && categoryDescription && (
         <div className="max-w-6xl mx-auto px-4 py-8">

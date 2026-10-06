@@ -162,8 +162,49 @@ export interface ProductImage {
   alt_bn: string
   alt_en: string
   order: number
-  color_bn: string
-  color_en: string
+  visual_value: string | null
+  visual_value_bn: string
+  visual_value_en: string
+}
+
+export interface VariantAttributeType {
+  id: string
+  name_bn: string
+  name_en: string
+  code: string
+  has_bilingual_values: boolean
+  is_active: boolean
+}
+
+export interface VariantAttributeValue {
+  id: string
+  attribute_type: string
+  attribute_type_code: string
+  value_bn: string
+  value_en: string
+  is_active: boolean
+}
+
+export interface ProductVariantAttributeValue {
+  attribute_type_code: string
+  attribute_type_name_bn: string
+  attribute_type_name_en: string
+  value_id: string
+  value_bn: string
+  value_en: string
+}
+
+export interface ProductVariant {
+  id: string
+  product: string
+  sku_suffix: string
+  price_override: string | null
+  effective_price: string
+  stock_on_hand: string
+  is_active: boolean
+  label_bn: string
+  label_en: string
+  attribute_values: ProductVariantAttributeValue[]
 }
 
 export interface PackageItem {
@@ -212,6 +253,9 @@ export interface Product {
   stock_on_hand: string
   images: ProductImage[]
   package_items: PackageItem[]
+  variants: ProductVariant[]
+  variant_attribute_types: string[]
+  visual_attribute_type_code: string | null
   average_rating: number | null
   review_count: number
   seo_title_bn: string
@@ -382,8 +426,9 @@ export interface CartItem {
   product: string
   product_name_bn: string
   product_name_en: string
-  color_bn: string
-  color_en: string
+  variant: string | null
+  variant_label_bn: string
+  variant_label_en: string
   unit_price: string
   original_unit_price: string
   quantity: string
@@ -454,8 +499,9 @@ export interface SalesOrderItem {
   product_name_bn: string
   product_name_en: string
   product_image: string | null
-  color_bn: string
-  color_en: string
+  variant: string | null
+  variant_label_bn: string
+  variant_label_en: string
   original_unit_price: string | null
   unit_price: string
   quantity: string

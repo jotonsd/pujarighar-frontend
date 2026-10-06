@@ -31,6 +31,7 @@ const getEmptyForm = () => ({
   payment_method: "CASH" as "CASH" | "CREDIT",
   date: todayStr(),
   note_bn: "",
+  variant_id: "",
 });
 
 interface Props {
@@ -56,6 +57,8 @@ export default function StockAdjustPanel({ product }: Props) {
   const isSupplierReturn = adjForm.movement_type === "SUPPLIER_RETURN";
   const isAdjustment = adjForm.movement_type === "ADJUSTMENT";
   const needsCostAndSupplier = isPurchase || isSupplierReturn;
+  const hasVariants = (product.variants?.length ?? 0) > 0;
+  const selectedVariant = product.variants?.find(v => v.id === adjForm.variant_id);
 
   const startEditMovement = (m: StockMovement) => {
     setEditingId(m.id);
@@ -96,6 +99,7 @@ export default function StockAdjustPanel({ product }: Props) {
         productId: product.id,
         movement_type: adjForm.movement_type,
         quantity: signedQuantity,
+        ...(adjForm.variant_id && { variant_id: adjForm.variant_id }),
         ...(needsCostAndSupplier && {
           unit_cost: Number(adjForm.unit_cost),
           ...(isPurchase && adjForm.unit_price && { unit_price: Number(adjForm.unit_price) }),
@@ -132,12 +136,16 @@ export default function StockAdjustPanel({ product }: Props) {
         </div>
         <div className="text-right shrink-0">
           <p className="text-3xl font-bold text-amber-700 dark:text-amber-400">
-            {stockData?.stock_on_hand
-              ? formatNumber(parseFloat(stockData.stock_on_hand), locale)
-              : "..."}
+            {selectedVariant
+              ? formatNumber(parseFloat(selectedVariant.stock_on_hand), locale)
+              : stockData?.stock_on_hand
+                ? formatNumber(parseFloat(stockData.stock_on_hand), locale)
+                : "..."}
           </p>
           <p className="text-muted text-xs mt-0.5">
-            {isBn ? "বর্তমান স্টক" : "Current stock"}
+            {selectedVariant
+              ? (isBn ? selectedVariant.label_bn : selectedVariant.label_en)
+              : isBn ? "বর্তমান স্টক (সর্বমোট)" : "Current stock (combined)"}
           </p>
         </div>
       </div>
@@ -146,6 +154,18 @@ export default function StockAdjustPanel({ product }: Props) {
         <h3 className="font-medium text-muted">
           {isBn ? "স্টক সমন্বয়" : "Stock Adjustment"}
         </h3>
+        {hasVariants && (
+          <FloatingSelect
+            label={isBn ? "ভ্যারিয়েন্ট নির্বাচন করুন *" : "Select variant *"}
+            value={adjForm.variant_id}
+            onChange={val => setAdjForm(p => ({ ...p, variant_id: val }))}
+          >
+            <option value="">{isBn ? "নির্বাচন করুন" : "Select"}</option>
+            {product.variants.map(v => (
+              <option key={v.id} value={v.id}>{isBn ? v.label_bn : v.label_en}</option>
+            ))}
+          </FloatingSelect>
+        )}
         <div className="grid grid-cols-2 gap-3">
           <FloatingSelect
             label={isBn ? "ধরন" : "Type"}
@@ -304,7 +324,7 @@ export default function StockAdjustPanel({ product }: Props) {
 
         <button
           onClick={handleAdjust}
-          disabled={!adjForm.quantity || (needsCostAndSupplier && !adjForm.unit_cost) || adjusting}
+          disabled={!adjForm.quantity || (needsCostAndSupplier && !adjForm.unit_cost) || (hasVariants && !adjForm.variant_id) || adjusting}
           className="btn-primary w-full"
         >
           {adjusting

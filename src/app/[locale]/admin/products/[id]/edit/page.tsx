@@ -8,9 +8,13 @@ import {
   useGetProductQuery,
   useUpdateProductImageMutation,
   useUpdateProductMutation,
+  useGetAttributeTypesQuery,
+  useGetAttributeValuesQuery,
+  useCreateAttributeValueMutation,
 } from "@/api/products/productsApi";
 import BadgePicker from "@/components/admin/products/BadgePicker";
-import ImageUpload, { PendingColor } from "@/components/ui/ImageUpload";
+import ImageUpload, { AttributeValueOption } from "@/components/ui/ImageUpload";
+import VariantsPanel from "@/components/admin/products/VariantsPanel";
 import {
   FloatingInput,
   FloatingSelect,
@@ -42,6 +46,17 @@ export default function EditProductPage({
   const [addImages]   = useAddProductImagesMutation();
   const [deleteImage] = useDeleteProductImageMutation();
   const [updateImage] = useUpdateProductImageMutation();
+  const { data: attributeTypes = [] } = useGetAttributeTypesQuery();
+  const colorType = attributeTypes.find(t => t.code === "color");
+  const { data: colorValues = [] } = useGetAttributeValuesQuery(
+    colorType ? { attribute_type_id: colorType.id } : undefined,
+    { skip: !colorType },
+  );
+  const [createAttributeValue] = useCreateAttributeValueMutation();
+  const colorOptions: AttributeValueOption[] = colorValues.map(v => ({
+    id: v.id,
+    label: locale === "bn" ? (v.value_bn || v.value_en) : (v.value_en || v.value_bn),
+  }));
 
   const [form, setForm] = useState({
     name_bn: "",
@@ -64,7 +79,7 @@ export default function EditProductPage({
   });
 
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
-  const [pendingColors, setPendingColors] = useState<PendingColor[]>([]);
+  const [pendingValueIds, setPendingValueIds] = useState<(string | null)[]>([]);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -99,8 +114,7 @@ export default function EditProductPage({
         await addImages({
           productId: params.id,
           files: pendingFiles,
-          colorsBn: pendingColors.map(c => c.bn),
-          colorsEn: pendingColors.map(c => c.en),
+          visualValueIds: pendingValueIds,
         }).unwrap();
       }
       toast.success(locale === "bn" ? "পণ্য আপডেট হয়েছে" : "Product updated");
@@ -233,10 +247,21 @@ export default function EditProductPage({
           onDeleteExisting={imageId => deleteImage({ productId: params.id, imageId })}
           onFilesChange={setPendingFiles}
           maxImages={5}
-          colorTagging
-          onColorChange={(imageId, color) => updateImage({ productId: params.id, imageId, color_bn: color.bn, color_en: color.en })}
-          onPendingColorsChange={setPendingColors}
+          valueTagging
+          attributeValues={colorOptions}
+          valueBilingual={colorType?.has_bilingual_values ?? true}
+          onCreateValue={async (valueBn, valueEn) => {
+            if (!colorType) throw new Error("Color attribute type not loaded");
+            const created = await createAttributeValue({ attribute_type_id: colorType.id, value_bn: valueBn, value_en: valueEn }).unwrap();
+            return { id: created.id, label: locale === "bn" ? (created.value_bn || created.value_en) : created.value_en };
+          }}
+          onValueChange={(imageId, valueId) => updateImage({ productId: params.id, imageId, visual_value_id: valueId })}
+          onPendingValuesChange={setPendingValueIds}
         />
+
+        {product && (
+          <VariantsPanel product={product} locale={locale} />
+        )}
 
         <div className="flex gap-3">
           <button onClick={handleUpdate} disabled={saving} className="btn-primary">

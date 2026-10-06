@@ -1,13 +1,15 @@
 "use client";
 
 import { useAddToCartMutation } from "@/api/cart/cartApi";
-import { Product } from "@/lib/types";
+import { Product, ProductVariant } from "@/lib/types";
 import { useAuthStore } from "@/store/authStore";
 import { useCartStore } from "@/store/cartStore";
 import { useGuestCartStore } from "@/store/guestCartStore";
 import { toast } from "@/store/toastStore";
 import OfferBadge from "@/components/ui/OfferBadge";
 import ProductBadges from "@/components/products/ProductBadges";
+import VariantSelectModal from "@/components/products/VariantSelectModal";
+import { useVariantSelection } from "@/hooks/useVariantSelection";
 import { formatAmount, formatNumber, localName } from "@/utils/format";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
@@ -34,28 +36,29 @@ export default function ProductCard({
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const images = product.images ?? [];
   const hasMany = images.length > 1;
-  // Distinct (bn,en) color pairs — same dedup key/logic as the product
-  // detail page's picker.
-  const colors = Array.from(
-    new Map(
-      images
-        .filter(img => img.color_bn || img.color_en)
-        .map(img => [`${img.color_bn}\u0000${img.color_en}`, { bn: img.color_bn, en: img.color_en }]),
-    ).values(),
-  );
-  const colorLabel = (c: { bn: string; en: string }) => (locale === "bn" ? c.bn || c.en : c.en || c.bn);
-  const [selectedColor, setSelectedColor] = useState<{ bn: string; en: string } | null>(null);
-  const activeColor = selectedColor ?? colors[0] ?? null;
+  const selection = useVariantSelection(product);
 
   useEffect(() => {
-    if (!hasMany) return;
+    if (!hasMany || selection.hasVariants) return;
     timerRef.current = setInterval(() => {
       setImgIdx(i => (i + 1) % images.length);
     }, 3000);
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [hasMany, images.length]);
+  }, [hasMany, images.length, selection.hasVariants]);
+
+  // Gallery/variant pill unification — same as the product detail page:
+  // picking a value of the product's visual attribute type also jumps the
+  // gallery to that value's photo.
+  useEffect(() => {
+    if (!product.visual_attribute_type_code) return;
+    const valueId = selection.selected[product.visual_attribute_type_code];
+    if (!valueId) return;
+    const idx = images.findIndex(img => img.visual_value === valueId);
+    if (idx >= 0) setImgIdx(idx);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product.visual_attribute_type_code, selection.selected]);
 
   const goTo = (e: React.MouseEvent, idx: number) => {
     e.preventDefault();
@@ -69,8 +72,11 @@ export default function ProductCard({
   };
 
   const name = localName(product.name_bn, product.name_en, locale === "bn");
-  const inStock = Number(product.stock_on_hand) > 0;
-  const maxStock = Math.max(1, Number(product.stock_on_hand));
+  const displayStock = selection.resolvedVariant ? Number(selection.resolvedVariant.stock_on_hand) : Number(product.stock_on_hand);
+  const inStock = selection.hasVariants
+    ? (!selection.isComplete ? true : (!!selection.resolvedVariant && displayStock > 0))
+    : displayStock > 0;
+  const maxStock = Math.max(1, displayStock);
 
   const _orig     = parseFloat(String(product.unit_price));
   const _eff      = parseFloat(String(product.effective_price));
@@ -83,6 +89,7 @@ export default function ProductCard({
 
   const [addToCart, { isLoading: apiAdding }] = useAddToCartMutation();
   const adding = localAdding || apiAdding;
+  const [showVariantModal, setShowVariantModal] = useState(false);
 
   const dec = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -95,20 +102,10 @@ export default function ProductCard({
     setQty(q => Math.min(maxStock, q + 1));
   };
 
-  const hasColors = colors.length > 0;
-
-  const selectColor = (e: React.MouseEvent, color: { bn: string; en: string }) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setSelectedColor(color);
-    const firstIdx = images.findIndex(img => img.color_bn === color.bn && img.color_en === color.en);
-    if (firstIdx >= 0) setImgIdx(firstIdx);
-  };
-
-  const handleAddToCart = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!inStock || adding) return;
+  const addToCartCore = async (variant: ProductVariant | null, quantity: number) => {
+    const effectivePrice = variant ? variant.effective_price : (product.effective_price ?? product.unit_price);
+    const originalPrice  = variant ? (variant.price_override ?? product.unit_price) : (product.original_price ?? product.unit_price);
+    const stock          = variant ? Number(variant.stock_on_hand) : Number(product.stock_on_hand);
 
     if (!isAuthenticated) {
       setLocalAdding(true);
@@ -117,20 +114,20 @@ export default function ProductCard({
           product_id:          product.id,
           name_bn:             product.name_bn,
           name_en:             product.name_en,
-          unit_price:          String(product.effective_price ?? product.unit_price),
-          original_unit_price: String(product.original_price ?? product.unit_price),
-          stock:               Number(product.stock_on_hand),
+          unit_price:          String(effectivePrice),
+          original_unit_price: String(originalPrice),
+          stock,
           is_package:          false,
           package_items:       [],
           image:               product.images?.[0]?.image,
           weight_kg:           product.weight_kg,
-          color_bn:            activeColor?.bn ?? "",
-          color_en:            activeColor?.en ?? "",
+          variant_id:          variant?.id,
+          variant_label_bn:    variant?.label_bn,
+          variant_label_en:    variant?.label_en,
         },
-        qty,
+        quantity,
       );
       toast.success(locale === "bn" ? "কার্টে যোগ হয়েছে" : "Added to cart");
-      setQty(1);
       setLocalAdding(false);
       return;
     }
@@ -138,16 +135,35 @@ export default function ProductCard({
     try {
       const cart = await addToCart({
         product_id: product.id,
-        quantity: qty.toFixed(3),
-        color_bn: activeColor?.bn ?? "",
-        color_en: activeColor?.en ?? "",
+        quantity: quantity.toFixed(3),
+        ...(variant && { variant_id: variant.id }),
       }).unwrap();
       setItemCount(cart.item_count);
       toast.success(locale === "bn" ? "কার্টে যোগ হয়েছে" : "Added to cart");
-      setQty(1);
     } catch {
       toast.error(locale === "bn" ? "যোগ করা যায়নি" : "Failed to add to cart");
     }
+  };
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!inStock || adding) return;
+    // Variant-bearing products pick their combination (and quantity) in
+    // the modal instead of the card's own compact controls — there's no
+    // room for a full pill row per attribute type on a small card.
+    if (selection.hasVariants) {
+      setShowVariantModal(true);
+      return;
+    }
+    addToCartCore(null, qty);
+    setQty(1);
+  };
+
+  const handleModalConfirm = async (variant: ProductVariant, quantity: number) => {
+    await addToCartCore(variant, quantity);
+    setShowVariantModal(false);
+    setQty(1);
   };
 
   return (
@@ -250,15 +266,15 @@ export default function ProductCard({
             {product.active_discount_type && parseFloat(String(product.effective_price)) < parseFloat(String(product.unit_price)) ? (
               <>
                 <span className="text-amber-700 font-bold">
-                  {formatAmount(product.effective_price, locale, 0)}
+                  {formatAmount(selection.resolvedVariant?.effective_price ?? product.effective_price, locale, 0)}
                 </span>
                 <span className="text-xs text-muted line-through ml-1.5">
-                  {formatAmount(product.unit_price, locale, 0)}
+                  {formatAmount(selection.resolvedVariant?.price_override ?? product.unit_price, locale, 0)}
                 </span>
               </>
             ) : (
               <span className="text-amber-700 font-bold">
-                {formatAmount(product.effective_price ?? product.unit_price, locale, 0)}
+                {formatAmount(selection.resolvedVariant?.effective_price ?? product.effective_price ?? product.unit_price, locale, 0)}
               </span>
             )}
           </div>
@@ -269,26 +285,6 @@ export default function ProductCard({
       </Link>
 
       <div className="px-3 pb-3">
-        {hasColors && (
-          <div className="flex flex-wrap gap-1 mb-1.5">
-            {colors.map(color => {
-              const selected = activeColor?.bn === color.bn && activeColor?.en === color.en;
-              return (
-                <button
-                  key={`${color.bn}\u0000${color.en}`}
-                  onClick={e => selectColor(e, color)}
-                  className={`px-1.5 py-0.5 rounded text-[9px] font-semibold border transition-colors leading-none ${
-                    selected
-                      ? "border-amber-500 bg-amber-50 text-amber-700"
-                      : "border-border text-muted hover:border-amber-300"
-                  }`}
-                >
-                  {colorLabel(color)}
-                </button>
-              );
-            })}
-          </div>
-        )}
         <div className="flex items-center gap-1">
           {inStock && (
             <>
@@ -324,12 +320,22 @@ export default function ProductCard({
             {adding
               ? "..."
               : inStock
-                ? locale === "bn" ? "কার্টে যোগ" : "Add to Cart"
+                ? (locale === "bn" ? "কার্টে যোগ" : "Add to Cart")
                 : t("product.outOfStock")}
           </button>
         </div>
       </div>
     </div>
+    {showVariantModal && (
+      <VariantSelectModal
+        product={product}
+        locale={locale}
+        initialQty={qty}
+        onClose={() => setShowVariantModal(false)}
+        onConfirm={handleModalConfirm}
+        confirmLoading={adding}
+      />
+    )}
     </div>
   );
 }

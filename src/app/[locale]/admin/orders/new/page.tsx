@@ -14,7 +14,8 @@ import {
   FloatingTextarea,
 } from "@/components/ui/forms";
 import { POSProductSkeleton } from "@/components/ui/skeletons";
-import { Product, ShippingAddress } from "@/lib/types";
+import { Product, ProductVariant, ShippingAddress } from "@/lib/types";
+import VariantSelectModal from "@/components/products/VariantSelectModal";
 import { toast } from "@/store/toastStore";
 import { formatAmount, formatNumber } from "@/utils/format";
 import { CheckCircle2, MapPin, Pencil, Plus, Trash2, X } from "lucide-react";
@@ -127,6 +128,7 @@ function POSProductCard({
 interface CartLine {
   product: Product;
   quantity: number;
+  variant?: ProductVariant;
 }
 
 type Tab = "products" | "packages";
@@ -199,39 +201,67 @@ export default function POSPage() {
 
   // ── Cart ──────────────────────────────────────────────────────────────────
   const [cart, setCart] = useState<CartLine[]>([]);
+  const [variantModalProduct, setVariantModalProduct] = useState<Product | null>(null);
 
-  const addToCart = (product: Product) => {
+  const addLine = (product: Product, variant?: ProductVariant) => {
     const isPackage = product.is_package;
-    if (!isPackage && Number(product.stock_on_hand) <= 0) return;
+    const stock = variant ? Number(variant.stock_on_hand) : Number(product.stock_on_hand);
+    if (!isPackage && stock <= 0) return;
     setCart(c => {
-      const existing = c.find(l => l.product.id === product.id);
+      const existing = c.find(l => l.product.id === product.id && l.variant?.id === variant?.id);
       if (existing) {
-        const max = isPackage ? 999 : Number(product.stock_on_hand);
+        const max = isPackage ? 999 : stock;
         return c.map(l =>
-          l.product.id === product.id
+          l === existing
             ? { ...l, quantity: Math.min(l.quantity + 1, max) }
             : l,
         );
       }
-      return [...c, { product, quantity: 1 }];
+      return [...c, { product, quantity: 1, variant }];
     });
   };
 
-  const updateQty = (productId: string, qty: number) => {
+  const addToCart = (product: Product) => {
+    if ((product.variants?.length ?? 0) > 0) {
+      setVariantModalProduct(product);
+      return;
+    }
+    addLine(product);
+  };
+
+  const handleVariantModalConfirm = (variant: ProductVariant, qty: number) => {
+    if (!variantModalProduct) return;
+    const product = variantModalProduct;
+    setCart(c => {
+      const existing = c.find(l => l.product.id === product.id && l.variant?.id === variant.id);
+      if (existing) {
+        const max = Number(variant.stock_on_hand);
+        return c.map(l =>
+          l === existing
+            ? { ...l, quantity: Math.min(l.quantity + qty, max) }
+            : l,
+        );
+      }
+      return [...c, { product, quantity: qty, variant }];
+    });
+    setVariantModalProduct(null);
+  };
+
+  const updateQty = (productId: string, qty: number, variantId?: string) => {
     if (qty <= 0) {
-      removeFromCart(productId);
+      removeFromCart(productId, variantId);
       return;
     }
     setCart(c =>
-      c.map(l => (l.product.id === productId ? { ...l, quantity: qty } : l)),
+      c.map(l => (l.product.id === productId && l.variant?.id === variantId ? { ...l, quantity: qty } : l)),
     );
   };
 
-  const removeFromCart = (productId: string) =>
-    setCart(c => c.filter(l => l.product.id !== productId));
+  const removeFromCart = (productId: string, variantId?: string) =>
+    setCart(c => c.filter(l => !(l.product.id === productId && l.variant?.id === variantId)));
 
   const subtotal = cart.reduce(
-    (s, l) => s + parseFloat(l.product.effective_price) * l.quantity,
+    (s, l) => s + parseFloat(l.variant ? l.variant.effective_price : l.product.effective_price) * l.quantity,
     0,
   );
 
@@ -384,6 +414,7 @@ export default function POSPage() {
         items: cart.map(l => ({
           product_id: l.product.id,
           quantity: l.quantity.toFixed(3),
+          ...(l.variant && { variant_id: l.variant.id }),
         })),
         ...customer,
         ...(selectedUserId ? { customer_id: selectedUserId } : {}),
@@ -551,9 +582,13 @@ export default function POSPage() {
             </p>
           ) : (
             <div className="space-y-3 overflow-y-auto max-h-80 lg:max-h-none lg:flex-1">
-              {cart.map(line => (
+              {cart.map(line => {
+                const unitPrice = line.variant ? line.variant.effective_price : line.product.effective_price;
+                const stock = line.variant ? Number(line.variant.stock_on_hand) : Number(line.product.stock_on_hand);
+                const variantLabel = line.variant ? (locale === "bn" ? line.variant.label_bn : line.variant.label_en) : null;
+                return (
                 <div
-                  key={line.product.id}
+                  key={`${line.product.id}:${line.variant?.id ?? ""}`}
                   className={`rounded-lg ${line.product.is_package ? "bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800 p-2" : "py-1"}`}
                 >
                   {/* Main line */}
@@ -566,15 +601,18 @@ export default function POSPage() {
                         {locale === "bn"
                           ? line.product.name_bn
                           : line.product.name_en}
+                        {variantLabel && (
+                          <span className="ml-1 text-amber-700 dark:text-amber-400">({variantLabel})</span>
+                        )}
                       </p>
                       <p className="text-xs text-muted">
-                        {formatAmount(line.product.effective_price, locale, 0)}
+                        {formatAmount(unitPrice, locale, 0)}
                       </p>
                     </div>
                     <div className="flex items-center gap-1 shrink-0">
                       <button
                         onClick={() =>
-                          updateQty(line.product.id, line.quantity - 1)
+                          updateQty(line.product.id, line.quantity - 1, line.variant?.id)
                         }
                         className="w-5 h-5 bg-surface-alt rounded text-xs font-bold flex items-center justify-center hover:bg-amber-100 dark:hover:bg-amber-900/40"
                       >
@@ -589,10 +627,9 @@ export default function POSPage() {
                             line.product.id,
                             Math.min(
                               line.quantity + 1,
-                              line.product.is_package
-                                ? 999
-                                : Number(line.product.stock_on_hand),
+                              line.product.is_package ? 999 : stock,
                             ),
+                            line.variant?.id,
                           )
                         }
                         className="w-5 h-5 bg-surface-alt rounded text-xs font-bold flex items-center justify-center hover:bg-amber-100 dark:hover:bg-amber-900/40"
@@ -602,13 +639,13 @@ export default function POSPage() {
                     </div>
                     <p className="text-xs font-bold text-amber-700 dark:text-amber-400 w-14 text-right shrink-0">
                       {formatAmount(
-                        parseFloat(line.product.effective_price) * line.quantity,
+                        parseFloat(unitPrice) * line.quantity,
                         locale,
                         0,
                       )}
                     </p>
                     <button
-                      onClick={() => removeFromCart(line.product.id)}
+                      onClick={() => removeFromCart(line.product.id, line.variant?.id)}
                       className="w-5 h-5 flex items-center justify-center rounded text-red-400 dark:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-700 dark:hover:text-red-400 transition-colors shrink-0"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -638,7 +675,8 @@ export default function POSPage() {
                       </div>
                     )}
                 </div>
-              ))}
+                );
+              })}
             </div>
           )}
 
@@ -1035,6 +1073,14 @@ export default function POSPage() {
               : `Create Order • ${formatAmount(grandTotal, locale, 0)}`}
         </button>
       </div>
+      {variantModalProduct && (
+        <VariantSelectModal
+          product={variantModalProduct}
+          locale={locale}
+          onClose={() => setVariantModalProduct(null)}
+          onConfirm={handleVariantModalConfirm}
+        />
+      )}
     </div>
   );
 }

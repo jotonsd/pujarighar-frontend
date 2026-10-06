@@ -13,6 +13,7 @@ export default async function AppPromoBanner() {
   const qrDataUrl = await QRCode.toDataURL(PLAY_STORE_URL, {
     width: 260,
     margin: 1,
+    errorCorrectionLevel: "H", // tolerates the center logo overlay below
     color: { dark: "#1c1917", light: "#ffffff" },
   });
 
@@ -75,8 +76,15 @@ export default async function AppPromoBanner() {
 
             {/* Right: QR code */}
             <div className="shrink-0 bg-white rounded-2xl p-4 text-center">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <Image src={qrDataUrl} alt="" width={160} height={160} unoptimized className="w-36 h-36 sm:w-40 sm:h-40" />
+              <div className="relative w-36 h-36 sm:w-40 sm:h-40">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <Image src={qrDataUrl} alt="" fill unoptimized />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-lg bg-white flex items-center justify-center overflow-hidden ring-2 ring-white">
+                    <Image src="/assets/logo/brahman.png" alt="" width={36} height={36} className="w-9 h-9 sm:w-10 sm:h-10 object-contain" />
+                  </div>
+                </div>
+              </div>
               <p className="text-xs text-muted mt-2 max-w-[9rem]">
                 {bn ? "স্ক্যান করে অ্যাপ ইনস্টল করুন" : "Scan to install the app"}
               </p>

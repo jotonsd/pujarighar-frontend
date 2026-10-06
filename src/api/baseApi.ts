@@ -133,6 +133,8 @@ export const baseApi = createApi({
     'Bayna',
     'SmsSettings',
     'SmsLogs',
+    'AttributeTypes',
+    'AttributeValues',
   ],
   endpoints: () => ({}),
 })

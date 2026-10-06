@@ -6,6 +6,9 @@ import {
     useAddProductImagesMutation,
     useCreateProductMutation,
     useGetProductQuery,
+    useGetAttributeTypesQuery,
+    useGetAttributeValuesQuery,
+    useCreateAttributeValueMutation,
 } from "@/api/products/productsApi";
 import {
     FloatingInput,
@@ -13,7 +16,7 @@ import {
     FloatingTextarea,
 } from "@/components/ui/forms";
 import BadgePicker from "@/components/admin/products/BadgePicker";
-import ImageUpload, { PendingColor } from "@/components/ui/ImageUpload";
+import ImageUpload, { AttributeValueOption } from "@/components/ui/ImageUpload";
 import PageHeader from "@/components/ui/PageHeader";
 import { ProductBadge } from "@/lib/types";
 import { toast } from "@/store/toastStore";
@@ -75,7 +78,7 @@ export default function NewProductPage() {
     badges: [] as ProductBadge[],
   });
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
-  const [pendingColors, setPendingColors] = useState<PendingColor[]>([]);
+  const [pendingValueIds, setPendingValueIds] = useState<(string | null)[]>([]);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const skuManualRef = useRef(false);
 
@@ -83,6 +86,17 @@ export default function NewProductPage() {
   const { data: brands = [] } = useGetBrandsQuery();
   const [createProduct, { isLoading }] = useCreateProductMutation();
   const [addImages] = useAddProductImagesMutation();
+  const { data: attributeTypes = [] } = useGetAttributeTypesQuery();
+  const colorType = attributeTypes.find(t => t.code === "color");
+  const { data: colorValues = [] } = useGetAttributeValuesQuery(
+    colorType ? { attribute_type_id: colorType.id } : undefined,
+    { skip: !colorType },
+  );
+  const [createAttributeValue] = useCreateAttributeValueMutation();
+  const colorOptions: AttributeValueOption[] = colorValues.map(v => ({
+    id: v.id,
+    label: locale === "bn" ? (v.value_bn || v.value_en) : (v.value_en || v.value_bn),
+  }));
 
   // Duplicate-from-existing-product flow: /admin/products/new?duplicateFrom=<id>
   const duplicateFromId = useSearchParams().get("duplicateFrom");
@@ -151,8 +165,7 @@ export default function NewProductPage() {
         await addImages({
           productId: product.id,
           files: pendingFiles,
-          colorsBn: pendingColors.map(c => c.bn),
-          colorsEn: pendingColors.map(c => c.en),
+          visualValueIds: pendingValueIds,
         }).unwrap();
       }
       toast.success(locale === "bn" ? "পণ্য তৈরি হয়েছে" : "Product created");
@@ -335,8 +348,15 @@ export default function NewProductPage() {
             onFilesChange={setPendingFiles}
             maxImages={5}
             initialFiles={duplicateImageFiles}
-            colorTagging
-            onPendingColorsChange={setPendingColors}
+            valueTagging
+            attributeValues={colorOptions}
+            valueBilingual={colorType?.has_bilingual_values ?? true}
+            onCreateValue={async (valueBn, valueEn) => {
+              if (!colorType) throw new Error("Color attribute type not loaded");
+              const created = await createAttributeValue({ attribute_type_id: colorType.id, value_bn: valueBn, value_en: valueEn }).unwrap();
+              return { id: created.id, label: locale === "bn" ? (created.value_bn || created.value_en) : created.value_en };
+            }}
+            onPendingValuesChange={setPendingValueIds}
           />
         ) : (
           <p className="text-sm text-muted">

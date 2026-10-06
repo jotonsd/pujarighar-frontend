@@ -18,7 +18,7 @@ function AddProductPicker({ orderId, locale }: { orderId: string; locale: string
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<Product | null>(null);
   const [qty, setQty] = useState("1");
-  const [color, setColor] = useState("");
+  const [variantId, setVariantId] = useState("");
   const [addItem, { isLoading: adding }] = useAddOrderItemMutation();
 
   const { data: results, isFetching } = useGetProductsQuery(
@@ -26,15 +26,18 @@ function AddProductPicker({ orderId, locale }: { orderId: string; locale: string
     { skip: query.trim().length < 2 },
   );
 
+  const hasVariants = (selected?.variants?.length ?? 0) > 0;
+
   const handleAdd = async () => {
     if (!selected || !qty || Number(qty) <= 0) return;
+    if (hasVariants && !variantId) return;
     try {
-      await addItem({ id: orderId, product_id: selected.id, quantity: Number(qty), color }).unwrap();
+      await addItem({ id: orderId, product_id: selected.id, quantity: Number(qty), ...(variantId && { variant_id: variantId }) }).unwrap();
       toast.success(isBn ? "পণ্য যোগ হয়েছে" : "Product added");
       setSelected(null);
       setQuery("");
       setQty("1");
-      setColor("");
+      setVariantId("");
     } catch (err: unknown) {
       toast.error(getErrorMessage(err, locale));
     }
@@ -105,16 +108,21 @@ function AddProductPicker({ orderId, locale }: { orderId: string; locale: string
             onChange={e => setQty(e.target.value)}
             className="w-20 px-2 py-2 text-sm border border-border rounded-lg text-center focus:outline-none focus:border-amber-500"
           />
-          <input
-            type="text"
-            value={color}
-            onChange={e => setColor(e.target.value)}
-            placeholder={isBn ? "রঙ (ঐচ্ছিক)" : "Color (optional)"}
-            className="w-32 px-2 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-amber-500"
-          />
+          {hasVariants && (
+            <select
+              value={variantId}
+              onChange={e => setVariantId(e.target.value)}
+              className="w-36 px-2 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-amber-500"
+            >
+              <option value="">{isBn ? "ভ্যারিয়েন্ট নির্বাচন করুন" : "Select variant"}</option>
+              {selected!.variants.map(v => (
+                <option key={v.id} value={v.id}>{isBn ? v.label_bn : v.label_en}</option>
+              ))}
+            </select>
+          )}
           <button
             type="button"
-            disabled={adding || !qty || Number(qty) <= 0}
+            disabled={adding || !qty || Number(qty) <= 0 || (hasVariants && !variantId)}
             onClick={handleAdd}
             className="btn-primary text-xs whitespace-nowrap inline-flex items-center gap-1 disabled:opacity-50"
           >
@@ -215,9 +223,9 @@ export default function OrderItems({ order }: Props) {
                           )}
                           <div>
                             {localName(item.product_name_bn, item.product_name_en, locale === "bn")}
-                            {(item.color_bn || item.color_en) && (
+                            {(item.variant_label_bn || item.variant_label_en) && (
                               <span className="ml-1.5 text-xs font-medium text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-1.5 py-0.5 rounded-full">
-                                {localName(item.color_bn, item.color_en, locale === "bn")}
+                                {localName(item.variant_label_bn, item.variant_label_en, locale === "bn")}
                               </span>
                             )}
                           </div>

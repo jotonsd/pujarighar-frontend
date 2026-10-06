@@ -9,13 +9,99 @@ export interface ExistingImage {
   image: string
   alt_en?: string
   alt_bn?: string
-  color_bn?: string
-  color_en?: string
+  visual_value?: string | null
+  visual_value_bn?: string
+  visual_value_en?: string
 }
 
-export interface PendingColor {
-  bn: string
-  en: string
+export interface AttributeValueOption {
+  id: string
+  label: string
+}
+
+const NEW_VALUE_SENTINEL = '__new__'
+
+interface ValuePickerProps {
+  value: string | null
+  options: AttributeValueOption[]
+  onChange: (valueId: string | null) => void
+  // Bilingual types (e.g. Color) need both value_bn/value_en captured for
+  // a brand-new value — non-bilingual types (Size, Weight) just need one.
+  bilingual?: boolean
+  onCreateValue?: (valueBn: string, valueEn: string) => Promise<AttributeValueOption>
+  placeholder: string
+  addLabel: string
+}
+
+// Shared by both existing and pending thumbnails — a <select> over the
+// product's visual attribute type's reusable value library (e.g. every
+// Color value typed anywhere so far), plus an inline "+ add new" that
+// creates a value in that same library without leaving this screen.
+function ValuePicker({ value, options, onChange, bilingual, onCreateValue, placeholder, addLabel }: ValuePickerProps) {
+  const [adding, setAdding] = useState(false)
+  const [newBn, setNewBn] = useState('')
+  const [newEn, setNewEn] = useState('')
+
+  const submit = async () => {
+    if (!onCreateValue) return
+    const en = newEn.trim()
+    const bn = newBn.trim()
+    if (!en && !bn) return
+    const created = await onCreateValue(bn, en || bn)
+    onChange(created.id)
+    setAdding(false)
+    setNewBn('')
+    setNewEn('')
+  }
+
+  if (adding) {
+    return (
+      <div className="space-y-1">
+        {bilingual && (
+          <input
+            autoFocus
+            type="text"
+            value={newBn}
+            onChange={e => setNewBn(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') submit(); if (e.key === 'Escape') setAdding(false) }}
+            placeholder="বাংলা"
+            className="w-full text-[11px] px-1.5 py-1 rounded border border-border bg-background text-body"
+          />
+        )}
+        <div className="flex gap-1">
+          <input
+            autoFocus={!bilingual}
+            type="text"
+            value={newEn}
+            onChange={e => setNewEn(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') submit(); if (e.key === 'Escape') setAdding(false) }}
+            placeholder={placeholder}
+            className="w-full text-[11px] px-1.5 py-1 rounded border border-border bg-background text-body"
+          />
+          <button type="button" onClick={() => setAdding(false)} className="text-[11px] text-muted px-1">
+            <X className="w-3 h-3" />
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <select
+      value={value ?? ''}
+      onChange={e => {
+        if (e.target.value === NEW_VALUE_SENTINEL) setAdding(true)
+        else onChange(e.target.value || null)
+      }}
+      className="w-24 text-[11px] px-1.5 py-1 rounded border border-border bg-background text-body"
+    >
+      <option value="">{placeholder}</option>
+      {options.map(o => (
+        <option key={o.id} value={o.id}>{o.label}</option>
+      ))}
+      {onCreateValue && <option value={NEW_VALUE_SENTINEL}>{addLabel}</option>}
+    </select>
+  )
 }
 
 interface Props {
@@ -28,19 +114,24 @@ interface Props {
   // delay rendering this component until these are ready (see
   // products/new/page.tsx's duplicate-from flow).
   initialFiles?: File[]
-  // Shows small bn/en color-label text inputs under every thumbnail
-  // (existing and pending) — used only by the product add/edit pages.
-  // Leaving this off (every other call site: site settings logo/favicon)
-  // changes nothing about the component's behavior.
-  colorTagging?: boolean
-  // Fired when an EXISTING image's color label changes (on blur) — the
-  // caller is expected to persist it via its own update mutation, since
-  // that image is already uploaded.
-  onColorChange?: (imageId: string, color: PendingColor) => void
-  // Fired whenever the PENDING files' colors change, index-aligned with
-  // the files passed to onFilesChange — the caller sends these alongside
-  // the files on upload, since pending images don't exist server-side yet.
-  onPendingColorsChange?: (colors: PendingColor[]) => void
+  // Shows a value-picker dropdown under every thumbnail (existing and
+  // pending), sourced from `attributeValues` — used only by the product
+  // add/edit pages, tagging each photo with which value of the product's
+  // visual attribute type (almost always Color) it shows. Leaving this off
+  // (every other call site: site settings logo/favicon) changes nothing.
+  valueTagging?: boolean
+  attributeValues?: AttributeValueOption[]
+  valueBilingual?: boolean
+  onCreateValue?: (valueBn: string, valueEn: string) => Promise<AttributeValueOption>
+  // Fired when an EXISTING image's tagged value changes — the caller is
+  // expected to persist it via its own update mutation, since that image
+  // is already uploaded.
+  onValueChange?: (imageId: string, valueId: string | null) => void
+  // Fired whenever the PENDING files' tagged values change, index-aligned
+  // with the files passed to onFilesChange — the caller sends these
+  // alongside the files on upload, since pending images don't exist
+  // server-side yet.
+  onPendingValuesChange?: (valueIds: (string | null)[]) => void
 }
 
 export default function ImageUpload({
@@ -49,9 +140,12 @@ export default function ImageUpload({
   onFilesChange,
   maxImages = 5,
   initialFiles,
-  colorTagging = false,
-  onColorChange,
-  onPendingColorsChange,
+  valueTagging = false,
+  attributeValues = [],
+  valueBilingual = false,
+  onCreateValue,
+  onValueChange,
+  onPendingValuesChange,
 }: Props) {
   const locale   = useLocale()
   const isBn     = locale === 'bn'
@@ -59,28 +153,28 @@ export default function ImageUpload({
 
   const [pendingFiles, setPendingFiles] = useState<File[]>(initialFiles ?? [])
   const [previewUrls, setPreviewUrls]   = useState<string[]>(() => (initialFiles ?? []).map(f => URL.createObjectURL(f)))
-  const [pendingColors, setPendingColors] = useState<PendingColor[]>(() => (initialFiles ?? []).map(() => ({ bn: '', en: '' })))
+  const [pendingValues, setPendingValues] = useState<(string | null)[]>(() => (initialFiles ?? []).map(() => null))
   const [dragging, setDragging]         = useState(false)
 
-  const setPendingColorAt = (index: number, field: 'bn' | 'en', value: string) => {
-    setPendingColors(prev => {
+  const setPendingValueAt = (index: number, valueId: string | null) => {
+    setPendingValues(prev => {
       const next = [...prev]
-      next[index] = { ...next[index], [field]: value }
-      onPendingColorsChange?.(next)
+      next[index] = valueId
+      onPendingValuesChange?.(next)
       return next
     })
   }
 
-  // Local edit buffer for EXISTING images' colors, keyed by image id —
-  // tracked separately from the `existingImages` prop so editing bn then en
-  // (two blurs in a row) composes correctly instead of each blur firing
-  // onColorChange with a stale value for the field it didn't touch (the
-  // prop only updates once the caller's mutation round-trips).
-  const [existingColorEdits, setExistingColorEdits] = useState<Record<string, PendingColor>>({})
-  const colorOf = (img: ExistingImage): PendingColor =>
-    existingColorEdits[img.id] ?? { bn: img.color_bn ?? '', en: img.color_en ?? '' }
-  const setExistingColorAt = (img: ExistingImage, field: 'bn' | 'en', value: string) => {
-    setExistingColorEdits(prev => ({ ...prev, [img.id]: { ...colorOf(img), [field]: value } }))
+  // Local edit buffer for EXISTING images' tagged value, keyed by image id
+  // — tracked separately from the `existingImages` prop so the dropdown
+  // reflects the pick instantly instead of waiting for the caller's
+  // mutation to round-trip.
+  const [existingValueEdits, setExistingValueEdits] = useState<Record<string, string | null>>({})
+  const valueOf = (img: ExistingImage): string | null =>
+    img.id in existingValueEdits ? existingValueEdits[img.id] : (img.visual_value ?? null)
+  const setExistingValueAt = (img: ExistingImage, valueId: string | null) => {
+    setExistingValueEdits(prev => ({ ...prev, [img.id]: valueId }))
+    onValueChange?.(img.id, valueId)
   }
 
   const totalCount = existingImages.length + pendingFiles.length
@@ -100,12 +194,12 @@ export default function ImageUpload({
       return next
     })
     setPreviewUrls(prev => [...prev, ...urls])
-    setPendingColors(prev => {
-      const next = [...prev, ...batch.map(() => ({ bn: '', en: '' }))]
-      onPendingColorsChange?.(next)
+    setPendingValues(prev => {
+      const next = [...prev, ...batch.map(() => null)]
+      onPendingValuesChange?.(next)
       return next
     })
-  }, [existingImages.length, pendingFiles.length, maxImages, onFilesChange, onPendingColorsChange])
+  }, [existingImages.length, pendingFiles.length, maxImages, onFilesChange, onPendingValuesChange])
 
   const removePending = (index: number) => {
     URL.revokeObjectURL(previewUrls[index])
@@ -115,9 +209,9 @@ export default function ImageUpload({
       return next
     })
     setPreviewUrls(prev => prev.filter((_, i) => i !== index))
-    setPendingColors(prev => {
+    setPendingValues(prev => {
       const next = prev.filter((_, i) => i !== index)
-      onPendingColorsChange?.(next)
+      onPendingValuesChange?.(next)
       return next
     })
   }
@@ -238,25 +332,16 @@ export default function ImageUpload({
                     </button>
                   )}
                 </div>
-                {colorTagging && (
-                  <div className="w-24 space-y-1">
-                    <input
-                      type="text"
-                      value={colorOf(img).bn}
-                      placeholder={isBn ? 'রঙ (বাংলা)' : 'Color (Bangla)'}
-                      onChange={e => setExistingColorAt(img, 'bn', e.target.value)}
-                      onBlur={() => onColorChange?.(img.id, colorOf(img))}
-                      className="w-24 text-[11px] px-1.5 py-1 rounded border border-border bg-background text-body"
-                    />
-                    <input
-                      type="text"
-                      value={colorOf(img).en}
-                      placeholder={isBn ? 'রঙ (ইংরেজি)' : 'Color (English)'}
-                      onChange={e => setExistingColorAt(img, 'en', e.target.value)}
-                      onBlur={() => onColorChange?.(img.id, colorOf(img))}
-                      className="w-24 text-[11px] px-1.5 py-1 rounded border border-border bg-background text-body"
-                    />
-                  </div>
+                {valueTagging && (
+                  <ValuePicker
+                    value={valueOf(img)}
+                    options={attributeValues}
+                    onChange={v => setExistingValueAt(img, v)}
+                    bilingual={valueBilingual}
+                    onCreateValue={onCreateValue}
+                    placeholder={isBn ? 'ট্যাগ নেই' : 'Untagged'}
+                    addLabel={isBn ? '+ নতুন যোগ করুন' : '+ Add new'}
+                  />
                 )}
               </div>
             ))}
@@ -278,23 +363,16 @@ export default function ImageUpload({
                     {isBn ? 'নতুন' : 'New'}
                   </span>
                 </div>
-                {colorTagging && (
-                  <div className="w-24 space-y-1">
-                    <input
-                      type="text"
-                      value={pendingColors[i]?.bn ?? ''}
-                      placeholder={isBn ? 'রঙ (বাংলা)' : 'Color (Bangla)'}
-                      onChange={e => setPendingColorAt(i, 'bn', e.target.value)}
-                      className="w-24 text-[11px] px-1.5 py-1 rounded border border-border bg-background text-body"
-                    />
-                    <input
-                      type="text"
-                      value={pendingColors[i]?.en ?? ''}
-                      placeholder={isBn ? 'রঙ (ইংরেজি)' : 'Color (English)'}
-                      onChange={e => setPendingColorAt(i, 'en', e.target.value)}
-                      className="w-24 text-[11px] px-1.5 py-1 rounded border border-border bg-background text-body"
-                    />
-                  </div>
+                {valueTagging && (
+                  <ValuePicker
+                    value={pendingValues[i] ?? null}
+                    options={attributeValues}
+                    onChange={v => setPendingValueAt(i, v)}
+                    bilingual={valueBilingual}
+                    onCreateValue={onCreateValue}
+                    placeholder={isBn ? 'ট্যাগ নেই' : 'Untagged'}
+                    addLabel={isBn ? '+ নতুন যোগ করুন' : '+ Add new'}
+                  />
                 )}
               </div>
             ))}

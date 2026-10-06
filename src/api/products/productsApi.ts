@@ -1,5 +1,5 @@
 import { baseApi } from '@/api/baseApi'
-import { Product, ProductImage, ApiMeta } from '@/lib/types'
+import { Product, ProductImage, ApiMeta, VariantAttributeType, VariantAttributeValue, ProductVariant } from '@/lib/types'
 
 interface ProductListResponse { data: Product[]; pagination: ApiMeta }
 
@@ -67,15 +67,14 @@ export const productsApi = baseApi.injectEndpoints({
       invalidatesTags: ['Products'],
     }),
 
-    addProductImages: build.mutation<ProductImage[], { productId: string; files: File[]; colorsBn?: string[]; colorsEn?: string[] }>({
-      query: ({ productId, files, colorsBn, colorsEn }) => {
+    addProductImages: build.mutation<ProductImage[], { productId: string; files: File[]; visualValueIds?: (string | null)[] }>({
+      query: ({ productId, files, visualValueIds }) => {
         const fd = new FormData()
         files.forEach(f => fd.append('images', f))
-        // Index-aligned with `images` — one 'colors_bn'/'colors_en' field
-        // per file, same order, so the backend can zip them (see
+        // Index-aligned with `images` — one 'visual_value_ids' field per
+        // file, same order, so the backend can zip them (see
         // add_product_image view).
-        files.forEach((_, i) => fd.append('colors_bn', colorsBn?.[i] ?? ''))
-        files.forEach((_, i) => fd.append('colors_en', colorsEn?.[i] ?? ''))
+        files.forEach((_, i) => fd.append('visual_value_ids', visualValueIds?.[i] ?? ''))
         return { url: `/api/products/${productId}/images/`, method: 'POST', body: fd, formData: true }
       },
       transformResponse: (res: { data: ProductImage[] }) => res.data,
@@ -90,14 +89,87 @@ export const productsApi = baseApi.injectEndpoints({
       invalidatesTags: (_r, _e, { productId }) => [{ type: 'Product', id: productId }],
     }),
 
-    updateProductImage: build.mutation<ProductImage, { productId: string; imageId: string; color_bn?: string; color_en?: string }>({
-      query: ({ productId, imageId, color_bn, color_en }) => ({
+    updateProductImage: build.mutation<ProductImage, { productId: string; imageId: string; visual_value_id: string | null }>({
+      query: ({ productId, imageId, visual_value_id }) => ({
         url: `/api/products/${productId}/images/${imageId}/`,
         method: 'PATCH',
-        body: { color_bn, color_en },
+        body: { visual_value_id },
       }),
       transformResponse: (res: { data: ProductImage }) => res.data,
       invalidatesTags: (_r, _e, { productId }) => [{ type: 'Product', id: productId }],
+    }),
+
+    // ── Variant / attribute library endpoints ──────────────────────────────
+    getAttributeTypes: build.query<VariantAttributeType[], { includeInactive?: boolean } | void>({
+      query: (params) => {
+        const p = new URLSearchParams()
+        if (params?.includeInactive) p.set('include_inactive', 'true')
+        return `/api/attribute-types/?${p}`
+      },
+      transformResponse: (res: { data: VariantAttributeType[] }) => res.data,
+      providesTags: ['AttributeTypes'],
+    }),
+
+    createAttributeType: build.mutation<VariantAttributeType, { name_bn: string; name_en: string; code: string; has_bilingual_values: boolean }>({
+      query: (body) => ({ url: '/api/attribute-types/create/', method: 'POST', body }),
+      transformResponse: (res: { data: VariantAttributeType }) => res.data,
+      invalidatesTags: ['AttributeTypes'],
+    }),
+
+    updateAttributeType: build.mutation<VariantAttributeType, { id: string; name_bn?: string; name_en?: string; has_bilingual_values?: boolean; is_active?: boolean }>({
+      query: ({ id, ...body }) => ({ url: `/api/attribute-types/${id}/`, method: 'PATCH', body }),
+      transformResponse: (res: { data: VariantAttributeType }) => res.data,
+      invalidatesTags: ['AttributeTypes'],
+    }),
+
+    deleteAttributeType: build.mutation<void, string>({
+      query: (id) => ({ url: `/api/attribute-types/${id}/`, method: 'DELETE' }),
+      invalidatesTags: ['AttributeTypes'],
+    }),
+
+    getAttributeValues: build.query<VariantAttributeValue[], { attribute_type_id?: string; includeInactive?: boolean } | void>({
+      query: (params) => {
+        const p = new URLSearchParams()
+        if (params?.attribute_type_id) p.set('attribute_type_id', params.attribute_type_id)
+        if (params?.includeInactive) p.set('include_inactive', 'true')
+        return `/api/attribute-values/?${p}`
+      },
+      transformResponse: (res: { data: VariantAttributeValue[] }) => res.data,
+      providesTags: ['AttributeValues'],
+    }),
+
+    createAttributeValue: build.mutation<VariantAttributeValue, { attribute_type_id: string; value_bn?: string; value_en: string }>({
+      query: (body) => ({ url: '/api/attribute-values/create/', method: 'POST', body }),
+      transformResponse: (res: { data: VariantAttributeValue }) => res.data,
+      invalidatesTags: ['AttributeValues'],
+    }),
+
+    updateAttributeValue: build.mutation<VariantAttributeValue, { id: string; value_bn?: string; value_en?: string; is_active?: boolean }>({
+      query: ({ id, ...body }) => ({ url: `/api/attribute-values/${id}/`, method: 'PATCH', body }),
+      transformResponse: (res: { data: VariantAttributeValue }) => res.data,
+      invalidatesTags: ['AttributeValues'],
+    }),
+
+    deleteAttributeValue: build.mutation<void, string>({
+      query: (id) => ({ url: `/api/attribute-values/${id}/`, method: 'DELETE' }),
+      invalidatesTags: ['AttributeValues'],
+    }),
+
+    generateProductVariants: build.mutation<ProductVariant[], { productId: string; value_ids: string[] }>({
+      query: ({ productId, value_ids }) => ({ url: `/api/products/${productId}/variants/generate/`, method: 'POST', body: { value_ids } }),
+      transformResponse: (res: { data: ProductVariant[] }) => res.data,
+      invalidatesTags: (_r, _e, { productId }) => [{ type: 'Product', id: productId }, 'Products'],
+    }),
+
+    updateProductVariant: build.mutation<ProductVariant, { productId: string; variantId: string; sku_suffix?: string; price_override?: string | null; is_active?: boolean }>({
+      query: ({ productId, variantId, ...body }) => ({ url: `/api/products/${productId}/variants/${variantId}/`, method: 'PATCH', body }),
+      transformResponse: (res: { data: ProductVariant }) => res.data,
+      invalidatesTags: (_r, _e, { productId }) => [{ type: 'Product', id: productId }, 'Products'],
+    }),
+
+    deleteProductVariant: build.mutation<void, { productId: string; variantId: string }>({
+      query: ({ productId, variantId }) => ({ url: `/api/products/${productId}/variants/${variantId}/`, method: 'DELETE' }),
+      invalidatesTags: (_r, _e, { productId }) => [{ type: 'Product', id: productId }, 'Products'],
     }),
 
     // ── Package item endpoints ──────────────────────────────────────────────
@@ -165,4 +237,15 @@ export const {
   useDeletePackageItemMutation,
   useGetPopularByCategoryQuery,
   useGetRecommendedProductsQuery,
+  useGetAttributeTypesQuery,
+  useCreateAttributeTypeMutation,
+  useUpdateAttributeTypeMutation,
+  useDeleteAttributeTypeMutation,
+  useGetAttributeValuesQuery,
+  useCreateAttributeValueMutation,
+  useUpdateAttributeValueMutation,
+  useDeleteAttributeValueMutation,
+  useGenerateProductVariantsMutation,
+  useUpdateProductVariantMutation,
+  useDeleteProductVariantMutation,
 } = productsApi

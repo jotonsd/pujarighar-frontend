@@ -164,6 +164,7 @@ interface Props {
   initialCategories?: Category[];
   initialBrands?: Brand[];
   offerBanners?: ReactNode;
+  appQrCard?: ReactNode;
 }
 
 export default function ProductsPageClient({
@@ -172,6 +173,7 @@ export default function ProductsPageClient({
   initialCategories = [],
   initialBrands = [],
   offerBanners,
+  appQrCard,
 }: Props) {
   const locale = useLocale();
   const pathname = usePathname();
@@ -574,8 +576,9 @@ export default function ProductsPageClient({
       {offerBanners}
 
       <div className="flex gap-3">
-        <aside className="hidden lg:block w-56 shrink-0">
-          <div className="bg-surface rounded-xl shadow-sm border border-border p-5 sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto overscroll-contain scrollbar-hide">
+        <aside className="hidden lg:block w-56 shrink-0 sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto overscroll-contain scrollbar-hide">
+          {appQrCard}
+          <div className="bg-surface rounded-xl shadow-sm border border-border p-5">
             {isLoading && allProducts.length === 0 ? <FilterPanelSkeleton /> : <FilterPanel />}
           </div>
         </aside>
@@ -599,6 +602,7 @@ export default function ProductsPageClient({
               }}
             />
             <div className="fixed inset-y-0 left-0 w-72 bg-surface z-50 lg:hidden overflow-y-auto overscroll-contain shadow-xl">
+              <div className="px-5 pt-20">{appQrCard}</div>
               <div className="flex items-center justify-between px-5 py-4 border-b border-border">
                 <span className="font-semibold text-body">
                   {locale === "bn" ? "ফিল্টার" : "Filters"}
