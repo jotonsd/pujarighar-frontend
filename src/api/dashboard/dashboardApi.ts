@@ -31,6 +31,7 @@ export interface DashboardSummary {
   // new
   this_month_revenue: string
   last_month_revenue: string
+  this_month_expense: string
   this_month_profit: string
   revenue_change_pct: number | null
   supplier_outstanding: string
