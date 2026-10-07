@@ -58,6 +58,8 @@ interface ReusableTableProps<T> {
   quickActions?: QuickAction<T>[]
   enableSelection?: boolean
   onBulkDelete?: (ids: (string | number)[]) => void
+  onBulkActivate?: (ids: (string | number)[]) => void
+  onBulkDeactivate?: (ids: (string | number)[]) => void
   enableSorting?: boolean
   onSort?: (key: string, direction: SortDirection) => void
   exportFilename?: string
@@ -80,6 +82,8 @@ export function ReusableTable<T>({
   quickActions,
   enableSelection = false,
   onBulkDelete,
+  onBulkActivate,
+  onBulkDeactivate,
   enableSorting = false,
   onSort,
   exportFilename = 'export',
@@ -242,15 +246,33 @@ export function ReusableTable<T>({
       {enableSelection && selectedIds.length > 0 && (
         <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg px-4 py-3 flex items-center justify-between">
           <span className="text-sm text-amber-900 dark:text-amber-300">{selectedIds.length} selected</span>
-          {onBulkDelete && (
-            <button
-              onClick={() => { onBulkDelete(selectedIds); setSelectedIds([]) }}
-              className="flex items-center gap-2 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm transition-colors"
-            >
-              <Trash2 className="w-4 h-4" />
-              Delete selected
-            </button>
-          )}
+          <div className="flex items-center gap-2">
+            {onBulkActivate && (
+              <button
+                onClick={() => { onBulkActivate(selectedIds); setSelectedIds([]) }}
+                className="flex items-center gap-2 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm transition-colors"
+              >
+                Activate
+              </button>
+            )}
+            {onBulkDeactivate && (
+              <button
+                onClick={() => { onBulkDeactivate(selectedIds); setSelectedIds([]) }}
+                className="flex items-center gap-2 px-3 py-1.5 bg-gray-500 hover:bg-gray-600 text-white rounded-lg text-sm transition-colors"
+              >
+                Deactivate
+              </button>
+            )}
+            {onBulkDelete && (
+              <button
+                onClick={() => { onBulkDelete(selectedIds); setSelectedIds([]) }}
+                className="flex items-center gap-2 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm transition-colors"
+              >
+                <Trash2 className="w-4 h-4" />
+                Delete selected
+              </button>
+            )}
+          </div>
         </div>
       )}
 
