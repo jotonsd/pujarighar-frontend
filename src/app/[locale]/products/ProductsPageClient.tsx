@@ -576,9 +576,11 @@ export default function ProductsPageClient({
       {offerBanners}
 
       <div className="flex gap-3">
-        <aside className="hidden lg:block w-56 shrink-0 sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto overscroll-contain scrollbar-hide">
-          {appQrCard}
-          <div className="bg-surface rounded-xl shadow-sm border border-border p-5">
+        <aside className="hidden lg:flex flex-col w-56 shrink-0 sticky top-20 max-h-[calc(100vh-6rem)]">
+          {/* QR card stays put — only the filter box below scrolls, so it
+              never gets pushed out of view by a long filter list. */}
+          <div className="shrink-0">{appQrCard}</div>
+          <div className="bg-surface rounded-xl shadow-sm border border-border p-5 flex-1 min-h-0 overflow-y-auto overscroll-contain scrollbar-hide">
             {isLoading && allProducts.length === 0 ? <FilterPanelSkeleton /> : <FilterPanel />}
           </div>
         </aside>

@@ -102,6 +102,24 @@ export default function ProductCard({
     setQty(q => Math.min(maxStock, q + 1));
   };
 
+  // Resolves the gallery photo for whichever variant is actually being
+  // added — `imgIdx` only tracks the card's OWN pill/carousel state, which
+  // the variant modal never touches (it keeps its own separate selection),
+  // so a variant confirmed there without ever interacting with the card's
+  // carousel would otherwise add with whatever stale photo imgIdx is on.
+  const resolveImageForVariant = (variant: ProductVariant | null) => {
+    if (variant && product.visual_attribute_type_code) {
+      const value = variant.attribute_values.find(
+        av => av.attribute_type_code === product.visual_attribute_type_code,
+      );
+      if (value) {
+        const matched = images.find(img => img.visual_value === value.value_id);
+        if (matched) return matched.image;
+      }
+    }
+    return images[imgIdx]?.image ?? images[0]?.image;
+  };
+
   const addToCartCore = async (variant: ProductVariant | null, quantity: number) => {
     const effectivePrice = variant ? variant.effective_price : (product.effective_price ?? product.unit_price);
     const originalPrice  = variant ? (variant.price_override ?? product.unit_price) : (product.original_price ?? product.unit_price);
@@ -119,9 +137,7 @@ export default function ProductCard({
           stock,
           is_package:          false,
           package_items:       [],
-          // images[imgIdx] is already the gallery/pill-unification-resolved
-          // photo (jumped to match the selected color) — not always index 0.
-          image:               images[imgIdx]?.image ?? images[0]?.image,
+          image:               resolveImageForVariant(variant),
           weight_kg:           product.weight_kg,
           variant_id:          variant?.id,
           variant_label_bn:    variant?.label_bn,
