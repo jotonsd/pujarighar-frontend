@@ -346,7 +346,7 @@ export default function NewProductPage() {
         {imagesReady ? (
           <ImageUpload
             onFilesChange={setPendingFiles}
-            maxImages={5}
+            maxImages={6}
             initialFiles={duplicateImageFiles}
             valueTagging
             attributeValues={colorOptions}

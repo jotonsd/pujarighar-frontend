@@ -246,7 +246,7 @@ export default function EditProductPage({
           existingImages={product?.images ?? []}
           onDeleteExisting={imageId => deleteImage({ productId: params.id, imageId })}
           onFilesChange={setPendingFiles}
-          maxImages={5}
+          maxImages={6}
           valueTagging
           attributeValues={colorOptions}
           valueBilingual={colorType?.has_bilingual_values ?? true}

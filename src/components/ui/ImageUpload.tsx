@@ -138,7 +138,7 @@ export default function ImageUpload({
   existingImages = [],
   onDeleteExisting,
   onFilesChange,
-  maxImages = 5,
+  maxImages = 6,
   initialFiles,
   valueTagging = false,
   attributeValues = [],
