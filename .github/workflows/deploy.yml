@@ -98,6 +98,17 @@ jobs:
             sleep 5
           done
 
+      - name: Warm image cache
+        # Runs the key pages' images through Next's on-demand optimizer
+        # (resize + WebP encode) right now, as part of the deploy, so no
+        # real visitor — first one or the thousandth — ever pays that
+        # one-time encode cost themselves. `sleep 5` gives PM2 a moment to
+        # actually finish restarting before the first request hits it.
+        run: |
+          sleep 5
+          chmod +x scripts/warm-image-cache.sh
+          ./scripts/warm-image-cache.sh "${{ env.SITE_URL }}"
+
       - name: Cleanup
         if: always()
         run: rm -f ~/.ssh/id_rsa

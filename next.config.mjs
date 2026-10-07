@@ -44,9 +44,15 @@ const nextConfig = {
       { protocol: "https", hostname: "dev-api.pujarighar.com" },
       { protocol: "https", hostname: "api.pujarighar.com" },
     ],
-    // AVIF first — meaningfully smaller than WebP at equivalent quality on
-    // browsers that support it; Next falls back to WebP automatically.
-    formats: ["image/avif", "image/webp"],
+    // WebP only — AVIF encoding via sharp/libvips is dramatically more
+    // CPU-expensive than WebP (often 5-10x slower per image) for a modest
+    // size win. On first page load, a dozen+ product cards plus the hero
+    // all need an on-demand encode simultaneously; on this VPS that was the
+    // direct cause of images taking over a minute to appear after the
+    // sharp-CPU-compat fix made real encoding start happening at all.
+    // WebP still beats plain JPEG significantly and encodes fast enough to
+    // not stall concurrent first-time requests like this.
+    formats: ["image/webp"],
     // Default imageSizes jumps 128 -> 256 -> 384 -> straight into
     // deviceSizes' 640/750/828 tier. Product-grid thumbnails render around
     // 200-435px CSS width (ProductCard's `sizes` prop), so on a 2-3x DPR
