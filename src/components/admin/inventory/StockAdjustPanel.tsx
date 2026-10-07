@@ -50,7 +50,7 @@ export default function StockAdjustPanel({ product }: Props) {
   const [updateMovement, { isLoading: savingEdit }] = useUpdateStockMovementMutation();
 
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editForm, setEditForm] = useState({ quantity: "", unit_cost: "", unit_price: "", payment_method: "CASH" as "CASH" | "CREDIT", date: todayStr() });
+  const [editForm, setEditForm] = useState({ quantity: "", unit_cost: "", unit_price: "", payment_method: "CASH" as "CASH" | "CREDIT", date: todayStr(), variant_id: "" });
 
   const isBn = locale === "bn";
   const isPurchase = adjForm.movement_type === "PURCHASE";
@@ -68,6 +68,7 @@ export default function StockAdjustPanel({ product }: Props) {
       unit_price: m.movement_type === "PURCHASE" ? (product.unit_price ?? "") : "",
       payment_method: m.payment_method,
       date: toLocalDateStr(new Date(m.created_at)),
+      variant_id: m.variant ?? "",
     });
   };
 
@@ -79,6 +80,7 @@ export default function StockAdjustPanel({ product }: Props) {
         quantity: Number(editForm.quantity),
         payment_method: editForm.payment_method,
         date: editForm.date,
+        ...(hasVariants && { variant_id: editForm.variant_id }),
         ...(editForm.unit_cost && { unit_cost: Number(editForm.unit_cost) }),
         ...(movementType === "PURCHASE" && editForm.unit_price && { unit_price: Number(editForm.unit_price) }),
       }).unwrap();
@@ -346,6 +348,20 @@ export default function StockAdjustPanel({ product }: Props) {
                 {isEditing ? (
                   <div className="space-y-2 bg-background rounded-lg p-2 -mx-1">
                     <div className="grid grid-cols-2 gap-2">
+                      {hasVariants && (
+                        <div className="col-span-2">
+                          <FloatingSelect
+                            label={isBn ? "ভ্যারিয়েন্ট" : "Variant"}
+                            value={editForm.variant_id}
+                            onChange={val => setEditForm(p => ({ ...p, variant_id: val }))}
+                          >
+                            <option value="">{isBn ? "কোনোটি নয় (পণ্য পর্যায়ে)" : "None (product-level)"}</option>
+                            {product.variants.map(v => (
+                              <option key={v.id} value={v.id}>{isBn ? v.label_bn : v.label_en}</option>
+                            ))}
+                          </FloatingSelect>
+                        </div>
+                      )}
                       <FloatingInput
                         label={translations("product.quantity")}
                         type="number"
@@ -410,6 +426,11 @@ export default function StockAdjustPanel({ product }: Props) {
                         {isBn
                           ? ({ PURCHASE: "ক্রয়", SALE: "বিক্রয়", RETURN: "ফেরত", ADJUSTMENT: "সমন্বয়", SUPPLIER_RETURN: "সরবরাহকারীকে ফেরত" } as Record<string, string>)[m.movement_type] ?? m.movement_type
                           : ({ SUPPLIER_RETURN: "Return to Supplier" } as Record<string, string>)[m.movement_type] ?? m.movement_type}
+                        {(m.variant_label_bn || m.variant_label_en) && (
+                          <span className="ml-1 text-xs font-semibold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-1.5 py-0.5 rounded-full">
+                            {isBn ? m.variant_label_bn : m.variant_label_en}
+                          </span>
+                        )}
                         {m.supplier_display && (
                           <span className="ml-1 text-xs text-amber-700 dark:text-amber-400">— {m.supplier_display}</span>
                         )}

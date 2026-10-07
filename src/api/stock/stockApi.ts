@@ -24,7 +24,7 @@ export const stockApi = baseApi.injectEndpoints({
       invalidatesTags: (_r, _e, { productId }) => [{ type: 'Stock', id: productId }, 'Products'],
     }),
 
-    updateStockMovement: build.mutation<StockMovement, { productId: string; movementId: string; quantity?: number; unit_cost?: number; unit_price?: number; supplier_id?: string | null; supplier_name?: string; payment_method?: 'CASH' | 'CREDIT'; date?: string; note_bn?: string; note_en?: string }>({
+    updateStockMovement: build.mutation<StockMovement, { productId: string; movementId: string; quantity?: number; variant_id?: string; unit_cost?: number; unit_price?: number; supplier_id?: string | null; supplier_name?: string; payment_method?: 'CASH' | 'CREDIT'; date?: string; note_bn?: string; note_en?: string }>({
       query: ({ productId, movementId, ...body }) => ({
         url: `/api/products/${productId}/stock/${movementId}/update/`,
         method: 'PATCH',

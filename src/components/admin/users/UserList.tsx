@@ -150,6 +150,7 @@ export default function UserList() {
       <ReusableTable data={data?.data ?? []} columns={columns} keyExtractor={u => u.id}
         isLoading={isLoading || isFetching} totalPages={data?.pagination?.total_pages ?? 1}
         totalRecords={data?.pagination?.total} currentPage={page} onPageChange={setPage}
+        limit={limit} onLimitChange={l => { setLimit(l); setPage(1) }}
         exportFilename="users" emptyMessage={locale === 'bn' ? 'কোনো ব্যবহারকারী নেই' : 'No users found'}
         quickActions={[{
           label: t('common.edit'),

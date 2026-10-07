@@ -80,6 +80,9 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
         stock,
         is_package:          false,
         package_items:       [],
+        // images[imgIdx] is already the gallery/pill-unification-resolved
+        // photo (jumped to match the selected color) — not always index 0.
+        image:               images[imgIdx]?.image ?? images[0]?.image,
         weight_kg:           product.weight_kg,
         variant_id:          variant?.id,
         variant_label_bn:    variant?.label_bn,
