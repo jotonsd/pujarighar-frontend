@@ -39,19 +39,19 @@ export default function ProductCard({
   const selection = useVariantSelection(product);
 
   useEffect(() => {
-    // Auto-rotation only conflicts with a variant pill tap when the
-    // product's gallery is actually DRIVEN by a variant value (its
-    // visual_attribute_type, e.g. Color) — a size-only variant product
-    // with no such link has nothing for a timer to fight, so it should
-    // still auto-rotate like any other multi-image product.
-    if (!hasMany || (selection.hasVariants && product.visual_attribute_type_code)) return;
+    // The card never renders a pill picker itself — color/size selection
+    // only happens in the separate Add-to-Cart modal (its own independent
+    // selection state), so there's never a pill tap on the card for a
+    // timer to conflict with, variants or not. Auto-rotate runs for any
+    // multi-image card.
+    if (!hasMany) return;
     timerRef.current = setInterval(() => {
       setImgIdx(i => (i + 1) % images.length);
     }, 3000);
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [hasMany, images.length, selection.hasVariants, product.visual_attribute_type_code]);
+  }, [hasMany, images.length]);
 
   // Gallery/variant pill unification — same as the product detail page:
   // picking a value of the product's visual attribute type also jumps the
