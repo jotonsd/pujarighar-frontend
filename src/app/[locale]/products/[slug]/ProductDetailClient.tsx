@@ -187,6 +187,7 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
                         fill
                         priority={i === 0}
                         sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 610px"
+                        quality={70}
                         className="object-cover"
                       />
                     </div>
@@ -253,6 +254,7 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
                     alt={locale === "bn" ? img.alt_bn : img.alt_en}
                     fill
                     sizes="64px"
+                    quality={70}
                     className="object-cover"
                   />
                 </button>

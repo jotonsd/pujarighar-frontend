@@ -773,6 +773,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                               alt={name}
                               width={44}
                               height={44}
+                              quality={70}
                               className="w-full h-full object-cover"
                             />
                           ) : (

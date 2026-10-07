@@ -116,6 +116,7 @@ export default function PackageDetailClient({ id, offerBanners }: { id: string; 
                 fill
                 priority
                 sizes="(max-width: 768px) 100vw, 50vw"
+                quality={70}
                 className="object-cover"
               />
             </div>
@@ -241,6 +242,7 @@ export default function PackageDetailClient({ id, offerBanners }: { id: string; 
                     alt=""
                     width={36}
                     height={36}
+                    quality={70}
                     className="w-9 h-9 rounded-lg object-cover border border-border shrink-0"
                   />
                 ) : (

@@ -42,6 +42,7 @@ export default function OfferBannersClient({ banners }: { banners: Banner[] }) {
             // Same cap as the hero slider — this renders at the same
             // max-w-7xl content width, not a fixed/full-viewport size.
             sizes="(min-width: 1280px) 1248px, calc(100vw - 32px)"
+            quality={70}
             className="w-full h-auto block"
           />
         </div>

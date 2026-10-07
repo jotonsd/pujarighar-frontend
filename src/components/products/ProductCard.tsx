@@ -217,6 +217,7 @@ export default function ProductCard({
                       fill
                       priority={priority && i === 0}
                       sizes={sizes}
+                      quality={70}
                       className="object-cover"
                     />
                   </div>

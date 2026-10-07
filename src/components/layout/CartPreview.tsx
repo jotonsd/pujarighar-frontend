@@ -118,7 +118,7 @@ export default function CartPreview({ locale }: { locale: string }) {
                 {items.map(item => (
                   <div key={item.id} className="flex items-center gap-2.5 px-4 py-2.5">
                     {item.image ? (
-                      <Image src={item.image} alt="" width={44} height={44} className="w-11 h-11 object-cover rounded-lg border border-border shrink-0" />
+                      <Image src={item.image} alt="" width={44} height={44} quality={70} className="w-11 h-11 object-cover rounded-lg border border-border shrink-0" />
                     ) : (
                       <div className="w-11 h-11 rounded-lg border border-border bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center text-lg shrink-0">🪔</div>
                     )}

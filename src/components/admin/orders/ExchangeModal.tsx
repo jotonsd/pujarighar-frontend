@@ -60,7 +60,7 @@ function ReplacementPicker({
                 className="w-full flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-amber-50 dark:hover:bg-amber-900/30 text-left transition-colors"
               >
                 {p.images?.[0]?.image ? (
-                  <Image src={p.images[0].image} alt="" width={32} height={32} className="w-8 h-8 rounded-md object-cover border border-border shrink-0" />
+                  <Image src={p.images[0].image} alt="" width={32} height={32} quality={70} className="w-8 h-8 rounded-md object-cover border border-border shrink-0" />
                 ) : (
                   <div className="w-8 h-8 rounded-md border border-border bg-background flex items-center justify-center text-muted text-xs shrink-0">—</div>
                 )}
