@@ -1,6 +1,7 @@
 "use client";
 import { formatAmount } from "@/utils/format";
 import { ShoppingCart } from "lucide-react";
+import Image from "next/image";
 
 import { useGetMeQuery } from "@/api/auth/authApi";
 import {
@@ -767,10 +768,11 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                         {/* Image */}
                         <div className="w-11 h-11 rounded-lg overflow-hidden bg-amber-50 shrink-0 flex items-center justify-center">
                           {item.product_image ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
+                            <Image
                               src={item.product_image}
                               alt={name}
+                              width={44}
+                              height={44}
                               className="w-full h-full object-cover"
                             />
                           ) : (

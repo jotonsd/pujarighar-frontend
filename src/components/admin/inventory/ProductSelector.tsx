@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
+import Image from 'next/image'
 import Badge from '@/components/ui/Badge'
 import Pagination from '@/components/ui/Pagination'
 import { FloatingInput, FloatingSelect } from '@/components/ui/forms'
@@ -106,8 +107,7 @@ export default function ProductSelector({ selected, onSelect }: Props) {
                   <td className="px-4 py-3 text-sm text-body">
                     <div className="flex items-center gap-2.5">
                       {p.images?.[0]?.image ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={p.images[0].image} alt="" className="w-9 h-9 object-cover rounded-md border border-border shrink-0" />
+                        <Image src={p.images[0].image} alt="" width={36} height={36} className="w-9 h-9 object-cover rounded-md border border-border shrink-0" />
                       ) : (
                         <div className="w-9 h-9 rounded-md border border-border bg-background flex items-center justify-center text-muted text-xs shrink-0">—</div>
                       )}

@@ -10,6 +10,7 @@ import PageHeader from "@/components/ui/PageHeader";
 import { Column, ReusableTable } from "@/components/ui/ReusableTable";
 import { Product } from "@/lib/types";
 import { toast } from "@/store/toastStore";
+import Image from "next/image";
 import { formatAmount, formatNumber } from "@/utils/format";
 import { Pencil } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
@@ -53,8 +54,7 @@ export default function PackageList() {
     {
       header: locale === "bn" ? "ছবি" : "Image",
       accessor: p => p.images?.[0]?.image ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={p.images[0].image} alt="" className="w-12 h-12 object-cover rounded-lg border border-border" />
+        <Image src={p.images[0].image} alt="" width={48} height={48} className="w-12 h-12 object-cover rounded-lg border border-border" />
       ) : (
         <div className="w-12 h-12 rounded-lg border border-border bg-background flex items-center justify-center text-muted text-xs">
           —
