@@ -68,7 +68,13 @@ jobs:
 
       - name: Deploy via rsync
         run: |
-          rsync -avz --delete \
+          # --exclude='.next/cache' protects Next's on-disk image-optimizer
+          # cache from --delete — that directory only ever exists on the
+          # server (populated at runtime as real requests come in, never
+          # part of this build's output), so without the exclude, every
+          # deploy was wiping it and forcing every image on the site back
+          # to a cold/first-request resize afterward.
+          rsync -avz --delete --exclude='.next/cache' \
             -e "ssh -p ${{ secrets.SSH_PORT }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" \
             ./deploy/ \
             ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ env.DEPLOY_PATH }}/

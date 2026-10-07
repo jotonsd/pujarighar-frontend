@@ -55,6 +55,17 @@ const nextConfig = {
     // Lighthouse findings. These extra steps let it pick something close
     // instead.
     imageSizes: [16, 32, 48, 64, 96, 128, 192, 256, 320, 384, 480, 640],
+    // Defaults to 60s — meaning every resized variant Next generates on
+    // demand (one per distinct image × size × format) is treated as stale
+    // and eligible to be reprocessed again after just a minute. A product
+    // grid requests dozens of distinct images per page; on real browsing
+    // (not a single warmed-up Lighthouse run) that compounds into
+    // noticeably slow thumbnails well past the first visit. Our resize
+    // pipeline gives a replaced image a new filename rather than
+    // overwriting one in place, so there's no staleness risk in caching
+    // these for a long time — a year is the standard "effectively
+    // immutable" value for content-addressed/rarely-changing images.
+    minimumCacheTTL: 31536000,
   },
 };
 
