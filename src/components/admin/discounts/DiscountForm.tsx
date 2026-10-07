@@ -39,7 +39,7 @@ function BulkProductPicker({
   const [page, setPage] = useState(1)
 
   const { data: products, isLoading } = useGetProductsQuery({
-    page, page_size: 10, search, category: category || undefined, brand: brand || undefined, is_package: 'false',
+    page, page_size: 1000, search, category: category || undefined, brand: brand || undefined, is_package: 'false',
   })
   const { data: categories = [] } = useGetCategoriesQuery()
   const { data: brands = [] } = useGetBrandsQuery()

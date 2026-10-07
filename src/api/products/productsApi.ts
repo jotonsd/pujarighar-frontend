@@ -72,6 +72,19 @@ export const productsApi = baseApi.injectEndpoints({
       invalidatesTags: ['Products'],
     }),
 
+    bulkUpdateProductStatus: build.mutation<{ updated: number }, { ids: (string | number)[]; is_active: boolean }>({
+      query: (body) => ({ url: '/api/products/bulk-status/', method: 'POST', body }),
+      invalidatesTags: ['Products'],
+    }),
+
+    bulkDeleteProducts: build.mutation<
+      { deleted: number; skipped: { id: string; name: string; reason_bn: string; reason_en: string }[] },
+      (string | number)[]
+    >({
+      query: (ids) => ({ url: '/api/products/bulk-delete/', method: 'POST', body: { ids } }),
+      invalidatesTags: ['Products'],
+    }),
+
     addProductImages: build.mutation<ProductImage[], { productId: string; files: File[]; visualValueIds?: (string | null)[] }>({
       query: ({ productId, files, visualValueIds }) => {
         const fd = new FormData()
@@ -234,6 +247,8 @@ export const {
   useCreateProductMutation,
   useUpdateProductMutation,
   useDeleteProductMutation,
+  useBulkUpdateProductStatusMutation,
+  useBulkDeleteProductsMutation,
   useAddProductImagesMutation,
   useDeleteProductImageMutation,
   useUpdateProductImageMutation,

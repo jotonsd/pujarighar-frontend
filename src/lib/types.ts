@@ -258,6 +258,9 @@ export interface Product {
   visual_attribute_type_code: string | null
   average_rating: number | null
   review_count: number
+  // Only present on the admin Product List fetch (include_inactive=true)
+  // — null everywhere else (storefront/detail), since it's not computed there.
+  can_delete?: boolean | null
   seo_title_bn: string
   seo_title_en: string
   meta_description_bn: string
