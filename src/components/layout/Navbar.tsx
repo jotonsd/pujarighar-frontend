@@ -2,15 +2,17 @@
 
 import { useGetMeQuery, useLogoutMutation } from "@/api/auth/authApi";
 import { useGetCategoriesQuery } from "@/api/categories/categoriesApi";
+import { useClearCacheMutation } from "@/api/logs/logsApi";
 import { useGetSiteSettingsQuery } from "@/api/settings/settingsApi";
 import CartPreview from "@/components/layout/CartPreview";
 import NotificationBell from "@/components/ui/NotificationBell";
 import { NavGroupChild, NavGroupItem, NavItem, NavSubGroupItem, User } from "@/lib/types";
 import { useAuthStore } from "@/store/authStore";
+import { toast } from "@/store/toastStore";
 import { formatAmount } from "@/utils/format";
 import Cookies from "js-cookie";
 import {
-  Settings, Cog, Package, LogOut, Copy, Check, ScrollText,
+  Settings, Cog, Package, LogOut, Copy, Check, ScrollText, RefreshCw,
   Receipt, ShoppingBag, LayoutDashboard, BarChart3, TrendingUp, TrendingDown,
   Boxes, Gift, Tag, BadgeCheck, Percent, Warehouse, ClipboardList, Truck,
   Users as UsersIcon, Handshake, PiggyBank, Landmark, BookOpen, NotebookPen, PlusCircle,
@@ -287,11 +289,23 @@ function ProfileDropdown({
 }) {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [clearCache, { isLoading: clearingCache }] = useClearCacheMutation();
   const initials = (user.profile?.full_name_en || user.email || "?")
     .charAt(0)
     .toUpperCase();
   const balance = parseFloat(user.profile?.cashback_balance ?? "0");
   const isBn = locale === "bn";
+
+  const handleClearCache = async () => {
+    try {
+      await clearCache().unwrap();
+      toast.success(isBn ? "ক্যাশ ক্লিয়ার হয়েছে" : "Cache cleared");
+    } catch {
+      toast.error(isBn ? "ক্যাশ ক্লিয়ার করা যায়নি" : "Failed to clear cache");
+    } finally {
+      setOpen(false);
+    }
+  };
 
   return (
     <div className="relative flex items-center gap-1.5">
@@ -389,6 +403,17 @@ function ProfileDropdown({
               >
                 <ScrollText className="w-4 h-4" /> {isBn ? "লগ ভিউয়ার" : "Log Viewer"}
               </Link>
+            )}
+
+            {user.role.code === "ADMIN" && (
+              <button
+                onClick={handleClearCache}
+                disabled={clearingCache}
+                className="flex items-center gap-2 px-4 py-2 text-sm text-muted hover:bg-amber-50 dark:hover:bg-amber-900/30 hover:text-amber-700 dark:hover:text-amber-400 transition-colors w-full disabled:opacity-50"
+              >
+                <RefreshCw className={`w-4 h-4 ${clearingCache ? "animate-spin" : ""}`} />
+                {isBn ? "ক্যাশ ক্লিয়ার করুন" : "Clear Cache"}
+              </button>
             )}
 
             {user.role.code === "CUSTOMER" && (

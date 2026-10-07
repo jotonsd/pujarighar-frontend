@@ -5,6 +5,16 @@ import QRCode from "qrcode";
 
 const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.pujarighar.pujarighar_app";
 
+// A pure function of constants, generated once per server process instead
+// of once per request (this renders on every Shop page load) — see
+// AppPromoBanner.tsx for the same pattern.
+const qrDataUrlPromise = QRCode.toDataURL(PLAY_STORE_URL, {
+  width: 240,
+  margin: 1,
+  errorCorrectionLevel: "H", // tolerates the center logo overlay below
+  color: { dark: "#1c1917", light: "#ffffff" },
+});
+
 // Compact "scan to install the app" promo for the Shop page's filter
 // sidebar (desktop aside + mobile drawer) — same QR/link as the full
 // AppPromoBanner, just sized to sit above a narrow filter panel instead of
@@ -12,12 +22,7 @@ const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.pujari
 export default async function ShopAppQrCard() {
   const locale = await getLocale();
   const bn = locale === "bn";
-  const qrDataUrl = await QRCode.toDataURL(PLAY_STORE_URL, {
-    width: 240,
-    margin: 1,
-    errorCorrectionLevel: "H", // tolerates the center logo overlay below
-    color: { dark: "#1c1917", light: "#ffffff" },
-  });
+  const qrDataUrl = await qrDataUrlPromise;
 
   return (
     <div className="relative mb-4 pt-9">

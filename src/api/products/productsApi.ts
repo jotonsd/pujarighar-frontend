@@ -30,6 +30,11 @@ export const productsApi = baseApi.injectEndpoints({
         return `/api/products/?${p}`
       },
       providesTags: ['Products'],
+      // Products don't change daily — reusing an already-fetched filter/page
+      // combo for 5 minutes after the last subscriber unmounts means
+      // switching filters back and forth, or navigating away and back,
+      // doesn't re-hit the backend every time past RTK Query's 60s default.
+      keepUnusedDataFor: 300,
     }),
 
     getRecommendedProducts: build.query<Product[], { limit?: number } | void>({

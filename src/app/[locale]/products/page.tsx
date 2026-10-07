@@ -98,7 +98,7 @@ async function getInitialProducts(searchParams: Props["searchParams"]): Promise<
 
   try {
     const res = await fetch(`${API_URL}/api/products/?${p}`, {
-      cache: "no-store",
+      next: { revalidate: 300 },
     });
     if (!res.ok) return { products: [], totalPages: 1 };
     const json = await res.json();

@@ -7,15 +7,21 @@ import CopyButton from "@/components/ui/CopyButton";
 const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.pujarighar.pujarighar_app";
 const APP_PROMO_CODE = "APPNEWU";
 
+// A pure function of constants — generating it fresh on every single
+// request (this component renders on every storefront page load) wastes
+// CPU for an identical result each time. Module scope means this runs once
+// per server process instead of once per request.
+const qrDataUrlPromise = QRCode.toDataURL(PLAY_STORE_URL, {
+  width: 260,
+  margin: 1,
+  errorCorrectionLevel: "H", // tolerates the center logo overlay below
+  color: { dark: "#1c1917", light: "#ffffff" },
+});
+
 export default async function AppPromoBanner() {
   const locale = await getLocale();
   const bn = locale === "bn";
-  const qrDataUrl = await QRCode.toDataURL(PLAY_STORE_URL, {
-    width: 260,
-    margin: 1,
-    errorCorrectionLevel: "H", // tolerates the center logo overlay below
-    color: { dark: "#1c1917", light: "#ffffff" },
-  });
+  const qrDataUrl = await qrDataUrlPromise;
 
   return (
     <section className="bg-background">
