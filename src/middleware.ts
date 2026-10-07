@@ -30,24 +30,43 @@ const PUBLIC_ORDER_PATH = /^\/orders\/[^/]+\/tracking\/?$/
 // Cached in-process (single Node server) so we don't hit the backend on every request.
 const MAINTENANCE_CACHE_TTL_MS = 10_000
 let maintenanceCache = { value: false, expiresAt: 0 }
+// Dedupes concurrent callers hitting the middleware in the same instant the
+// cache expires — without this, each one reads the stale expiresAt before
+// any of them finishes writing the refreshed value back, so they all fire
+// their own redundant fetch at once (same pattern as baseApi.ts's shared
+// refreshPromise for concurrent 401s).
+let inFlight: Promise<boolean> | null = null
 
 async function isMaintenanceMode(): Promise<boolean> {
   const now = Date.now()
   if (now < maintenanceCache.expiresAt) return maintenanceCache.value
+  if (inFlight) return inFlight
 
-  let value = false
+  inFlight = (async () => {
+    let value = false
+    try {
+      // Correct path is /api/settings/ (see get_site_settings in
+      // api/urls.py) — this previously pointed at /api/site-settings/,
+      // which has never existed, so this check always got a 404 instead of
+      // ever seeing a real maintenance-mode 503.
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/settings/`, {
+        cache: 'no-store',
+        signal: AbortSignal.timeout(3000),
+      })
+      value = res.status === 503
+    } catch {
+      // Backend unreachable — fail open so a network blip doesn't take down the whole site
+      value = false
+    }
+    maintenanceCache = { value, expiresAt: Date.now() + MAINTENANCE_CACHE_TTL_MS }
+    return value
+  })()
+
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/site-settings/`, {
-      cache: 'no-store',
-      signal: AbortSignal.timeout(3000),
-    })
-    value = res.status === 503
-  } catch {
-    // Backend unreachable — fail open so a network blip doesn't take down the whole site
-    value = false
+    return await inFlight
+  } finally {
+    inFlight = null
   }
-  maintenanceCache = { value, expiresAt: now + MAINTENANCE_CACHE_TTL_MS }
-  return value
 }
 
 function extractLocale(pathname: string): string {
