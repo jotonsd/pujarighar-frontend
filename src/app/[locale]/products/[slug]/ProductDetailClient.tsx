@@ -119,10 +119,15 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
   };
 
   const hasMany = images.length > 1;
-  // Auto-advancing would wander off the selected variant's photos into
-  // another variant's — only auto-slide for plain multi-image products
-  // with no variants to preserve.
-  const autoSlideEnabled = hasMany && !selection.hasVariants;
+  // Auto-advancing only conflicts with a variant pill tap when the
+  // gallery is actually DRIVEN by a variant value (visual_attribute_type,
+  // e.g. Color) — a size-only variant product has nothing for a timer to
+  // wander off into, so it should still auto-slide like any other
+  // multi-image product. Scoping this to hasVariants alone (rather than
+  // visual_attribute_type_code specifically) meant this was effectively
+  // always off, since nearly every multi-photo product now has at least a
+  // Color variant from the variant-system migration.
+  const autoSlideEnabled = hasMany && !(selection.hasVariants && product?.visual_attribute_type_code);
 
   // Auto-slide — must be before early returns
   useEffect(() => {
