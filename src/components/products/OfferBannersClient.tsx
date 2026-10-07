@@ -3,6 +3,7 @@
 import { Banner } from "@/api/banners/bannersApi";
 import { formatNumber } from "@/utils/format";
 import { useLocale } from "next-intl";
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -33,12 +34,14 @@ export default function OfferBannersClient({ banners }: { banners: Banner[] }) {
               attributes (not just CSS) let the browser reserve the correct
               box before the image loads, instead of shifting layout in
               after — omitting them is what Lighthouse flags as a CLS risk. */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <Image
             src={banner.image}
             alt={title}
-            width={banner.image_width ?? undefined}
-            height={banner.image_height ?? undefined}
+            width={banner.image_width ?? 1250}
+            height={banner.image_height ?? 115}
+            // Same cap as the hero slider — this renders at the same
+            // max-w-7xl content width, not a fixed/full-viewport size.
+            sizes="(min-width: 1280px) 1248px, calc(100vw - 32px)"
             className="w-full h-auto block"
           />
         </div>

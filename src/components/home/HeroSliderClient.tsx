@@ -37,7 +37,12 @@ export default function HeroSliderClient({ slides }: { slides: HeroSlide[] }) {
                   alt={locale === "bn" ? slide.title_bn : slide.title_en}
                   fill
                   priority={i === 0}
-                  sizes="100vw"
+                  // The hero never actually spans the full viewport — its
+                  // parent is capped at max-w-7xl (1280px) with px-4 (16px)
+                  // padding each side, so "100vw" was telling Next to fetch
+                  // a full-viewport-width image on every screen, including
+                  // desktops far wider than the hero ever renders.
+                  sizes="(min-width: 1280px) 1248px, calc(100vw - 32px)"
                   className="object-cover"
                 />
                 {(slide.title_bn || slide.title_en) && (
