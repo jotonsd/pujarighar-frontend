@@ -26,7 +26,15 @@ export interface DashboardSummary {
   total_customers: number
   total_products: number
   monthly_revenue_chart: { month: string; revenue: string; expense: string }[]
-  order_comparison_chart: { day: number; this_month: number; last_month: number }[]
+  order_comparison_chart: {
+    day: number
+    this_month: number
+    this_month_amount: string
+    last_month: number
+    last_month_amount: string
+    this_month_processing: number
+    this_month_processing_amount: string
+  }[]
   status_breakdown: { status: string; count: number }[]
   // new
   this_month_revenue: string

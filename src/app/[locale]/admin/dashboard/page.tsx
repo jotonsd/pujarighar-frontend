@@ -107,13 +107,19 @@ export default function DashboardPage() {
   const thisMonthName = now.toLocaleDateString(isBn ? "bn-BD" : "en-US", { month: "long" });
   const lastMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
   const lastMonthName = lastMonthDate.toLocaleDateString(isBn ? "bn-BD" : "en-US", { month: "long" });
+  const processingName = isBn ? "প্রসেসিং" : "Processing";
   const orderComparisonData = (data?.order_comparison_chart ?? []).map(d => ({
     day: d.day,
     [thisMonthName]: d.this_month,
+    [`${thisMonthName}__amount`]: d.this_month_amount,
     [lastMonthName]: d.last_month,
+    [`${lastMonthName}__amount`]: d.last_month_amount,
+    [processingName]: d.this_month_processing,
+    [`${processingName}__amount`]: d.this_month_processing_amount,
   }));
   const thisMonthOrderTotal = (data?.order_comparison_chart ?? []).reduce((s, d) => s + d.this_month, 0);
   const lastMonthOrderTotal = (data?.order_comparison_chart ?? []).reduce((s, d) => s + d.last_month, 0);
+  const processingOrderTotal = (data?.order_comparison_chart ?? []).reduce((s, d) => s + d.this_month_processing, 0);
 
   const statusRows = (data?.status_breakdown ?? []).filter(r => r.count > 0);
   const maxCount   = Math.max(...statusRows.map(r => r.count), 1);
@@ -338,6 +344,10 @@ export default function DashboardPage() {
               <span className="w-2 h-2 rounded-full bg-gray-400" />
               {lastMonthName}: {formatNumber(lastMonthOrderTotal, locale)}
             </span>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-sky-50 dark:bg-sky-900/30 text-sky-700 dark:text-sky-400 border border-sky-100 dark:border-sky-800">
+              <span className="w-2 h-2 rounded-full bg-sky-600" />
+              {processingName}: {formatNumber(processingOrderTotal, locale)}
+            </span>
           </div>
         </div>
         {orderComparisonData.length > 0 ? (
@@ -346,10 +356,19 @@ export default function DashboardPage() {
               <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
               <XAxis dataKey="day" tick={{ fontSize: 11, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 11, fill: "#9ca3af" }} axisLine={false} tickLine={false} allowDecimals={false} width={32} />
-              <Tooltip formatter={v => [formatNumber(Number(v ?? 0), locale)]} labelFormatter={d => (isBn ? `দিন ${formatNumber(Number(d), locale)}` : `Day ${d}`)} contentStyle={{ borderRadius: "10px", border: "1px solid #e5e7eb", fontSize: "12px" }} />
+              <Tooltip
+                formatter={(v, name, props) => {
+                  const amount = (props as { payload?: Record<string, unknown> })?.payload?.[`${name}__amount`];
+                  const amountStr = amount !== undefined ? ` (${formatAmount(amount as string, locale, 0)})` : "";
+                  return [`${formatNumber(Number(v ?? 0), locale)}${amountStr}`, name];
+                }}
+                labelFormatter={d => (isBn ? `দিন ${formatNumber(Number(d), locale)}` : `Day ${d}`)}
+                contentStyle={{ borderRadius: "10px", border: "1px solid #e5e7eb", fontSize: "12px" }}
+              />
               <Legend wrapperStyle={{ fontSize: "12px", paddingTop: "12px" }} />
               <Line type="monotone" dataKey={lastMonthName} stroke="#9ca3af" strokeWidth={2.5} strokeDasharray="6 3" dot={false} activeDot={{ r: 5 }} />
               <Line type="monotone" dataKey={thisMonthName} stroke="#d97706" strokeWidth={2.5} dot={false} activeDot={{ r: 5 }} />
+              <Line type="monotone" dataKey={processingName} stroke="#0284c7" strokeWidth={2.5} strokeDasharray="4 2" dot={false} activeDot={{ r: 5 }} />
             </LineChart>
           </ResponsiveContainer>
         ) : (
