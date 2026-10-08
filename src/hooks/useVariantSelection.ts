@@ -31,7 +31,12 @@ export interface VariantSelection {
  * VariantAttributeType row on the backend, never new UI code here.
  */
 export function useVariantSelection(product: Product | undefined): VariantSelection {
-  const variants = useMemo(() => product?.variants ?? [], [product]);
+  // Deactivated variants (e.g. a permanently-out-of-stock color the admin
+  // hid) must never be selectable, auto-picked as the default, or resolved
+  // to — otherwise a customer can land on the page with that dead variant
+  // pre-selected and see "out of stock" even though other, active variants
+  // still have real stock.
+  const variants = useMemo(() => (product?.variants ?? []).filter(v => v.is_active), [product]);
   const hasVariants = variants.length > 0;
 
   const types = useMemo<VariantTypeOption[]>(() => {
