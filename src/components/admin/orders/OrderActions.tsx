@@ -18,6 +18,7 @@ import {
   usePartialDeliverOrderMutation,
   useReturnOrderMutation,
   useWaiveDeliveryChargeMutation,
+  useRestoreDeliveryChargeMutation,
   useChangeDeliveryZoneMutation,
 } from '@/api/orders/ordersApi'
 import { useGetDeliveryPersonsQuery } from '@/api/users/usersApi'
@@ -118,6 +119,7 @@ export default function OrderActions({ order, orderId }: Props) {
   const [showReturnModal, setShowReturnModal]   = useState(false)
   const [showExchangeModal, setShowExchangeModal] = useState(false)
   const [showWaiveDeliveryModal, setShowWaiveDeliveryModal] = useState(false)
+  const [showRestoreDeliveryModal, setShowRestoreDeliveryModal] = useState(false)
   const [showZoneModal, setShowZoneModal] = useState(false)
   const [showAssignDeliveryModal, setShowAssignDeliveryModal] = useState(false)
   const [deliveryMethod, setDeliveryMethod] = useState<'internal' | 'courier'>('internal')
@@ -133,6 +135,7 @@ export default function OrderActions({ order, orderId }: Props) {
   const [markPaid, { isLoading: markingPaid }]    = useMarkCodPaidMutation()
   const [applyDiscount, { isLoading: discounting }] = useApplyDiscountMutation()
   const [waiveDelivery, { isLoading: waivingDelivery }] = useWaiveDeliveryChargeMutation()
+  const [restoreDelivery, { isLoading: restoringDelivery }] = useRestoreDeliveryChargeMutation()
   const [changeZone, { isLoading: changingZone }] = useChangeDeliveryZoneMutation()
   const [pickUp, { isLoading: pickingUp }]        = usePickUpOrderMutation()
   const [dispatch, { isLoading: dispatching }]    = useDispatchOrderMutation()
@@ -147,13 +150,14 @@ export default function OrderActions({ order, orderId }: Props) {
   const [refreshCourierStatus, { isLoading: refreshingCourier }] = useRefreshCourierStatusMutation()
 
   const loading = confirming || packing || assigning || cancelling || markingPaid || discounting
-    || pickingUp || dispatching || delivering || partiallyDelivering || returning || sendingToCourier || waivingDelivery || exchanging
+    || pickingUp || dispatching || delivering || partiallyDelivering || returning || sendingToCourier || waivingDelivery || restoringDelivery || exchanging
 
   const hasPayAction = order.payment_method === 'COD' && order.payment_status === 'UNPAID' && !['CANCELLED', 'RETURNED'].includes(order.status)
   const hasStatusAction = ['PENDING', 'CONFIRMED', 'PACKED'].includes(order.status)
   const hasCancelAction = !['ASSIGNED', 'PICKED', 'ON_THE_WAY', 'DELIVERED', 'RETURNED', 'CANCELLED'].includes(order.status)
   const hasDiscountAction = ['PENDING', 'CONFIRMED'].includes(order.status) && order.payment_status === 'UNPAID'
   const hasWaiveDeliveryAction = hasDiscountAction && Number(order.delivery_charge) > 0
+  const hasRestoreDeliveryAction = hasDiscountAction && Number(order.delivery_charge) === 0
   // Online-gateway orders carry a percentage gateway fee computed on the old total, so the server refuses those.
   const hasChangeZoneAction = hasDiscountAction && Number(order.gateway_charge_amount ?? 0) === 0
   // Admin can drive the order through every status regardless of whether a delivery
@@ -576,6 +580,27 @@ export default function OrderActions({ order, orderId }: Props) {
                 onConfirm={async () => {
                   await doAction(() => waiveDelivery({ id: orderId }).unwrap(), locale === 'bn' ? 'ডেলিভারি চার্জ মওকুফ হয়েছে' : 'Delivery charge waived')
                   setShowWaiveDeliveryModal(false)
+                }}
+              />
+            )}
+          </>
+        )}
+        {hasRestoreDeliveryAction && (
+          <>
+            <button disabled={loading} className="btn-secondary text-sm" onClick={() => setShowRestoreDeliveryModal(true)}>
+              🚚 {locale === 'bn' ? 'ডেলিভারি চার্জ যোগ করুন' : 'Add Delivery Charge'}
+            </button>
+            {showRestoreDeliveryModal && (
+              <ConfirmModal
+                title={locale === 'bn' ? 'ডেলিভারি চার্জ যোগ করবেন?' : 'Add the delivery charge?'}
+                description={locale === 'bn' ? 'এই অর্ডারের প্রকৃত ওজন ও অঞ্চল অনুযায়ী ডেলিভারি চার্জ যোগ করা হবে, ফ্রি-ডেলিভারি সীমা উপেক্ষা করে।' : "This order's actual weight and zone will be used to add a delivery charge, overriding the free-delivery threshold."}
+                confirmLabel={locale === 'bn' ? 'হ্যাঁ, যোগ করুন' : 'Yes, Add It'}
+                cancelLabel={locale === 'bn' ? 'ফিরে যান' : 'Go Back'}
+                loading={restoringDelivery}
+                onCancel={() => setShowRestoreDeliveryModal(false)}
+                onConfirm={async () => {
+                  await doAction(() => restoreDelivery({ id: orderId }).unwrap(), locale === 'bn' ? 'ডেলিভারি চার্জ যোগ হয়েছে' : 'Delivery charge added')
+                  setShowRestoreDeliveryModal(false)
                 }}
               />
             )}

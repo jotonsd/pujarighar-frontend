@@ -144,6 +144,12 @@ export const ordersApi = baseApi.injectEndpoints({
       invalidatesTags: (_r, _e, { id }) => ['Orders', { type: 'Order', id }],
     }),
 
+    restoreDeliveryCharge: build.mutation<SalesOrder, { id: string }>({
+      query: ({ id }) => ({ url: `/api/orders/${id}/restore-delivery/`, method: 'POST' }),
+      transformResponse: (res: { data: SalesOrder }) => res.data,
+      invalidatesTags: (_r, _e, { id }) => ['Orders', { type: 'Order', id }],
+    }),
+
     changeDeliveryZone: build.mutation<SalesOrder, { id: string; zone: 'inside' | 'outside' }>({
       query: ({ id, zone }) => ({ url: `/api/orders/${id}/change-delivery-zone/`, method: 'POST', body: { zone } }),
       transformResponse: (res: { data: SalesOrder }) => res.data,
@@ -233,6 +239,7 @@ export const {
   useMarkCodPaidMutation,
   useApplyDiscountMutation,
   useWaiveDeliveryChargeMutation,
+  useRestoreDeliveryChargeMutation,
   useChangeDeliveryZoneMutation,
   useCreateExchangeMutation,
   useLookupRecentOrderByPhoneQuery,
