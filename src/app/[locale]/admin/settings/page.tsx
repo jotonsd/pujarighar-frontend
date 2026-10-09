@@ -648,12 +648,14 @@ function TelegramPanel({ settings, isBn }: { settings: SiteSettings; isBn: boole
   const [form, setForm] = useState({
     telegram_bot_token: "",
     telegram_chat_id:   settings.telegram_chat_id ?? "",
+    telegram_courier_chat_id: settings.telegram_courier_chat_id ?? "",
   });
 
   useEffect(() => {
     setForm({
       telegram_bot_token: "",
       telegram_chat_id:   settings.telegram_chat_id ?? "",
+      telegram_courier_chat_id: settings.telegram_courier_chat_id ?? "",
     });
   }, [settings]);
 
@@ -668,6 +670,7 @@ function TelegramPanel({ settings, isBn }: { settings: SiteSettings; isBn: boole
       await update({
         ...(form.telegram_bot_token ? { telegram_bot_token: form.telegram_bot_token } : {}),
         telegram_chat_id: form.telegram_chat_id,
+        telegram_courier_chat_id: form.telegram_courier_chat_id,
       }).unwrap();
       toast.success(isBn ? "সংরক্ষিত হয়েছে" : "Saved");
     } catch {
@@ -715,6 +718,21 @@ function TelegramPanel({ settings, isBn }: { settings: SiteSettings; isBn: boole
           ? "কনফিগার করা থাকলে, নতুন অর্ডার, বাতিল ও ডেলিভারি হওয়া অর্ডারের নোটিফিকেশন ইমেইলের পাশাপাশি এই গ্রুপেও পাঠানো হবে।"
           : "Once configured, new-order, cancelled, and delivered notifications will be sent to this group alongside the existing admin emails."}
       </p>
+
+      <div className="pt-2 border-t border-border">
+        <FloatingInput
+          label={isBn ? "কুরিয়ার ওয়েবহুক গ্রুপ চ্যাট আইডি" : "Courier Webhook Group Chat ID"}
+          value={form.telegram_courier_chat_id}
+          onChange={f("telegram_courier_chat_id")}
+          placeholder="-1009876543210"
+        />
+        <p className="text-xs text-muted mt-1.5">
+          {isBn
+            ? "ঐচ্ছিক — একই বটকে একটি দ্বিতীয় গ্রুপে যোগ করুন এবং এখানে তার চ্যাট আইডি দিন। Pathao/Steadfast-এর প্রতিটি ওয়েবহুক ইভেন্ট (অনেক বেশি ঘন ঘন) আলাদাভাবে এই গ্রুপে পাঠানো হবে, উপরের মূল গ্রুপে নয়।"
+            : "Optional — add the same bot to a second group and enter its chat ID here. Every Pathao/Steadfast webhook event (far more frequent) goes to this group separately, not the main one above."}
+        </p>
+      </div>
+
       <button onClick={handleSave} disabled={isLoading || !form.telegram_chat_id} className="btn-primary">
         {isLoading ? (isBn ? "সংরক্ষণ হচ্ছে..." : "Saving...") : (isBn ? "সংরক্ষণ করুন" : "Save Changes")}
       </button>

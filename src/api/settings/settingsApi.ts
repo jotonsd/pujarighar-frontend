@@ -25,6 +25,7 @@ export interface SiteSettings {
   first_order_discount_percent?: string
   has_telegram_bot_token?:    boolean
   telegram_chat_id?:          string
+  telegram_courier_chat_id?:  string
   has_gemini_api_key?:        boolean
   gemini_model?:              string
   ai_ordering_enabled?:       boolean
