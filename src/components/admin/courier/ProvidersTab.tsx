@@ -58,6 +58,7 @@ function ProviderCard({ provider, isBn, locale }: { provider: CourierProvider; i
   const [password, setPassword] = useState("");
   const [storeId, setStoreId] = useState(provider.store_id ?? "");
   const [webhookVerificationSecret, setWebhookVerificationSecret] = useState(provider.webhook_verification_secret ?? "");
+  const [codFeePercent, setCodFeePercent] = useState(provider.cod_fee_percent ?? "0");
   // The webhook secret only ever comes back in plaintext once, right when
   // it's (re)generated — the list endpoint never includes it, so this has
   // to be tracked in local state rather than read off `provider` directly.
@@ -94,6 +95,7 @@ function ProviderCard({ provider, isBn, locale }: { provider: CourierProvider; i
         ...(isPathao && username ? { username } : {}),
         ...(isPathao && password ? { password } : {}),
         ...(isPathao ? { store_id: storeId, webhook_verification_secret: webhookVerificationSecret } : {}),
+        cod_fee_percent: codFeePercent,
       }).unwrap();
       toast.success(isBn ? "সংরক্ষণ হয়েছে" : "Saved");
       setApiKey("");
@@ -144,6 +146,7 @@ function ProviderCard({ provider, isBn, locale }: { provider: CourierProvider; i
           </>
         )}
         <span>{isBn ? "ওয়েবহুক: " : "Webhook: "}{provider.has_webhook_secret ? "✓" : "—"}</span>
+        <span>{isBn ? "কোড ফি: " : "COD Fee: "}{provider.cod_fee_percent && Number(provider.cod_fee_percent) > 0 ? `${provider.cod_fee_percent}%` : "—"}</span>
         {isPathao && (
           <span>{isBn ? "ভেরিফিকেশন সিক্রেট: " : "Verification secret: "}{provider.webhook_verification_secret ? "✓" : "—"}</span>
         )}
@@ -228,6 +231,13 @@ function ProviderCard({ provider, isBn, locale }: { provider: CourierProvider; i
               />
             </>
           )}
+          <FloatingInput
+            label={isBn ? "কোড সংগ্রহ ফি (%)" : "COD Collection Fee (%)"}
+            type="number"
+            value={codFeePercent}
+            onChange={e => setCodFeePercent(e.target.value)}
+            placeholder={isBn ? "যেমন Pathao ১% কেটে রাখে" : "e.g. Pathao deducts 1%"}
+          />
           <div className="flex gap-2">
             <button onClick={handleSaveKeys} disabled={isLoading} className="btn-primary flex-1">
               {isBn ? "সংরক্ষণ করুন" : "Save"}

@@ -608,6 +608,7 @@ export interface CourierProvider {
   is_active: boolean
   store_id?: string
   webhook_verification_secret?: string
+  cod_fee_percent?: string
   has_api_key: boolean
   has_secret_key: boolean
   has_webhook_secret: boolean
