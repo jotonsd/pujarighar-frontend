@@ -486,12 +486,26 @@ export default function SupportChatWidget() {
     try {
       const updated = await addItems({ product_ids: productIds, pending_order: currentPendingOrder }).unwrap();
       setSelectedProducts(prev => ({ ...prev, [messageId]: new Set() }));
+      // Name the exact products added, not a vague "added your selection" —
+      // this message also becomes part of the conversation history sent
+      // back to the AI on the next turn, and a vague confirmation left no
+      // textual record that an earlier open question (e.g. "which color?")
+      // was actually answered via checkbox, not by typing a reply. Without
+      // specifics here, the model could later resurface that same question
+      // as if it were still unresolved.
+      const addedNames = products
+        .filter((_, i) => indices.has(i))
+        .map(p => localName(p.name_bn, p.name_en, isBn))
+        .join(isBn ? ", " : ", ");
+      const text = isBn
+        ? `নিশ্চিত করা হয়েছে: ${addedNames} — এই পণ্যগুলো অর্ডারে যোগ করা হয়েছে।`
+        : `Confirmed: ${addedNames} — added to the order.`;
       setMessages(prev => [
         ...prev,
         {
           id: `${Date.now()}-m`,
           role: "model",
-          text: isBn ? "আপনার নির্বাচিত পণ্য যোগ করা হয়েছে।" : "Added your selected products.",
+          text,
           pendingOrder: updated,
           orderUpdated: true,
         },
