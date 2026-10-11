@@ -12,6 +12,7 @@ interface SupportChatRequest {
 }
 
 export interface SupportChatProduct {
+  product_id: string
   name_bn: string
   name_en: string
   price: string
@@ -61,13 +62,27 @@ interface SupportChatResult {
   order_updated: boolean
 }
 
+interface AddSupportChatItemsRequest {
+  product_ids: string[]
+  pending_order?: PendingOrder | null
+}
+
 export const supportChatApi = baseApi.injectEndpoints({
   endpoints: build => ({
     sendSupportChat: build.mutation<SupportChatResult, SupportChatRequest>({
       query: body => ({ url: '/api/support/chat/', method: 'POST', body }),
       transformResponse: (res: { data: SupportChatResult }) => res.data,
     }),
+
+    // Checkbox multi-select "Order selected" — deterministic, no AI call
+    // (see backend support_chat_service.add_order_items_by_id): the
+    // product_ids already came straight from a real search result the
+    // customer ticked, so there's nothing for a model to resolve or guess.
+    addSupportChatItems: build.mutation<PendingOrder, AddSupportChatItemsRequest>({
+      query: body => ({ url: '/api/support/chat/add-items/', method: 'POST', body }),
+      transformResponse: (res: { data: PendingOrder }) => res.data,
+    }),
   }),
 })
 
-export const { useSendSupportChatMutation } = supportChatApi
+export const { useSendSupportChatMutation, useAddSupportChatItemsMutation } = supportChatApi

@@ -6,6 +6,7 @@ import {
   PendingOrder,
   SupportChatProduct,
   SupportChatTurn,
+  useAddSupportChatItemsMutation,
   useSendSupportChatMutation,
 } from "@/api/support/supportChatApi";
 import { useSupportChatStore } from "@/store/supportChatStore";
@@ -15,10 +16,9 @@ import {
   toWhatsAppNumber,
 } from "@/utils/contact";
 import { formatAmount, localName } from "@/utils/format";
-import { CheckCircle2, Mail, Minus, Phone, RefreshCw, Send, Sparkles, User, X } from "lucide-react";
+import { Check, CheckCircle2, Mail, Minus, Phone, RefreshCw, Send, Sparkles, User, X } from "lucide-react";
 import { useLocale } from "next-intl";
 import Image from "next/image";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
@@ -48,13 +48,32 @@ function ProductResultCard({
   product,
   isBn,
   locale,
+  selected,
+  onToggle,
+  interactive,
 }: {
   product: SupportChatProduct;
   isBn: boolean;
   locale: string;
+  selected: boolean;
+  onToggle: () => void;
+  interactive: boolean;
 }) {
-  const card = (
-    <div className="flex items-center gap-2.5 p-2 hover:bg-amber-50 dark:hover:bg-amber-900/30 transition-colors">
+  const selectable = interactive && product.in_stock;
+  return (
+    <button
+      type="button"
+      onClick={() => selectable && onToggle()}
+      disabled={!selectable}
+      className="w-full flex items-center gap-2.5 p-2 text-left hover:bg-amber-50 dark:hover:bg-amber-900/30 transition-colors disabled:hover:bg-transparent disabled:opacity-60"
+    >
+      <span
+        className={`w-4 h-4 rounded border shrink-0 flex items-center justify-center transition-colors ${
+          selected ? "bg-amber-600 border-amber-600" : "border-border"
+        }`}
+      >
+        {selected && <Check className="w-3 h-3 text-white" strokeWidth={3} />}
+      </span>
       {product.image_url ? (
         <Image
           src={product.image_url}
@@ -86,14 +105,7 @@ function ProductResultCard({
           )}
         </div>
       </div>
-    </div>
-  );
-  return product.url ? (
-    <Link href={`/${locale}${product.url}`} target="_blank" className="block">
-      {card}
-    </Link>
-  ) : (
-    card
+    </button>
   );
 }
 
@@ -349,7 +361,12 @@ export default function SupportChatWidget() {
   // overwriting the stored history with [].
   const [messages, setMessages] = useState<Message[]>(loadStoredMessages);
   const [input, setInput] = useState("");
+  // Which product indices are checked in a search-results list — keyed by
+  // message id since only the most recent message's list is interactive,
+  // but older messages still need to render their (now-frozen) state.
+  const [selectedProducts, setSelectedProducts] = useState<Record<string, Set<number>>>({});
   const [sendChat, { isLoading }] = useSendSupportChatMutation();
+  const [addItems, { isLoading: addingItems }] = useAddSupportChatItemsMutation();
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const { data: siteSettings } = useGetSiteSettingsQuery();
@@ -448,6 +465,51 @@ export default function SupportChatWidget() {
     sendMessage(isBn ? "হ্যাঁ, অর্ডারটি কনফার্ম করুন।" : "Yes, please confirm the order.");
   const handleSelectCandidate = (candidate: DisambiguationCandidate) =>
     sendMessage(localName(candidate.name_bn, candidate.name_en, isBn));
+
+  const toggleProductSelection = (messageId: string, index: number) =>
+    setSelectedProducts(prev => {
+      const next = new Set(prev[messageId]);
+      if (next.has(index)) next.delete(index);
+      else next.add(index);
+      return { ...prev, [messageId]: next };
+    });
+
+  const handleOrderSelectedProducts = async (messageId: string, products: SupportChatProduct[]) => {
+    const indices = selectedProducts[messageId];
+    if (!indices || indices.size === 0 || addingItems) return;
+    const productIds = products.filter((_, i) => indices.has(i)).map(p => p.product_id);
+    // Deterministic, no AI call — resolves these exact product_ids straight
+    // from the database (see useAddSupportChatItemsMutation), so this never
+    // has the "model mis-splits the names" risk a text message would.
+    const lastModelMsg = [...messages].reverse().find(m => m.role === "model");
+    const currentPendingOrder = lastModelMsg?.pendingOrder ?? null;
+    try {
+      const updated = await addItems({ product_ids: productIds, pending_order: currentPendingOrder }).unwrap();
+      setSelectedProducts(prev => ({ ...prev, [messageId]: new Set() }));
+      setMessages(prev => [
+        ...prev,
+        {
+          id: `${Date.now()}-m`,
+          role: "model",
+          text: isBn ? "আপনার নির্বাচিত পণ্য যোগ করা হয়েছে।" : "Added your selected products.",
+          pendingOrder: updated,
+          orderUpdated: true,
+        },
+      ]);
+    } catch {
+      setMessages(prev => [
+        ...prev,
+        {
+          id: `${Date.now()}-m`,
+          role: "model",
+          isError: true,
+          text: isBn
+            ? "দুঃখিত, নির্বাচিত পণ্য যোগ করা যায়নি। আবার চেষ্টা করুন।"
+            : "Sorry, couldn't add the selected products. Please try again.",
+        },
+      ]);
+    }
+  };
 
   const contactIcons = (compact?: boolean) => (
     <div
@@ -645,8 +707,23 @@ export default function SupportChatWidget() {
                           product={p}
                           isBn={isBn}
                           locale={locale}
+                          selected={!!selectedProducts[m.id]?.has(i)}
+                          onToggle={() => toggleProductSelection(m.id, i)}
+                          interactive={m.id === messages[messages.length - 1]?.id}
                         />
                       ))}
+                      {!!selectedProducts[m.id]?.size && m.id === messages[messages.length - 1]?.id && (
+                        <button
+                          type="button"
+                          onClick={() => handleOrderSelectedProducts(m.id, m.products!)}
+                          disabled={isLoading || addingItems}
+                          className="w-full flex items-center justify-center gap-1.5 p-2.5 text-xs font-semibold text-white bg-amber-600 hover:bg-amber-700 transition-colors disabled:opacity-60"
+                        >
+                          {isBn
+                            ? `নির্বাচিত পণ্য অর্ডার করুন (${selectedProducts[m.id]?.size})`
+                            : `Order selected (${selectedProducts[m.id]?.size})`}
+                        </button>
+                      )}
                     </div>
                   )}
                   {showPendingOrder && m.pendingOrder && !m.candidates?.length && (

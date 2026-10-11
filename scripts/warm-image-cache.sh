@@ -12,7 +12,13 @@ BASE_URL="${1:?Usage: warm-image-cache.sh <base-url>}"
 # Representative pages covering the heaviest image counts: the homepage
 # (hero + several product rails) and the main shop grid.
 PAGES=("$BASE_URL/bn" "$BASE_URL/bn/products")
-CONCURRENCY=6
+# Already-cached images (persisted across deploys — see rsync's
+# --exclude='.next/cache') respond near-instantly; they don't need
+# "skipping", there's just more total images to warm as the catalog grows.
+# Higher concurrency shrinks wall-clock time regardless of hit/miss ratio.
+CONCURRENCY=20
+# Per-request cap so one slow/stuck URL can't stall the whole batch.
+REQUEST_TIMEOUT=10
 
 echo "Warming image cache against $BASE_URL ..."
 
@@ -41,6 +47,6 @@ fi
 # Request each one — bounding concurrency so this doesn't itself hammer the
 # just-restarted server.
 printf '%s\n' "${image_urls[@]}" \
-  | xargs -P "$CONCURRENCY" -I{} curl -fsSL -o /dev/null -w "  %{http_code} %{time_total}s {}\n" "$BASE_URL{}" || true
+  | xargs -P "$CONCURRENCY" -I{} curl -fsSL --max-time "$REQUEST_TIMEOUT" -o /dev/null -w "  %{http_code} %{time_total}s {}\n" "$BASE_URL{}" || true
 
 echo "Cache warm-up done."
