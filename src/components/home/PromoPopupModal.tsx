@@ -61,7 +61,7 @@ export default function PromoPopupModal() {
       onClick={handleClose}
     >
       <div
-        className="relative w-full max-w-lg"
+        className="relative w-full max-w-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <button
