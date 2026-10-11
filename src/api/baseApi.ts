@@ -107,6 +107,7 @@ export const baseApi = createApi({
     'Stock',
     'PackageItems',
     'Banners',
+    'PromoPopups',
     'HeroSlides',
     'ShippingAddresses',
     'UserAddresses',

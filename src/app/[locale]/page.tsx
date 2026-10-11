@@ -1,4 +1,5 @@
 import AppPromoBanner from "@/components/layout/AppPromoBanner";
+import PromoPopupModal from "@/components/home/PromoPopupModal";
 import HeroSlider from "@/components/home/HeroSlider";
 import HomeCategoryProducts from "@/components/home/HomeCategoryProducts";
 import HomeNewArrivals from "@/components/home/HomeNewArrivals";
@@ -96,6 +97,7 @@ export default async function HomePage({ params }: Props) {
 
   return (
     <>
+    <PromoPopupModal />
     <div className="max-w-7xl mx-auto px-4 py-6">
       {/* Hero Slider */}
       <HeroSlider />
