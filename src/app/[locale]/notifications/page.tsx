@@ -138,13 +138,11 @@ export default function NotificationsPage() {
                   <div
                     key={n.id}
                     onClick={() => handleClick(n)}
-                    className={`px-4 py-3.5 transition-colors ${!n.is_read ? "bg-amber-50/50" : ""} ${link ? "cursor-pointer hover:bg-surface-alt" : ""}`}
+                    className={`px-4 py-3.5 transition-colors ${!n.is_read ? "bg-amber-50/50 dark:bg-amber-900/20" : ""} ${link ? "cursor-pointer hover:bg-surface-alt" : ""}`}
                   >
                     <div className="flex items-start gap-2.5">
-                      {!n.is_read && (
-                        <span className="mt-1.5 w-2 h-2 rounded-full bg-amber-600 shrink-0" />
-                      )}
-                      <div className="flex-1 min-w-0" style={{ paddingLeft: n.is_read ? "10px" : "0" }}>
+                      <span className={`mt-1.5 w-2 h-2 rounded-full shrink-0 ${!n.is_read ? "bg-amber-600" : "bg-transparent"}`} />
+                      <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold text-body leading-snug">
                           {isBn ? n.title_bn : n.title_en}
                         </p>

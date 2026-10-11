@@ -68,7 +68,7 @@ export default function PromoPopupModal() {
           type="button"
           onClick={handleClose}
           aria-label={isBn ? "বন্ধ করুন" : "Close"}
-          className="absolute -top-3 -right-3 z-10 w-9 h-9 rounded-full bg-white text-body shadow-lg flex items-center justify-center hover:bg-surface-alt transition-colors"
+          className="absolute -top-3 -right-3 z-10 w-9 h-9 rounded-full bg-white text-gray-800 shadow-lg flex items-center justify-center hover:bg-gray-100 transition-colors"
         >
           <X className="w-5 h-5" />
         </button>
