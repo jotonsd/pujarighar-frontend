@@ -18,7 +18,7 @@ import {
   Users as UsersIcon, Handshake, PiggyBank, Landmark, BookOpen, NotebookPen, PlusCircle,
   Scale, ShoppingCart, FileBarChart, Undo2, CreditCard, Megaphone,
   GalleryHorizontal, Target, Mail, Star, Home, Store, FileText, Shield, ListTree, Search, ChevronRight, Calendar,
-  MessageSquare, BellRing, Ticket, Palette,
+  MessageSquare, BellRing, Ticket, Palette, LayoutTemplate,
   type LucideIcon,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
@@ -84,6 +84,7 @@ const NAV_ICONS: Record<string, LucideIcon> = {
   "credit-card": CreditCard,
   megaphone: Megaphone,
   "gallery-horizontal": GalleryHorizontal,
+  "layout-template": LayoutTemplate,
   target: Target,
   mail: Mail,
   star: Star,

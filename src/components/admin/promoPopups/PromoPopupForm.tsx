@@ -6,18 +6,10 @@ import {
   useUpdatePromoPopupMutation,
 } from "@/api/promoPopups/promoPopupsApi";
 import { FloatingInput } from "@/components/ui/forms";
+import FloatingDatePicker from "@/components/ui/forms/FloatingDatePicker";
 import { toast } from "@/store/toastStore";
 import { useLocale } from "next-intl";
 import { useRef, useState } from "react";
-
-// datetime-local inputs need "YYYY-MM-DDTHH:mm", not the ISO string with
-// seconds/timezone the API returns — same conversion both ways.
-function toLocalInput(iso: string | null): string {
-  if (!iso) return "";
-  const d = new Date(iso);
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
-}
 
 const EMPTY_FORM = {
   link: "",
@@ -40,8 +32,8 @@ export default function PromoPopupForm({ editItem, onClose }: Props) {
     editItem
       ? {
           link: editItem.link,
-          valid_from: toLocalInput(editItem.valid_from),
-          valid_until: toLocalInput(editItem.valid_until),
+          valid_from: editItem.valid_from ?? "",
+          valid_until: editItem.valid_until ?? "",
           order: editItem.order,
         }
       : { ...EMPTY_FORM },
@@ -55,7 +47,7 @@ export default function PromoPopupForm({ editItem, onClose }: Props) {
   const [updatePopup, { isLoading: updating }] = useUpdatePromoPopupMutation();
   const saving = creating || updating;
 
-  const f = (key: keyof typeof form) =>
+  const f = (key: "link" | "order") =>
     (e: React.ChangeEvent<HTMLInputElement>) =>
       setForm(p => ({ ...p, [key]: e.target.value }));
 
@@ -63,8 +55,6 @@ export default function PromoPopupForm({ editItem, onClose }: Props) {
     const fd = new FormData();
     fd.append("link", form.link);
     fd.append("order", String(form.order));
-    // datetime-local has no seconds/timezone suffix — Django's DRF
-    // DateTimeField parses this fine as naive local time.
     if (form.valid_from) fd.append("valid_from", form.valid_from);
     if (form.valid_until) fd.append("valid_until", form.valid_until);
     if (imageFile) fd.append("image", imageFile);
@@ -98,42 +88,7 @@ export default function PromoPopupForm({ editItem, onClose }: Props) {
         {editItem ? (isBn ? "পপআপ সম্পাদনা" : "Edit Popup") : (isBn ? "নতুন পপআপ" : "New Popup")}
       </h2>
 
-      <div className="grid grid-cols-3 gap-3">
-        <FloatingInput
-          label={isBn ? "লিংক (ঐচ্ছিক)" : "Link (optional)"}
-          value={form.link}
-          onChange={f("link")}
-          placeholder="/bn/products?category=..."
-        />
-        <FloatingInput
-          label={isBn ? "ক্রম" : "Order"}
-          type="number"
-          min="0"
-          value={String(form.order)}
-          onChange={f("order")}
-        />
-      </div>
-
-      <div className="grid grid-cols-2 gap-3">
-        <FloatingInput
-          label={isBn ? "শুরুর তারিখ (ঐচ্ছিক)" : "Valid from (optional)"}
-          type="datetime-local"
-          value={form.valid_from}
-          onChange={f("valid_from")}
-        />
-        <FloatingInput
-          label={isBn ? "শেষ তারিখ (ঐচ্ছিক)" : "Valid until (optional)"}
-          type="datetime-local"
-          value={form.valid_until}
-          onChange={f("valid_until")}
-        />
-      </div>
-      <p className="text-xs text-muted -mt-2">
-        {isBn
-          ? "খালি রাখলে সক্রিয় থাকা অবস্থায় সবসময় দেখাবে।"
-          : "Leave blank to show indefinitely while active."}
-      </p>
-
+      {/* Image first, its own row */}
       <div>
         <p className="text-xs text-muted mb-2">{isBn ? "ছবি *" : "Image *"}</p>
         <div className="flex items-center gap-3">
@@ -171,6 +126,46 @@ export default function PromoPopupForm({ editItem, onClose }: Props) {
           />
         </div>
       </div>
+
+      {/* Link + Order, one row */}
+      <div className="grid grid-cols-3 gap-3">
+        <FloatingInput
+          label={isBn ? "লিংক (ঐচ্ছিক)" : "Link (optional)"}
+          value={form.link}
+          onChange={f("link")}
+          placeholder="/bn/products?category=..."
+        />
+        <FloatingInput
+          label={isBn ? "ক্রম" : "Order"}
+          type="number"
+          min="0"
+          value={String(form.order)}
+          onChange={f("order")}
+        />
+      </div>
+
+      {/* Valid from/until, one row */}
+      <div className="grid grid-cols-2 gap-3">
+        <FloatingDatePicker
+          label={isBn ? "শুরুর তারিখ (ঐচ্ছিক)" : "Valid from (optional)"}
+          value={form.valid_from}
+          onChange={v => setForm(p => ({ ...p, valid_from: v }))}
+          showTimePicker
+          clearable
+        />
+        <FloatingDatePicker
+          label={isBn ? "শেষ তারিখ (ঐচ্ছিক)" : "Valid until (optional)"}
+          value={form.valid_until}
+          onChange={v => setForm(p => ({ ...p, valid_until: v }))}
+          showTimePicker
+          clearable
+        />
+      </div>
+      <p className="text-xs text-muted -mt-2">
+        {isBn
+          ? "খালি রাখলে সক্রিয় থাকা অবস্থায় সবসময় দেখাবে।"
+          : "Leave blank to show indefinitely while active."}
+      </p>
 
       <div className="flex gap-3">
         <button onClick={handleSave} disabled={saving} className="btn-primary">
