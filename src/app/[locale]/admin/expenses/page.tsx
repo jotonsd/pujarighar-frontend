@@ -63,36 +63,40 @@ export default function AddExpensePage() {
         description={isBn ? "কোম্পানির খরচ (ভাড়া, বিদ্যুৎ, বেতন ইত্যাদি) এখানে যোগ করুন" : "Record a company expense — rent, utilities, salary, etc."}
       />
 
-      <div className="card space-y-4 max-w-xl">
-        <FloatingSelect
-          label={isBn ? "খরচের ধরন" : "Expense Category"}
-          value={categoryId}
-          onChange={setCategoryId}
-          showClearButton={!!categoryId}
-          onClear={() => setCategoryId("")}
-          options={expenseAccounts.map(a => ({ value: a.id, label: isBn ? a.name_bn : a.name_en }))}
-        />
-        <FloatingSelect
-          label={isBn ? "পরিশোধের উৎস" : "Payment Source"}
-          value={paymentSourceId}
-          onChange={setPaymentSourceId}
-          showClearButton={!!paymentSourceId}
-          onClear={() => setPaymentSourceId("")}
-          options={paymentSources.map(a => ({ value: a.id, label: isBn ? a.name_bn : a.name_en }))}
-        />
-        <FloatingInput
-          label={isBn ? "পরিমাণ (৳)" : "Amount (৳)"}
-          type="number"
-          min="0"
-          value={amount}
-          onChange={e => setAmount(e.target.value)}
-        />
-        <FloatingTextarea
-          label={isBn ? "নোট (ঐচ্ছিক)" : "Note (optional)"}
-          value={note}
-          onChange={e => setNote(e.target.value)}
-          rows={2}
-        />
+      <div className="card space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FloatingSelect
+            label={isBn ? "খরচের ধরন" : "Expense Category"}
+            value={categoryId}
+            onChange={setCategoryId}
+            showClearButton={!!categoryId}
+            onClear={() => setCategoryId("")}
+            options={expenseAccounts.map(a => ({ value: a.id, label: isBn ? a.name_bn : a.name_en }))}
+          />
+          <FloatingSelect
+            label={isBn ? "পরিশোধের উৎস" : "Payment Source"}
+            value={paymentSourceId}
+            onChange={setPaymentSourceId}
+            showClearButton={!!paymentSourceId}
+            onClear={() => setPaymentSourceId("")}
+            options={paymentSources.map(a => ({ value: a.id, label: isBn ? a.name_bn : a.name_en }))}
+          />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FloatingInput
+            label={isBn ? "পরিমাণ (৳)" : "Amount (৳)"}
+            type="number"
+            min="0"
+            value={amount}
+            onChange={e => setAmount(e.target.value)}
+          />
+          <FloatingTextarea
+            label={isBn ? "নোট (ঐচ্ছিক)" : "Note (optional)"}
+            value={note}
+            onChange={e => setNote(e.target.value)}
+            rows={2}
+          />
+        </div>
         <button
           onClick={handleSubmit}
           disabled={!isValid || isLoading}

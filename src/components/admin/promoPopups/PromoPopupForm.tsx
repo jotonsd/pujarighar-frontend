@@ -127,8 +127,8 @@ export default function PromoPopupForm({ editItem, onClose }: Props) {
         </div>
       </div>
 
-      {/* Link + Order, one row */}
-      <div className="grid grid-cols-3 gap-3">
+      {/* Link, Order, Valid from, Valid until — all one row */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         <FloatingInput
           label={isBn ? "লিংক (ঐচ্ছিক)" : "Link (optional)"}
           value={form.link}
@@ -142,10 +142,6 @@ export default function PromoPopupForm({ editItem, onClose }: Props) {
           value={String(form.order)}
           onChange={f("order")}
         />
-      </div>
-
-      {/* Valid from/until, one row */}
-      <div className="grid grid-cols-2 gap-3">
         <FloatingDatePicker
           label={isBn ? "শুরুর তারিখ (ঐচ্ছিক)" : "Valid from (optional)"}
           value={form.valid_from}
