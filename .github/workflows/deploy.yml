@@ -104,16 +104,21 @@ jobs:
         # (resize + WebP encode) right after deploy, so no real visitor —
         # first one or the thousandth — ever pays that one-time encode
         # cost themselves. Launched on the SERVER itself (not the CI
-        # runner) via nohup + disown + closed stdin, so it fully detaches
-        # from this SSH session and keeps running after it closes — the
-        # CI job returns in seconds regardless of catalog size, instead of
-        # blocking on however long warming the whole site takes. Progress
-        # is logged server-side to warm-image-cache.log for later review.
+        # runner), fully detached from this SSH session so it keeps
+        # running after it closes and the CI job returns in seconds
+        # regardless of catalog size. The I/O redirect wraps the WHOLE
+        # ( ... ) group, not just the last command — redirecting only
+        # nohup's own stdout/stderr left the earlier commands (and the
+        # subshell bash wrapping the chain) still holding the SSH
+        # session's original pty open until the entire chain finished,
+        # which defeated the detach and made this step block for however
+        # long the full warm-up took (observed: ~2 minutes). Progress is
+        # logged server-side to warm-image-cache.log for later review.
         run: |
           ssh -p ${{ secrets.SSH_PORT }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
             ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} \
-            "cd ${{ env.DEPLOY_PATH }} && chmod +x scripts/warm-image-cache.sh && \
-             sleep 5 && nohup ./scripts/warm-image-cache.sh '${{ env.SITE_URL }}' \
+            "( cd ${{ env.DEPLOY_PATH }} && chmod +x scripts/warm-image-cache.sh && \
+               sleep 5 && nohup ./scripts/warm-image-cache.sh '${{ env.SITE_URL }}' ) \
              > warm-image-cache.log 2>&1 < /dev/null & disown"
 
       - name: Cleanup
