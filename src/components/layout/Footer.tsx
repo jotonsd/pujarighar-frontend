@@ -291,7 +291,7 @@ export default async function Footer() {
               href={`/${locale}/return-policy`}
               className="hover:text-amber-400 transition-colors"
             >
-              {bn ? "রিটার্ন নীতি" : "Return Policy"}
+              {bn ? "রিটার্ন ও এক্সচেঞ্জ নীতি" : "Return & Exchange Policy"}
             </Link>
             <Link
               href={`/${locale}/faq`}

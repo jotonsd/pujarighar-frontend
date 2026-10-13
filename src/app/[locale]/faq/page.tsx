@@ -46,10 +46,10 @@ const FAQS = [
     answer_en: "You can pay via Cash on Delivery (COD) or online payment/mobile banking.",
   },
   {
-    question_bn: "পণ্য কি ফেরত দেওয়া যায়?",
-    question_en: "Can I return a product?",
-    answer_bn: "ডেলিভারির পর ২৪ ঘণ্টার মধ্যে ক্ষতিগ্রস্ত, ভুল বা ত্রুটিপূর্ণ পণ্যের জন্য রিটার্ন গ্রহণ করা হয়। বিস্তারিত জানতে আমাদের রিটার্ন নীতি দেখুন।",
-    answer_en: "Returns are accepted within 24 hours of delivery for damaged, incorrect, or defective items. See our Return Policy page for details.",
+    question_bn: "পণ্য কি ফেরত বা এক্সচেঞ্জ করা যায়?",
+    question_en: "Can I return or exchange a product?",
+    answer_bn: "ডেলিভারি গ্রহণের সময়ই পণ্যটি যাচাই করে নিতে হবে — ক্ষতিগ্রস্ত, ভুল বা ত্রুটিপূর্ণ পণ্যের জন্য তখনই আমাদের জানালে রিটার্ন বা এক্সচেঞ্জ করা যাবে। বিস্তারিত জানতে আমাদের রিটার্ন ও এক্সচেঞ্জ নীতি দেখুন।",
+    answer_en: "Please inspect your order at the time of delivery — if it's damaged, incorrect, or defective, let us know right then and we'll arrange a return or exchange. See our Return & Exchange Policy page for details.",
   },
   {
     question_bn: "পূজারিঘরের পণ্যগুলো কি প্রামাণিক?",
