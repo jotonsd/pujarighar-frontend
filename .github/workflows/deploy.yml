@@ -56,6 +56,7 @@ jobs:
           cp -r .next/standalone/. deploy/
           cp -r .next/static deploy/.next/static
           if [ -d public ]; then cp -r public deploy/public; fi
+          cp -r scripts deploy/scripts
           echo "----- deploy/.next contents -----"
           ls -la deploy/.next/
 
@@ -100,14 +101,20 @@ jobs:
 
       - name: Warm image cache
         # Runs the key pages' images through Next's on-demand optimizer
-        # (resize + WebP encode) right now, as part of the deploy, so no
-        # real visitor — first one or the thousandth — ever pays that
-        # one-time encode cost themselves. `sleep 5` gives PM2 a moment to
-        # actually finish restarting before the first request hits it.
+        # (resize + WebP encode) right after deploy, so no real visitor —
+        # first one or the thousandth — ever pays that one-time encode
+        # cost themselves. Launched on the SERVER itself (not the CI
+        # runner) via nohup + disown + closed stdin, so it fully detaches
+        # from this SSH session and keeps running after it closes — the
+        # CI job returns in seconds regardless of catalog size, instead of
+        # blocking on however long warming the whole site takes. Progress
+        # is logged server-side to warm-image-cache.log for later review.
         run: |
-          sleep 5
-          chmod +x scripts/warm-image-cache.sh
-          ./scripts/warm-image-cache.sh "${{ env.SITE_URL }}"
+          ssh -p ${{ secrets.SSH_PORT }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
+            ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} \
+            "cd ${{ env.DEPLOY_PATH }} && chmod +x scripts/warm-image-cache.sh && \
+             sleep 5 && nohup ./scripts/warm-image-cache.sh '${{ env.SITE_URL }}' \
+             > warm-image-cache.log 2>&1 < /dev/null & disown"
 
       - name: Cleanup
         if: always()
