@@ -9,12 +9,23 @@
 set -euo pipefail
 
 BASE_URL="${1:?Usage: warm-image-cache.sh <base-url>}"
-# Representative pages covering the heaviest image counts: the homepage
-# (hero + several product rails) and the main shop grid.
-PAGES=("$BASE_URL/bn" "$BASE_URL/bn/products")
 CONCURRENCY=6
 
 echo "Warming image cache against $BASE_URL ..."
+
+# Homepage + shop grid first (heaviest/most-visited pages), then every real
+# product and package page from the sitemap — a visitor landing directly on
+# ANY product page (shared link, search, ad) should never be the first one
+# to trigger that page's images being resized. One locale only (bn) since
+# the images themselves are identical across locales, just the surrounding
+# text differs.
+PAGES=("$BASE_URL/bn" "$BASE_URL/bn/products")
+sitemap_urls="$(curl -fsSL "$BASE_URL/sitemap.xml" || true)"
+while IFS= read -r url; do
+  [ -n "$url" ] && PAGES+=("$url")
+done < <(grep -oE '<loc>[^<]*/bn/(products|packages)/[^<]+</loc>' <<< "$sitemap_urls" | sed -E 's#</?loc>##g')
+
+echo "Warming ${#PAGES[@]} pages (homepage, shop grid, every product/package page)."
 
 image_urls=()
 for page in "${PAGES[@]}"; do
