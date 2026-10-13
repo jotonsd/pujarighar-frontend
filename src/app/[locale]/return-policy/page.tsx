@@ -50,7 +50,7 @@ export default async function ReturnPolicyPage({ params }: Props) {
 
         {/* ── Return Policy ─────────────────────────────────────────── */}
         <div className="pt-2">
-          <h2 className="text-xl font-bold text-body mb-4 pb-2 border-b border-border">
+          <h2 className="text-xl font-bold text-green-800 mb-4 pb-2 border-b border-border">
             {isBn ? "রিটার্ন নীতি" : "Return Policy"}
           </h2>
 
@@ -90,6 +90,17 @@ export default async function ReturnPolicyPage({ params }: Props) {
 
             <section>
               <h3 className="text-lg font-semibold text-body mb-2">
+                {isBn ? "ডেলিভারি চার্জ" : "Delivery Charge"}
+              </h3>
+              <p>
+                {isBn
+                  ? "রিটার্নের ক্ষেত্রে পণ্যটি আমাদের কাছে ফেরত পাঠানোর ডেলিভারি চার্জ গ্রাহককে বহন করতে হবে।"
+                  : "For returns, the delivery charge for sending the item back to us must be covered by the customer."}
+              </p>
+            </section>
+
+            <section>
+              <h3 className="text-lg font-semibold text-body mb-2">
                 {isBn ? "রিফান্ড" : "Refunds"}
               </h3>
               <p>
@@ -103,7 +114,7 @@ export default async function ReturnPolicyPage({ params }: Props) {
 
         {/* ── Exchange Policy ───────────────────────────────────────── */}
         <div className="pt-2">
-          <h2 className="text-xl font-bold text-body mb-4 pb-2 border-b border-border">
+          <h2 className="text-xl font-bold text-green-800 mb-4 pb-2 border-b border-border">
             {isBn ? "এক্সচেঞ্জ নীতি" : "Exchange Policy"}
           </h2>
 
@@ -127,6 +138,17 @@ export default async function ReturnPolicyPage({ params }: Props) {
                 {isBn
                   ? "এক্সচেঞ্জের জন্য অর্ডার নম্বর সহ আমাদের গ্রাহক সেবার সাথে যোগাযোগ করুন। আমাদের একজন প্রতিনিধি পণ্যটি যাচাই করে পিকআপ এবং নতুন পণ্য পাঠানোর ব্যবস্থা করবেন।"
                   : "Contact our customer support with your order number to request an exchange. A representative will verify the item and arrange pickup along with sending the replacement."}
+              </p>
+            </section>
+
+            <section>
+              <h3 className="text-lg font-semibold text-body mb-2">
+                {isBn ? "ডেলিভারি চার্জ" : "Delivery Charge"}
+              </h3>
+              <p>
+                {isBn
+                  ? "এক্সচেঞ্জের ক্ষেত্রে পণ্যটি আমাদের কাছে ফেরত পাঠানোর ডেলিভারি চার্জ গ্রাহককে বহন করতে হবে।"
+                  : "For exchanges, the delivery charge for sending the item back to us must be covered by the customer."}
               </p>
             </section>
           </div>

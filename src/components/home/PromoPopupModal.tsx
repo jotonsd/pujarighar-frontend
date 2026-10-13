@@ -9,19 +9,28 @@ import { X } from "lucide-react";
 
 const SEEN_KEY_PREFIX = "promo_popup_seen_";
 
+// Local calendar date (not UTC) — "today" should match the visitor's own
+// day boundary, not a server/UTC one.
+function todayKey(): string {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
 export default function PromoPopupModal() {
   const locale = useLocale();
   const isBn = locale === "bn";
   const { data: popup } = useGetActivePromoPopupQuery();
   const [open, setOpen] = useState(false);
 
-  // Shown once per popup id, ever — tracked client-side only (no server
-  // round-trip needed), so a NEW popup the admin creates shows again even
-  // to a visitor who already dismissed a previous one.
+  // Shown on every page, once per popup per calendar day — closing it
+  // suppresses it for the rest of today, but it comes back tomorrow (and
+  // immediately for a NEW popup the admin creates, since the key is scoped
+  // to that popup's own id). Tracked client-side only (localStorage), no
+  // server round-trip needed.
   useEffect(() => {
     if (!popup) return;
     try {
-      if (!localStorage.getItem(SEEN_KEY_PREFIX + popup.id)) {
+      if (localStorage.getItem(SEEN_KEY_PREFIX + popup.id) !== todayKey()) {
         setOpen(true);
       }
     } catch {
@@ -35,7 +44,7 @@ export default function PromoPopupModal() {
     setOpen(false);
     if (popup) {
       try {
-        localStorage.setItem(SEEN_KEY_PREFIX + popup.id, "1");
+        localStorage.setItem(SEEN_KEY_PREFIX + popup.id, todayKey());
       } catch {
         // Ignore — nothing to persist, popup just shows again next visit.
       }
