@@ -10,6 +10,7 @@ export interface Discount {
   product_image: string | null
   discount_type: 'PERCENTAGE' | 'FLAT'
   discount_value: string
+  scope: 'MOBILE_APP' | 'WEBSITE' | 'BOTH'
   note: string
   is_active: boolean
   start_date: string | null
@@ -31,19 +32,19 @@ export const discountsApi = baseApi.injectEndpoints({
       providesTags: ['Discounts'],
     }),
 
-    createDiscount: build.mutation<Discount, { product: string; discount_type: string; discount_value: string; note?: string; start_date?: string | null; end_date?: string | null }>({
+    createDiscount: build.mutation<Discount, { product: string; discount_type: string; discount_value: string; scope?: string; note?: string; start_date?: string | null; end_date?: string | null }>({
       query: (body) => ({ url: '/api/discounts/create/', method: 'POST', body }),
       transformResponse: (res: { data: Discount }) => res.data,
       invalidatesTags: ['Discounts', 'Products'],
     }),
 
-    bulkCreateDiscount: build.mutation<Discount[], { product_ids: string[]; discount_type: string; discount_value: string; note?: string; start_date?: string | null; end_date?: string | null }>({
+    bulkCreateDiscount: build.mutation<Discount[], { product_ids: string[]; discount_type: string; discount_value: string; scope?: string; note?: string; start_date?: string | null; end_date?: string | null }>({
       query: (body) => ({ url: '/api/discounts/bulk-create/', method: 'POST', body }),
       transformResponse: (res: { data: Discount[] }) => res.data,
       invalidatesTags: ['Discounts', 'Products'],
     }),
 
-    updateDiscount: build.mutation<Discount, { id: string; discount_type?: string; discount_value?: string; note?: string; start_date?: string | null; end_date?: string | null }>({
+    updateDiscount: build.mutation<Discount, { id: string; discount_type?: string; discount_value?: string; scope?: string; note?: string; start_date?: string | null; end_date?: string | null }>({
       query: ({ id, ...body }) => ({ url: `/api/discounts/${id}/update/`, method: 'PATCH', body }),
       transformResponse: (res: { data: Discount }) => res.data,
       invalidatesTags: ['Discounts', 'Products'],

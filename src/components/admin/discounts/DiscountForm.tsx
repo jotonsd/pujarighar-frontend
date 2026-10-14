@@ -16,6 +16,7 @@ const EMPTY = {
   product: '',
   discount_type: 'PERCENTAGE',
   discount_value: '',
+  scope: 'BOTH',
   note: '',
   start_date: '',
   end_date: '',
@@ -159,6 +160,7 @@ export default function DiscountForm() {
           product_ids: Array.from(selectedIds),
           discount_type: form.discount_type,
           discount_value: form.discount_value,
+          scope: form.scope,
           note: form.note,
           start_date: form.start_date || null,
           end_date:   form.end_date   || null,
@@ -303,6 +305,16 @@ export default function DiscountForm() {
           value={form.discount_value}
           onChange={e => set('discount_value', e.target.value)}
         />
+
+        <FloatingSelect
+          label={isBn ? 'প্রযোজ্য মাধ্যম' : 'Applies To'}
+          value={form.scope}
+          onChange={val => set('scope', val)}
+        >
+          <option value="BOTH">{isBn ? 'অ্যাপ ও ওয়েবসাইট উভয়ই' : 'App & Website (Both)'}</option>
+          <option value="MOBILE_APP">{isBn ? 'শুধু অ্যাপ' : 'App Only'}</option>
+          <option value="WEBSITE">{isBn ? 'শুধু ওয়েবসাইট' : 'Website Only'}</option>
+        </FloatingSelect>
 
         {mode === 'single' && selectedProduct && newPrice !== null && parseFloat(form.discount_value || '0') > 0 && (
           <div className="flex items-center justify-between px-3 py-2 bg-green-50 dark:bg-green-900/30 border border-green-100 dark:border-green-800 rounded-lg text-xs">

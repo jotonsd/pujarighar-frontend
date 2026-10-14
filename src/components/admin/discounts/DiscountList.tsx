@@ -24,9 +24,16 @@ import { useState } from "react";
 type EditForm = {
   discount_type: string;
   discount_value: string;
+  scope: string;
   note: string;
   start_date: string;
   end_date: string;
+};
+
+const SCOPE_LABELS: Record<string, { bn: string; en: string }> = {
+  BOTH:       { bn: "অ্যাপ ও ওয়েবসাইট",  en: "App & Website" },
+  MOBILE_APP: { bn: "শুধু অ্যাপ",         en: "App Only" },
+  WEBSITE:    { bn: "শুধু ওয়েবসাইট",     en: "Website Only" },
 };
 
 function EditModal({
@@ -41,6 +48,7 @@ function EditModal({
   const [form, setForm] = useState<EditForm>({
     discount_type:  discount.discount_type,
     discount_value: discount.discount_value,
+    scope:          discount.scope,
     note:           discount.note,
     start_date:     discount.start_date ?? "",
     end_date:       discount.end_date   ?? "",
@@ -57,6 +65,7 @@ function EditModal({
         id:             discount.id,
         discount_type:  form.discount_type,
         discount_value: form.discount_value,
+        scope:          form.scope,
         note:           form.note,
         start_date:     form.start_date || null,
         end_date:       form.end_date   || null,
@@ -138,6 +147,16 @@ function EditModal({
               clearable
             />
           </div>
+
+          <FloatingSelect
+            label={isBn ? "প্রযোজ্য মাধ্যম" : "Applies To"}
+            value={form.scope}
+            onChange={val => set("scope", val)}
+          >
+            <option value="BOTH">{isBn ? "অ্যাপ ও ওয়েবসাইট উভয়ই" : "App & Website (Both)"}</option>
+            <option value="MOBILE_APP">{isBn ? "শুধু অ্যাপ" : "App Only"}</option>
+            <option value="WEBSITE">{isBn ? "শুধু ওয়েবসাইট" : "Website Only"}</option>
+          </FloatingSelect>
 
           <FloatingInput
             label={isBn ? "নোট (ঐচ্ছিক)" : "Note (optional)"}
@@ -234,6 +253,18 @@ export default function DiscountList() {
       ),
       exportValue: d =>
         `${d.discount_value}${d.discount_type === "PERCENTAGE" ? "%" : "৳"}`,
+    },
+    {
+      header: isBn ? "প্রযোজ্য" : "Applies To",
+      accessor: d => {
+        const label = SCOPE_LABELS[d.scope] ?? SCOPE_LABELS.BOTH;
+        return (
+          <span className="inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400">
+            {isBn ? label.bn : label.en}
+          </span>
+        );
+      },
+      exportValue: d => (SCOPE_LABELS[d.scope] ?? SCOPE_LABELS.BOTH).en,
     },
     {
       header: isBn ? "নোট" : "Note",
