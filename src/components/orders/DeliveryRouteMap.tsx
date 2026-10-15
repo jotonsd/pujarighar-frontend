@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { useTheme } from "next-themes";
 import bdMap from "@/data/bdDistrictsMap.json";
 import { DISTRICT_BN, DISTRICT_EN_BY_BN, DISTRICT_NAME_ALIASES, normalize } from "@/data/bdDistrictNames";
 
@@ -50,6 +52,16 @@ interface Props {
 export default function DeliveryRouteMap({ isBn, originDistrict, destinationDistrict, destinationThana }: Props) {
   const origin = findDistrict(originDistrict);
   const destination = findDistrict(destinationDistrict);
+
+  // next-themes' `resolvedTheme` is undefined until mounted on the client
+  // (it reads localStorage) — same mounted-guard ThemeToggle uses, so this
+  // doesn't render light-mode colors for a split second on an actual
+  // dark-mode visit before flipping.
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const isDark = mounted && resolvedTheme === "dark";
+
   if (!origin || !destination) return null;
 
   const destinationLabel = [districtLabel(destination.name, isBn), destinationThana]
@@ -57,6 +69,13 @@ export default function DeliveryRouteMap({ isBn, originDistrict, destinationDist
     .join(", ");
 
   const sameDistrict = origin.name === destination.name;
+  // Light gray (#e5e7eb) on white reads as a map; the same gray on a black
+  // page background looked washed out, so dark mode gets a darker panel
+  // fill — borders are green in both modes now, same family as the
+  // selected-district green, just lighter so it still reads against gray.
+  const unselectedFill = isDark ? "#374151" : "#e5e7eb";
+  const borderStroke = "#4ade80";
+  const borderWidth = isDark ? 0.8 : 0.6;
 
   return (
     <div className="border-t border-border pt-4">
@@ -86,9 +105,9 @@ export default function DeliveryRouteMap({ isBn, originDistrict, destinationDist
             <path
               key={d.name}
               d={d.path}
-              fill={d.name === origin.name || d.name === destination.name ? "#15803d" : "#e5e7eb"}
-              stroke="#ffffff"
-              strokeWidth={0.6}
+              fill={d.name === origin.name || d.name === destination.name ? "#15803d" : unselectedFill}
+              stroke={borderStroke}
+              strokeWidth={borderWidth}
             />
           ))}
           {bdMap.districts
