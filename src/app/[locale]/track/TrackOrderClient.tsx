@@ -1,6 +1,7 @@
 "use client";
 
 import { useTrackByOrderNumberQuery } from "@/api/orders/ordersApi";
+import { useGetSiteSettingsQuery } from "@/api/settings/settingsApi";
 import OrderProgressBar from "@/components/orders/OrderProgressBar";
 import OrderStatusBadge from "@/components/orders/OrderStatusBadge";
 import StatusTimeline from "@/components/orders/StatusTimeline";
@@ -10,6 +11,49 @@ import { formatAmount, localName } from "@/utils/format";
 import { useLocale } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { ReactNode, useState } from "react";
+
+function DeliveryRouteMap({
+  originLabel,
+  originAddress,
+  destinationLabel,
+  destinationAddress,
+  isBn,
+}: {
+  originLabel: string;
+  originAddress: string;
+  destinationLabel: string;
+  destinationAddress: string;
+  isBn: boolean;
+}) {
+  // No API key involved — this is the legacy "classic Maps" directions URL,
+  // which still renders fine inside an iframe. Addresses are free text
+  // (shop's configured address, customer's typed shipping address), so this
+  // is only ever an approximate route, not a precise live courier position.
+  const src = `https://www.google.com/maps?saddr=${encodeURIComponent(originAddress)}&daddr=${encodeURIComponent(destinationAddress)}&output=embed`;
+
+  return (
+    <div className="border-t border-border pt-4">
+      <p className="text-xs font-semibold text-muted uppercase tracking-wide mb-2">
+        {isBn ? "ডেলিভারি রুট" : "Delivery Route"}
+      </p>
+      <div className="flex items-center gap-2 text-xs text-muted mb-2">
+        <span className="truncate">📍 {originLabel}</span>
+        <span className="shrink-0">→</span>
+        <span className="truncate">🏠 {destinationLabel}</span>
+      </div>
+      <div className="rounded-xl overflow-hidden border border-border">
+        <iframe
+          src={src}
+          width="100%"
+          height="300"
+          style={{ border: 0 }}
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+        />
+      </div>
+    </div>
+  );
+}
 
 export default function TrackOrderClient({ offerBanners }: { offerBanners?: ReactNode }) {
   const locale = useLocale();
@@ -38,6 +82,7 @@ export default function TrackOrderClient({ offerBanners }: { offerBanners?: Reac
   } = useTrackByOrderNumberQuery(query ?? { order_number: "", phone: "" }, {
     skip: !query,
   });
+  const { data: settings } = useGetSiteSettingsQuery();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -218,6 +263,21 @@ export default function TrackOrderClient({ offerBanners }: { offerBanners?: Reac
                 courierTrackingUrl={order.courier_tracking_url}
               />
             </div>
+          )}
+
+          {/* Route map */}
+          {settings?.address_bn && order.status !== "CANCELLED" && order.status !== "RETURNED" && (
+            <DeliveryRouteMap
+              isBn={isBn}
+              originLabel={isBn ? settings.company_name_bn : settings.company_name_en}
+              originAddress={isBn ? settings.address_bn : settings.address_en}
+              destinationLabel={localName(order.shipping_name_bn, order.shipping_name_en, isBn)}
+              destinationAddress={[
+                order.shipping_address_bn,
+                order.shipping_thana,
+                order.shipping_district,
+              ].filter(Boolean).join(", ")}
+            />
           )}
         </div>
       )}
