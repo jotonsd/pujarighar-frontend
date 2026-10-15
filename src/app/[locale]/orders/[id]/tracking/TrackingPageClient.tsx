@@ -113,7 +113,7 @@ export default function TrackingPageClient({ id, offerBanners }: { id: string; o
             isBn={isBn}
             originDistrict={WAREHOUSE_DISTRICT}
             destinationDistrict={order.shipping_district}
-            destinationLabel={[order.shipping_district, order.shipping_thana].filter(Boolean).join(", ")}
+            destinationThana={order.shipping_thana}
           />
         )}
       </div>

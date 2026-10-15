@@ -1,24 +1,29 @@
 "use client";
 
 import bdMap from "@/data/bdDistrictsMap.json";
+import { DISTRICT_BN, DISTRICT_EN_BY_BN, DISTRICT_NAME_ALIASES, normalize } from "@/data/bdDistrictNames";
 
-// Same official-dataset-vs-our-spelling drift the /delivery-area map
-// already has to correct for (see DISTRICT_NAME_ALIASES there) — kept
-// minimal here since we only need to resolve ONE district per order, not
-// build a full bn/en directory.
-const normalize = (s: string) => s.toLowerCase().replace(/[^a-z]/g, "");
-const DISTRICT_NAME_ALIASES: Record<string, string> = {
-  chapainababganj: "chapainawabganj",
-  netrakona: "netrokona",
-  jhalokati: "jhalokathi",
-};
-
-function findDistrict(name: string) {
+function findDistrict(rawName: string) {
+  // A shipping_district typed in Bengali (very common — "ঝিনাইদহ") has no
+  // a-z characters at all, so normalize() alone reduces it to "". Resolve
+  // the Bengali name to its English spelling first in that case.
+  const name = DISTRICT_EN_BY_BN[rawName.trim()] ?? rawName;
   const key = DISTRICT_NAME_ALIASES[normalize(name)] ?? normalize(name);
+  // An empty key (unresolved Bengali text, or just garbage input) must
+  // never be treated as a match — `"".includes(x)` / `x.includes("")` are
+  // both true for every district, which previously made this silently
+  // "match" the first district in the whole list instead of finding
+  // nothing. No district name normalizes to "", so this is a safe guard.
+  if (!key) return undefined;
   return (
     bdMap.districts.find(d => normalize(d.name) === key) ??
     bdMap.districts.find(d => key.includes(normalize(d.name)) || normalize(d.name).includes(key))
   );
+}
+
+function districtLabel(name: string, isBn: boolean): string {
+  if (!isBn) return name;
+  return DISTRICT_BN[normalize(name)] ?? name;
 }
 
 // Outward arc — same curve BangladeshMap's hub routes use, just drawn for
@@ -39,13 +44,17 @@ interface Props {
   isBn: boolean;
   originDistrict: string;
   destinationDistrict: string;
-  destinationLabel: string;
+  destinationThana?: string;
 }
 
-export default function DeliveryRouteMap({ isBn, originDistrict, destinationDistrict, destinationLabel }: Props) {
+export default function DeliveryRouteMap({ isBn, originDistrict, destinationDistrict, destinationThana }: Props) {
   const origin = findDistrict(originDistrict);
   const destination = findDistrict(destinationDistrict);
   if (!origin || !destination) return null;
+
+  const destinationLabel = [districtLabel(destination.name, isBn), destinationThana]
+    .filter(Boolean)
+    .join(", ");
 
   const sameDistrict = origin.name === destination.name;
 
@@ -70,7 +79,7 @@ export default function DeliveryRouteMap({ isBn, originDistrict, destinationDist
             <path
               key={d.name}
               d={d.path}
-              fill={d.name === origin.name || d.name === destination.name ? "#fde68a" : "#e5e7eb"}
+              fill={d.name === origin.name || d.name === destination.name ? "#86efac" : "#e5e7eb"}
               stroke="#ffffff"
               strokeWidth={0.6}
             />
@@ -85,7 +94,7 @@ export default function DeliveryRouteMap({ isBn, originDistrict, destinationDist
               />
               <path
                 d={arcPath(origin.cx, origin.cy, destination.cx, destination.cy)}
-                fill="none" stroke="#b45309" strokeWidth={3} strokeLinecap="round"
+                fill="none" stroke="#15803d" strokeWidth={3} strokeLinecap="round"
               />
               <path
                 d={arcPath(origin.cx, origin.cy, destination.cx, destination.cy)}
@@ -97,7 +106,7 @@ export default function DeliveryRouteMap({ isBn, originDistrict, destinationDist
 
           {/* Origin — our warehouse */}
           <circle cx={origin.cx} cy={origin.cy} r="7" fill="#000000" opacity="0.2" filter="url(#dr-shadow)" transform="translate(1, 1.5)" />
-          <circle cx={origin.cx} cy={origin.cy} r="6" fill="#dc2626" stroke="#fff" strokeWidth="1.4" />
+          <circle cx={origin.cx} cy={origin.cy} r="6" fill="#15803d" stroke="#fff" strokeWidth="1.4" />
 
           {/* Destination — customer, with the delivery car */}
           <image
@@ -117,7 +126,7 @@ export default function DeliveryRouteMap({ isBn, originDistrict, destinationDist
                 className="fill-gray-900 font-bold pointer-events-none select-none"
                 style={{ fontSize: 11, paintOrder: "stroke", stroke: "#fff", strokeWidth: 3 }}
               >
-                {d.name}
+                {districtLabel(d.name, isBn)}
               </text>
             ))}
         </svg>
