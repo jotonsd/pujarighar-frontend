@@ -2,13 +2,13 @@
 
 import { useState } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
-import { Pencil } from 'lucide-react'
+import { Pencil, RefreshCw } from 'lucide-react'
 import { SalesOrder } from '@/lib/types'
 import CopyButton from '@/components/ui/CopyButton'
 import { FloatingInput } from '@/components/ui/forms'
 import { localName } from '@/utils/format'
 import { toast } from '@/store/toastStore'
-import { useUpdateShippingMutation } from '@/api/orders/ordersApi'
+import { useUpdateShippingMutation, useDetectShippingLocationMutation } from '@/api/orders/ordersApi'
 
 interface Props {
   order: SalesOrder
@@ -31,9 +31,33 @@ export default function OrderShipping({ order }: Props) {
   })
 
   const [updateShipping, { isLoading: saving }] = useUpdateShippingMutation()
+  const [detectLocation, { isLoading: detecting }] = useDetectShippingLocationMutation()
 
   const f = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm(p => ({ ...p, [k]: e.target.value }))
+
+  const handleDetectLocation = async () => {
+    try {
+      const { district, thana } = await detectLocation(order.id).unwrap()
+      if (!district && !thana) {
+        toast.error(isBn ? 'ঠিকানা থেকে শনাক্ত করা যায়নি' : 'Could not detect from the address')
+        return
+      }
+      const next = {
+        ...form,
+        shipping_district: district || form.shipping_district,
+        shipping_thana:    thana    || form.shipping_thana,
+      }
+      setForm(next)
+      // Saved immediately, not just filled in — "refresh" here means the
+      // order's actual District/Thana are updated, not a draft the admin
+      // still has to separately confirm with Save.
+      await updateShipping({ id: order.id, ...next }).unwrap()
+      toast.success(isBn ? 'জেলা/থানা শনাক্ত ও সংরক্ষণ হয়েছে' : 'District/Thana detected and saved')
+    } catch {
+      toast.error(isBn ? 'শনাক্ত করতে ব্যর্থ হয়েছে' : 'Detection failed')
+    }
+  }
 
   const handleSave = async () => {
     try {
@@ -85,6 +109,20 @@ export default function OrderShipping({ order }: Props) {
             value={form.shipping_address_bn}
             onChange={f('shipping_address_bn')}
           />
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-muted">
+              {isBn ? 'ঠিকানা থেকে জেলা ও থানা স্বয়ংক্রিয়ভাবে শনাক্ত করুন' : 'Auto-detect district & thana from the address'}
+            </p>
+            <button
+              type="button"
+              onClick={handleDetectLocation}
+              disabled={detecting || saving}
+              className="inline-flex items-center gap-1 text-xs text-amber-700 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-400 border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/30 hover:bg-amber-100 dark:hover:bg-amber-900/40 px-2.5 py-1 rounded-lg transition-colors disabled:opacity-60"
+            >
+              <RefreshCw className={`w-3 h-3 ${detecting ? 'animate-spin' : ''}`} />
+              {detecting ? (isBn ? 'শনাক্ত হচ্ছে...' : 'Detecting...') : (isBn ? 'রিফ্রেশ' : 'Refresh')}
+            </button>
+          </div>
           <div className="grid grid-cols-3 gap-3">
             <FloatingInput
               label={isBn ? 'জেলা' : 'District'}

@@ -177,6 +177,11 @@ export const ordersApi = baseApi.injectEndpoints({
       invalidatesTags: (_r, _e, { id }) => ['Orders', { type: 'Order', id }],
     }),
 
+    detectShippingLocation: build.mutation<{ district: string; thana: string }, string>({
+      query: id => ({ url: `/api/orders/${id}/detect-shipping-location/`, method: 'POST' }),
+      transformResponse: (res: { data: { district: string; thana: string } }) => res.data,
+    }),
+
     addOrderItem: build.mutation<SalesOrder, { id: string; product_id: string; quantity: number; variant_id?: string }>({
       query: ({ id, product_id, quantity, variant_id }) => ({ url: `/api/orders/${id}/items/add/`, method: 'POST', body: { product_id, quantity, variant_id } }),
       transformResponse: (res: { data: SalesOrder }) => res.data,
@@ -244,6 +249,7 @@ export const {
   useCreateExchangeMutation,
   useLookupRecentOrderByPhoneQuery,
   useUpdateShippingMutation,
+  useDetectShippingLocationMutation,
   useAddOrderItemMutation,
   useUpdateOrderItemQuantityMutation,
   useDeleteOrderItemMutation,
