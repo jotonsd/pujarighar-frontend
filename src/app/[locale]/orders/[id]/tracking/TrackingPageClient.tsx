@@ -1,6 +1,7 @@
 "use client";
 
 import { useGetOrderTrackingQuery } from "@/api/orders/ordersApi";
+import DeliveryRouteMap from "@/components/orders/DeliveryRouteMap";
 import OrderProgressBar from "@/components/orders/OrderProgressBar";
 import OrderStatusBadge from "@/components/orders/OrderStatusBadge";
 import StatusTimeline from "@/components/orders/StatusTimeline";
@@ -8,6 +9,10 @@ import { TrackingSkeleton } from "@/components/ui/skeletons";
 import { localName } from "@/utils/format";
 import { useLocale } from "next-intl";
 import { ReactNode } from "react";
+
+// Our warehouse — same hub every route on the /delivery-area Bangladesh
+// map is already drawn from.
+const WAREHOUSE_DISTRICT = "Dhaka";
 
 export default function TrackingPageClient({ id, offerBanners }: { id: string; offerBanners?: ReactNode }) {
   const locale = useLocale();
@@ -100,6 +105,16 @@ export default function TrackingPageClient({ id, offerBanners }: { id: string; o
               courierTrackingUrl={order.courier_tracking_url}
             />
           </div>
+        )}
+
+        {/* Route map — hidden once cancelled/returned, nothing useful to show */}
+        {order.shipping_district && order.status !== "CANCELLED" && order.status !== "RETURNED" && (
+          <DeliveryRouteMap
+            isBn={isBn}
+            originDistrict={WAREHOUSE_DISTRICT}
+            destinationDistrict={order.shipping_district}
+            destinationLabel={[order.shipping_district, order.shipping_thana].filter(Boolean).join(", ")}
+          />
         )}
       </div>
     </div>
