@@ -75,6 +75,13 @@ export default function DeliveryRouteMap({ isBn, originDistrict, destinationDist
             `}</style>
           </defs>
 
+          {/* Two passes: a later district in the array (e.g. Gazipur)
+              whose simplified polygon slightly overlaps an earlier one
+              (Dhaka) paints over it in plain array order — invisible
+              between two gray districts, but a visible notch once one of
+              them is the highlighted green. Drawing origin/destination
+              in a second pass, on top of every other district, guarantees
+              their full shape always wins that overlap. */}
           {bdMap.districts.map(d => (
             <path
               key={d.name}
@@ -84,6 +91,17 @@ export default function DeliveryRouteMap({ isBn, originDistrict, destinationDist
               strokeWidth={0.6}
             />
           ))}
+          {bdMap.districts
+            .filter(d => d.name === origin.name || d.name === destination.name)
+            .map(d => (
+              <path
+                key={`top-${d.name}`}
+                d={d.path}
+                fill="#15803d"
+                stroke="#15803d"
+                strokeWidth={0.6}
+              />
+            ))}
 
           {!sameDistrict && (
             <g>
