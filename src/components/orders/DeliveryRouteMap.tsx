@@ -69,11 +69,11 @@ export default function DeliveryRouteMap({ isBn, originDistrict, destinationDist
     .join(", ");
 
   const sameDistrict = origin.name === destination.name;
-  // Light gray (#e5e7eb) on white reads as a map; the same gray on a black
-  // page background looked washed out, so dark mode gets a darker panel
-  // fill — borders are green in both modes now, same family as the
-  // selected-district green, just lighter so it still reads against gray.
-  const unselectedFill = isDark ? "#374151" : "#e5e7eb";
+  // #e5e7eb was too close to the white card background — districts barely
+  // read as shapes at all, leaving just thin green hairlines floating on
+  // white. #cbd5e1 gives the map actual contrast in light mode; dark mode
+  // already had its own darker panel fill and stays as-is.
+  const unselectedFill = isDark ? "#374151" : "#cbd5e1";
   const borderStroke = "#4ade80";
   const borderWidth = isDark ? 0.8 : 0.6;
 
