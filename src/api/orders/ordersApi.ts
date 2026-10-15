@@ -177,9 +177,9 @@ export const ordersApi = baseApi.injectEndpoints({
       invalidatesTags: (_r, _e, { id }) => ['Orders', { type: 'Order', id }],
     }),
 
-    detectShippingLocation: build.mutation<{ district: string; thana: string }, string>({
+    detectShippingLocation: build.mutation<{ district: string; thana: string; post_code: string }, string>({
       query: id => ({ url: `/api/orders/${id}/detect-shipping-location/`, method: 'POST' }),
-      transformResponse: (res: { data: { district: string; thana: string } }) => res.data,
+      transformResponse: (res: { data: { district: string; thana: string; post_code: string } }) => res.data,
     }),
 
     addOrderItem: build.mutation<SalesOrder, { id: string; product_id: string; quantity: number; variant_id?: string }>({

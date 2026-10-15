@@ -14,6 +14,13 @@ interface Props {
   order: SalesOrder
 }
 
+// Shipping address stays editable right up through being handed off for
+// delivery (ASSIGNED — a delivery person or courier is picked, but hasn't
+// physically picked the package up yet) — locked once PICKED, since that's
+// the moment it's actually in transit and changing the destination no
+// longer reflects where the package is actually headed.
+const SHIPPING_EDITABLE_STATUSES = ['PENDING', 'CONFIRMED', 'PACKED', 'ASSIGNED']
+
 export default function OrderShipping({ order }: Props) {
   const t      = useTranslations()
   const locale = useLocale()
@@ -38,22 +45,23 @@ export default function OrderShipping({ order }: Props) {
 
   const handleDetectLocation = async () => {
     try {
-      const { district, thana } = await detectLocation(order.id).unwrap()
-      if (!district && !thana) {
+      const { district, thana, post_code } = await detectLocation(order.id).unwrap()
+      if (!district && !thana && !post_code) {
         toast.error(isBn ? 'ঠিকানা থেকে শনাক্ত করা যায়নি' : 'Could not detect from the address')
         return
       }
       const next = {
         ...form,
-        shipping_district: district || form.shipping_district,
-        shipping_thana:    thana    || form.shipping_thana,
+        shipping_district:  district  || form.shipping_district,
+        shipping_thana:     thana     || form.shipping_thana,
+        shipping_post_code: post_code || form.shipping_post_code,
       }
       setForm(next)
       // Saved immediately, not just filled in — "refresh" here means the
-      // order's actual District/Thana are updated, not a draft the admin
-      // still has to separately confirm with Save.
+      // order's actual District/Thana/Post Code are updated, not a draft
+      // the admin still has to separately confirm with Save.
       await updateShipping({ id: order.id, ...next }).unwrap()
-      toast.success(isBn ? 'জেলা/থানা শনাক্ত ও সংরক্ষণ হয়েছে' : 'District/Thana detected and saved')
+      toast.success(isBn ? 'জেলা/থানা/পোস্ট কোড শনাক্ত ও সংরক্ষণ হয়েছে' : 'District/Thana/Post Code detected and saved')
     } catch {
       toast.error(isBn ? 'শনাক্ত করতে ব্যর্থ হয়েছে' : 'Detection failed')
     }
@@ -73,7 +81,7 @@ export default function OrderShipping({ order }: Props) {
     <div className="card">
       <div className="flex items-center justify-between mb-4">
         <h2 className="font-semibold text-muted">{t('order.shipping')}</h2>
-        {!editing && !order.delivery && (
+        {!editing && SHIPPING_EDITABLE_STATUSES.includes(order.status) && (
           <button
             onClick={() => setEditing(true)}
             className="inline-flex items-center gap-1 text-xs text-amber-700 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-400 border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/30 hover:bg-amber-100 dark:hover:bg-amber-900/40 px-2.5 py-1 rounded-lg transition-colors"
@@ -111,7 +119,7 @@ export default function OrderShipping({ order }: Props) {
           />
           <div className="flex items-center justify-between">
             <p className="text-xs text-muted">
-              {isBn ? 'ঠিকানা থেকে জেলা ও থানা স্বয়ংক্রিয়ভাবে শনাক্ত করুন' : 'Auto-detect district & thana from the address'}
+              {isBn ? 'ঠিকানা থেকে জেলা, থানা ও পোস্ট কোড স্বয়ংক্রিয়ভাবে শনাক্ত করুন' : 'Auto-detect district, thana & post code from the address'}
             </p>
             <button
               type="button"
