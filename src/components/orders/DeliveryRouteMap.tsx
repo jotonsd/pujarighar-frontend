@@ -79,7 +79,7 @@ export default function DeliveryRouteMap({ isBn, originDistrict, destinationDist
             <path
               key={d.name}
               d={d.path}
-              fill={d.name === origin.name || d.name === destination.name ? "#86efac" : "#e5e7eb"}
+              fill={d.name === origin.name || d.name === destination.name ? "#15803d" : "#e5e7eb"}
               stroke="#ffffff"
               strokeWidth={0.6}
             />
@@ -123,8 +123,8 @@ export default function DeliveryRouteMap({ isBn, originDistrict, destinationDist
                 key={`label-${d.name}`}
                 x={d.cx} y={d.cy + (d.name === destination.name ? 16 : 20)}
                 textAnchor="middle"
-                className="fill-gray-900 font-bold pointer-events-none select-none"
-                style={{ fontSize: 11, paintOrder: "stroke", stroke: "#fff", strokeWidth: 3 }}
+                className="fill-white font-bold pointer-events-none select-none"
+                style={{ fontSize: 11, paintOrder: "stroke", stroke: "#14532d", strokeWidth: 3 }}
               >
                 {districtLabel(d.name, isBn)}
               </text>
