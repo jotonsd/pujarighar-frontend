@@ -248,6 +248,7 @@ export interface Product {
   original_price: string
   active_discount_type: 'PERCENTAGE' | 'FLAT' | null
   active_discount_value: string | null
+  has_free_delivery: boolean
   is_active: boolean
   badges: ProductBadge[]
   stock_on_hand: string
@@ -452,6 +453,7 @@ export interface Cart {
   discount_amount: string
   item_count: number
   weight_kg: string
+  all_free_delivery: boolean
 }
 
 // ─── Order Tracking (public) ─────────────────────────────────────────────────

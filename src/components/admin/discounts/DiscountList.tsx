@@ -9,7 +9,8 @@ import {
   useUpdateDiscountMutation,
 } from "@/api/discounts/discountsApi";
 import ToggleSwitch from "@/components/ui/forms/ToggleSwitch";
-import { FloatingInput, FloatingSelect, FloatingDatePicker } from "@/components/ui/forms";
+import { Checkbox, FloatingInput, FloatingSelect, FloatingDatePicker } from "@/components/ui/forms";
+import { Truck } from "lucide-react";
 import {
   Column,
   QuickAction,
@@ -25,6 +26,7 @@ type EditForm = {
   discount_type: string;
   discount_value: string;
   scope: string;
+  free_delivery: boolean;
   note: string;
   start_date: string;
   end_date: string;
@@ -49,6 +51,7 @@ function EditModal({
     discount_type:  discount.discount_type,
     discount_value: discount.discount_value,
     scope:          discount.scope,
+    free_delivery:  discount.free_delivery,
     note:           discount.note,
     start_date:     discount.start_date ?? "",
     end_date:       discount.end_date   ?? "",
@@ -66,6 +69,7 @@ function EditModal({
         discount_type:  form.discount_type,
         discount_value: form.discount_value,
         scope:          form.scope,
+        free_delivery:  form.free_delivery,
         note:           form.note,
         start_date:     form.start_date || null,
         end_date:       form.end_date   || null,
@@ -157,6 +161,12 @@ function EditModal({
             <option value="MOBILE_APP">{isBn ? "শুধু অ্যাপ" : "App Only"}</option>
             <option value="WEBSITE">{isBn ? "শুধু ওয়েবসাইট" : "Website Only"}</option>
           </FloatingSelect>
+
+          <Checkbox
+            checked={form.free_delivery}
+            onChange={() => setForm(f => ({ ...f, free_delivery: !f.free_delivery }))}
+            label={isBn ? "ফ্রি ডেলিভারি (এই পণ্যের ওজন ডেলিভারি চার্জে যুক্ত হবে না)" : "Free delivery (this product's weight won't count toward the delivery charge)"}
+          />
 
           <FloatingInput
             label={isBn ? "নোট (ঐচ্ছিক)" : "Note (optional)"}
@@ -259,12 +269,20 @@ export default function DiscountList() {
       accessor: d => {
         const label = SCOPE_LABELS[d.scope] ?? SCOPE_LABELS.BOTH;
         return (
-          <span className="inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400">
-            {isBn ? label.bn : label.en}
-          </span>
+          <div className="flex flex-wrap gap-1">
+            <span className="inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400">
+              {isBn ? label.bn : label.en}
+            </span>
+            {d.free_delivery && (
+              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400">
+                <Truck className="w-2.5 h-2.5" />
+                {isBn ? "ফ্রি ডেলিভারি" : "Free Delivery"}
+              </span>
+            )}
+          </div>
         );
       },
-      exportValue: d => (SCOPE_LABELS[d.scope] ?? SCOPE_LABELS.BOTH).en,
+      exportValue: d => (SCOPE_LABELS[d.scope] ?? SCOPE_LABELS.BOTH).en + (d.free_delivery ? " + Free Delivery" : ""),
     },
     {
       header: isBn ? "নোট" : "Note",

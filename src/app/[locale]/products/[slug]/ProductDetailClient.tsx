@@ -84,6 +84,7 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
         // photo (jumped to match the selected color) — not always index 0.
         image:               images[imgIdx]?.image ?? images[0]?.image,
         weight_kg:           product.weight_kg,
+        free_delivery:       product.has_free_delivery,
         variant_id:          variant?.id,
         variant_label_bn:    variant?.label_bn,
         variant_label_en:    variant?.label_en,

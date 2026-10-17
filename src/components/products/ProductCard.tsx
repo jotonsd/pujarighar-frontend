@@ -144,6 +144,7 @@ export default function ProductCard({
           package_items:       [],
           image:               resolveImageForVariant(variant),
           weight_kg:           product.weight_kg,
+          free_delivery:       product.has_free_delivery,
           variant_id:          variant?.id,
           variant_label_bn:    variant?.label_bn,
           variant_label_en:    variant?.label_en,

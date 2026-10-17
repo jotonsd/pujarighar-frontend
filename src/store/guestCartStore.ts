@@ -19,6 +19,7 @@ export interface GuestCartItem {
   package_items:       GuestCartPackageItem[]
   image?:              string
   weight_kg?:          string | null
+  free_delivery?:      boolean
   variant_id?:         string
   variant_label_bn?:   string
   variant_label_en?:   string

@@ -17,6 +17,7 @@ const EMPTY = {
   discount_type: 'PERCENTAGE',
   discount_value: '',
   scope: 'BOTH',
+  free_delivery: false,
   note: '',
   start_date: '',
   end_date: '',
@@ -161,6 +162,7 @@ export default function DiscountForm() {
           discount_type: form.discount_type,
           discount_value: form.discount_value,
           scope: form.scope,
+          free_delivery: form.free_delivery,
           note: form.note,
           start_date: form.start_date || null,
           end_date:   form.end_date   || null,
@@ -315,6 +317,12 @@ export default function DiscountForm() {
           <option value="MOBILE_APP">{isBn ? 'শুধু অ্যাপ' : 'App Only'}</option>
           <option value="WEBSITE">{isBn ? 'শুধু ওয়েবসাইট' : 'Website Only'}</option>
         </FloatingSelect>
+
+        <Checkbox
+          checked={form.free_delivery}
+          onChange={() => setForm(p => ({ ...p, free_delivery: !p.free_delivery }))}
+          label={isBn ? 'ফ্রি ডেলিভারি (এই পণ্যের ওজন ডেলিভারি চার্জে যুক্ত হবে না)' : "Free delivery (this product's weight won't count toward the delivery charge)"}
+        />
 
         {mode === 'single' && selectedProduct && newPrice !== null && parseFloat(form.discount_value || '0') > 0 && (
           <div className="flex items-center justify-between px-3 py-2 bg-green-50 dark:bg-green-900/30 border border-green-100 dark:border-green-800 rounded-lg text-xs">

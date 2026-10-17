@@ -556,14 +556,21 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
   const [deliveryZone, setDeliveryZone] = useState<"inside" | "outside">(
     "inside",
   );
-  // Approximate — sum of each product's declared weight * quantity. Server
-  // computes this for the authenticated cart; guest cart has no server round
-  // trip until checkout, so it's summed client-side from the same per-item
-  // weight_kg the product pages/cards already attach to guestAddItem.
+  // Approximate — sum of each product's declared weight * quantity, minus
+  // any free_delivery item's weight (its own weight shouldn't inflate the
+  // bracket DeliveryCharge.charge_for() looks up — see
+  // CheckoutService._chargeable_weight for the server-side equivalent).
+  // Server computes this for the authenticated cart; guest cart has no
+  // server round trip until checkout, so it's summed client-side from the
+  // same per-item weight_kg/free_delivery the product pages/cards already
+  // attach to guestAddItem.
   const cartWeightKg = isAuthenticated
     ? cart?.weight_kg ?? "0"
     : String(
-        guestItems.reduce((sum, i) => sum + (Number(i.weight_kg) || 0) * i.quantity, 0),
+        guestItems.reduce(
+          (sum, i) => sum + (i.free_delivery ? 0 : (Number(i.weight_kg) || 0) * i.quantity),
+          0,
+        ),
       );
   const { data: deliveryRates } = useGetDeliveryChargesQuery({ weight: cartWeightKg });
   // Weight-aware quote when available (matches what checkout will actually
@@ -574,11 +581,19 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
   const { data: me } = useGetMeQuery(undefined, { skip: !isAuthenticated });
   const { data: siteSettings } = useGetSiteSettingsQuery();
   const freeDeliveryThreshold = parseFloat(siteSettings?.free_delivery_min_subtotal ?? "0");
+  // A 0kg cartWeightKg above doesn't guarantee the quote comes back ৳0 —
+  // DeliveryCharge's configured tiers can have a nonzero base bracket — so
+  // "every line is free_delivery" needs its own explicit check here, same
+  // as CheckoutService._all_free_delivery server-side.
+  const allFreeDelivery = isAuthenticated
+    ? cart?.all_free_delivery ?? false
+    : guestItems.length > 0 && guestItems.every(i => i.free_delivery);
   // The actual charge for the selected zone, zeroed out once subtotal
   // clears the free-delivery threshold — mirrors CheckoutService.checkout /
   // GuestCheckoutService.checkout's identical override server-side, so this
   // pre-checkout summary matches what the order will actually be charged.
   const deliveryChargeFor = (subtotal: number): number => {
+    if (allFreeDelivery) return 0;
     const raw = parseFloat(deliveryZone === "inside" ? insideCharge : outsideCharge);
     if (freeDeliveryThreshold > 0 && subtotal >= freeDeliveryThreshold) return 0;
     return raw;
