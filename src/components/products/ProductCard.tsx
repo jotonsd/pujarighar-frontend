@@ -12,6 +12,7 @@ import VariantSelectModal from "@/components/products/VariantSelectModal";
 import { useVariantSelection } from "@/hooks/useVariantSelection";
 import { formatAmount, formatNumber, localName } from "@/utils/format";
 import { useTranslations } from "next-intl";
+import { Truck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -286,6 +287,12 @@ export default function ProductCard({
           </div>
         )} */}
         <p className="text-xs text-muted mb-2">SKU: {product.sku}</p>
+        {product.has_free_delivery && (
+          <div className="flex items-center gap-1 mb-2 text-[11px] font-semibold text-green-700 dark:text-green-400">
+            <Truck className="w-3 h-3" />
+            {locale === "bn" ? "ফ্রি ডেলিভারি" : "Free Delivery"}
+          </div>
+        )}
         <div className="flex items-center justify-between">
           <div>
             {product.active_discount_type && parseFloat(String(product.effective_price)) < parseFloat(String(product.unit_price)) ? (

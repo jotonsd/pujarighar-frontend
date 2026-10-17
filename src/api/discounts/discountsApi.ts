@@ -22,10 +22,12 @@ export interface Discount {
 export const discountsApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
 
-    getDiscounts: build.query<{ data: Discount[]; pagination: ApiMeta }, { product?: string; page?: number; page_size?: number }>({
-      query: ({ product, page = 1, page_size } = {}) => {
+    getDiscounts: build.query<{ data: Discount[]; pagination: ApiMeta }, { product?: string; category?: string; brand?: string; page?: number; page_size?: number }>({
+      query: ({ product, category, brand, page = 1, page_size } = {}) => {
         const p = new URLSearchParams({ page: String(page) })
         if (product)   p.set('product', product)
+        if (category)  p.set('category', category)
+        if (brand)     p.set('brand', brand)
         if (page_size) p.set('page_size', String(page_size))
         return `/api/discounts/?${p}`
       },

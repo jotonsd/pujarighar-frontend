@@ -10,6 +10,7 @@ import { useGetProductsQuery } from '@/api/products/productsApi'
 import { useGetCategoriesQuery } from '@/api/categories/categoriesApi'
 import { useGetBrandsQuery } from '@/api/brands/brandsApi'
 import { formatAmount } from '@/utils/format'
+import { getErrorMessage, getFieldErrors } from '@/utils/apiError'
 import { X } from 'lucide-react'
 
 const EMPTY = {
@@ -132,6 +133,7 @@ export default function DiscountForm() {
   const [mode, setMode] = useState<'single' | 'bulk'>('single')
   const [form, setForm] = useState(EMPTY)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
 
   const { data: products } = useGetProductsQuery({ page_size: 200, include_inactive: false })
   const [create, { isLoading: creating }] = useCreateDiscountMutation()
@@ -150,9 +152,24 @@ export default function DiscountForm() {
   const resetSharedFields = () =>
     setForm(p => ({ ...EMPTY, product: p.product }))
 
+  // A discount that's neither a real price cut NOR free delivery does
+  // nothing — same rule the backend enforces (DiscountSerializer.validate),
+  // checked here too so the button disables and an inline error shows
+  // immediately instead of only after a round trip.
+  const hasValidValue = !!form.discount_value && parseFloat(form.discount_value) > 0
+  const valueOrFreeDelivery = hasValidValue || form.free_delivery
+
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!form.discount_value) return
+    setFieldErrors({})
+    if (!valueOrFreeDelivery) {
+      const msg = isBn
+        ? 'শূন্যের বেশি একটি ছাড়ের পরিমাণ দিন, অথবা ফ্রি ডেলিভারি চালু করুন।'
+        : 'Enter a discount value greater than 0, or enable Free Delivery.'
+      setFieldErrors({ discount_value: msg })
+      toast.error(msg)
+      return
+    }
 
     if (mode === 'bulk') {
       if (selectedIds.size === 0) return
@@ -160,7 +177,7 @@ export default function DiscountForm() {
         const created = await bulkCreate({
           product_ids: Array.from(selectedIds),
           discount_type: form.discount_type,
-          discount_value: form.discount_value,
+          discount_value: form.discount_value || '0',
           scope: form.scope,
           free_delivery: form.free_delivery,
           note: form.note,
@@ -172,8 +189,9 @@ export default function DiscountForm() {
         toast.success(
           isBn ? `${created.length}টি পণ্যে ডিসকাউন্ট যোগ হয়েছে` : `Discount added to ${created.length} product(s)`,
         )
-      } catch {
-        toast.error(isBn ? 'ব্যর্থ হয়েছে' : 'Failed')
+      } catch (err) {
+        setFieldErrors(getFieldErrors(err))
+        toast.error(getErrorMessage(err, locale))
       }
       return
     }
@@ -182,13 +200,15 @@ export default function DiscountForm() {
     try {
       await create({
         ...form,
+        discount_value: form.discount_value || '0',
         start_date: form.start_date || null,
         end_date:   form.end_date   || null,
       }).unwrap()
       setForm(EMPTY)
       toast.success(isBn ? 'ডিসকাউন্ট যোগ হয়েছে' : 'Discount created')
-    } catch {
-      toast.error(isBn ? 'ব্যর্থ হয়েছে' : 'Failed')
+    } catch (err) {
+      setFieldErrors(getFieldErrors(err))
+      toast.error(getErrorMessage(err, locale))
     }
   }
 
@@ -206,8 +226,8 @@ export default function DiscountForm() {
   })()
 
   const submitDisabled = mode === 'single'
-    ? (creating || !form.product || !form.discount_value)
-    : (bulkCreating || selectedIds.size === 0 || !form.discount_value)
+    ? (creating || !form.product || !valueOrFreeDelivery)
+    : (bulkCreating || selectedIds.size === 0 || !valueOrFreeDelivery)
 
   return (
     <div className="card space-y-3">
@@ -303,9 +323,9 @@ export default function DiscountForm() {
           type="number"
           min="0"
           step="0.01"
-          required
           value={form.discount_value}
-          onChange={e => set('discount_value', e.target.value)}
+          onChange={e => { set('discount_value', e.target.value); setFieldErrors({}) }}
+          error={fieldErrors.discount_value}
         />
 
         <FloatingSelect
@@ -320,7 +340,7 @@ export default function DiscountForm() {
 
         <Checkbox
           checked={form.free_delivery}
-          onChange={() => setForm(p => ({ ...p, free_delivery: !p.free_delivery }))}
+          onChange={() => { setForm(p => ({ ...p, free_delivery: !p.free_delivery })); setFieldErrors({}) }}
           label={isBn ? 'ফ্রি ডেলিভারি (এই পণ্যের ওজন ডেলিভারি চার্জে যুক্ত হবে না)' : "Free delivery (this product's weight won't count toward the delivery charge)"}
         />
 

@@ -2,23 +2,21 @@
 
 import {
   Discount,
-  useBulkDeleteDiscountMutation,
   useDeleteDiscountMutation,
   useGetDiscountsQuery,
   useToggleDiscountMutation,
   useUpdateDiscountMutation,
 } from "@/api/discounts/discountsApi";
+import { useGetCategoriesQuery } from "@/api/categories/categoriesApi";
+import { useGetBrandsQuery } from "@/api/brands/brandsApi";
 import ToggleSwitch from "@/components/ui/forms/ToggleSwitch";
+import ConfirmModal from "@/components/ui/ConfirmModal";
+import Pagination from "@/components/ui/Pagination";
 import { Checkbox, FloatingInput, FloatingSelect, FloatingDatePicker } from "@/components/ui/forms";
-import { Truck } from "lucide-react";
-import {
-  Column,
-  QuickAction,
-  ReusableTable,
-} from "@/components/ui/ReusableTable";
+import { Pencil, Trash2, Truck } from "lucide-react";
 import { toast } from "@/store/toastStore";
+import { getErrorMessage, getFieldErrors } from "@/utils/apiError";
 import { formatAmount, formatDate, formatNumber } from "@/utils/format";
-import { Pencil, Trash2 } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useState } from "react";
 
@@ -57,17 +55,32 @@ function EditModal({
     end_date:       discount.end_date   ?? "",
   });
   const [update, { isLoading }] = useUpdateDiscountMutation();
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
-  const set = (key: keyof EditForm, val: string) =>
+  const set = (key: keyof EditForm, val: string) => {
     setForm(f => ({ ...f, [key]: val }));
+    setFieldErrors({});
+  };
+
+  // A discount that's neither a real price cut NOR free delivery does
+  // nothing — same rule the backend enforces (DiscountSerializer.validate).
+  const valueOrFreeDelivery = (!!form.discount_value && parseFloat(form.discount_value) > 0) || form.free_delivery;
 
   const handleSave = async () => {
-    if (!form.discount_value) return;
+    setFieldErrors({});
+    if (!valueOrFreeDelivery) {
+      const msg = isBn
+        ? "শূন্যের বেশি একটি ছাড়ের পরিমাণ দিন, অথবা ফ্রি ডেলিভারি চালু করুন।"
+        : "Enter a discount value greater than 0, or enable Free Delivery.";
+      setFieldErrors({ discount_value: msg });
+      toast.error(msg);
+      return;
+    }
     try {
       await update({
         id:             discount.id,
         discount_type:  form.discount_type,
-        discount_value: form.discount_value,
+        discount_value: form.discount_value || "0",
         scope:          form.scope,
         free_delivery:  form.free_delivery,
         note:           form.note,
@@ -76,8 +89,9 @@ function EditModal({
       }).unwrap();
       toast.success(isBn ? "আপডেট হয়েছে" : "Discount updated");
       onClose();
-    } catch {
-      toast.error(isBn ? "ব্যর্থ হয়েছে" : "Update failed");
+    } catch (err) {
+      setFieldErrors(getFieldErrors(err));
+      toast.error(getErrorMessage(err, isBn ? "bn" : "en"));
     }
   };
 
@@ -135,6 +149,7 @@ function EditModal({
               step="0.01"
               value={form.discount_value}
               onChange={e => set("discount_value", e.target.value)}
+              error={fieldErrors.discount_value}
             />
 
             <FloatingDatePicker
@@ -177,7 +192,7 @@ function EditModal({
 
         {/* Footer */}
         <div className="flex gap-3 px-6 py-4 border-t border-border">
-          <button onClick={handleSave} disabled={isLoading} className="btn-primary flex-1">
+          <button onClick={handleSave} disabled={isLoading || !valueOrFreeDelivery} className="btn-primary flex-1">
             {isLoading
               ? (isBn ? "সংরক্ষণ হচ্ছে..." : "Saving...")
               : (isBn ? "সংরক্ষণ করুন" : "Save Changes")}
@@ -191,200 +206,213 @@ function EditModal({
   );
 }
 
+function ValidityInfo({ d, locale, isBn }: { d: Discount; locale: string; isBn: boolean }) {
+  if (!d.start_date && !d.end_date) return null;
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const parseLocal = (s: string) => { const [y, m, day] = s.split("-").map(Number); return new Date(y, m - 1, day); };
+  const expired = d.end_date && parseLocal(d.end_date) < today;
+  const notStarted = d.start_date && parseLocal(d.start_date) > today;
+  return (
+    <div className="text-xs space-y-0.5">
+      {d.start_date && (
+        <p className="text-muted">
+          {isBn ? "শুরু: " : "From: "}
+          <span className="font-medium text-muted">{formatDate(d.start_date, locale)}</span>
+        </p>
+      )}
+      {d.end_date && (
+        <p className={expired ? "text-red-500 dark:text-red-400" : "text-muted"}>
+          {isBn ? "শেষ: " : "To: "}
+          <span className={`font-medium ${expired ? "text-red-700 dark:text-red-400" : "text-muted"}`}>
+            {formatDate(d.end_date, locale)}
+          </span>
+        </p>
+      )}
+      {(expired || notStarted) && (
+        <span className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold ${expired ? "bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400" : "bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400"}`}>
+          {expired
+            ? (isBn ? "মেয়াদ শেষ" : "Expired")
+            : (isBn ? "শুরু হয়নি" : "Not started")}
+        </span>
+      )}
+    </div>
+  );
+}
+
+function DiscountCard({
+  d,
+  locale,
+  isBn,
+  onToggle,
+  onEdit,
+  onDelete,
+}: {
+  d: Discount;
+  locale: string;
+  isBn: boolean;
+  onToggle: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
+}) {
+  const scopeLabel = SCOPE_LABELS[d.scope] ?? SCOPE_LABELS.BOTH;
+  return (
+    <div className="card flex flex-col gap-3">
+      <div className="flex items-start gap-2.5">
+        {d.product_image ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={d.product_image} alt="" className="w-11 h-11 object-cover rounded-md border border-border shrink-0" />
+        ) : (
+          <div className="w-11 h-11 rounded-md border border-border bg-background flex items-center justify-center text-muted text-xs shrink-0">—</div>
+        )}
+        <div className="min-w-0 flex-1">
+          <p className="font-medium text-body truncate">{isBn ? d.product_name_bn : d.product_name_en}</p>
+          <p className="text-xs text-muted font-mono">{d.product_sku}</p>
+        </div>
+        <ToggleSwitch
+          checked={d.is_active}
+          onChange={onToggle}
+          activeLabel={isBn ? "সক্রিয়" : "Active"}
+          inactiveLabel={isBn ? "নিষ্ক্রিয়" : "Inactive"}
+        />
+      </div>
+
+      <div className="flex items-center justify-between">
+        <span className="text-base font-bold text-amber-700 dark:text-amber-400">
+          {d.discount_type === "PERCENTAGE"
+            ? `${formatNumber(d.discount_value, locale)}% ${isBn ? "ছাড়" : "OFF"}`
+            : `${formatAmount(d.discount_value, locale, 0)} ${isBn ? "ছাড়" : "OFF"}`}
+        </span>
+        <div className="flex flex-wrap gap-1 justify-end">
+          <span className="inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400">
+            {isBn ? scopeLabel.bn : scopeLabel.en}
+          </span>
+          {d.free_delivery && (
+            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400">
+              <Truck className="w-2.5 h-2.5" />
+              {isBn ? "ফ্রি ডেলিভারি" : "Free Delivery"}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {d.note && <p className="text-sm text-muted">{d.note}</p>}
+
+      <ValidityInfo d={d} locale={locale} isBn={isBn} />
+
+      <div className="flex items-center justify-between pt-2 border-t border-border">
+        <span className="text-xs text-muted">{formatDate(d.created_at, locale)}</span>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={onEdit}
+            className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/40 transition-colors"
+            title={isBn ? "সম্পাদনা" : "Edit"}
+          >
+            <Pencil className="w-3.5 h-3.5" />
+          </button>
+          <button
+            onClick={onDelete}
+            className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/30 text-red-500 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors"
+            title={isBn ? "মুছুন" : "Delete"}
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function DiscountList() {
   const locale = useLocale();
   const isBn = locale === "bn";
 
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
-  const { data, isLoading, isFetching } = useGetDiscountsQuery({ page, page_size: limit });
+  const [category, setCategory] = useState("");
+  const [brand, setBrand] = useState("");
+  const { data, isLoading, isFetching } = useGetDiscountsQuery({ page, page_size: 12, category, brand });
   const discounts = data?.data ?? [];
+  const { data: categories = [] } = useGetCategoriesQuery();
+  const { data: brands = [] } = useGetBrandsQuery();
+
   const [toggle] = useToggleDiscountMutation();
   const [remove] = useDeleteDiscountMutation();
-  const [bulkRemove] = useBulkDeleteDiscountMutation();
 
   const [editTarget, setEditTarget] = useState<Discount | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Discount | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const handleToggle = async (id: string) => {
     try {
       await toggle(id).unwrap();
-    } catch {
-      toast.error("Failed");
+    } catch (err) {
+      toast.error(getErrorMessage(err, isBn ? "bn" : "en"));
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDeleteConfirm = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
     try {
-      await remove(id).unwrap();
+      await remove(deleteTarget.id).unwrap();
       toast.success(isBn ? "মুছে ফেলা হয়েছে" : "Deleted");
-    } catch {
-      toast.error("Failed");
+      setDeleteTarget(null);
+    } catch (err) {
+      toast.error(getErrorMessage(err, isBn ? "bn" : "en"));
+    } finally {
+      setDeleting(false);
     }
   };
-
-  const handleBulkDelete = async (ids: (string | number)[]) => {
-    try {
-      const { deleted } = await bulkRemove(ids as string[]).unwrap();
-      toast.success(isBn ? `${deleted}টি ডিসকাউন্ট মুছে ফেলা হয়েছে` : `${deleted} discount(s) deleted`);
-    } catch {
-      toast.error(isBn ? "ব্যর্থ হয়েছে" : "Failed");
-    }
-  };
-
-  const columns: Column<Discount>[] = [
-    {
-      header: isBn ? "পণ্য" : "Product",
-      accessor: d => (
-        <div className="flex items-center gap-2.5">
-          {d.product_image ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={d.product_image} alt="" className="w-9 h-9 object-cover rounded-md border border-border shrink-0" />
-          ) : (
-            <div className="w-9 h-9 rounded-md border border-border bg-background flex items-center justify-center text-muted text-xs shrink-0">—</div>
-          )}
-          <div>
-            <p className="font-medium text-body">
-              {isBn ? d.product_name_bn : d.product_name_en}
-            </p>
-            <p className="text-xs text-muted font-mono">{d.product_sku}</p>
-          </div>
-        </div>
-      ),
-      exportValue: d => (isBn ? d.product_name_bn : d.product_name_en),
-    },
-    {
-      header: isBn ? "ছাড়" : "Discount",
-      accessor: d => (
-        <span className="text-sm font-bold text-amber-700 dark:text-amber-400">
-          {d.discount_type === "PERCENTAGE"
-            ? `${formatNumber(d.discount_value, locale)}% ${isBn ? "ছাড়" : "OFF"}`
-            : `${formatAmount(d.discount_value, locale, 0)} ${isBn ? "ছাড়" : "OFF"}`}
-        </span>
-      ),
-      exportValue: d =>
-        `${d.discount_value}${d.discount_type === "PERCENTAGE" ? "%" : "৳"}`,
-    },
-    {
-      header: isBn ? "প্রযোজ্য" : "Applies To",
-      accessor: d => {
-        const label = SCOPE_LABELS[d.scope] ?? SCOPE_LABELS.BOTH;
-        return (
-          <div className="flex flex-wrap gap-1">
-            <span className="inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400">
-              {isBn ? label.bn : label.en}
-            </span>
-            {d.free_delivery && (
-              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400">
-                <Truck className="w-2.5 h-2.5" />
-                {isBn ? "ফ্রি ডেলিভারি" : "Free Delivery"}
-              </span>
-            )}
-          </div>
-        );
-      },
-      exportValue: d => (SCOPE_LABELS[d.scope] ?? SCOPE_LABELS.BOTH).en + (d.free_delivery ? " + Free Delivery" : ""),
-    },
-    {
-      header: isBn ? "নোট" : "Note",
-      accessor: d =>
-        d.note ? (
-          <span className="text-sm text-muted">{d.note}</span>
-        ) : (
-          <span className="text-muted">—</span>
-        ),
-      exportValue: d => d.note,
-    },
-    {
-      header: isBn ? "মেয়াদ" : "Validity",
-      accessor: d => {
-        if (!d.start_date && !d.end_date) return <span className="text-muted text-xs">—</span>;
-        const today = new Date(); today.setHours(0, 0, 0, 0);
-        const parseLocal = (s: string) => { const [y, m, day] = s.split('-').map(Number); return new Date(y, m - 1, day); };
-        const expired = d.end_date && parseLocal(d.end_date) < today;
-        const notStarted = d.start_date && parseLocal(d.start_date) > today;
-        return (
-          <div className="text-xs space-y-0.5">
-            {d.start_date && (
-              <p className="text-muted">
-                {isBn ? "শুরু: " : "From: "}
-                <span className="font-medium text-muted">{formatDate(d.start_date, locale)}</span>
-              </p>
-            )}
-            {d.end_date && (
-              <p className={expired ? "text-red-500 dark:text-red-400" : "text-muted"}>
-                {isBn ? "শেষ: " : "To: "}
-                <span className={`font-medium ${expired ? "text-red-700 dark:text-red-400" : "text-muted"}`}>
-                  {formatDate(d.end_date, locale)}
-                </span>
-              </p>
-            )}
-            {(expired || notStarted) && (
-              <span className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold ${expired ? "bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400" : "bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400"}`}>
-                {expired
-                  ? (isBn ? "মেয়াদ শেষ" : "Expired")
-                  : (isBn ? "শুরু হয়নি" : "Not started")}
-              </span>
-            )}
-          </div>
-        );
-      },
-      exportValue: d => [d.start_date, d.end_date].filter(Boolean).join(" → "),
-    },
-    {
-      header: isBn ? "তারিখ" : "Created",
-      accessor: d => (
-        <span className="text-xs text-muted">{formatDate(d.created_at, locale)}</span>
-      ),
-      exportValue: d => new Date(d.created_at).toLocaleDateString(),
-    },
-    {
-      header: isBn ? "স্ট্যাটাস" : "Status",
-      accessor: d => (
-        <ToggleSwitch
-          checked={d.is_active}
-          onChange={() => handleToggle(d.id)}
-          activeLabel={isBn ? "সক্রিয়" : "Active"}
-          inactiveLabel={isBn ? "নিষ্ক্রিয়" : "Inactive"}
-        />
-      ),
-      className: "px-4 py-3 w-36",
-    },
-  ];
-
-  const quickActions: QuickAction<Discount>[] = [
-    {
-      label: isBn ? "সম্পাদনা" : "Edit",
-      icon: <Pencil className="w-3.5 h-3.5" />,
-      onClick: d => setEditTarget(d),
-    },
-    {
-      label: isBn ? "মুছুন" : "Delete",
-      icon: <Trash2 className="w-3.5 h-3.5" />,
-      onClick: d => handleDelete(d.id),
-      className:
-        "inline-flex items-center justify-center w-8 h-8 rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/30 text-red-500 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors",
-    },
-  ];
 
   return (
-    <>
-      <ReusableTable
-        data={discounts}
-        columns={columns}
-        keyExtractor={d => d.id}
-        isLoading={isLoading || isFetching}
-        quickActions={quickActions}
-        enableSelection
-        onBulkDelete={handleBulkDelete}
-        emptyMessage={isBn ? "কোনো ডিসকাউন্ট নেই" : "No discounts yet"}
-        exportFilename="discounts"
-        totalPages={data?.pagination?.total_pages ?? 1}
-        totalRecords={data?.pagination?.total}
-        currentPage={page}
-        onPageChange={p => setPage(p)}
-        limit={limit}
-        onLimitChange={l => { setLimit(l); setPage(1); }}
-      />
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <FloatingSelect
+          label={isBn ? "কেটাগরি" : "Category"}
+          value={category}
+          onChange={val => { setCategory(val); setPage(1); }}
+          showClearButton={!!category}
+          onClear={() => { setCategory(""); setPage(1); }}
+        >
+          <option value="">{isBn ? "সব কেটাগরি" : "All categories"}</option>
+          {categories.map(c => (
+            <option key={c.id} value={c.id}>{isBn ? c.name_bn : c.name_en}</option>
+          ))}
+        </FloatingSelect>
+        <FloatingSelect
+          label={isBn ? "ব্র্যান্ড" : "Brand"}
+          value={brand}
+          onChange={val => { setBrand(val); setPage(1); }}
+          showClearButton={!!brand}
+          onClear={() => { setBrand(""); setPage(1); }}
+        >
+          <option value="">{isBn ? "সব ব্র্যান্ড" : "All brands"}</option>
+          {brands.map(b => (
+            <option key={b.id} value={b.id}>{isBn ? b.name_bn : b.name_en}</option>
+          ))}
+        </FloatingSelect>
+      </div>
+
+      {isLoading || isFetching ? (
+        <p className="text-center text-sm text-muted py-10">{isBn ? "লোড হচ্ছে..." : "Loading..."}</p>
+      ) : discounts.length === 0 ? (
+        <p className="text-center text-sm text-muted py-10">{isBn ? "কোনো ডিসকাউন্ট নেই" : "No discounts yet"}</p>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {discounts.map(d => (
+            <DiscountCard
+              key={d.id}
+              d={d}
+              locale={locale}
+              isBn={isBn}
+              onToggle={() => handleToggle(d.id)}
+              onEdit={() => setEditTarget(d)}
+              onDelete={() => setDeleteTarget(d)}
+            />
+          ))}
+        </div>
+      )}
+
+      <Pagination page={page} totalPages={data?.pagination?.total_pages ?? 1} onPageChange={setPage} />
 
       {editTarget && (
         <EditModal
@@ -393,6 +421,23 @@ export default function DiscountList() {
           onClose={() => setEditTarget(null)}
         />
       )}
-    </>
+
+      {deleteTarget && (
+        <ConfirmModal
+          icon="🗑️"
+          title={isBn ? "ডিসকাউন্ট মুছবেন?" : "Delete discount?"}
+          description={
+            isBn
+              ? `"${deleteTarget.product_name_bn}"-এর ডিসকাউন্টটি স্থায়ীভাবে মুছে ফেলা হবে। এটি পূর্বাবস্থায় ফেরানো যাবে না।`
+              : `The discount on "${deleteTarget.product_name_en}" will be permanently deleted. This cannot be undone.`
+          }
+          confirmLabel={isBn ? "মুছে ফেলুন" : "Delete"}
+          confirmClassName="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-2.5 rounded-xl transition-colors text-sm"
+          loading={deleting}
+          onConfirm={handleDeleteConfirm}
+          onCancel={() => setDeleteTarget(null)}
+        />
+      )}
+    </div>
   );
 }

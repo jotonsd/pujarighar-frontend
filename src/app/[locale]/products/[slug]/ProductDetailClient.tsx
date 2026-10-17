@@ -8,7 +8,7 @@ import RecommendedForYou from "@/components/home/RecommendedForYou";
 import VariantPillPicker from "@/components/products/VariantPillPicker";
 import { useVariantSelection } from "@/hooks/useVariantSelection";
 import Badge from "@/components/ui/Badge";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Truck } from "lucide-react";
 import { ProductDetailSkeleton } from "@/components/ui/skeletons";
 import { useAuthStore } from "@/store/authStore";
 import { useCartStore } from "@/store/cartStore";
@@ -300,6 +300,12 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
               <Badge variant="red">{t("product.outOfStock")}</Badge>
             )}
           </div>
+          {product.has_free_delivery && (
+            <div className="flex items-center gap-1.5 mb-4 text-sm font-semibold text-green-700 dark:text-green-400">
+              <Truck className="w-4 h-4" />
+              {locale === "bn" ? "ফ্রি ডেলিভারি" : "Free Delivery"}
+            </div>
+          )}
           {selection.hasVariants && (
             <div className="mb-5">
               <VariantPillPicker selection={selection} locale={locale} />
