@@ -17,6 +17,11 @@ export interface TopProduct {
   revenue: string
 }
 
+export interface DashboardSummaryParams {
+  from?: string
+  to?: string
+}
+
 export interface DashboardSummary {
   // existing
   week_orders: number
@@ -55,13 +60,21 @@ export interface DashboardSummary {
   this_month_sales_amount: string
   recent_orders: RecentOrder[]
   top_products: TopProduct[]
+  period_from: string
+  period_to: string
 }
 
 export const dashboardApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
 
-    getDashboardSummary: build.query<DashboardSummary, void>({
-      query: () => '/api/dashboard/summary/',
+    getDashboardSummary: build.query<DashboardSummary, DashboardSummaryParams | void>({
+      query: (params) => {
+        const qs = new URLSearchParams()
+        if (params?.from) qs.set('from', params.from)
+        if (params?.to) qs.set('to', params.to)
+        const suffix = qs.toString()
+        return `/api/dashboard/summary/${suffix ? `?${suffix}` : ''}`
+      },
       transformResponse: (res: { data: DashboardSummary }) => res.data,
       providesTags: ['Dashboard'],
     }),

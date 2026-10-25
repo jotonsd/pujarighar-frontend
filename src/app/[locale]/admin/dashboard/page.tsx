@@ -6,14 +6,64 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { formatAmount, formatNumber } from "@/utils/format";
 import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
+import { useMemo, useState } from "react";
 import {
   CartesianGrid, Legend, Line, LineChart,
   ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from "recharts";
 import {
   TrendingUp, TrendingDown, Minus, ShoppingBag, Wallet, Clock,
-  AlertTriangle, Users, Package, Scale, Truck, HandCoins, Landmark,
+  AlertTriangle, Users, Package, Scale, Truck, HandCoins, Landmark, CalendarRange,
 } from "lucide-react";
+
+// ─── Date-range filter ─────────────────────────────────────────────────────
+type DatePreset = "today" | "this_week" | "first_fortnight" | "last_fortnight" | "this_month" | "custom";
+
+const PRESET_ORDER: DatePreset[] = ["today", "this_week", "first_fortnight", "last_fortnight", "this_month", "custom"];
+
+const PRESET_LABELS: Record<DatePreset, { bn: string; en: string }> = {
+  today:            { bn: "আজ",              en: "Today" },
+  this_week:        { bn: "এই সপ্তাহ",        en: "This Week" },
+  first_fortnight:  { bn: "প্রথম পাক্ষিক",     en: "First Fortnight" },
+  last_fortnight:   { bn: "শেষ পাক্ষিক",       en: "Last Fortnight" },
+  this_month:       { bn: "এই মাস",           en: "This Month" },
+  custom:           { bn: "নির্দিষ্ট তারিখ",   en: "Custom Range" },
+};
+
+function fmtISO(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+// Resolves a preset to an explicit {from, to} pair in the viewer's local
+// calendar — the backend takes explicit dates only, so every preset gets
+// turned into one here rather than the server guessing what "this week"
+// means for a dropdown value it's never seen.
+function resolvePreset(preset: DatePreset, customFrom: string, customTo: string): { from: string; to: string } {
+  const now = new Date();
+  const todayISO = fmtISO(now);
+  switch (preset) {
+    case "today":
+      return { from: todayISO, to: todayISO };
+    case "this_week": {
+      // Monday-start week, matching the backend's own week bucketing.
+      const monday = new Date(now);
+      const dow = (now.getDay() + 6) % 7; // 0 = Monday
+      monday.setDate(now.getDate() - dow);
+      return { from: fmtISO(monday), to: todayISO };
+    }
+    case "first_fortnight":
+      return { from: fmtISO(new Date(now.getFullYear(), now.getMonth(), 1)), to: fmtISO(new Date(now.getFullYear(), now.getMonth(), 15)) };
+    case "last_fortnight": {
+      const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+      return { from: fmtISO(new Date(now.getFullYear(), now.getMonth(), 16)), to: fmtISO(new Date(now.getFullYear(), now.getMonth(), lastDay)) };
+    }
+    case "custom":
+      return { from: customFrom || todayISO, to: customTo || todayISO };
+    case "this_month":
+    default:
+      return { from: fmtISO(new Date(now.getFullYear(), now.getMonth(), 1)), to: todayISO };
+  }
+}
 
 // ─── Stat card definitions ────────────────────────────────────────────────────
 // Split into explicit rows (rather than one flat list) since each row now
@@ -64,7 +114,13 @@ export default function DashboardPage() {
   const t      = useTranslations("admin");
   const locale = useLocale();
   const isBn   = locale === "bn";
-  const { data, isLoading } = useGetDashboardSummaryQuery();
+
+  const [preset, setPreset]         = useState<DatePreset>("this_month");
+  const [customFrom, setCustomFrom] = useState("");
+  const [customTo, setCustomTo]     = useState("");
+  const range = useMemo(() => resolvePreset(preset, customFrom, customTo), [preset, customFrom, customTo]);
+
+  const { data, isLoading } = useGetDashboardSummaryQuery(range);
 
   if (isLoading) return (
     <div className="space-y-5">
@@ -126,6 +182,10 @@ export default function DashboardPage() {
 
   const revPct     = data?.revenue_change_pct ?? null;
   const profitVal  = parseFloat(data?.this_month_profit ?? "0");
+  // "This Month ..." card titles below should track whichever preset is
+  // selected in the date filter, not stay hardcoded to "this month" once
+  // the viewer picks Today/This Week/a fortnight/a custom range.
+  const periodLabel = isBn ? PRESET_LABELS[preset].bn : PRESET_LABELS[preset].en;
 
   const topRevenue = Math.max(...(data?.top_products ?? []).map(p => parseFloat(p.revenue)), 1);
 
@@ -167,6 +227,40 @@ export default function DashboardPage() {
         title={isBn ? "ড্যাশবোর্ড" : "Dashboard"}
         description={isBn ? "ব্যবসার সার্বিক অবস্থার সংক্ষিপ্ত চিত্র" : "Overview of your business performance"}
       />
+
+      {/* ── Date-range filter — drives the "This Month ..." stat cards below ── */}
+      <div className="flex flex-wrap items-center gap-2 bg-surface rounded-2xl border border-border shadow-sm p-3">
+        <CalendarRange className="w-4 h-4 text-muted shrink-0" />
+        <select
+          value={preset}
+          onChange={e => setPreset(e.target.value as DatePreset)}
+          className="px-3 py-2 rounded-xl border border-border text-sm bg-surface text-body focus:outline-none focus:border-amber-500"
+        >
+          {PRESET_ORDER.map(p => (
+            <option key={p} value={p}>{isBn ? PRESET_LABELS[p].bn : PRESET_LABELS[p].en}</option>
+          ))}
+        </select>
+        {preset === "custom" && (
+          <>
+            <input
+              type="date"
+              value={customFrom}
+              onChange={e => setCustomFrom(e.target.value)}
+              max={customTo || undefined}
+              className="px-3 py-2 rounded-xl border border-border text-sm bg-surface text-body focus:outline-none focus:border-amber-500"
+            />
+            <span className="text-sm text-muted">{isBn ? "থেকে" : "to"}</span>
+            <input
+              type="date"
+              value={customTo}
+              onChange={e => setCustomTo(e.target.value)}
+              min={customFrom || undefined}
+              className="px-3 py-2 rounded-xl border border-border text-sm bg-surface text-body focus:outline-none focus:border-amber-500"
+            />
+          </>
+        )}
+      </div>
+
       {/* ── Stat rows 1-3 ─────────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
         {STAT_ROW_1.map(renderStatCard)}
@@ -201,12 +295,12 @@ export default function DashboardPage() {
             <TrendingUp className="w-5 h-5 text-teal-700" strokeWidth={2} />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-xs text-white/80 mb-1">{isBn ? "এই মাসের আয়" : "This Month Revenue"}</p>
+            <p className="text-xs text-white/80 mb-1">{periodLabel} {isBn ? "আয়" : "Revenue"}</p>
             <p className="text-xl font-bold text-white leading-tight">{formatAmount(data?.this_month_revenue ?? "0", locale, 0)}</p>
             {revPct !== null && (
               <div className="flex items-center gap-1 mt-1 text-xs font-medium text-white/90">
                 {revPct > 0 ? <TrendingUp className="w-3 h-3" /> : revPct < 0 ? <TrendingDown className="w-3 h-3" /> : <Minus className="w-3 h-3" />}
-                {revPct > 0 ? "+" : ""}{formatNumber(revPct, locale)}% {isBn ? "গত মাসের তুলনায়" : "vs last month"}
+                {revPct > 0 ? "+" : ""}{formatNumber(revPct, locale)}% {isBn ? "আগের সমপরিমাণ সময়ের তুলনায়" : "vs previous period"}
               </div>
             )}
           </div>
@@ -218,7 +312,7 @@ export default function DashboardPage() {
             <TrendingDown className="w-5 h-5 text-rose-700" strokeWidth={2} />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-xs text-white/80 mb-1">{t("thisMonthExpense")}</p>
+            <p className="text-xs text-white/80 mb-1">{periodLabel} {isBn ? "খরচ" : "Expense"}</p>
             <p className="text-xl font-bold text-white leading-tight">{formatAmount(data?.this_month_expense ?? "0", locale, 0)}</p>
             <Link href={`/${locale}/admin/reports/expenses`} className="text-xs text-white/70 mt-1 hover:underline inline-block">
               {isBn ? "খরচের রিপোর্ট দেখুন" : "View expense report"}
@@ -232,7 +326,7 @@ export default function DashboardPage() {
             <Scale className={`w-5 h-5 ${profitVal >= 0 ? "text-emerald-700" : "text-red-700"}`} strokeWidth={2} />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-xs text-white/80 mb-1">{isBn ? "এই মাসের নিট লাভ" : "This Month Net Profit"}</p>
+            <p className="text-xs text-white/80 mb-1">{periodLabel} {isBn ? "নিট লাভ" : "Net Profit"}</p>
             <p className="text-xl font-bold leading-tight text-white">
               {formatAmount(data?.this_month_profit ?? "0", locale, 0)}
             </p>
