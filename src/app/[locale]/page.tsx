@@ -106,11 +106,11 @@ export default async function HomePage({ params }: Props) {
       {/* New Arrivals — products tagged 'new' */}
       <HomeNewArrivals />
 
-      {/* Offer Banners */}
-      <OfferBanners />
-
       {/* Recommended for you — personalized by view/search history */}
       <RecommendedForYou />
+
+      {/* Offer Banners */}
+      <OfferBanners />
 
       {/* Products — category-wise, top 12 by sales */}
       <HomeCategoryProducts />
