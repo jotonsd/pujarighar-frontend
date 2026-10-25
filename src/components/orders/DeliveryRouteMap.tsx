@@ -152,6 +152,25 @@ export default function DeliveryRouteMap({ isBn, originDistrict, destinationDist
             style={{ filter: "drop-shadow(0 2px 2px rgba(0,0,0,0.35))" }}
           />
 
+          {/* Every other district's name, in the theme's secondary/muted
+              text color — same hex pair globals.css defines for
+              `text-muted` (there's no Tailwind class for SVG `fill`, so it's
+              inlined here) — so the map reads as a real map instead of two
+              labelled blobs floating in unlabelled gray shapes. */}
+          {bdMap.districts
+            .filter(d => d.name !== origin.name && d.name !== destination.name)
+            .map(d => (
+              <text
+                key={`label-${d.name}`}
+                x={d.cx} y={d.cy}
+                textAnchor="middle"
+                className="pointer-events-none select-none"
+                style={{ fontSize: 7, fill: isDark ? "#a1a1aa" : "#6b7280" }}
+              >
+                {districtLabel(d.name, isBn)}
+              </text>
+            ))}
+
           {bdMap.districts
             .filter(d => d.name === origin.name || d.name === destination.name)
             .map(d => (
