@@ -34,6 +34,7 @@ import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import DeliveryPartners from "./DeliveryPartners";
 
 type PaymentMethod = "COD" | "SSLCOMMERZ" | "BKASH" | "NAGAD" | "STRIPE";
 
@@ -1186,6 +1187,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
                 >
                   {t("cart.checkout")}
                 </button>
+                <DeliveryPartners locale={locale} />
               </div>
             </div>
           </div>
@@ -1610,6 +1612,7 @@ export default function CartClient({ offerBanners }: { offerBanners?: import("re
             >
               {t("cart.placeOrder")}
             </button>
+            <DeliveryPartners locale={locale} />
           </form>
         </div>
       )}

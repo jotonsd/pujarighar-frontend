@@ -1,5 +1,5 @@
 import { baseApi } from '@/api/baseApi'
-import { CourierConsignment, CourierProvider, CourierReturnRequest } from '@/lib/types'
+import { CourierConsignment, CourierProvider, CourierReturnRequest, DeliveryPartner } from '@/lib/types'
 
 interface ApiMetaLike { page: number; page_size: number; total: number; total_pages: number }
 interface ConsignmentListResponse { data: CourierConsignment[]; pagination: ApiMetaLike }
@@ -16,19 +16,42 @@ export const courierApi = baseApi.injectEndpoints({
     createCourierProvider: build.mutation<CourierProvider, Partial<CourierProvider> & { api_key?: string; secret_key?: string; username?: string; password?: string }>({
       query: body => ({ url: '/api/courier/providers/', method: 'POST', body }),
       transformResponse: (res: { data: CourierProvider }) => res.data,
-      invalidatesTags: ['CourierProviders'],
+      invalidatesTags: ['CourierProviders', 'DeliveryPartners'],
     }),
 
     updateCourierProvider: build.mutation<CourierProvider, { id: number } & Partial<CourierProvider> & { api_key?: string; secret_key?: string; username?: string; password?: string }>({
       query: ({ id, ...body }) => ({ url: `/api/courier/providers/${id}/update/`, method: 'PATCH', body }),
       transformResponse: (res: { data: CourierProvider }) => res.data,
-      invalidatesTags: ['CourierProviders'],
+      invalidatesTags: ['CourierProviders', 'DeliveryPartners'],
     }),
 
     regenerateWebhookSecret: build.mutation<CourierProvider, number>({
       query: id => ({ url: `/api/courier/providers/${id}/regenerate-webhook-secret/`, method: 'POST' }),
       transformResponse: (res: { data: CourierProvider }) => res.data,
       invalidatesTags: ['CourierProviders'],
+    }),
+
+    uploadCourierProviderLogo: build.mutation<CourierProvider, { id: number; file: File }>({
+      query: ({ id, file }) => {
+        const fd = new FormData()
+        fd.append('logo', file)
+        return { url: `/api/courier/providers/${id}/logo/`, method: 'POST', body: fd }
+      },
+      transformResponse: (res: { data: CourierProvider }) => res.data,
+      invalidatesTags: ['CourierProviders', 'DeliveryPartners'],
+    }),
+
+    removeCourierProviderLogo: build.mutation<CourierProvider, number>({
+      query: id => ({ url: `/api/courier/providers/${id}/logo/`, method: 'DELETE' }),
+      transformResponse: (res: { data: CourierProvider }) => res.data,
+      invalidatesTags: ['CourierProviders', 'DeliveryPartners'],
+    }),
+
+    // Public — active couriers shown at checkout
+    getDeliveryPartners: build.query<DeliveryPartner[], void>({
+      query: () => '/api/courier/delivery-partners/',
+      transformResponse: (res: { data: DeliveryPartner[] }) => res.data,
+      providesTags: ['DeliveryPartners'],
     }),
 
     getCourierProviderBalance: build.query<{ current_balance: number }, number>({
@@ -91,6 +114,9 @@ export const {
   useCreateCourierProviderMutation,
   useUpdateCourierProviderMutation,
   useRegenerateWebhookSecretMutation,
+  useUploadCourierProviderLogoMutation,
+  useRemoveCourierProviderLogoMutation,
+  useGetDeliveryPartnersQuery,
   useGetCourierProviderBalanceQuery,
   useGetCourierConsignmentsQuery,
   useGetCourierConsignmentQuery,

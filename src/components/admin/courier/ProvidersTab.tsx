@@ -5,15 +5,74 @@ import {
   useGetCourierProviderBalanceQuery,
   useGetCourierProvidersQuery,
   useRegenerateWebhookSecretMutation,
+  useRemoveCourierProviderLogoMutation,
   useUpdateCourierProviderMutation,
+  useUploadCourierProviderLogoMutation,
 } from "@/api/courier/courierApi";
 import { FloatingInput, FloatingSelect } from "@/components/ui/forms";
 import ToggleSwitch from "@/components/ui/forms/ToggleSwitch";
 import { CourierProvider } from "@/lib/types";
 import { toast } from "@/store/toastStore";
 import { formatAmount } from "@/utils/format";
-import { Check, Copy } from "lucide-react";
-import { useState } from "react";
+import { Check, Copy, ImagePlus, X } from "lucide-react";
+import { useRef, useState } from "react";
+
+// Logo shown to customers at checkout ("our delivery partners") — click to
+// upload/change, same pattern as the payment method logos in settings.
+function ProviderLogo({ provider, isBn }: { provider: CourierProvider; isBn: boolean }) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [uploadLogo, { isLoading: uploading }] = useUploadCourierProviderLogoMutation();
+  const [removeLogo, { isLoading: removing }] = useRemoveCourierProviderLogoMutation();
+
+  const handlePick = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    try {
+      await uploadLogo({ id: provider.id, file }).unwrap();
+      toast.success(isBn ? "লোগো আপলোড হয়েছে" : "Logo uploaded");
+    } catch {
+      toast.error(isBn ? "আপলোড ব্যর্থ হয়েছে" : "Upload failed");
+    }
+  };
+
+  const handleRemove = async () => {
+    try {
+      await removeLogo(provider.id).unwrap();
+      toast.success(isBn ? "লোগো সরানো হয়েছে" : "Logo removed");
+    } catch {
+      toast.error(isBn ? "ব্যর্থ হয়েছে" : "Failed to remove");
+    }
+  };
+
+  return (
+    <div className="relative shrink-0 group">
+      <button
+        type="button"
+        onClick={() => inputRef.current?.click()}
+        disabled={uploading || removing}
+        title={isBn ? "লোগো পরিবর্তন করুন" : "Change logo"}
+        className="w-14 h-14 rounded-lg border border-border bg-surface flex items-center justify-center overflow-hidden hover:border-amber-300 transition-colors disabled:opacity-60"
+      >
+        {provider.logo
+          ? <img src={provider.logo} alt={provider.name} className="w-full h-full object-contain p-1" />
+          : <ImagePlus className="w-5 h-5 text-muted" />}
+        <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={handlePick} />
+      </button>
+      {provider.logo && (
+        <button
+          type="button"
+          onClick={handleRemove}
+          disabled={uploading || removing}
+          title={isBn ? "লোগো সরান" : "Remove logo"}
+          className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity"
+        >
+          <X className="w-3 h-3" />
+        </button>
+      )}
+    </div>
+  );
+}
 
 function CopyButton({ value, isBn }: { value: string; isBn: boolean }) {
   const [copied, setCopied] = useState(false);
@@ -110,10 +169,18 @@ function ProviderCard({ provider, isBn, locale }: { provider: CourierProvider; i
 
   return (
     <div className="card space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h3 className="font-bold text-body">{provider.name}</h3>
-          <p className="text-xs text-muted font-mono">{provider.code} · {provider.base_url}</p>
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3 min-w-0">
+          <ProviderLogo provider={provider} isBn={isBn} />
+          <div className="min-w-0">
+            <h3 className="font-bold text-body">{provider.name}</h3>
+            <p className="text-xs text-muted font-mono truncate">{provider.code} · {provider.base_url}</p>
+            {!provider.logo && (
+              <p className="text-[11px] text-muted mt-0.5">
+                {isBn ? "চেকআউটে দেখানোর জন্য লোগো যোগ করুন" : "Add a logo to show at checkout"}
+              </p>
+            )}
+          </div>
         </div>
         <ToggleSwitch
           checked={provider.is_active}

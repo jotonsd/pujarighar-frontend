@@ -127,6 +127,7 @@ export const baseApi = createApi({
     'GoogleAnalytics',
     'GooglePagespeed',
     'CourierProviders',
+    'DeliveryPartners',
     'CourierConsignments',
     'CourierReturnRequests',
     'BlogPosts',

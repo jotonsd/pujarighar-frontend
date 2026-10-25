@@ -616,7 +616,16 @@ export interface CourierProvider {
   has_webhook_secret: boolean
   has_username: boolean
   has_password: boolean
+  logo: string | null
   webhook_secret?: string // present only right after creation
+}
+
+// Public, checkout-facing view of an active courier provider
+export interface DeliveryPartner {
+  id: number
+  code: string
+  name: string
+  logo: string | null
 }
 
 export interface CourierTrackingEvent {

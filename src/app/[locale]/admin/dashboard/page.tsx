@@ -17,18 +17,32 @@ import {
 } from "lucide-react";
 
 // ─── Date-range filter ─────────────────────────────────────────────────────
-type DatePreset = "today" | "this_week" | "first_fortnight" | "last_fortnight" | "this_month" | "custom";
+type DatePreset =
+  | "today" | "yesterday" | "last_7_days" | "first_fortnight" | "second_fortnight"
+  | "this_month" | "last_month" | "last_3_months" | "all" | "custom";
 
-const PRESET_ORDER: DatePreset[] = ["today", "this_week", "first_fortnight", "last_fortnight", "this_month", "custom"];
+const PRESET_ORDER: DatePreset[] = [
+  "today", "yesterday", "last_7_days", "first_fortnight", "second_fortnight",
+  "this_month", "last_month", "last_3_months", "all", "custom",
+];
 
 const PRESET_LABELS: Record<DatePreset, { bn: string; en: string }> = {
-  today:            { bn: "আজ",              en: "Today" },
-  this_week:        { bn: "এই সপ্তাহ",        en: "This Week" },
-  first_fortnight:  { bn: "প্রথম পাক্ষিক",     en: "First Fortnight" },
-  last_fortnight:   { bn: "শেষ পাক্ষিক",       en: "Last Fortnight" },
-  this_month:       { bn: "এই মাস",           en: "This Month" },
-  custom:           { bn: "নির্দিষ্ট তারিখ",   en: "Custom Range" },
+  today:             { bn: "আজ",              en: "Today" },
+  yesterday:         { bn: "গতকাল",            en: "Yesterday" },
+  last_7_days:       { bn: "গত ৭ দিন",         en: "Last 7 Days" },
+  first_fortnight:   { bn: "প্রথম পাক্ষিক",     en: "First Fortnight" },
+  second_fortnight:  { bn: "দ্বিতীয় পাক্ষিক",   en: "Second Fortnight" },
+  this_month:        { bn: "এই মাস",           en: "This Month" },
+  last_month:        { bn: "গত মাস",           en: "Last Month" },
+  last_3_months:     { bn: "গত ৩ মাস",         en: "Last 3 Months" },
+  all:               { bn: "সব",               en: "All" },
+  custom:            { bn: "নির্দিষ্ট তারিখ",   en: "Custom Range" },
 };
+
+// Earliest date the business could plausibly have data from — used for the
+// "All" preset instead of leaving `from` unset, since an unset `from` would
+// make the backend fall back to its own "this calendar month" default.
+const EPOCH = "2015-01-01";
 
 function fmtISO(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -44,19 +58,33 @@ function resolvePreset(preset: DatePreset, customFrom: string, customTo: string)
   switch (preset) {
     case "today":
       return { from: todayISO, to: todayISO };
-    case "this_week": {
-      // Monday-start week, matching the backend's own week bucketing.
-      const monday = new Date(now);
-      const dow = (now.getDay() + 6) % 7; // 0 = Monday
-      monday.setDate(now.getDate() - dow);
-      return { from: fmtISO(monday), to: todayISO };
+    case "yesterday": {
+      const y = new Date(now);
+      y.setDate(now.getDate() - 1);
+      return { from: fmtISO(y), to: fmtISO(y) };
+    }
+    case "last_7_days": {
+      const start = new Date(now);
+      start.setDate(now.getDate() - 6);
+      return { from: fmtISO(start), to: todayISO };
     }
     case "first_fortnight":
       return { from: fmtISO(new Date(now.getFullYear(), now.getMonth(), 1)), to: fmtISO(new Date(now.getFullYear(), now.getMonth(), 15)) };
-    case "last_fortnight": {
+    case "second_fortnight": {
       const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
       return { from: fmtISO(new Date(now.getFullYear(), now.getMonth(), 16)), to: fmtISO(new Date(now.getFullYear(), now.getMonth(), lastDay)) };
     }
+    case "last_month": {
+      const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
+      const lastMonthStart = new Date(lastMonthEnd.getFullYear(), lastMonthEnd.getMonth(), 1);
+      return { from: fmtISO(lastMonthStart), to: fmtISO(lastMonthEnd) };
+    }
+    case "last_3_months": {
+      const start = new Date(now.getFullYear(), now.getMonth() - 2, 1);
+      return { from: fmtISO(start), to: todayISO };
+    }
+    case "all":
+      return { from: EPOCH, to: todayISO };
     case "custom":
       return { from: customFrom || todayISO, to: customTo || todayISO };
     case "this_month":
@@ -64,6 +92,20 @@ function resolvePreset(preset: DatePreset, customFrom: string, customTo: string)
       return { from: fmtISO(new Date(now.getFullYear(), now.getMonth(), 1)), to: todayISO };
   }
 }
+
+// For the separate Month/Year picker — resolves to that whole calendar
+// month regardless of which preset pill was last active.
+function resolveMonthYear(month: number, year: number): { from: string; to: string } {
+  const lastDay = new Date(year, month, 0).getDate();
+  return { from: fmtISO(new Date(year, month - 1, 1)), to: fmtISO(new Date(year, month - 1, lastDay)) };
+}
+
+const MONTH_NAMES: { bn: string; en: string }[] = [
+  { bn: "জানুয়ারি", en: "January" }, { bn: "ফেব্রুয়ারি", en: "February" }, { bn: "মার্চ", en: "March" },
+  { bn: "এপ্রিল", en: "April" }, { bn: "মে", en: "May" }, { bn: "জুন", en: "June" },
+  { bn: "জুলাই", en: "July" }, { bn: "আগস্ট", en: "August" }, { bn: "সেপ্টেম্বর", en: "September" },
+  { bn: "অক্টোবর", en: "October" }, { bn: "নভেম্বর", en: "November" }, { bn: "ডিসেম্বর", en: "December" },
+];
 
 // ─── Stat card definitions ────────────────────────────────────────────────────
 // Split into explicit rows (rather than one flat list) since each row now
@@ -118,7 +160,17 @@ export default function DashboardPage() {
   const [preset, setPreset]         = useState<DatePreset>("this_month");
   const [customFrom, setCustomFrom] = useState("");
   const [customTo, setCustomTo]     = useState("");
-  const range = useMemo(() => resolvePreset(preset, customFrom, customTo), [preset, customFrom, customTo]);
+  // Separate Month+Year picker for viewing any past month's dashboard —
+  // set independently of the preset pills above; picking a month clears
+  // whichever pill was active (and vice versa), so exactly one of the two
+  // ever decides the active range.
+  const thisYear = new Date().getFullYear();
+  const [monthYear, setMonthYear] = useState<{ month: number; year: number } | null>(null);
+  const range = useMemo(
+    () => (monthYear ? resolveMonthYear(monthYear.month, monthYear.year) : resolvePreset(preset, customFrom, customTo)),
+    [preset, customFrom, customTo, monthYear],
+  );
+  const selectPreset = (p: DatePreset) => { setMonthYear(null); setPreset(p); };
 
   const { data, isLoading } = useGetDashboardSummaryQuery(range);
 
@@ -182,10 +234,12 @@ export default function DashboardPage() {
 
   const revPct     = data?.revenue_change_pct ?? null;
   const profitVal  = parseFloat(data?.this_month_profit ?? "0");
-  // "This Month ..." card titles below should track whichever preset is
-  // selected in the date filter, not stay hardcoded to "this month" once
-  // the viewer picks Today/This Week/a fortnight/a custom range.
-  const periodLabel = isBn ? PRESET_LABELS[preset].bn : PRESET_LABELS[preset].en;
+  // "This Month ..." card titles below should track whichever preset (or
+  // Month/Year pick) is active in the date filter, not stay hardcoded to
+  // "this month".
+  const periodLabel = monthYear
+    ? `${isBn ? MONTH_NAMES[monthYear.month - 1].bn : MONTH_NAMES[monthYear.month - 1].en} ${monthYear.year}`
+    : (isBn ? PRESET_LABELS[preset].bn : PRESET_LABELS[preset].en);
 
   const topRevenue = Math.max(...(data?.top_products ?? []).map(p => parseFloat(p.revenue)), 1);
 
@@ -230,17 +284,24 @@ export default function DashboardPage() {
 
       {/* ── Date-range filter — drives the "This Month ..." stat cards below ── */}
       <div className="flex flex-wrap items-center gap-2 bg-surface rounded-2xl border border-border shadow-sm p-3">
-        <CalendarRange className="w-4 h-4 text-muted shrink-0" />
-        <select
-          value={preset}
-          onChange={e => setPreset(e.target.value as DatePreset)}
-          className="px-3 py-2 rounded-xl border border-border text-sm bg-surface text-body focus:outline-none focus:border-amber-500"
-        >
-          {PRESET_ORDER.map(p => (
-            <option key={p} value={p}>{isBn ? PRESET_LABELS[p].bn : PRESET_LABELS[p].en}</option>
-          ))}
-        </select>
-        {preset === "custom" && (
+        {PRESET_ORDER.map(p => {
+          const active = !monthYear && preset === p;
+          return (
+            <button
+              key={p}
+              type="button"
+              onClick={() => selectPreset(p)}
+              className={`px-3.5 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-colors flex items-center gap-1.5 ${
+                active ? "bg-indigo-600 text-white" : "bg-surface-alt text-body hover:bg-surface-alt/70"
+              }`}
+            >
+              {p === "custom" && <CalendarRange className="w-3.5 h-3.5" />}
+              {isBn ? PRESET_LABELS[p].bn : PRESET_LABELS[p].en}
+            </button>
+          );
+        })}
+
+        {!monthYear && preset === "custom" && (
           <>
             <input
               type="date"
@@ -259,6 +320,31 @@ export default function DashboardPage() {
             />
           </>
         )}
+
+        {/* Month + Year picker — views any specific month's dashboard,
+            independent of the preset pills above. */}
+        <div className="flex items-center gap-1.5 ms-auto">
+          <select
+            value={monthYear?.month ?? ""}
+            onChange={e => setMonthYear({ month: Number(e.target.value), year: monthYear?.year ?? thisYear })}
+            className="px-3 py-2 rounded-xl border border-border text-sm bg-surface text-body focus:outline-none focus:border-amber-500"
+          >
+            <option value="" disabled>{isBn ? "মাস" : "Month"}</option>
+            {MONTH_NAMES.map((m, i) => (
+              <option key={i + 1} value={i + 1}>{isBn ? m.bn : m.en}</option>
+            ))}
+          </select>
+          <select
+            value={monthYear?.year ?? ""}
+            onChange={e => setMonthYear({ month: monthYear?.month ?? new Date().getMonth() + 1, year: Number(e.target.value) })}
+            className="px-3 py-2 rounded-xl border border-border text-sm bg-surface text-body focus:outline-none focus:border-amber-500"
+          >
+            <option value="" disabled>{isBn ? "বছর" : "Year"}</option>
+            {Array.from({ length: 6 }, (_, i) => thisYear - i).map(y => (
+              <option key={y} value={y}>{y}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* ── Stat rows 1-3 ─────────────────────────────────────────────────── */}
