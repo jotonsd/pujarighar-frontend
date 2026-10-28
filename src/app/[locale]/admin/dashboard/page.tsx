@@ -137,6 +137,7 @@ const STATUS_META: Record<string, { label_bn: string; label_en: string; color: s
   ASSIGNED:   { label_bn: "এসাইন্ড",         label_en: "Assigned",   color: "#06b6d4" },
   ON_THE_WAY: { label_bn: "পথে আছে",        label_en: "On the Way", color: "#f97316" },
   DELIVERED:  { label_bn: "ডেলিভারি হয়েছে", label_en: "Delivered",  color: "#22c55e" },
+  EXCHANGED:  { label_bn: "বিনিময় হয়েছে",   label_en: "Exchanged",  color: "#14b8a6" },
   RETURNED:   { label_bn: "ফেরত",           label_en: "Returned",   color: "#ef4444" },
   CANCELLED:  { label_bn: "বাতিল",          label_en: "Cancelled",  color: "#6b7280" },
 };
@@ -148,6 +149,7 @@ const STATUS_BADGE: Record<string, string> = {
   ASSIGNED:   "bg-cyan-50 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-400 border-cyan-100 dark:border-cyan-800",
   ON_THE_WAY: "bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 border-orange-100 dark:border-orange-800",
   DELIVERED:  "bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 border-green-100 dark:border-green-800",
+  EXCHANGED:  "bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400 border-teal-100 dark:border-teal-800",
   RETURNED:   "bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 border-red-100 dark:border-red-800",
   CANCELLED:  "bg-surface-alt text-muted border-border",
 };
