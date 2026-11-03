@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
 import Link from 'next/link'
-import { Pencil } from 'lucide-react'
+import { Pencil, Trash2 } from 'lucide-react'
 import Badge from '@/components/ui/Badge'
 import ToggleSwitch from '@/components/ui/forms/ToggleSwitch'
 import PageHeader from '@/components/ui/PageHeader'
@@ -11,8 +11,11 @@ import { ReusableTable, Column } from '@/components/ui/ReusableTable'
 import { FloatingInput, FloatingSelect } from '@/components/ui/forms'
 import { User } from '@/lib/types'
 import { useAuthStore } from '@/store/authStore'
-import { useGetUsersQuery, useActivateUserMutation, useDeactivateUserMutation } from '@/api/users/usersApi'
+import { useGetUsersQuery, useActivateUserMutation, useDeactivateUserMutation, useHardDeleteUserMutation } from '@/api/users/usersApi'
 import { useGetRolesQuery } from '@/api/roles/rolesApi'
+import { toast } from '@/store/toastStore'
+import { getErrorMessage } from '@/utils/apiError'
+import DeleteUserConfirmModal from './DeleteUserConfirmModal'
 
 const SYSTEM_ROLE_VARIANTS: Record<string, 'blue' | 'yellow' | 'orange' | 'green'> = {
   ADMIN: 'blue', WAREHOUSE: 'yellow', DELIVERY: 'orange', CUSTOMER: 'green',
@@ -37,13 +40,28 @@ export default function UserList() {
   const [search, setSearch] = useState('')
   const [registeredVia, setRegisteredVia] = useState('')
 
-  const currentUserId = useAuthStore(s => s.user?.id)
+  const currentUser   = useAuthStore(s => s.user)
+  const currentUserId = currentUser?.id
+  const isAdmin       = currentUser?.role.code === 'ADMIN'
   const { data, isLoading, isFetching } = useGetUsersQuery({ page, page_size: limit, role, search, registered_via: registeredVia })
   const { data: roles = [] } = useGetRolesQuery()
   const [activate]   = useActivateUserMutation()
   const [deactivate] = useDeactivateUserMutation()
+  const [hardDelete, { isLoading: deleting }] = useHardDeleteUserMutation()
+  const [deleteTarget, setDeleteTarget] = useState<User | null>(null)
 
   const toggle = (id: string, isActive: boolean) => isActive ? deactivate(id) : activate(id)
+
+  const confirmHardDelete = async () => {
+    if (!deleteTarget) return
+    try {
+      await hardDelete(deleteTarget.id).unwrap()
+      toast.success(isBn ? 'ব্যবহারকারী স্থায়ীভাবে মুছে ফেলা হয়েছে' : 'User permanently deleted')
+      setDeleteTarget(null)
+    } catch (err) {
+      toast.error(getErrorMessage(err, locale))
+    }
+  }
 
   const nameFor = (u: User) =>
     (isBn ? u.profile?.full_name_bn || u.profile?.full_name_en : u.profile?.full_name_en || u.profile?.full_name_bn)
@@ -152,16 +170,44 @@ export default function UserList() {
         totalRecords={data?.pagination?.total} currentPage={page} onPageChange={setPage}
         limit={limit} onLimitChange={l => { setLimit(l); setPage(1) }}
         exportFilename="users" emptyMessage={locale === 'bn' ? 'কোনো ব্যবহারকারী নেই' : 'No users found'}
-        quickActions={[{
-          label: t('common.edit'),
-          render: u => (
-            <Link href={`/${locale}/admin/users/${u.id}`}
-              className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/40 transition-colors"
-              title={t('common.edit')}>
-              <Pencil className="w-3.5 h-3.5" />
-            </Link>
-          ),
-        }]} />
+        quickActions={[
+          {
+            label: t('common.edit'),
+            render: u => (
+              <Link href={`/${locale}/admin/users/${u.id}`}
+                className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/40 transition-colors"
+                title={t('common.edit')}>
+                <Pencil className="w-3.5 h-3.5" />
+              </Link>
+            ),
+          },
+          // ADMIN-only (the backend enforces this too) — permanently
+          // removes the row, unlike the Status toggle above which only
+          // deactivates. Hidden for the viewer's own account, same as the
+          // Status toggle's disabled state.
+          ...(isAdmin ? [{
+            label: isBn ? 'স্থায়ীভাবে মুছুন' : 'Delete Permanently',
+            show: (u: User) => u.id !== currentUserId,
+            render: (u: User) => (
+              <button
+                onClick={() => setDeleteTarget(u)}
+                className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors"
+                title={isBn ? 'স্থায়ীভাবে মুছুন' : 'Delete Permanently'}>
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            ),
+          }] : []),
+        ]} />
+
+      {deleteTarget && (
+        <DeleteUserConfirmModal
+          locale={locale}
+          userName={nameFor(deleteTarget) !== '—' ? nameFor(deleteTarget) : deleteTarget.email}
+          loading={deleting}
+          onConfirm={confirmHardDelete}
+          onCancel={() => setDeleteTarget(null)}
+        />
+      )}
     </div>
   )
 }

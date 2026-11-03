@@ -51,6 +51,14 @@ export const usersApi = baseApi.injectEndpoints({
       invalidatesTags: ['Users'],
     }),
 
+    // Permanent removal (unlike deleteUser above, which only deactivates) —
+    // ADMIN-only on the backend, and blocked with a 409 if the account has
+    // orders. See hard_delete_user's docstring.
+    hardDeleteUser: build.mutation<void, string>({
+      query: (id) => ({ url: `/api/users/${id}/hard-delete/`, method: 'DELETE' }),
+      invalidatesTags: ['Users'],
+    }),
+
     activateUser: build.mutation<User, string>({
       query: (id) => ({ url: `/api/users/${id}/activate/`, method: 'POST', body: {} }),
       transformResponse: (res: { data: User }) => res.data,
@@ -101,6 +109,7 @@ export const {
   useCreateUserMutation,
   useUpdateUserMutation,
   useDeleteUserMutation,
+  useHardDeleteUserMutation,
   useActivateUserMutation,
   useDeactivateUserMutation,
   useChangeRoleMutation,
