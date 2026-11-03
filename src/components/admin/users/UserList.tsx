@@ -15,6 +15,7 @@ import { useGetUsersQuery, useActivateUserMutation, useDeactivateUserMutation, u
 import { useGetRolesQuery } from '@/api/roles/rolesApi'
 import { toast } from '@/store/toastStore'
 import { getErrorMessage } from '@/utils/apiError'
+import { hasPermission } from '@/utils/permissions'
 import DeleteUserConfirmModal from './DeleteUserConfirmModal'
 
 const SYSTEM_ROLE_VARIANTS: Record<string, 'blue' | 'yellow' | 'orange' | 'green'> = {
@@ -42,7 +43,7 @@ export default function UserList() {
 
   const currentUser   = useAuthStore(s => s.user)
   const currentUserId = currentUser?.id
-  const isAdmin       = currentUser?.role.code === 'ADMIN'
+  const canDeleteUsers = hasPermission(currentUser, 'users_admin', 'delete')
   const { data, isLoading, isFetching } = useGetUsersQuery({ page, page_size: limit, role, search, registered_via: registeredVia })
   const { data: roles = [] } = useGetRolesQuery()
   const [activate]   = useActivateUserMutation()
@@ -181,11 +182,12 @@ export default function UserList() {
               </Link>
             ),
           },
-          // ADMIN-only (the backend enforces this too) — permanently
-          // removes the row, unlike the Status toggle above which only
-          // deactivates. Hidden for the viewer's own account, same as the
-          // Status toggle's disabled state.
-          ...(isAdmin ? [{
+          // Permission-gated ('users_admin'.'delete' — grantable to a
+          // custom role via Admin > Roles, same as the backend check) rather
+          // than hardcoded to ADMIN — permanently removes the row, unlike
+          // the Status toggle above which only deactivates. Hidden for the
+          // viewer's own account, same as the Status toggle's disabled state.
+          ...(canDeleteUsers ? [{
             label: isBn ? 'স্থায়ীভাবে মুছুন' : 'Delete Permanently',
             show: (u: User) => u.id !== currentUserId,
             render: (u: User) => (
