@@ -336,7 +336,14 @@ export default function OrderItems({ order }: Props) {
         </div>
         {parseFloat(order.discount_amount) > 0 && (
           <div className="flex justify-between text-sm text-green-600 dark:text-green-400">
-            <span>{locale === "bn" ? "ছাড়" : "Discount"}</span>
+            <span>
+              {locale === "bn" ? "ছাড়" : "Discount"}
+              {parseFloat(order.first_order_discount_amount || "0") > 0 && (
+                <span className="text-xs font-normal opacity-80">
+                  {" "}{locale === "bn" ? "(প্রথম অর্ডার)" : "(first order)"}
+                </span>
+              )}
+            </span>
             <span className="font-bold">− {formatAmount(order.discount_amount, locale)}</span>
           </div>
         )}
@@ -348,12 +355,6 @@ export default function OrderItems({ order }: Props) {
               <span className="font-mono font-bold">{order.promo_code_used}</span>
             </span>
             <span className="font-bold">− {formatAmount(order.mobile_app_discount_amount, locale)}</span>
-          </div>
-        )}
-        {parseFloat(order.first_order_discount_amount || "0") > 0 && (
-          <div className="flex justify-between text-sm text-green-600 dark:text-green-400">
-            <span>{locale === "bn" ? "প্রথম অর্ডার ছাড় ব্যবহৃত" : "First Order Discount Used"}</span>
-            <span className="font-bold">− {formatAmount(order.first_order_discount_amount, locale)}</span>
           </div>
         )}
         <div className="flex justify-between text-sm text-muted">
