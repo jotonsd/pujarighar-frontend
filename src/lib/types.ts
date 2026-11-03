@@ -589,6 +589,7 @@ export interface SalesOrder {
   cashback_amount: string
   promo_code_used: string
   mobile_app_discount_amount: string
+  first_order_discount_amount: string
   notes_bn: string
   notes_en: string
   items: SalesOrderItem[]

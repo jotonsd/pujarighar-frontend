@@ -350,6 +350,12 @@ export default function OrderItems({ order }: Props) {
             <span className="font-bold">− {formatAmount(order.mobile_app_discount_amount, locale)}</span>
           </div>
         )}
+        {parseFloat(order.first_order_discount_amount || "0") > 0 && (
+          <div className="flex justify-between text-sm text-green-600 dark:text-green-400">
+            <span>{locale === "bn" ? "প্রথম অর্ডার ছাড় ব্যবহৃত" : "First Order Discount Used"}</span>
+            <span className="font-bold">− {formatAmount(order.first_order_discount_amount, locale)}</span>
+          </div>
+        )}
         <div className="flex justify-between text-sm text-muted">
           <span>{locale === "bn" ? "সাবটোটাল" : "Subtotal"}</span>
           <span className="font-bold">{formatAmount(order.subtotal, locale)}</span>
