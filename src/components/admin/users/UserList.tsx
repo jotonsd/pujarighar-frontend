@@ -73,7 +73,7 @@ export default function UserList() {
     {
       header: locale === 'bn' ? 'নাম' : 'Name',
       accessor: u => nameFor(u),
-      className: 'px-4 py-3 text-sm text-body font-medium',
+      className: 'px-4 py-3 text-sm text-body font-medium whitespace-nowrap',
       exportValue: nameFor,
     },
     { header: t('auth.email'), accessor: 'email', className: 'px-4 py-3 text-sm text-body font-medium', exportValue: u => u.email },
