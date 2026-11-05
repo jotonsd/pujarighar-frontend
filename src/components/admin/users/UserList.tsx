@@ -73,7 +73,7 @@ export default function UserList() {
     {
       header: locale === 'bn' ? 'নাম' : 'Name',
       accessor: u => nameFor(u),
-      className: 'px-4 py-3 text-sm text-body font-medium whitespace-nowrap',
+      className: 'px-4 py-3 text-sm text-body font-medium',
       exportValue: nameFor,
     },
     { header: t('auth.email'), accessor: 'email', className: 'px-4 py-3 text-sm text-body font-medium', exportValue: u => u.email },
@@ -119,11 +119,10 @@ export default function UserList() {
       accessor: u => (
         <ToggleSwitch checked={u.is_active} onChange={() => toggle(u.id, u.is_active)}
           disabled={u.id === currentUserId}
-          disabledTitle={locale === 'bn' ? 'নিজের অ্যাকাউন্ট পরিবর্তন করা যাবে না' : 'Cannot toggle your own account'}
-          activeLabel={locale === 'bn' ? 'সক্রিয়' : 'Active'} inactiveLabel={locale === 'bn' ? 'নিষ্ক্রিয়' : 'Inactive'} />
+          disabledTitle={locale === 'bn' ? 'নিজের অ্যাকাউন্ট পরিবর্তন করা যাবে না' : 'Cannot toggle your own account'} />
       ),
       exportValue: u => u.is_active ? 'Active' : 'Inactive',
-      className: 'px-4 py-3 w-36',
+      className: 'px-4 py-3 w-16',
     },
   ]
 
