@@ -140,20 +140,7 @@ export default function UserList() {
         }
       />
 
-      {data?.meta?.platform_counts && (
-        <div className="flex gap-3 mb-4 flex-wrap">
-          <div className="px-4 py-2.5 rounded-lg bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 text-sm text-blue-800 dark:text-blue-400">
-            <span className="font-semibold">{data.meta.platform_counts.mobile_app}</span>{' '}
-            {locale === 'bn' ? 'জন অ্যাপ ব্যবহারকারী' : 'app users'}
-          </div>
-          <div className="px-4 py-2.5 rounded-lg bg-background border border-border text-sm text-muted">
-            <span className="font-semibold">{data.meta.platform_counts.website}</span>{' '}
-            {locale === 'bn' ? 'জন ওয়েবসাইট ব্যবহারকারী' : 'website users'}
-          </div>
-        </div>
-      )}
-
-      <div className="flex gap-3 mb-4 flex-wrap">
+      <div className="flex gap-3 mb-4 flex-wrap items-center">
         <div className="w-64">
           <FloatingInput label={t('common.search')} value={search}
             onChange={e => { setSearch(e.target.value); setPage(1) }} />
@@ -172,6 +159,18 @@ export default function UserList() {
             <option value="WEBSITE">{locale === 'bn' ? 'ওয়েবসাইট' : 'Website'}</option>
           </FloatingSelect>
         </div>
+        {data?.meta?.platform_counts && (
+          <>
+            <div className="px-4 py-2.5 rounded-lg bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 text-sm text-blue-800 dark:text-blue-400">
+              <span className="font-semibold">{data.meta.platform_counts.mobile_app}</span>{' '}
+              {locale === 'bn' ? 'জন অ্যাপ ব্যবহারকারী' : 'app users'}
+            </div>
+            <div className="px-4 py-2.5 rounded-lg bg-background border border-border text-sm text-muted">
+              <span className="font-semibold">{data.meta.platform_counts.website}</span>{' '}
+              {locale === 'bn' ? 'জন ওয়েবসাইট ব্যবহারকারী' : 'website users'}
+            </div>
+          </>
+        )}
       </div>
 
       <ReusableTable data={data?.data ?? []} columns={columns} keyExtractor={u => u.id}
