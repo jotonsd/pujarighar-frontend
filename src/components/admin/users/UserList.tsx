@@ -10,6 +10,7 @@ import PageHeader from '@/components/ui/PageHeader'
 import { ReusableTable, Column } from '@/components/ui/ReusableTable'
 import { FloatingInput, FloatingSelect } from '@/components/ui/forms'
 import { User } from '@/lib/types'
+import { formatDateTime } from '@/utils/format'
 import { useAuthStore } from '@/store/authStore'
 import { useGetUsersQuery, useActivateUserMutation, useDeactivateUserMutation, useHardDeleteUserMutation } from '@/api/users/usersApi'
 import { useGetRolesQuery } from '@/api/roles/rolesApi'
@@ -105,6 +106,13 @@ export default function UserList() {
         </Badge>
       ),
       exportValue: u => u.signup_provider,
+    },
+    {
+      header: locale === 'bn' ? 'নিবন্ধনের তারিখ' : 'Registered',
+      accessor: u => (
+        <span className="text-sm text-muted whitespace-nowrap">{formatDateTime(u.date_joined, locale)}</span>
+      ),
+      exportValue: u => formatDateTime(u.date_joined, locale),
     },
     {
       header: locale === 'bn' ? 'স্ট্যাটাস' : 'Status',
