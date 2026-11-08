@@ -17,8 +17,8 @@ export interface RecentShipping {
 export const ordersApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
 
-    getOrders: build.query<OrderListResponse, { page?: number; page_size?: number; status?: string; payment_status?: string; order_number?: string; phone?: string; name?: string; source?: string; from?: string; to?: string }>({
-      query: ({ page = 1, page_size, status = '', payment_status = '', order_number = '', phone = '', name = '', source = '', from = '', to = '' } = {}) => {
+    getOrders: build.query<OrderListResponse, { page?: number; page_size?: number; status?: string; payment_status?: string; order_number?: string; phone?: string; name?: string; source?: string; from?: string; to?: string; out_of_stock?: string }>({
+      query: ({ page = 1, page_size, status = '', payment_status = '', order_number = '', phone = '', name = '', source = '', from = '', to = '', out_of_stock = '' } = {}) => {
         const p = new URLSearchParams({ page: String(page) })
         if (page_size)      p.set('page_size', String(page_size))
         if (status)         p.set('status', status)
@@ -29,6 +29,7 @@ export const ordersApi = baseApi.injectEndpoints({
         if (source)         p.set('source', source)
         if (from)           p.set('from', from)
         if (to)             p.set('to', to)
+        if (out_of_stock)   p.set('out_of_stock', '1')
         return `/api/orders/?${p}`
       },
       providesTags: ['Orders'],

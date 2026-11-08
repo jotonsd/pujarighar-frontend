@@ -23,7 +23,7 @@ const SOURCE_LABELS: Record<OrderSource, { bn: string; en: string }> = {
   AI_CHATBOT: { bn: 'ব্রাহ্মণ AI', en: 'Brahman AI' },
   POS: { bn: 'POS', en: 'POS' },
 }
-const EMPTY = { status: '', payment_status: '', order_number: '', phone: '', name: '', source: '', from: '', to: '' }
+const EMPTY = { status: '', payment_status: '', order_number: '', phone: '', name: '', source: '', from: '', to: '', out_of_stock: '' }
 
 export default function OrderList() {
   const t      = useTranslations()
@@ -128,6 +128,15 @@ export default function OrderList() {
           </FloatingSelect>
           <FloatingDatePicker label={locale === 'bn' ? 'শুরু তারিখ' : 'From Date'} value={draft.from} onChange={set('from')} clearable />
           <FloatingDatePicker label={locale === 'bn' ? 'শেষ তারিখ' : 'To Date'} value={draft.to} onChange={set('to')} clearable />
+          <label className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border text-sm text-body cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={draft.out_of_stock === '1'}
+              onChange={e => set('out_of_stock')(e.target.checked ? '1' : '')}
+              className="w-4 h-4 accent-amber-600"
+            />
+            {locale === 'bn' ? 'স্টক নেই এমন পণ্যের অর্ডার' : 'Orders with out-of-stock items'}
+          </label>
           <div className="flex items-center"><button type="submit" className="btn-primary w-full">{locale === 'bn' ? 'খুঁজুন' : 'Apply'}</button></div>
         </form>
       )}
