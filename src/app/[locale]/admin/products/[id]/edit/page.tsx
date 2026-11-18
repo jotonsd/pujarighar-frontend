@@ -22,6 +22,7 @@ import {
   ToggleSwitch,
 } from "@/components/ui/forms";
 import PageHeader from "@/components/ui/PageHeader";
+import ProcessingOverlay from "@/components/ui/ProcessingOverlay";
 import Spinner from "@/components/ui/Spinner";
 import { ProductBadge } from "@/lib/types";
 import { toast } from "@/store/toastStore";
@@ -42,7 +43,12 @@ export default function EditProductPage({
   const { data: product, isLoading } = useGetProductQuery(params.id);
   const { data: categories = [] }    = useGetCategoriesQuery();
   const { data: brands = [] }        = useGetBrandsQuery();
-  const [updateProduct, { isLoading: saving }] = useUpdateProductMutation();
+  const [updateProduct] = useUpdateProductMutation();
+  // Neither updateProduct's nor addImages' own isLoading covers the whole
+  // update-then-upload sequence (each resolves/flips back independently) —
+  // this tracks the entire handleUpdate() call instead, so the overlay and
+  // disabled Save button stay correct for all of it, not just the first step.
+  const [saving, setSaving] = useState(false);
   const [addImages]   = useAddProductImagesMutation();
   const [deleteImage] = useDeleteProductImageMutation();
   const [updateImage] = useUpdateProductImageMutation();
@@ -108,6 +114,7 @@ export default function EditProductPage({
 
   const handleUpdate = async () => {
     setFieldErrors({});
+    setSaving(true);
     try {
       await updateProduct({ id: params.id, ...form }).unwrap();
       if (pendingFiles.length > 0) {
@@ -119,9 +126,13 @@ export default function EditProductPage({
       }
       toast.success(locale === "bn" ? "পণ্য আপডেট হয়েছে" : "Product updated");
       router.push(`/${locale}/admin/products`);
+      // Deliberately no setSaving(false) on the success path — the overlay
+      // should stay up through the redirect instead of flashing the form
+      // again for a frame while the route change is in flight.
     } catch (err: unknown) {
       toast.error(getErrorMessage(err, locale));
       setFieldErrors(getFieldErrors(err));
+      setSaving(false);
     }
   };
 
@@ -133,6 +144,10 @@ export default function EditProductPage({
 
   return (
     <div className="max-w-7xl">
+      <ProcessingOverlay
+        show={saving}
+        message={locale === "bn" ? "পণ্য আপডেট হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন..." : "Updating product, please wait..."}
+      />
       <PageHeader
         title={`${t("common.edit")} ${t("product.title")}`}
         description={locale === "bn" ? "পণ্যের তথ্য, ছবি ও স্টক আপডেট করুন" : "Update product details, images and stock"}

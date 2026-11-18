@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/forms";
 import BadgePicker from "@/components/admin/products/BadgePicker";
 import ImageUpload, { AttributeValueOption } from "@/components/ui/ImageUpload";
+import ProcessingOverlay from "@/components/ui/ProcessingOverlay";
 import PageHeader from "@/components/ui/PageHeader";
 import { ProductBadge } from "@/lib/types";
 import { toast } from "@/store/toastStore";
@@ -84,8 +85,13 @@ export default function NewProductPage() {
 
   const { data: categories = [] } = useGetCategoriesQuery();
   const { data: brands = [] } = useGetBrandsQuery();
-  const [createProduct, { isLoading }] = useCreateProductMutation();
+  const [createProduct] = useCreateProductMutation();
   const [addImages] = useAddProductImagesMutation();
+  // Neither mutation's own isLoading covers the whole create-then-upload
+  // sequence (each resolves/flips back independently) — this tracks the
+  // entire handleCreate() call instead, so the overlay and disabled Create
+  // button stay correct for all of it, not just the first step.
+  const [submitting, setSubmitting] = useState(false);
   const { data: attributeTypes = [] } = useGetAttributeTypesQuery();
   const colorType = attributeTypes.find(t => t.code === "color");
   const { data: colorValues = [] } = useGetAttributeValuesQuery(
@@ -159,6 +165,7 @@ export default function NewProductPage() {
 
   const handleCreate = async () => {
     setFieldErrors({});
+    setSubmitting(true);
     try {
       const product = await createProduct(form).unwrap();
       if (pendingFiles.length > 0) {
@@ -170,9 +177,13 @@ export default function NewProductPage() {
       }
       toast.success(locale === "bn" ? "পণ্য তৈরি হয়েছে" : "Product created");
       router.push(`/${locale}/admin/products`);
+      // Deliberately no setSubmitting(false) on the success path — the
+      // overlay should stay up through the redirect instead of flashing
+      // the form again for a frame while the route change is in flight.
     } catch (err: unknown) {
       toast.error(getErrorMessage(err, locale));
       setFieldErrors(getFieldErrors(err));
+      setSubmitting(false);
     }
   };
 
@@ -204,6 +215,10 @@ export default function NewProductPage() {
 
   return (
     <div className="max-w-7xl">
+      <ProcessingOverlay
+        show={submitting}
+        message={locale === "bn" ? "পণ্য তৈরি হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন..." : "Creating product, please wait..."}
+      />
       <PageHeader
         title={duplicateFromId ? (locale === 'bn' ? 'পণ্য কপি করুন' : 'Duplicate Product') : `${t("common.create")} ${t("product.title")}`}
         description={
@@ -367,10 +382,10 @@ export default function NewProductPage() {
         <div className="flex gap-3">
           <button
             onClick={handleCreate}
-            disabled={isLoading}
+            disabled={submitting}
             className="btn-primary"
           >
-            {isLoading ? t("common.loading") : t("common.create")}
+            {submitting ? t("common.loading") : t("common.create")}
           </button>
           <button onClick={() => router.back()} className="btn-secondary">
             {t("common.cancel")}
