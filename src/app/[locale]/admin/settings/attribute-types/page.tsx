@@ -168,74 +168,100 @@ export default function AttributeTypesPage() {
       {isLoading ? (
         <TableSkeleton columns={5} rows={3} />
       ) : (
-        <div className="space-y-3">
-          {types.map(type => (
-            <div key={type.id} className="bg-surface rounded-lg shadow-sm overflow-hidden">
-              <div className="flex items-center gap-3 px-4 py-3">
-                <button
-                  type="button"
-                  onClick={() => setExpandedId(expandedId === type.id ? null : type.id)}
-                  className="text-muted hover:text-body"
-                >
-                  {expandedId === type.id ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-                </button>
-                {editingId === type.id ? (
-                  <div className="flex items-end gap-3 flex-1 flex-wrap">
-                    <div className="w-44">
-                      <FloatingInput label={isBn ? "নাম (বাংলা)" : "Name (BN)"} value={editForm.name_bn} onChange={e => setEditForm(f => ({ ...f, name_bn: e.target.value }))} />
-                    </div>
-                    <div className="w-44">
-                      <FloatingInput label="Name (EN)" value={editForm.name_en} onChange={e => setEditForm(f => ({ ...f, name_en: e.target.value }))} />
-                    </div>
-                    <button onClick={() => handleUpdate(type.id)} className="btn-primary text-xs px-3 py-1.5">
-                      {isBn ? "সংরক্ষণ" : "Save"}
-                    </button>
-                  </div>
-                ) : (
-                  <div className="flex-1 flex items-center gap-3 flex-wrap">
-                    <span className="font-medium text-body">{isBn ? type.name_bn : type.name_en}</span>
-                    <span className="font-mono text-xs text-muted">{type.code}</span>
-                    {type.has_bilingual_values && (
-                      <Badge variant="blue">{isBn ? "দ্বিভাষিক" : "Bilingual"}</Badge>
+        <div className="card overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-border">
+                <th className="w-8 py-2" />
+                <th className="text-left py-2 pr-4 text-xs font-semibold text-muted uppercase">{isBn ? "নাম" : "Name"}</th>
+                <th className="text-left py-2 pr-4 text-xs font-semibold text-muted uppercase">Code</th>
+                <th className="text-left py-2 pr-4 text-xs font-semibold text-muted uppercase">{isBn ? "ধরন" : "Type"}</th>
+                <th className="text-left py-2 pr-4 text-xs font-semibold text-muted uppercase">{isBn ? "স্ট্যাটাস" : "Status"}</th>
+                <th className="text-right py-2 pl-4 text-xs font-semibold text-muted uppercase">{isBn ? "অ্যাকশন" : "Actions"}</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {types.map(type => (
+                <>
+                  <tr key={type.id} className="hover:bg-surface-alt/50">
+                    <td className="py-2.5 pl-2">
+                      <button
+                        type="button"
+                        onClick={() => setExpandedId(expandedId === type.id ? null : type.id)}
+                        className="text-muted hover:text-body"
+                      >
+                        {expandedId === type.id ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                      </button>
+                    </td>
+                    {editingId === type.id ? (
+                      <td colSpan={3} className="py-2.5 pr-4">
+                        <div className="flex items-end gap-3 flex-wrap">
+                          <div className="w-40">
+                            <FloatingInput label={isBn ? "নাম (বাংলা)" : "Name (BN)"} value={editForm.name_bn} onChange={e => setEditForm(f => ({ ...f, name_bn: e.target.value }))} />
+                          </div>
+                          <div className="w-40">
+                            <FloatingInput label="Name (EN)" value={editForm.name_en} onChange={e => setEditForm(f => ({ ...f, name_en: e.target.value }))} />
+                          </div>
+                          <button onClick={() => handleUpdate(type.id)} className="btn-primary text-xs px-3 py-1.5">
+                            {isBn ? "সংরক্ষণ" : "Save"}
+                          </button>
+                        </div>
+                      </td>
+                    ) : (
+                      <>
+                        <td className="py-2.5 pr-4 font-medium text-body">{isBn ? type.name_bn : type.name_en}</td>
+                        <td className="py-2.5 pr-4 font-mono text-xs text-muted">{type.code}</td>
+                        <td className="py-2.5 pr-4">
+                          {type.has_bilingual_values && <Badge variant="blue">{isBn ? "দ্বিভাষিক" : "Bilingual"}</Badge>}
+                        </td>
+                      </>
                     )}
-                  </div>
-                )}
-                {isAdmin ? (
-                  <ToggleSwitch
-                    checked={type.is_active}
-                    onChange={() => toggleActive(type)}
-                    activeLabel={isBn ? "সক্রিয়" : "Active"}
-                    inactiveLabel={isBn ? "নিষ্ক্রিয়" : "Inactive"}
-                  />
-                ) : (
-                  <Badge variant={type.is_active ? "green" : "red"}>{type.is_active ? (isBn ? "সক্রিয়" : "Active") : (isBn ? "নিষ্ক্রিয়" : "Inactive")}</Badge>
-                )}
-                {isAdmin && (
-                  <button
-                    onClick={() => editingId === type.id ? setEditingId(null) : startEdit(type)}
-                    title={isBn ? "সম্পাদনা" : "Edit"}
-                    className={`inline-flex items-center justify-center w-8 h-8 rounded-lg border transition-colors ${editingId === type.id ? "border-border bg-surface-alt text-muted hover:bg-border" : "border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/50"}`}
-                  >
-                    {editingId === type.id ? <X className="w-3.5 h-3.5" /> : <Pencil className="w-3.5 h-3.5" />}
-                  </button>
-                )}
-                {canDelete && (
-                  <button
-                    onClick={() => handleDelete(type.id)}
-                    title={isBn ? "মুছুন" : "Delete"}
-                    className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/30 text-red-500 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                )}
-              </div>
-              {expandedId === type.id && (
-                <div className="border-t border-border px-4 py-3 bg-background">
-                  <AttributeValuesEditor type={type} locale={locale} isAdmin={isAdmin} canDelete={canDelete} />
-                </div>
-              )}
-            </div>
-          ))}
+                    <td className="py-2.5 pr-4">
+                      {isAdmin ? (
+                        <ToggleSwitch
+                          checked={type.is_active}
+                          onChange={() => toggleActive(type)}
+                          activeLabel={isBn ? "সক্রিয়" : "Active"}
+                          inactiveLabel={isBn ? "নিষ্ক্রিয়" : "Inactive"}
+                        />
+                      ) : (
+                        <Badge variant={type.is_active ? "green" : "red"}>{type.is_active ? (isBn ? "সক্রিয়" : "Active") : (isBn ? "নিষ্ক্রিয়" : "Inactive")}</Badge>
+                      )}
+                    </td>
+                    <td className="py-2.5 pl-4">
+                      <div className="flex items-center justify-end gap-2">
+                        {isAdmin && (
+                          <button
+                            onClick={() => editingId === type.id ? setEditingId(null) : startEdit(type)}
+                            title={isBn ? "সম্পাদনা" : "Edit"}
+                            className={`inline-flex items-center justify-center w-8 h-8 rounded-lg border transition-colors ${editingId === type.id ? "border-border bg-surface-alt text-muted hover:bg-border" : "border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/50"}`}
+                          >
+                            {editingId === type.id ? <X className="w-3.5 h-3.5" /> : <Pencil className="w-3.5 h-3.5" />}
+                          </button>
+                        )}
+                        {canDelete && (
+                          <button
+                            onClick={() => handleDelete(type.id)}
+                            title={isBn ? "মুছুন" : "Delete"}
+                            className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/30 text-red-500 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                  {expandedId === type.id && (
+                    <tr key={`${type.id}-expanded`}>
+                      <td colSpan={6} className="border-t border-border px-4 py-3 bg-background">
+                        <AttributeValuesEditor type={type} locale={locale} isAdmin={isAdmin} canDelete={canDelete} />
+                      </td>
+                    </tr>
+                  )}
+                </>
+              ))}
+            </tbody>
+          </table>
           {types.length === 0 && (
             <p className="text-center text-muted py-8">{isBn ? "কোনো ধরন নেই" : "No attribute types found"}</p>
           )}
