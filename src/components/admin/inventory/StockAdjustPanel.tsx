@@ -62,10 +62,16 @@ export default function StockAdjustPanel({ product }: Props) {
 
   const startEditMovement = (m: StockMovement) => {
     setEditingId(m.id);
+    // A variant-scoped movement's real current selling price lives on that
+    // variant's own effective_price (price_override, falling back to the
+    // product's unit_price) — product.unit_price alone is commonly left at
+    // 0 once a product's pricing has moved onto its variants, which showed
+    // as a false "0.00" here for every variant purchase movement.
+    const variant = m.variant ? product.variants?.find(v => v.id === m.variant) : null;
     setEditForm({
       quantity: String(Math.abs(parseFloat(m.quantity))),
       unit_cost: m.unit_cost,
-      unit_price: m.movement_type === "PURCHASE" ? (product.unit_price ?? "") : "",
+      unit_price: m.movement_type === "PURCHASE" ? (variant?.effective_price ?? product.unit_price ?? "") : "",
       payment_method: m.payment_method,
       date: toLocalDateStr(new Date(m.created_at)),
       variant_id: m.variant ?? "",
