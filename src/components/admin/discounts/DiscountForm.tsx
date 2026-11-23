@@ -28,11 +28,15 @@ function BulkProductPicker({
   selected,
   onToggle,
   onClear,
+  onSelectAll,
+  onDeselectAll,
   locale,
 }: {
   selected: Set<string>
   onToggle: (id: string) => void
   onClear: () => void
+  onSelectAll: (ids: string[]) => void
+  onDeselectAll: (ids: string[]) => void
   locale: string
 }) {
   const isBn = locale === 'bn'
@@ -98,7 +102,24 @@ function BulkProductPicker({
         {isLoading ? (
           <p className="text-center text-xs text-muted py-6">{isBn ? 'লোড হচ্ছে...' : 'Loading...'}</p>
         ) : products?.data?.length ? (
-          products.data.map(p => (
+          <>
+            {(() => {
+              const visibleIds = products.data.map(p => p.id)
+              const allSelected = visibleIds.every(id => selected.has(id))
+              return (
+                <label className="flex items-center gap-2.5 px-3 py-2 cursor-pointer hover:bg-surface-alt bg-background sticky top-0 z-[1]">
+                  <Checkbox
+                    checked={allSelected}
+                    onChange={() => (allSelected ? onDeselectAll(visibleIds) : onSelectAll(visibleIds))}
+                    label=""
+                  />
+                  <span className="text-sm font-medium text-muted">
+                    {isBn ? `সব নির্বাচন করুন (${visibleIds.length}টি)` : `Select all (${visibleIds.length})`}
+                  </span>
+                </label>
+              )
+            })()}
+            {products.data.map(p => (
             <label key={p.id} className="flex items-center gap-2.5 px-3 py-2 cursor-pointer hover:bg-surface-alt">
               <Checkbox checked={selected.has(p.id)} onChange={() => onToggle(p.id)} label="" />
               {p.images?.[0]?.image ? (
@@ -113,7 +134,8 @@ function BulkProductPicker({
               </div>
               <div className="text-xs font-semibold text-muted shrink-0">{formatAmount(p.unit_price, locale)}</div>
             </label>
-          ))
+            ))}
+          </>
         ) : (
           <p className="text-center text-xs text-muted py-6">{isBn ? 'কোনো পণ্য পাওয়া যায়নি' : 'No products found'}</p>
         )}
@@ -146,6 +168,16 @@ export default function DiscountForm() {
     setSelectedIds(prev => {
       const next = new Set(prev)
       next.has(id) ? next.delete(id) : next.add(id)
+      return next
+    })
+
+  const selectAllIds = (ids: string[]) =>
+    setSelectedIds(prev => new Set([...prev, ...ids]))
+
+  const deselectAllIds = (ids: string[]) =>
+    setSelectedIds(prev => {
+      const next = new Set(prev)
+      ids.forEach(id => next.delete(id))
       return next
     })
 
@@ -303,6 +335,8 @@ export default function DiscountForm() {
             selected={selectedIds}
             onToggle={toggleSelected}
             onClear={() => setSelectedIds(new Set())}
+            onSelectAll={selectAllIds}
+            onDeselectAll={deselectAllIds}
             locale={locale}
           />
         )}
