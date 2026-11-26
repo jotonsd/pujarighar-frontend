@@ -20,10 +20,15 @@ const QR_VARIANT_PREFIX = "PG-VARIANT:";
 // product/variant exists.
 export default function ProductQrCode({
   label,
+  displaySku,
   code,
   isBn,
 }: {
   label: string;
+  // The human-readable SKU printed under the QR on the sticker — distinct
+  // from `code`, which is the full `PG-SKU:`/`PG-VARIANT:` payload actually
+  // encoded in the QR image.
+  displaySku: string;
   code: string;
   isBn: boolean;
 }) {
@@ -46,6 +51,7 @@ export default function ProductQrCode({
         <div className="w-28 h-28 rounded-lg bg-surface-alt animate-pulse" />
       )}
       <p className="text-xs font-medium text-body text-center">{label}</p>
+      <p className="text-xs font-mono text-muted text-center">{displaySku}</p>
       {dataUrl && (
         <a
           href={dataUrl}
