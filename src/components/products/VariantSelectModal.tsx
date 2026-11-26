@@ -86,8 +86,16 @@ export default function VariantSelectModal({ product, locale, onClose, onConfirm
             <span className="text-lg font-bold text-amber-700 dark:text-amber-400">
               {formatAmount(variant.effective_price, locale, 0)}
             </span>
-            <span className={`text-xs font-medium ${stock > 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>
-              {stock > 0
+            <span className={`text-xs font-medium ${
+              stock === 1
+                ? "text-orange-600 dark:text-orange-400"
+                : stock > 0
+                ? "text-green-600 dark:text-green-400"
+                : "text-red-600 dark:text-red-400"
+            }`}>
+              {stock === 1
+                ? (isBn ? "শেষ একটি বাকি" : "Last one left")
+                : stock > 0
                 ? (isBn ? `স্টক: ${formatNumber(stock, locale)}` : `Stock: ${stock}`)
                 : (isBn ? "স্টক নেই" : "Out of stock")}
             </span>

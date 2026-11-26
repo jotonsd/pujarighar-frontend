@@ -310,8 +310,16 @@ export default function ProductCard({
               </span>
             )}
           </div>
-          <span className={`badge text-xs ${inStock ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"}`}>
-            {locale === "bn" ? "স্টক" : "Stock"}
+          <span className={`badge text-xs ${
+            inStock && displayStock === 1
+              ? "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400"
+              : inStock
+              ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+              : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+          }`}>
+            {inStock && displayStock === 1
+              ? (locale === "bn" ? "শেষ একটি বাকি" : "Last one left")
+              : (locale === "bn" ? "স্টক" : "Stock")}
           </span>
         </div>
       </Link>

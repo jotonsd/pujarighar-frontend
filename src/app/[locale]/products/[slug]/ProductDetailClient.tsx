@@ -294,7 +294,9 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
                 </span>
               </>
             )}
-            {inStock ? (
+            {inStock && displayStock === 1 ? (
+              <Badge variant="orange">{locale === "bn" ? "শেষ একটি বাকি" : "Last one left"}</Badge>
+            ) : inStock ? (
               <Badge variant="green">{t("product.inStock")}</Badge>
             ) : (
               <Badge variant="red">{t("product.outOfStock")}</Badge>
