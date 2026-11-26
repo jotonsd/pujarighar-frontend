@@ -50,8 +50,7 @@ export default function ProductQrCode({
       ) : (
         <div className="w-28 h-28 rounded-lg bg-surface-alt animate-pulse" />
       )}
-      <p className="text-xs font-medium text-body text-center">{label}</p>
-      <p className="text-xs font-mono text-muted text-center">{displaySku}</p>
+      <p className="text-xs font-mono text-body text-center">{displaySku}</p>
       {dataUrl && (
         <a
           href={dataUrl}
