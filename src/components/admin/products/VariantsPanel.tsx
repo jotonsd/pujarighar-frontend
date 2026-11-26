@@ -11,6 +11,7 @@ import {
 import { Product, VariantAttributeType } from "@/lib/types";
 import { toast } from "@/store/toastStore";
 import { getErrorMessage } from "@/utils/apiError";
+import ProductQrCode, { skuQrCode, variantQrCode } from "./ProductQrCode";
 import { Trash2 } from "lucide-react";
 import { useState } from "react";
 
@@ -212,6 +213,32 @@ export default function VariantsPanel({ product, locale }: Props) {
           ))}
         </div>
       )}
+
+      <div className="space-y-2 pt-4 border-t border-border">
+        <p className="text-xs font-semibold text-muted">
+          {product.variants.length > 0
+            ? (isBn ? "QR কোড (প্রতিটি ভ্যারিয়েন্টের জন্য)" : "QR Codes (one per variant)")
+            : (isBn ? "QR কোড" : "QR Code")}
+        </p>
+        <div className="flex flex-wrap gap-3">
+          {product.variants.length > 0 ? (
+            product.variants.map(variant => (
+              <ProductQrCode
+                key={variant.id}
+                label={isBn ? variant.label_bn : variant.label_en}
+                code={variantQrCode(variant.id)}
+                isBn={isBn}
+              />
+            ))
+          ) : (
+            <ProductQrCode
+              label={isBn ? product.name_bn : product.name_en}
+              code={skuQrCode(product.sku)}
+              isBn={isBn}
+            />
+          )}
+        </div>
+      </div>
     </div>
   );
 }
