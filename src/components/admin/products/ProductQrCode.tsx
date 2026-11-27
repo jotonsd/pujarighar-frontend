@@ -50,11 +50,12 @@ export default function ProductQrCode({
       ) : (
         <div className="w-28 h-28 rounded-lg bg-surface-alt animate-pulse" />
       )}
-      <p className="text-xs font-mono text-body text-center">{displaySku}</p>
+      <p className="text-xs font-medium text-body text-center">{label}</p>
+      <p className="text-xs font-mono text-muted text-center">{displaySku}</p>
       {dataUrl && (
         <a
           href={dataUrl}
-          download={`qr-${code.replace(/[^a-zA-Z0-9-]/g, "_")}.png`}
+          download={`${displaySku.replace(/[^a-zA-Z0-9-]/g, "_")}.png`}
           className="inline-flex items-center gap-1 text-xs text-amber-700 hover:underline"
         >
           <Download className="w-3 h-3" />
