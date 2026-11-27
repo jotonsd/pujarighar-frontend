@@ -31,11 +31,16 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pujarighar.com";
 // _extract_qr_code).
 export default function ProductQrCode({
   label,
+  labelEn,
   displaySku,
   code,
   isBn,
 }: {
   label: string;
+  // Always-English version of `label`, baked into the downloaded sticker
+  // image regardless of the admin's current bn/en toggle — a printed
+  // sticker shouldn't change language depending on who generated it.
+  labelEn: string;
   // The human-readable SKU printed under the QR on the sticker — distinct
   // from `code`, which is the full `PG-SKU:`/`PG-VARIANT:` payload actually
   // encoded in the QR image.
@@ -44,14 +49,51 @@ export default function ProductQrCode({
   isBn: boolean;
 }) {
   const [dataUrl, setDataUrl] = useState<string | null>(null);
+  // The actual downloadable file — the bare QR composited with the name +
+  // SKU baked into the image itself, so the printed sticker still carries
+  // that info even once it's no longer shown next to the on-screen QR.
+  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
-    QRCode.toDataURL(code, { width: 200, margin: 1, color: { dark: "#1c1917", light: "#ffffff" } })
+    QRCode.toDataURL(code, { width: 300, margin: 1, color: { dark: "#1c1917", light: "#ffffff" } })
       .then(url => { if (!cancelled) setDataUrl(url); })
       .catch(() => { if (!cancelled) setDataUrl(null); });
     return () => { cancelled = true; };
   }, [code]);
+
+  useEffect(() => {
+    if (!dataUrl) {
+      setDownloadUrl(null);
+      return;
+    }
+    let cancelled = false;
+    const img = new Image();
+    img.onload = () => {
+      if (cancelled) return;
+      const canvas = document.createElement("canvas");
+      const qrSize = img.width;
+      const padding = 24;
+      const textBlockHeight = 70;
+      canvas.width = qrSize + padding * 2;
+      canvas.height = qrSize + padding * 2 + textBlockHeight;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, padding, padding);
+      ctx.textAlign = "center";
+      ctx.fillStyle = "#1c1917";
+      ctx.font = "600 20px sans-serif";
+      ctx.fillText(labelEn, canvas.width / 2, padding + qrSize + 32, canvas.width - padding);
+      ctx.fillStyle = "#6b7280";
+      ctx.font = "16px monospace";
+      ctx.fillText(displaySku, canvas.width / 2, padding + qrSize + 58, canvas.width - padding);
+      setDownloadUrl(canvas.toDataURL("image/png"));
+    };
+    img.src = dataUrl;
+    return () => { cancelled = true; };
+  }, [dataUrl, labelEn, displaySku]);
 
   return (
     <div className="flex flex-col items-center gap-2 p-3 border border-border rounded-xl bg-background">
@@ -63,9 +105,9 @@ export default function ProductQrCode({
       )}
       <p className="text-xs font-medium text-body text-center">{label}</p>
       <p className="text-xs font-mono text-muted text-center">{displaySku}</p>
-      {dataUrl && (
+      {downloadUrl && (
         <a
-          href={dataUrl}
+          href={downloadUrl}
           download={`${displaySku.replace(/[^a-zA-Z0-9-]/g, "_")}.png`}
           className="inline-flex items-center gap-1 text-xs text-amber-700 hover:underline"
         >
