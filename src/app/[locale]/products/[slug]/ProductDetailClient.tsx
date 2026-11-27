@@ -240,9 +240,11 @@ export default function ProductDetailClient({ id, offerBanners }: { id: string; 
             )}
           </div>
 
-          {/* Thumbnail strip */}
+          {/* Thumbnail strip — scrolls horizontally instead of wrapping
+              once there are more photos than fit the screen width, same as
+              the mobile app's own gallery strip. */}
           {hasMany && (
-            <div className="flex gap-2">
+            <div className="flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {images.map((img, i) => (
                 <button
                   key={img.id}
