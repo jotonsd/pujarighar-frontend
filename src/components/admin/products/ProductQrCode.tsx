@@ -5,11 +5,14 @@ import { useEffect, useState } from "react";
 import { Download } from "lucide-react";
 
 // Payload prefixes mirrored exactly from backend/api/views/product_views.py's
-// scan_product — a mismatch here would mean a printed sticker nobody can
-// scan, so these two constants are the single source of truth on this side
-// and must stay byte-for-byte identical to the backend's.
+// _resolve_qr_code (shared by scan_product and resolve_qr_code) — a
+// mismatch here would mean a printed sticker nobody can scan, so these two
+// constants are the single source of truth on this side and must stay
+// byte-for-byte identical to the backend's.
 const QR_SKU_PREFIX = "PG-SKU:";
 const QR_VARIANT_PREFIX = "PG-VARIANT:";
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pujarighar.com";
 
 // One QR per scannable identity — a simple product's own SKU, or one
 // specific variant (keyed by the variant's own id, not a made-up SKU
@@ -18,6 +21,14 @@ const QR_VARIANT_PREFIX = "PG-VARIANT:";
 // (ShopAppQrCard.tsx/AppPromoBanner.tsx) — generated fresh every time this
 // renders, which is fine since the encoded value never changes once a
 // product/variant exists.
+//
+// The QR encodes a real, openable `/qr?code=...` page URL (not the bare
+// PG-SKU:/PG-VARIANT: payload by itself) so a plain camera-app scan lands
+// on the actual product page instead of just showing unreadable text — see
+// src/app/[locale]/qr/page.tsx. The app's own in-app scanner still works
+// unchanged: it sends whatever raw text it decoded straight to the backend,
+// which strips this URL wrapper back off before matching the prefix (see
+// _extract_qr_code).
 export default function ProductQrCode({
   label,
   displaySku,
@@ -66,10 +77,14 @@ export default function ProductQrCode({
   );
 }
 
-export function skuQrCode(sku: string): string {
-  return `${QR_SKU_PREFIX}${sku}`;
+function qrPageUrl(locale: string, payload: string): string {
+  return `${SITE_URL}/${locale}/qr?code=${encodeURIComponent(payload)}`;
 }
 
-export function variantQrCode(variantId: string): string {
-  return `${QR_VARIANT_PREFIX}${variantId}`;
+export function skuQrCode(sku: string, locale: string): string {
+  return qrPageUrl(locale, `${QR_SKU_PREFIX}${sku}`);
+}
+
+export function variantQrCode(variantId: string, locale: string): string {
+  return qrPageUrl(locale, `${QR_VARIANT_PREFIX}${variantId}`);
 }

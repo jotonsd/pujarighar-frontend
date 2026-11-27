@@ -227,7 +227,7 @@ export default function VariantsPanel({ product, locale }: Props) {
                 key={variant.id}
                 label={isBn ? variant.label_bn : variant.label_en}
                 displaySku={variant.sku_suffix ? `${product.sku}-${variant.sku_suffix}` : product.sku}
-                code={variantQrCode(variant.id)}
+                code={variantQrCode(variant.id, locale)}
                 isBn={isBn}
               />
             ))
@@ -235,7 +235,7 @@ export default function VariantsPanel({ product, locale }: Props) {
             <ProductQrCode
               label={isBn ? product.name_bn : product.name_en}
               displaySku={product.sku}
-              code={skuQrCode(product.sku)}
+              code={skuQrCode(product.sku, locale)}
               isBn={isBn}
             />
           )}
