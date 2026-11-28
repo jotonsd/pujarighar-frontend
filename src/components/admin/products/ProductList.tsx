@@ -5,7 +5,7 @@ import { useLocale, useTranslations } from 'next-intl'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Copy, Pencil, Trash2 } from 'lucide-react'
+import { Copy, Pencil, QrCode, Trash2 } from 'lucide-react'
 import Badge from '@/components/ui/Badge'
 import ConfirmModal from '@/components/ui/ConfirmModal'
 import ToggleSwitch from '@/components/ui/forms/ToggleSwitch'
@@ -160,6 +160,16 @@ export default function ProductList() {
       <PageHeader
         title={t('admin.products')}
         description={locale === 'bn' ? 'সকল পণ্য দেখুন, সম্পাদনা করুন ও নতুন পণ্য যোগ করুন' : 'Browse, edit and add products to your catalog'}
+        actions={
+          <button
+            type="button"
+            onClick={() => router.push(`/${locale}/admin/products/qr-codes`)}
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-surface-alt text-muted border border-border hover:bg-border transition-colors"
+          >
+            <QrCode className="w-3.5 h-3.5" />
+            {locale === 'bn' ? 'সব QR কোড' : 'All QR Codes'}
+          </button>
+        }
         {...(isAdmin && { addLabel: t('common.create'), onAdd: () => router.push(`/${locale}/admin/products/new`) })}
       />
 
