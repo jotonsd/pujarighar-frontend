@@ -16,6 +16,14 @@ interface QrEntry {
   labelEn: string;
   displaySku: string;
   code: string;
+  // Suggested print quantity — defaults to current stock on hand, since the
+  // whole point of this page is one sticker per physical unit sitting in
+  // the warehouse. Admin can still override per-entry before printing.
+  stock: number;
+}
+
+function parseStock(value: string): number {
+  return Math.max(0, Math.floor(Number(value) || 0));
 }
 
 // One QR per scannable identity, mirroring VariantsPanel.tsx's own logic:
@@ -35,6 +43,7 @@ function buildEntries(products: Product[], locale: string, activeOnly: boolean):
           labelEn: `${product.name_en} - ${variant.label_en}`,
           displaySku: variant.sku_suffix ? `${product.sku}-${variant.sku_suffix}` : product.sku,
           code: variantQrCode(variant.id, locale),
+          stock: parseStock(variant.stock_on_hand),
         });
       }
     } else {
@@ -43,6 +52,7 @@ function buildEntries(products: Product[], locale: string, activeOnly: boolean):
         labelEn: product.name_en,
         displaySku: product.sku,
         code: skuQrCode(product.sku, locale),
+        stock: parseStock(product.stock_on_hand),
       });
     }
   }
@@ -76,6 +86,13 @@ export default function AllProductQrCodes() {
     () => buildEntries(data?.data ?? [], locale, status === "true"),
     [data, locale, status],
   );
+
+  // Per-entry print-quantity overrides, keyed by entry.key — unset entries
+  // fall back to their current stock count. Kept separate from `entries` so
+  // an edit survives re-filtering/re-fetching as long as the key persists.
+  const [quantityOverrides, setQuantityOverrides] = useState<Record<string, number>>({});
+  const getQuantity = (entry: QrEntry) => quantityOverrides[entry.key] ?? entry.stock;
+  const totalStickers = entries.reduce((sum, e) => sum + getQuantity(e), 0);
 
   return (
     <div>
@@ -137,6 +154,14 @@ export default function AllProductQrCodes() {
         </FloatingSelect>
       </div>
 
+      {!isLoading && entries.length > 0 && (
+        <p className="text-xs text-muted mb-3 print:hidden">
+          {isBn
+            ? `মোট ${entries.length}টি আইটেম — ${totalStickers}টি স্টিকার প্রিন্ট হবে`
+            : `${entries.length} item(s) — ${totalStickers} sticker(s) will print`}
+        </p>
+      )}
+
       {isLoading ? (
         <div className="text-sm text-muted">{isBn ? "লোড হচ্ছে..." : "Loading..."}</div>
       ) : entries.length === 0 ? (
@@ -153,6 +178,10 @@ export default function AllProductQrCodes() {
               displaySku={entry.displaySku}
               code={entry.code}
               isBn={isBn}
+              quantity={getQuantity(entry)}
+              onQuantityChange={next =>
+                setQuantityOverrides(prev => ({ ...prev, [entry.key]: next }))
+              }
             />
           ))}
         </div>
