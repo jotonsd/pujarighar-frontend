@@ -1,8 +1,7 @@
 "use client";
 
-import QRCode from "qrcode";
-import { useEffect, useState } from "react";
 import { Download } from "lucide-react";
+import { useQrStickerImage } from "./useQrStickerImage";
 
 // Payload prefixes mirrored exactly from backend/api/views/product_views.py's
 // _resolve_qr_code (shared by scan_product and resolve_qr_code) — a
@@ -48,63 +47,19 @@ export default function ProductQrCode({
   code: string;
   isBn: boolean;
 }) {
-  const [dataUrl, setDataUrl] = useState<string | null>(null);
   // The actual downloadable file — the bare QR composited with the name +
   // SKU baked into the image itself, so the printed sticker still carries
   // that info even once it's no longer shown next to the on-screen QR.
-  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    QRCode.toDataURL(code, { width: 300, margin: 1, color: { dark: "#1c1917", light: "#ffffff" } })
-      .then(url => { if (!cancelled) setDataUrl(url); })
-      .catch(() => { if (!cancelled) setDataUrl(null); });
-    return () => { cancelled = true; };
-  }, [code]);
-
-  useEffect(() => {
-    if (!dataUrl) {
-      setDownloadUrl(null);
-      return;
-    }
-    let cancelled = false;
-    const img = new Image();
-    img.onload = () => {
-      if (cancelled) return;
-      const canvas = document.createElement("canvas");
-      const qrSize = img.width;
-      const padding = 24;
-      const textBlockHeight = 70;
-      canvas.width = qrSize + padding * 2;
-      canvas.height = qrSize + padding * 2 + textBlockHeight;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(img, padding, padding);
-      ctx.textAlign = "center";
-      ctx.fillStyle = "#1c1917";
-      ctx.font = "600 20px sans-serif";
-      ctx.fillText(labelEn, canvas.width / 2, padding + qrSize + 32, canvas.width - padding);
-      ctx.fillStyle = "#6b7280";
-      ctx.font = "16px monospace";
-      ctx.fillText(displaySku, canvas.width / 2, padding + qrSize + 58, canvas.width - padding);
-      setDownloadUrl(canvas.toDataURL("image/png"));
-    };
-    img.src = dataUrl;
-    return () => { cancelled = true; };
-  }, [dataUrl, labelEn, displaySku]);
+  const downloadUrl = useQrStickerImage(code, labelEn, displaySku);
 
   return (
     <div className="flex flex-col items-center gap-2 p-3 border border-border rounded-xl bg-background">
-      {dataUrl ? (
+      {downloadUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={dataUrl} alt={label} className="w-28 h-28" />
+        <img src={downloadUrl} alt={label} className="w-28 h-auto" />
       ) : (
         <div className="w-28 h-28 rounded-lg bg-surface-alt animate-pulse" />
       )}
-      <p className="text-xs font-medium text-body text-center">{label}</p>
-      <p className="text-xs font-mono text-muted text-center">{displaySku}</p>
       {downloadUrl && (
         <a
           href={downloadUrl}
